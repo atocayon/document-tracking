@@ -1,11 +1,11 @@
 import React from 'react';
 import Home from './screens/Home';
-
+import LandingPage from './screens/LandingPage';
 
 function App() {
   return (
     <React.Fragment>
-        <Home />
+        <LandingPage />
     </React.Fragment>
   );
 }
