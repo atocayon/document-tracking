@@ -124,7 +124,7 @@ export default function PrimarySearchAppBar() {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            NMP | Document Tracking
+            NMP | Section Name
           </Typography>
 
           <div className={classes.grow} />
