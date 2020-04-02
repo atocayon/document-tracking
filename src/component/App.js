@@ -5,7 +5,7 @@ import PrimarySearchAppBar from "./common/navbar/PrimarySearchAppBar";
 import { ToastContainer } from "react-toastify";
 import { Route, Switch } from "react-router-dom";
 import SideBarNavigation from "./common/sideBarNavigation/SideBarNavigation";
-import UserList from "./common/userList/UserList";
+
 import TrackDocument from "./screens/trackDocument/TrackDocument";
 import AddDocument from "./screens/addDocument/AddDocument";
 import ReceiveDocument from "./screens/receiveDocument/ReceiveDocument";
@@ -17,10 +17,7 @@ import ProcessedDocuments from "./screens/processedDocuments/ProcessedDocuments"
 import LoginModal from "./screens/login/LoginModal";
 import Profile from "./screens/profile/Profile";
 import NotFoundPage from "./screens/pageNotfound/NotFoundPage";
-import { connect } from "react-redux";
-import { userLogin } from "../redux/actions/login";
-import { loadUsers } from "../redux/actions/fetchUsersBySection";
-import Reactotron from "reactotron-react-js";
+
 import UserManagement from "./screens/userManagement/UserManagement";
 import UpdateProfile from "./screens/updateProfile/UpdateProfile";
 
@@ -36,10 +33,8 @@ const customStyles = {
   }
 };
 
-function App({ users, userLogin, loadUsers, clearProfile, ...props }) {
+function App() {
   const [open, setOpen] = useState(true);
-  const [user, setUser] = useState([]);
-
 
   const handleClick = () => {
     setOpen(!open);
@@ -50,13 +45,12 @@ function App({ users, userLogin, loadUsers, clearProfile, ...props }) {
       <div>
         <ToastContainer autoClose={3000} hideProgressBar />
         <Grid container spacing={3}>
-          <PrimarySearchAppBar user={user} />
+          <PrimarySearchAppBar />
         </Grid>
 
         <Grid container spacing={3}>
           <Grid item xs={2}>
             <SideBarNavigation
-              user={user}
               open={open}
               setOpen={setOpen}
               handleClick={handleClick}
@@ -66,7 +60,7 @@ function App({ users, userLogin, loadUsers, clearProfile, ...props }) {
             <Switch>
               <Route path={"/"} exact component={Home} />
               <Route path={"/login"} component={LoginModal} />
-              <Route path="/fetchUsersBySection" component={UserManagement}  />
+              <Route path="/fetchUsersBySection" component={UserManagement} />
               <Route path="/trackDocument" component={TrackDocument} />
               <Route path="/addDocument" component={AddDocument} />
               <Route path="/receiveDocument" component={ReceiveDocument} />
@@ -79,7 +73,8 @@ function App({ users, userLogin, loadUsers, clearProfile, ...props }) {
                 component={ProcessedDocuments}
               />
               <Route path={"/user/:id"} component={Profile} />
-              <Route  path={"/update/:id"} component={UpdateProfile}/>
+              <Route path={"/user"} component={Profile} />
+              <Route path={"/update/:id"} component={UpdateProfile} />
               <Route path={"/users/:section"} component={UserManagement} />
 
               <Route component={NotFoundPage} />
@@ -94,15 +89,4 @@ function App({ users, userLogin, loadUsers, clearProfile, ...props }) {
   );
 }
 
-function mapStateToProps(state) {
-  return {
-    users: state.user
-  };
-}
-
-const mapDispatchToProps = {
-  userLogin,
-  loadUsers
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default App;

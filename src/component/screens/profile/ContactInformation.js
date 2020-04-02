@@ -12,22 +12,22 @@ export default function ContactInformation(props) {
             <td>Phone</td>
 
             <td style={{ color: "#2196F3" }}>
-              {props.user[0].data[0].contact
-                ? props.user[0].data[0].contact
+              {props.user[0].contact
+                ? props.user[0].contact
                 : "Not Available"}
             </td>
           </tr>
           <tr>
             <td>Email</td>
             <td style={{ color: "#2196F3" }}>
-              {props.user[0].data[0].email ? props.user[0].data[0].email : "Not Available"}
+              {props.user[0].email ? props.user[0].email : "Not Available"}
             </td>
           </tr>
           <tr>
             <td>Address</td>
             <td style={{ color: "#2196F3" }}>
-              {props.user[0].data[0].address
-                ? props.user[0].data[0].address
+              {props.user[0].address
+                ? props.user[0].address
                 : "Not Available"}
             </td>
           </tr>
@@ -43,13 +43,13 @@ export default function ContactInformation(props) {
           <tr>
             <td>Birthday</td>
             <td style={{ color: "#2196F3" }}>
-              {props.user[0].data[0].bdate ? props.user[0].data[0].bdate : "Not Available"}
+              {props.user[0].bdate ? props.user[0].bdate : "Not Available"}
             </td>
           </tr>
         <tr>
             <td>Gender</td>
             <td style={{ color: "#2196F3" }}>
-                {props.user[0].data[0].gender ? props.user[0].data[0].gender: "Not Available"}
+                {props.user[0].gender ? props.user[0].gender: "Not Available"}
             </td>
         </tr>
         </tbody>

@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import owl from "../../../img/owl.png";
 import { Link, Redirect } from "react-router-dom";
 import EditIcon from "@material-ui/icons/Edit";
+import DoneIcon from "@material-ui/icons/Done";
 import BookmarkIcon from "@material-ui/icons/Bookmark";
 import PersonIcon from "@material-ui/icons/Person";
 import WorkIcon from "@material-ui/icons/Work";
@@ -14,245 +15,328 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { fetchUserProfile } from "../../../redux/actions/fetchUserProfile";
 import { connect } from "react-redux";
 import InputField from "../../common/textField/InputField";
-function UpdateProfile({ match, fetchUserProfile, profile }) {
-  const [disable, setDisable] = useState(true);
-  useEffect(() => {
-    const id = match.params.id;
+import Reactotron from "reactotron-react-js";
+import axios from "axios";
+
+class UpdateProfile extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      _employeeId: true,
+      _name: true,
+      _username: true,
+      _password: true,
+      _contact: true,
+      _email: true,
+      _division: true,
+      _section: true,
+      _position: true,
+      _address: true,
+      _bdate: true,
+      _gender: true,
+      employeeId: "",
+      name: "",
+      username: "",
+      password: "",
+      newPassword: "",
+      contact: "",
+      email: "",
+      division: "",
+      section: "",
+      position: "",
+      address: "",
+      bdate: "",
+      gender: ""
+    };
+  }
+
+  componentDidMount() {
+    const id = this.props.match.params.id;
 
     if (id) {
-      fetchUserProfile(match.params.id).catch(err => {
+      this.props.fetchUserProfile(id).catch(err => {
         throw err;
       });
     }
-  }, []);
 
-  return (
-    <div>
-      {profile.length === 0 ? (
-        <Redirect to={"/"} />
-      ) : (
-        <Paper
-          elevation={3}
-          style={{
-            color: "#263238",
-            paddingBottom: "5vh"
-          }}
-        >
-          <div className={"jumbotron"} style={{ padding: 20 }}>
-            <div className={"row"}>
-              <div className={"col-md-2"}>
+    axios.get("http://localhost:4000/dts/user/" + id).then(user => {
+      // Reactotron.log(user.data[0]);
+      let info = user.data[0];
+      this.setState({
+        employeeId: info.employeeId,
+        name: info.name,
+        username: info.username,
+        password: info.password,
+        contact: info.contact,
+        email: info.email,
+        division: info.division,
+        section: info.section,
+        position: info.position,
+        address: info.address,
+        bdate: info.bdate,
+        gender: info.gender
+      })
+    })
+    
+  }
+
+  handleChange = ({ target }) => {
+    this.setState({
+      [target.name]: target.value
+    });
+  };
+
+  handleClick = val => {
+    this.setState({
+      [val]: !this.state[val]
+    });
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    Reactotron.log("Submit");
+  };
+
+  render() {
+    // Reactotron.log(this.props.profile == null ? "Empty" : this.props.profile);
+    Reactotron.log(this.state.name);
+    return (
+      <div>
+        {this.props.profile.length  === 0 ? (<Redirect to={"/update/" + this.props.match.params.id} />) :(
+            <Paper
+                elevation={3}
+                style={{
+                  color: "#263238",
+                  paddingBottom: "5vh"
+                }}
+            >
+              <div className={"jumbotron"} style={{ padding: 20 }}>
                 <div className={"row"}>
-                  <div className={"col-md-6"}>
-                    <Link to={"/user/" + match.params.id}>
-                      <ArrowBackIcon style={{fontSize: "2vw"}} />
-                    </Link>
-                  </div>
-                  <div className={"col-md-6"}>
-                    <div style={{ textAlign: "right" }}>
-                      <img
-                        src={owl}
-                        alt={"owl"}
-                        style={{ width: "3vw", paddingLeft: "1vw" }}
-                      />
+                  <div className={"col-md-2"}>
+                    <div className={"row"}>
+                      <div className={"col-md-6"}>
+                        <Link to={"/user/" + this.props.match.params.id}>
+                          <ArrowBackIcon style={{ fontSize: "2vw" }} />
+                        </Link>
+                      </div>
+                      <div className={"col-md-6"}>
+                        <div style={{ textAlign: "right" }}>
+                          <img
+                              src={owl}
+                              alt={"owl"}
+                              style={{ width: "3vw", paddingLeft: "1vw" }}
+                          />
+                        </div>
+                      </div>
                     </div>
+                  </div>
+                  <div className={"col-md-10"}>
+                    <h5>
+                      Details you select will update{" "}
+                      <span style={{ color: "#2196F3" }}>
+                    <u>Profile Information</u>
+                  </span>
+                    </h5>
                   </div>
                 </div>
               </div>
-              <div className={"col-md-10"}>
-                <h5>
-                  Details you select will update{" "}
-                  <span style={{ color: "#2196F3" }}>
-                    <u>Profile Information</u>
-                  </span>
-                </h5>
-              </div>
-            </div>
-          </div>
-          <Grid container spacing={3}>
-            <Grid item xs={2}></Grid>
-            <Grid item xs={8}>
-              <table className={"table table-borderless"}>
-                <tbody>
-                  <tr>
-                    <td style={{ background: "#E9ECEF" }}>
-                      <PersonIcon />
-                      &nbsp;&nbsp;Account Name
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <InputField
-                        id={"name"}
-                        name={"name"}
-                        label={"Full Name"}
-                        defaultValue={profile[0].data[0].name}
-                        disabled={disable}
-                      />
-                    </td>
-                    <td>
-                      <button className={"btn"}>
-                        <EditIcon />
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ background: "#E9ECEF" }}>
-                      <WorkIcon />
-                      &nbsp;&nbsp;Work
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <InputField
-                        id={"position"}
-                        name={"position"}
-                        label={"Current Position"}
-                        defaultValue={profile[0].data[0].position}
-                        disabled={disable}
-                      />
-                    </td>
-                    <td>
-                      <button className={"btn"}>
-                        <EditIcon />
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ background: "#E9ECEF" }}>
-                      <ContactPhoneIcon />
-                      &nbsp;&nbsp;Contact Information
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      <InputField
-                        id={"contact"}
-                        name={"contact"}
-                        label={"Contact No."}
-                        defaultValue={
-                          profile[0].data[0].contact
-                            ? profile[0].data[0].contact
-                            : "Not Available"
-                        }
-                        disabled={disable}
-                      />
-                    </td>
-                    <td>
-                      <button className={"btn"}>
-                        <EditIcon />
-                      </button>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      <InputField
-                        id={"email"}
-                        name={"email"}
-                        label={"Email"}
-                        defaultValue={
-                          profile[0].data[0].email
-                            ? profile[0].data[0].email
-                            : "Not Available"
-                        }
-                        disabled={disable}
-                      />
-                    </td>
-                    <td>
-                      <button className={"btn"}>
-                        <EditIcon />
-                      </button>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      <InputField
-                        id={"address"}
-                        name={"address"}
-                        label={"Address"}
-                        defaultValue={
-                          profile[0].data[0].address
-                            ? profile[0].data[0].address
-                            : "Not Available"
-                        }
-                        disabled={disable}
-                      />
-                    </td>
-                    <td>
-                      <button className={"btn"}>
-                        <EditIcon />
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ background: "#E9ECEF" }}>
-                      <ContactSupportIcon />
-                      &nbsp;&nbsp;Other Information
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <InputField
-                        id={"bdate"}
-                        name={"bdate"}
-                        label={"Date of Birth"}
-                        defaultValue={
-                          profile[0].data[0].bdate
-                            ? profile[0].data[0].bdate
-                            : "Not Available"
-                        }
-                        disabled={disable}
-                      />
-                    </td>
-                    <td>
-                      <button className={"btn"}>
-                        <EditIcon />
-                      </button>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      <InputField
-                        id={"gender"}
-                        name={"gender"}
-                        label={"Gender"}
-                        defaultValue={
-                          profile[0].data[0].gender
-                            ? profile[0].data[0].gender
-                            : "Not Available"
-                        }
-                        disabled={disable}
-                      />
-                    </td>
-                    <td>
-                      <button className={"btn"}>
-                        <EditIcon />
-                      </button>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      <div style={{ textAlign: "right" }}>
-                        <button className={"btn btn-info btn-sm"}>
-                          <SaveIcon />
-                          &nbsp;&nbsp; Save Changes
+              <Grid container spacing={3}>
+                <Grid item xs={2}></Grid>
+                <Grid item xs={8}>
+                  <table className={"table table-borderless"}>
+                    <tbody>
+                    <tr>
+                      <td style={{ background: "#E9ECEF" }}>
+                        <PersonIcon />
+                        &nbsp;&nbsp;Account Name
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <InputField
+                            id={"name"}
+                            name={"name"}
+                            label={"Full Name"}
+                            defaultValue={this.props.profile[0].name}
+                            disabled={this.state._name}
+                            onChange={this.handleChange}
+                        />
+                      </td>
+                      <td>
+                        <button
+                            className={"btn"}
+                            onClick={this.handleClick.bind(null, "_name")}
+                        >
+                          {this.state._name ? <EditIcon /> : <DoneIcon />}
                         </button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </Grid>
-            <Grid item xs={2}></Grid>
-          </Grid>
-        </Paper>
-      )}
-    </div>
-  );
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ background: "#E9ECEF" }}>
+                        <WorkIcon />
+                        &nbsp;&nbsp;Work
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <InputField
+                            id={"position"}
+                            name={"position"}
+                            label={"Current Position"}
+                            defaultValue={this.props.profile[0].position}
+                            disabled={this.state._position}
+                            onChange={this.handleChange}
+                        />
+                      </td>
+                      <td>
+                        <button
+                            className={"btn"}
+                            onClick={this.handleClick.bind(null, "_position")}
+                        >
+                          {this.state._position ? <EditIcon /> : <DoneIcon />}
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ background: "#E9ECEF" }}>
+                        <ContactPhoneIcon />
+                        &nbsp;&nbsp;Contact Information
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <InputField
+                            id={"contact"}
+                            name={"contact"}
+                            label={"Contact No."}
+                            defaultValue={this.props.profile[0].contact}
+                            disabled={this.state._contact}
+                            onChange={this.handleChange}
+                        />
+                      </td>
+                      <td>
+                        <button
+                            className={"btn"}
+                            onClick={this.handleClick.bind(null, "_contact")}
+                        >
+                          {this.state._contact ? <EditIcon /> : <DoneIcon />}
+                        </button>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <InputField
+                            id={"email"}
+                            name={"email"}
+                            label={"Email"}
+                            defaultValue={this.props.profile[0].email}
+                            disabled={this.state._email}
+                            onChange={this.handleChange}
+                        />
+                      </td>
+                      <td>
+                        <button
+                            className={"btn"}
+                            onClick={this.handleClick.bind(null, "_email")}
+                        >
+                          {this.state._email ? <EditIcon /> : <DoneIcon />}
+                        </button>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <InputField
+                            id={"address"}
+                            name={"address"}
+                            label={"Address"}
+                            defaultValue={this.props.profile[0].address}
+                            disabled={this.state._address}
+                            onChange={this.handleChange}
+                        />
+                      </td>
+                      <td>
+                        <button
+                            className={"btn"}
+                            onClick={this.handleClick.bind(null, "_address")}
+                        >
+                          {this.state._address ? <EditIcon /> : <DoneIcon />}
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ background: "#E9ECEF" }}>
+                        <ContactSupportIcon />
+                        &nbsp;&nbsp;Other Information
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <InputField
+                            id={"bdate"}
+                            name={"bdate"}
+                            label={"Date of Birth"}
+                            defaultValue={this.props.profile[0].bdate}
+                            disabled={this.state._bdate}
+                            onChange={this.handleChange}
+                        />
+                      </td>
+                      <td>
+                        <button
+                            className={"btn"}
+                            onClick={this.handleClick.bind(null, "_bdate")}
+                        >
+                          {this.state._bdate ? <EditIcon /> : <DoneIcon />}
+                        </button>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <InputField
+                            id={"gender"}
+                            name={"gender"}
+                            label={"Gender"}
+                            defaultValue={this.props.profile[0].gender}
+                            disabled={this.state._gender}
+                            onChange={this.handleChange}
+                        />
+                      </td>
+                      <td>
+                        <button
+                            className={"btn"}
+                            onClick={this.handleClick.bind(null, "_gender")}
+                        >
+                          {this.state._gender ? <EditIcon /> : <DoneIcon />}
+                        </button>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <div style={{ textAlign: "right" }}>
+                          <button className={"btn btn-info btn-sm"}>
+                            <SaveIcon />
+                            &nbsp;&nbsp; Save Changes
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </Grid>
+                <Grid item xs={2}></Grid>
+              </Grid>
+            </Paper>
+        )}
+
+
+      </div>
+    );
+  }
 }
 
 function mapStateToProps(state) {

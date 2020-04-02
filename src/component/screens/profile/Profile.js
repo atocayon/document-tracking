@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import avatar from "../../../img/avatar.png";
 import Grid from "@material-ui/core/Grid";
 import EditIcon from "@material-ui/icons/Edit";
@@ -12,20 +12,31 @@ import ContactInformation from "./ContactInformation";
 import { getFromStorage } from "../../storage";
 
 function Profile({ profile, fetchUserProfile, match }) {
+  const [userToken, setUserToken] = useState("");
+
   useEffect(() => {
     const id = match.params.id;
+
+    const obj = getFromStorage("documentTracking");
 
     if (id) {
       fetchUserProfile(match.params.id).catch(err => {
         throw err;
       });
+    } else {
+      if (obj && obj.token) {
+        const { token } = obj;
+        fetchUserProfile(token).catch(err => {
+          throw err;
+        });
+      }
     }
   }, []);
 
   return (
     <>
       {profile.length === 0 ? (
-        <Redirect to={"/"} />
+        <Redirect to={"/user/" + match.params.id} />
       ) : (
         <Paper
           elevation={3}
@@ -35,12 +46,26 @@ function Profile({ profile, fetchUserProfile, match }) {
             height: "100vh"
           }}
         >
-          <div className={"jumbotron"}>
-
-          </div>
-          <Grid container spacing={3} style={{paddingLeft: "2vw", paddingRight: "2vw", marginTop: "-12vh"}}>
+          <div className={"jumbotron"}></div>
+          <Grid
+            container
+            spacing={3}
+            style={{
+              paddingLeft: "2vw",
+              paddingRight: "2vw",
+              marginTop: "-12vh"
+            }}
+          >
             <Grid item xs={3}>
-              <img src={avatar} alt={"profile"} style={{ width: "10vw", background: "#fefefe", border: "3px solid #fff" }} />
+              <img
+                src={avatar}
+                alt={"profile"}
+                style={{
+                  width: "10vw",
+                  background: "#fefefe",
+                  border: "3px solid #fff"
+                }}
+              />
               <div>
                 <br />
                 <ContactInformation user={profile} />
@@ -53,15 +78,15 @@ function Profile({ profile, fetchUserProfile, match }) {
                   fontWeight: "bold"
                 }}
               >
-                {profile[0].data[0].name}
+                {profile[0].name}
               </h3>
               <h6 style={{ color: "#2196F3" }}>
-                {profile[0].data[0].position}
+                {profile[0].position}
               </h6>
               <br />
               <Link
                 className={"btn btn-sm btn-info"}
-                to={"/update/" + profile[0].data[0]._id}
+                to={"/update/" + profile[0]._id}
                 style={{
                   textDecoration: "none"
                 }}

@@ -33,17 +33,6 @@ export default function PrimarySearchAppBar(props) {
     right: false
   }); //Used for Drawer
 
-  const [userToken, setUserToken] = useState("");
-
-  useEffect(() => {
-    const obj = getFromStorage("documentTracking");
-    if (obj && obj.token) {
-      const { token } = obj;
-      setUserToken(token);
-    }
-  }, []);
-
-
   const toggleDrawer = (side, open) => event => {
     if (
       event.type === "keydown" &&
@@ -80,7 +69,6 @@ export default function PrimarySearchAppBar(props) {
 
   const profileMenu = (
     <ProfileMenu
-      token={userToken}
       anchorElProfileMenu={anchorEl}
       anchorOriginProfileMenu={{ vertical: "top", horizontal: "right" }}
       idProfileMenu={menuId}
