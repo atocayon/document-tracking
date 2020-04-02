@@ -26,7 +26,6 @@ class UpdateProfile extends Component {
       _employeeId: true,
       _name: true,
       _username: true,
-      _password: true,
       _contact: true,
       _email: true,
       _division: true,
@@ -38,8 +37,6 @@ class UpdateProfile extends Component {
       employeeId: "",
       name: "",
       username: "",
-      password: "",
-      newPassword: "",
       contact: "",
       email: "",
       division: "",
@@ -67,7 +64,6 @@ class UpdateProfile extends Component {
         employeeId: info.employeeId,
         name: info.name,
         username: info.username,
-        password: info.password,
         contact: info.contact,
         email: info.email,
         division: info.division,
@@ -78,7 +74,7 @@ class UpdateProfile extends Component {
         gender: info.gender
       })
     })
-    
+
   }
 
   handleChange = ({ target }) => {
@@ -149,7 +145,27 @@ class UpdateProfile extends Component {
                     <tr>
                       <td style={{ background: "#E9ECEF" }}>
                         <PersonIcon />
-                        &nbsp;&nbsp;Account Name
+                        &nbsp;&nbsp;Account
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <InputField
+                            id={"employeeId"}
+                            name={"employeeId"}
+                            label={"Employee ID"}
+                            defaultValue={this.props.profile[0].employeeId}
+                            disabled={this.state._employeeId}
+                            onChange={this.handleChange}
+                        />
+                      </td>
+                      <td>
+                        <button
+                            className={"btn"}
+                            onClick={this.handleClick.bind(null, "_employeeId")}
+                        >
+                          {this.state._employeeId ? <EditIcon /> : <DoneIcon />}
+                        </button>
                       </td>
                     </tr>
                     <tr>
@@ -169,6 +185,26 @@ class UpdateProfile extends Component {
                             onClick={this.handleClick.bind(null, "_name")}
                         >
                           {this.state._name ? <EditIcon /> : <DoneIcon />}
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <InputField
+                            id={"username"}
+                            name={"username"}
+                            label={"Username"}
+                            defaultValue={this.props.profile[0].username}
+                            disabled={this.state._username}
+                            onChange={this.handleChange}
+                        />
+                      </td>
+                      <td>
+                        <button
+                            className={"btn"}
+                            onClick={this.handleClick.bind(null, "_username")}
+                        >
+                          {this.state._username ? <EditIcon /> : <DoneIcon />}
                         </button>
                       </td>
                     </tr>

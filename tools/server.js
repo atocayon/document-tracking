@@ -2,27 +2,38 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
 const cors = require("cors");
-const mongoose = require("mongoose");
+const mysql = require("mysql");
 const router = express.Router();
 const PORT = 4000;
-
-const User = require("./users.model");
-const UserSession = require("./UserSession");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-mongoose.connect("mongodb://127.0.0.1:27017/dts", { useNewUrlParser: true });
-const connection = mongoose.connection;
+// mongoose.connect("mongodb://127.0.0.1:27017/dts", { useNewUrlParser: true });
+// const connection = mongoose.connection;
 
-connection.once("open", () => {
-  console.log("========================================================");
-  console.log("MongoDB database connection established successfully!!!");
-  console.log("========================================================");
+// connection.once("open", () => {
+//   console.log("========================================================");
+//   console.log("MongoDB database connection established successfully!!!");
+//   console.log("========================================================");
+// });
+
+const connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "documentTracking"
+});
+
+connection.connect(function(err) {
+  if (err) throw err;
+
+  console.log("MySQL database connection established successfully!!!");
 });
 
 // ==========================================================================================
@@ -31,97 +42,156 @@ connection.once("open", () => {
 //===========================================================================================
 //===========================================================================================
 
-//Add User
+// Add User
 router.route("/addUser").post(function(req, res) {
   const { body } = req;
-  let {employeeId,name,username,password,contact, email,division,section,position,address,gender } = body;
+  let {
+    employeeId,
+    name,
+    username,
+    password,
+    contact,
+    email,
+    division,
+    section,
+    position,
+    address,
+    bdate,
+    gender
+  } = body;
 
   email = email.toLowerCase();
   email = email.trim();
 
-  User.findOne({ email: email }, function(err, previousUsers) {
-    if (err) {
-      return res.status(500).json({
-        success: false,
-        message: "Server Error"
+  const sql = "SELECT * FROM users WHERE email = ? ";
+  connection.query(sql, [email], function(err, rows, fields) {
+    if (err) throw err;
+
+    if (rows.length > 0) {
+      res.status(409).send("Email is already in used");
+    }
+
+    bcrypt.hash(password, saltRounds, function(err, hash) {
+      if (err) {
+        res.status(500).send("Error hashing");
+      }
+
+      const sql1 =
+        "INSERT INTO users (employeeId, name, username, password, contact, email, division, section, position, address, bdate, gender) VALUES ?";
+
+      const values = [
+        [
+          employeeId,
+          name,
+          username,
+          hash,
+          contact,
+          email,
+          division,
+          section,
+          position,
+          address,
+          bdate,
+          gender
+        ]
+      ];
+      connection.query(sql1, [values], function(err, result) {
+        if (err) {
+          res.status(500).send(err);
+        }
+
+        res.status(200).send("Registration successful" + result);
       });
-    }
-
-    if (previousUsers) {
-      return res.status(409).json({
-        success: false,
-        message:
-          "Error: Sorry, User email is already in use.You can try another one..."
-      });
-    }
-
-    if (!previousUsers) {
-      const user = new User({employeeId,name,username,password,contact, email,division,section,position,address,gender});
-
-      user
-        .save()
-        .then(user => {
-          res.status(200).json({ success: true, message: "Signed up" });
-        })
-        .catch(err => {
-          res.status(500).json({ success: false, message: err });
-        });
-    }
+    });
   });
 });
 
-//Login
+// Users Login
 router.route("/login/:email/:password").post(function(req, res) {
   let email = req.params.email;
   let password = req.params.password;
 
-  User.findOne({ email: email }, function(err, user) {
+  const sql = "SELECT * FROM users WHERE email = ?";
+
+  connection.query(sql, [email], function(err, rows, fields) {
     if (err) {
-      res
-        .status(500)
-        .json({ success: false, message: "Internal Error Please Try Again" });
-    } else if (!user) {
-      res.status(404).json({ success: false, message: "Email unrecognized" });
-    } else {
-      user.isCorrectPassword(password, function(err, same) {
+      res.status(500).send("Server Error");
+    }
+
+    if (rows.length === 0) {
+      res.status(404).send("Unrecognized email");
+    }
+
+    bcrypt.compare(password, rows[0].password, function(err, result) {
+      if (err) {
+        res.status(500).send("Server Error");
+      }
+
+      if (!result) {
+        res.status(404).send("Unrecognized password");
+      }
+
+      const id = rows[0].user_id.toString();
+
+      const check_session_query =
+        "SELECT * FROM users_session WHERE userId = ?";
+      connection.query(check_session_query, [id], function(err, rows, fields) {
         if (err) {
           res.status(500).json({
-            error: "Internal Error Please Try Again"
-          });
-        } else if (!same) {
-          res.status(404).json({
             success: false,
-            message: "Incorrect Password"
+            message: "Server error in checking session"
           });
-        } else {
-          const userSession = new UserSession();
-          userSession.userId = user._id;
-          userSession
-            .save()
-            .then(doc => {
-              res.status(200).json({
-                success: true,
-                message: "Valid Sign in",
-                token: doc.userId
-              });
-            })
-            .catch(err => {
-              throw err;
-            });
         }
+
+        if (rows.length > 0) {
+          const update_session =
+            "UPDATE users_session SET isDeleted = ? WHERE userId = ?";
+          connection.query(update_session, [0, id], function(err, result) {
+            if (err) {
+              res.status(500).json({
+                success: false,
+                message: "Server error in updating session"
+              });
+            }
+
+            res.status(200).json({
+              success: true,
+              message: "Record Found, Login Success!",
+              token: id
+            });
+          });
+        }
+
+        const sql1 = "INSERT INTO users_session (userId, isDeleted) VALUES ?";
+        const values = [[id, 0]];
+        connection.query(sql1, [values], function(err, result) {
+          if (err) {
+            res.status(500).send("Server Error inserting new session");
+          }
+
+          res
+            .status(200)
+            .json({ success: true, message: "New User", token: id });
+        });
       });
-    }
+    });
   });
 });
 
+//Verify User Token
 router.route("/varifyToken/:token").get(function(req, res) {
   let token = req.params.token;
-  UserSession.find({ userId: token, isDeleted: false }, function(err, session) {
+
+  const sql = "SELECT * FROM users_session WHERE userId = ? AND isDeleted = ?";
+  connection.query(sql, [token, 0], function(err, rows, fields) {
     if (err) {
-      res.status(500).json({ success: false, message: "Error: Server Error" });
+      res.status(500).json({
+        success: false,
+        message: "Server error selecting user session"
+      });
     }
 
-    if (session) {
+    if (rows.length > 0) {
       res.status(200).json({ success: true, message: "Valid" });
     } else {
       res.status(404).json({ success: false, message: "Invalid" });
@@ -129,78 +199,116 @@ router.route("/varifyToken/:token").get(function(req, res) {
   });
 });
 
-//Fetch all users
+// //Fetch all users
 router.route("/getUsers").get(function(req, res) {
-  connection.db.collection("users", function(err, collection) {
-    collection.find({}).toArray(function(err, users) {
-      if (err) {
-        res.status(500).send("Error: Server Error");
-      } else {
-        res.json(users);
-      }
-    });
+  const sql = "SELECT * FROM users";
+  connection.query(sql, function(err, rows, fields) {
+    if (err) {
+      res.status(500).json({
+        success: false,
+        message: "Server Error in fetching data in users table"
+      });
+    }
+
+    res.status(200).send(rows[0]);
   });
 });
 
-//Fetch All users by section
+// //Fetch All users by section
 router.route("/sectionUser/:section").get(function(req, res) {
   let section = req.params.section;
-  User.find({ section: section }, function(err, users) {
-    if (!users) {
-      res.status(404).send("Data Not Found");
-    } else {
-      res.json(users);
+
+  const sql = "SELECT * FROM users WHERE section = ?";
+  connection.query(sql, section, function(err, rows, fields) {
+    if (err) {
+      res.status(500).json({
+        success: false,
+        message: "Server error in fetching data in users table"
+      });
     }
+
+    res.status(200).send(rows[0]);
   });
 });
 
 //Fetch Users Data By ID
 router.route("/user/:id").get(function(req, res) {
   let id = req.params.id;
-  User.find({ _id: id }, function(err, user) {
+
+  const sql = "SELECT * FROM users WHERE id = ?";
+  connection.query(sql, id, function(err, rows, fields) {
     if (err) {
-      res.status(500).json({ success: false, message: "Error: Server Error" });
+      res.status(500).json({
+        success: false,
+        message: "Server error in fetching data in users table"
+      });
     }
 
-    if (!user) {
-      res.status(404).json({ success: false, message: "Data Not Found" });
+    if (rows.length === 0) {
+      res.status(404).json({ success: false, message: "No Records Found" });
     }
 
-    res.json(user);
+    res.status(200).send(rows[0]);
   });
 });
 
 //Update Users Info
 router.route("/updateUser/:id").post(function(req, res) {
   let id = req.params.id;
-  User.findById(id, function(err, user) {
-    if (!user) {
-      res.status(404).send("Data Not Found");
-    } else {
-      user.employeeId = req.body.employeeId;
-      user.name = req.body.name;
-      user.username = req.body.username;
-      user.password = req.body.password;
-      user.contact = req.body.contact;
-      user.email = req.body.email;
-      user.division = req.body.division;
-      user.section = req.body.section;
-      user.position = req.body.position;
-      user.address = req.body.address;
-      user.gender = req.body.gender;
+  const {
+    employeeId,
+    name,
+    username,
+    contact,
+    email,
+    division,
+    section,
+    position,
+    address,
+    bdate,
+    gender
+  } = req.body;
+  const sql = "SELECT * FROM users WHERE user_id = ?";
+  connection.query(sql, id, function(err, rows, fields) {
+    if (err) {
+      res.status(500).json({
+        success: false,
+        message: "Server error in updating user info"
+      });
+    }
 
-      user
-        .save()
-        .then(user => {
-          res
-            .status(200)
-            .json({ success: true, message: "Data updated successfully..." });
-        })
-        .catch(err => {
-          res
-            .status(500)
-            .json({ success: false, message: "Error: Update failed" });
-        });
+    if (rows.length > 0) {
+      const sql1 =
+        "UPDATE users SET employeeId = ? , name = ?, username = ?, contact = ?, email = ?, division = ?, section = ?, position = ?, address = ?, bdate = ?, gender = ?";
+      connection.query(
+        sql1,
+        [
+          employeeId,
+          name,
+          username,
+          contact,
+          email,
+          division,
+          section,
+          position,
+          address,
+          bdate,
+          gender
+        ],
+        function(err, result) {
+          if (err) {
+            res.status(500).json({
+              success: false,
+              message: "Server error in updating users data"
+            });
+          }
+
+          res.status(200).json({
+            success: true,
+            message: "Users data updated successfully"
+          });
+        }
+      );
     }
   });
 });
