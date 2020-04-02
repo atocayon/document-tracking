@@ -32,7 +32,7 @@ function Dashboard({ fetchUserProfile, profile }) {
           paddingBottom: "3vh"
         }}
       >
-        <h1 style={{color: "#2196F3"}}>Hello, {profile.length > 0 ? profile[0].data[0].username:null} !</h1>
+        <h1 style={{color: "#2196F3"}}>Hello, {profile.length > 0 ? profile[0].username:null} !</h1>
         <Grid container spacing={3}>
           <Grid item xs={4}>
             <CardComponent

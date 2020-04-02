@@ -94,7 +94,6 @@ router.route("/login/:email/:password").post(function(req, res) {
             message: "Incorrect Password"
           });
         } else {
-          console.log(user._id);
           const userSession = new UserSession();
           userSession.userId = user._id;
           userSession
@@ -167,7 +166,7 @@ router.route("/user/:id").get(function(req, res) {
       res.status(404).json({ success: false, message: "Data Not Found" });
     }
 
-    res.status(200).json(user);
+    res.json(user);
   });
 });
 
