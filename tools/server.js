@@ -319,10 +319,7 @@ router.route("/updateUser/:id").post(function(req, res) {
             });
           }
 
-          res.status(200).json({
-            success: true,
-            message: "Users data updated successfully"
-          });
+          res.status(200).send("update success");
         }
       );
     }

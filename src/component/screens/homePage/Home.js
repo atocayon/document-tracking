@@ -7,7 +7,7 @@ import { verifyToken } from "../../../redux/actions/verifyToken";
 
 import { Redirect } from "react-router-dom";
 
-function Home({ user_token, verifyToken }) {
+function Home({ token, verifyToken }) {
   const [redirect, setRedirect] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -20,15 +20,12 @@ function Home({ user_token, verifyToken }) {
       setRedirect(true);
     }
   }, []);
-  return (
-      <div>
-        {redirect ? <Redirect to={"/login"} /> : <Dashboard />}
-     </div>
-  );
+
+  return <div>{redirect ? <Redirect to={"/login"} /> : <Dashboard />}</div>;
 }
 
 function mapStateToProps(state) {
-  return { user_token: state.token };
+  return { token: state.token };
 }
 
 const mapDispatchToProps = {
