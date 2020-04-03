@@ -3,11 +3,13 @@ import user from './login';
 import token from './verifyToken';
 import profile from "./fetchUserProfile";
 import sectionUsers from './fetchUsersBySection';
+import updateUserProfile from "./updateUserProfile";
 const rootReducer = combineReducers({
    user: user,
    profile: profile,
    sectionUsers: sectionUsers,
    token: token,
+   profileUpdate: updateUserProfile
 });
 
 export default rootReducer;
