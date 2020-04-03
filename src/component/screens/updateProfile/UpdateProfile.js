@@ -12,14 +12,12 @@ import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
 import ContactSupportIcon from "@material-ui/icons/ContactSupport";
 import SaveIcon from "@material-ui/icons/Save";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { connect } from "react-redux";
 import InputField from "../../common/textField/InputField";
 import { fetchUserProfile } from "../../../redux/actions/fetchUserProfile";
-import {updateUserProfile} from "../../../redux/actions/updateUserProfile";
+import { updateUserProfile } from "../../../redux/actions/updateUserProfile";
 import Reactotron from "reactotron-react-js";
-
-
 
 class UpdateProfile extends Component {
   constructor(props) {
@@ -43,7 +41,7 @@ class UpdateProfile extends Component {
   }
 
   componentDidMount() {
-    this.setState({loading: false});
+    this.setState({ loading: false });
     const id = this.props.match.params.id;
 
     if (id) {
@@ -54,19 +52,22 @@ class UpdateProfile extends Component {
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
-    this.setState({ state: [...this.state.state, {...nextProps.profile[0]}]});
-    Reactotron.log(nextProps.profileUpdate);
+    this.setState({ state: [...this.state.state, nextProps.profile] });
   }
 
   handleChange = ({ target }) => {
-    // Reactotron.log(this.state.state[1].data);
-    const { state } = this.state;
 
-    state[1].data[target.name] = target.value;
+    this.setState((state, props) => {
+      // Reactotron.log(target.name);
+      state.state[1][0].data[target.name] = target.value;
+
+      return state;
+    });
+
+    Reactotron.log(this.state.state[1][0].data[target.name]);
   };
 
   handleClick = val => {
-
     this.setState({
       [val]: !this.state[val]
     });
@@ -74,29 +75,17 @@ class UpdateProfile extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    this.setState({loading: true});
-    this.props.updateUserProfile(this.state.state[1].data);
+    // this.setState({loading: true});
+    const updateProfileState = [...this.state.state];
+    Reactotron.log(updateProfileState);
+    this.props.updateUserProfile(updateProfileState[1][0].data);
   };
 
   render() {
-    // Reactotron.log(this.props.profile == null ? "Empty" : this.props.profile);
-
-    if (this.state.loading){
-      return (
-          <div className={"row"}>
-            <div className={"col-md-12"}>
-              <div style={{textAlign: "center", marginTop: 50}}>
-                <CircularProgress />
-              </div>
-            </div>
-
-          </div>
-      );
-    }
-
+    const profile = [...this.props.profile];
     return (
       <div>
-        {this.props.profile.length === 0 ? (
+        {profile.length === 0 ? (
           <Redirect to={"/update/" + this.props.match.params.id} />
         ) : (
           <Paper
@@ -153,7 +142,7 @@ class UpdateProfile extends Component {
                           id={"employeeId"}
                           name={"employeeId"}
                           label={"Employee ID"}
-                          defaultValue={this.props.profile[0].data.employeeId}
+                          defaultValue={profile[0].data.employeeId}
                           disabled={this.state._employeeId}
                           onChange={this.handleChange}
                         />
@@ -173,7 +162,7 @@ class UpdateProfile extends Component {
                           id={"name"}
                           name={"name"}
                           label={"Full Name"}
-                          defaultValue={this.props.profile[0].data.name}
+                          defaultValue={profile[0].data.name}
                           disabled={this.state._name}
                           onChange={this.handleChange}
                         />
@@ -193,7 +182,7 @@ class UpdateProfile extends Component {
                           id={"username"}
                           name={"username"}
                           label={"Username"}
-                          defaultValue={this.props.profile[0].data.username}
+                          defaultValue={profile[0].data.username}
                           disabled={this.state._username}
                           onChange={this.handleChange}
                         />
@@ -219,7 +208,7 @@ class UpdateProfile extends Component {
                           id={"position"}
                           name={"position"}
                           label={"Current Position"}
-                          defaultValue={this.props.profile[0].data.position}
+                          defaultValue={profile[0].data.position}
                           disabled={this.state._position}
                           onChange={this.handleChange}
                         />
@@ -246,7 +235,7 @@ class UpdateProfile extends Component {
                           id={"contact"}
                           name={"contact"}
                           label={"Contact No."}
-                          defaultValue={this.props.profile[0].data.contact}
+                          defaultValue={profile[0].data.contact}
                           disabled={this.state._contact}
                           onChange={this.handleChange}
                         />
@@ -267,7 +256,7 @@ class UpdateProfile extends Component {
                           id={"email"}
                           name={"email"}
                           label={"Email"}
-                          defaultValue={this.props.profile[0].data.email}
+                          defaultValue={profile[0].data.email}
                           disabled={this.state._email}
                           onChange={this.handleChange}
                         />
@@ -288,7 +277,7 @@ class UpdateProfile extends Component {
                           id={"address"}
                           name={"address"}
                           label={"Address"}
-                          defaultValue={this.props.profile[0].data.address}
+                          defaultValue={profile[0].data.address}
                           disabled={this.state._address}
                           onChange={this.handleChange}
                         />
@@ -314,7 +303,7 @@ class UpdateProfile extends Component {
                           id={"bdate"}
                           name={"bdate"}
                           label={"Date of Birth"}
-                          defaultValue={this.props.profile[0].data.bdate}
+                          defaultValue={profile[0].data.bdate}
                           disabled={this.state._bdate}
                           onChange={this.handleChange}
                         />
@@ -335,7 +324,7 @@ class UpdateProfile extends Component {
                           id={"gender"}
                           name={"gender"}
                           label={"Gender"}
-                          defaultValue={this.props.profile[0].data.gender}
+                          defaultValue={profile[0].data.gender}
                           disabled={this.state._gender}
                           onChange={this.handleChange}
                         />
@@ -377,8 +366,7 @@ class UpdateProfile extends Component {
 
 function mapStateToProps(state) {
   return {
-    profile: state.profile,
-    profileUpdate: state.profileUpdate
+    profile: state.profile
   };
 }
 
