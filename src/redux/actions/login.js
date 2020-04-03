@@ -10,9 +10,7 @@ export function userLogin(data) {
         "http://localhost:4000/dts/login/" + data.email + "/" + data.password
       )
       .then(res => {
-          Reactotron.log(res);
         if (res.status === 200) {
-
           dispatch({
             type: actionTypes.USER_LOGIN,
             login: res

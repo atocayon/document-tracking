@@ -36,7 +36,7 @@ function Profile({ profile, fetchUserProfile, match }) {
   return (
     <>
       {profile.length === 0 ? (
-        <Redirect to={"/user/" + match.params.id} />
+        <Redirect to={"/user"} />
       ) : (
         <Paper
           elevation={3}
@@ -78,15 +78,15 @@ function Profile({ profile, fetchUserProfile, match }) {
                   fontWeight: "bold"
                 }}
               >
-                {profile[0].name}
+                {profile[0].data.name}
               </h3>
               <h6 style={{ color: "#2196F3" }}>
-                {profile[0].position}
+                {profile[0].data.position}
               </h6>
               <br />
               <Link
                 className={"btn btn-sm btn-info"}
-                to={"/update/" + profile[0]._id}
+                to={"/update/" + profile[0].data.user_id}
                 style={{
                   textDecoration: "none"
                 }}

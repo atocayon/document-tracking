@@ -20,8 +20,11 @@ function Home({ user_token, verifyToken }) {
       setRedirect(true);
     }
   }, []);
-
-  return <div>{redirect ? <Redirect to={"/login"} /> : <Dashboard />}</div>;
+  return (
+      <div>
+        {redirect ? <Redirect to={"/login"} /> : <Dashboard />}
+     </div>
+  );
 }
 
 function mapStateToProps(state) {
