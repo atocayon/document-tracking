@@ -136,7 +136,8 @@ router.route("/login/:email/:password").post(function(req, res) {
 
       const id = rows[0].user_id.toString();
 
-      const check_session_query = "SELECT * FROM users_session WHERE userId = ?";
+      const check_session_query =
+        "SELECT * FROM users_session WHERE userId = ?";
       connection.query(check_session_query, [id], function(err, rows, fields) {
         if (err) {
           res.status(500).json({
@@ -146,7 +147,6 @@ router.route("/login/:email/:password").post(function(req, res) {
         }
 
         if (!rows) {
-
           const sql1 = "INSERT INTO users_session (userId, isDeleted) VALUES ?";
           const values = [[id, 0]];
           connection.query(sql1, [values], function(err, result) {
@@ -155,16 +155,14 @@ router.route("/login/:email/:password").post(function(req, res) {
             }
 
             res
-                .status(200)
-                .json({ success: true, message: "New User", token: id });
+              .status(200)
+              .json({ success: true, message: "New User", token: id });
           });
-
-
         }
 
-        if (rows){
+        if (rows) {
           const update_session =
-              "UPDATE users_session SET isDeleted = ? WHERE userId = ?";
+            "UPDATE users_session SET isDeleted = ? WHERE userId = ?";
           connection.query(update_session, [0, id], function(err, result) {
             if (err) {
               res.status(500).json({
@@ -182,9 +180,6 @@ router.route("/login/:email/:password").post(function(req, res) {
             }
           });
         }
-
-
-
       });
     });
   });
@@ -260,17 +255,16 @@ router.route("/user/:id").get(function(req, res) {
       res.status(404).json({ success: false, message: "No Records Found" });
     }
 
-    if (rows){
+    if (rows) {
       res.status(200).send(rows[0]);
     }
-
-
   });
 });
 
 //Update Users Info
 router.route("/updateUser/:id").post(function(req, res) {
   let id = req.params.id;
+  console.log(req);
   const {
     employeeId,
     name,
@@ -281,21 +275,19 @@ router.route("/updateUser/:id").post(function(req, res) {
     section,
     position,
     address,
-    bdate,
-    gender
+    gender,
+    bdate
   } = req.body;
+
   const sql = "SELECT * FROM users WHERE user_id = ?";
-  connection.query(sql, id, function(err, rows, fields) {
+  connection.query(sql, [id.toString()], function(err, rows, fields) {
     if (err) {
-      res.status(500).json({
-        success: false,
-        message: "Server error in updating user info"
-      });
+      res.status(500).send(err);
     }
 
     if (rows.length > 0) {
       const sql1 =
-        "UPDATE users SET employeeId = ? , name = ?, username = ?, contact = ?, email = ?, division = ?, section = ?, position = ?, address = ?, bdate = ?, gender = ?";
+        "UPDATE users SET employeeId = ? , name = ?, username = ?, contact = ?, email = ?, division = ?, section = ?, position = ?, address = ?, gender = ?, bdate = ?";
       connection.query(
         sql1,
         [
@@ -308,15 +300,12 @@ router.route("/updateUser/:id").post(function(req, res) {
           section,
           position,
           address,
-          bdate,
-          gender
+          gender,
+          bdate
         ],
         function(err, result) {
           if (err) {
-            res.status(500).json({
-              success: false,
-              message: "Server error in updating users data"
-            });
+            res.status(500).send(err);
           }
 
           res.status(200).send("update success");
