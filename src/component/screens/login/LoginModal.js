@@ -40,7 +40,7 @@ function LoginModal({ userLogin, user }) {
     userLogin(login);
   };
 
-  // Reactotron.log(user.length > 0 ? user[0].data.token : null);
+  Reactotron.log(user);
   return (
     <>
       {loading === false ? <Redirect to={"/"} /> : null}

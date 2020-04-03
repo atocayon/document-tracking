@@ -7,7 +7,7 @@ export function fetchUserProfile(id) {
     return axios
       .get("http://localhost:4000/dts/user/" + id)
       .then(user => {
-        dispatch({ type: actionTypes.USER_PROFILE, data: user.data[0] });
+        dispatch({ type: actionTypes.USER_PROFILE, data: user });
       })
       .catch(err => {
         dispatch({ type: actionTypes.USER_PROFILE, data: err });

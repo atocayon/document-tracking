@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const mysql = require("mysql");
 const router = express.Router();
@@ -12,7 +11,6 @@ const saltRounds = 10;
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cookieParser());
 
 // mongoose.connect("mongodb://127.0.0.1:27017/dts", { useNewUrlParser: true });
 // const connection = mongoose.connection;
@@ -31,7 +29,9 @@ const connection = mysql.createConnection({
 });
 
 connection.connect(function(err) {
-  if (err) throw err;
+  if (err) {
+    console.log(err);
+  }
 
   console.log("MySQL database connection established successfully!!!");
 });
@@ -65,7 +65,10 @@ router.route("/addUser").post(function(req, res) {
 
   const sql = "SELECT * FROM users WHERE email = ? ";
   connection.query(sql, [email], function(err, rows, fields) {
-    if (err) throw err;
+    if (err) {
+      console.log(err);
+      res.send(err);
+    }
 
     if (rows.length > 0) {
       res.status(409).send("Email is already in used");
@@ -133,8 +136,7 @@ router.route("/login/:email/:password").post(function(req, res) {
 
       const id = rows[0].user_id.toString();
 
-      const check_session_query =
-        "SELECT * FROM users_session WHERE userId = ?";
+      const check_session_query = "SELECT * FROM users_session WHERE userId = ?";
       connection.query(check_session_query, [id], function(err, rows, fields) {
         if (err) {
           res.status(500).json({
@@ -143,9 +145,26 @@ router.route("/login/:email/:password").post(function(req, res) {
           });
         }
 
-        if (rows.length > 0) {
+        if (!rows) {
+
+          const sql1 = "INSERT INTO users_session (userId, isDeleted) VALUES ?";
+          const values = [[id, 0]];
+          connection.query(sql1, [values], function(err, result) {
+            if (err) {
+              res.status(500).send("Server Error inserting new session");
+            }
+
+            res
+                .status(200)
+                .json({ success: true, message: "New User", token: id });
+          });
+
+
+        }
+
+        if (rows){
           const update_session =
-            "UPDATE users_session SET isDeleted = ? WHERE userId = ?";
+              "UPDATE users_session SET isDeleted = ? WHERE userId = ?";
           connection.query(update_session, [0, id], function(err, result) {
             if (err) {
               res.status(500).json({
@@ -154,25 +173,18 @@ router.route("/login/:email/:password").post(function(req, res) {
               });
             }
 
-            res.status(200).json({
-              success: true,
-              message: "Record Found, Login Success!",
-              token: id
-            });
+            if (result) {
+              res.status(200).json({
+                success: true,
+                message: "Record Found, Login Success!",
+                token: id
+              });
+            }
           });
         }
 
-        const sql1 = "INSERT INTO users_session (userId, isDeleted) VALUES ?";
-        const values = [[id, 0]];
-        connection.query(sql1, [values], function(err, result) {
-          if (err) {
-            res.status(500).send("Server Error inserting new session");
-          }
 
-          res
-            .status(200)
-            .json({ success: true, message: "New User", token: id });
-        });
+
       });
     });
   });
@@ -191,7 +203,7 @@ router.route("/varifyToken/:token").get(function(req, res) {
       });
     }
 
-    if (rows.length > 0) {
+    if (rows) {
       res.status(200).json({ success: true, message: "Valid" });
     } else {
       res.status(404).json({ success: false, message: "Invalid" });
@@ -235,7 +247,7 @@ router.route("/sectionUser/:section").get(function(req, res) {
 router.route("/user/:id").get(function(req, res) {
   let id = req.params.id;
 
-  const sql = "SELECT * FROM users WHERE id = ?";
+  const sql = "SELECT * FROM users WHERE user_id = ?";
   connection.query(sql, id, function(err, rows, fields) {
     if (err) {
       res.status(500).json({
@@ -244,11 +256,15 @@ router.route("/user/:id").get(function(req, res) {
       });
     }
 
-    if (rows.length === 0) {
+    if (!rows) {
       res.status(404).json({ success: false, message: "No Records Found" });
     }
 
-    res.status(200).send(rows[0]);
+    if (rows){
+      res.status(200).send(rows[0]);
+    }
+
+
   });
 });
 

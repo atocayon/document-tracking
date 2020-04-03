@@ -58,8 +58,8 @@ class UpdateProfile extends Component {
     }
 
     axios.get("http://localhost:4000/dts/user/" + id).then(user => {
-      // Reactotron.log(user.data[0]);
-      let info = user.data[0];
+      Reactotron.log(user.data);
+      let info = user.data;
       this.setState({
         employeeId: info.employeeId,
         name: info.name,
@@ -154,7 +154,7 @@ class UpdateProfile extends Component {
                             id={"employeeId"}
                             name={"employeeId"}
                             label={"Employee ID"}
-                            defaultValue={this.props.profile[0].employeeId}
+                            defaultValue={this.props.profile[0].data.employeeId}
                             disabled={this.state._employeeId}
                             onChange={this.handleChange}
                         />
@@ -174,7 +174,7 @@ class UpdateProfile extends Component {
                             id={"name"}
                             name={"name"}
                             label={"Full Name"}
-                            defaultValue={this.props.profile[0].name}
+                            defaultValue={this.props.profile[0].data.name}
                             disabled={this.state._name}
                             onChange={this.handleChange}
                         />
@@ -194,7 +194,7 @@ class UpdateProfile extends Component {
                             id={"username"}
                             name={"username"}
                             label={"Username"}
-                            defaultValue={this.props.profile[0].username}
+                            defaultValue={this.props.profile[0].data.username}
                             disabled={this.state._username}
                             onChange={this.handleChange}
                         />
@@ -220,7 +220,7 @@ class UpdateProfile extends Component {
                             id={"position"}
                             name={"position"}
                             label={"Current Position"}
-                            defaultValue={this.props.profile[0].position}
+                            defaultValue={this.props.profile[0].data.position}
                             disabled={this.state._position}
                             onChange={this.handleChange}
                         />
@@ -247,7 +247,7 @@ class UpdateProfile extends Component {
                             id={"contact"}
                             name={"contact"}
                             label={"Contact No."}
-                            defaultValue={this.props.profile[0].contact}
+                            defaultValue={this.props.profile[0].data.contact}
                             disabled={this.state._contact}
                             onChange={this.handleChange}
                         />
@@ -268,7 +268,7 @@ class UpdateProfile extends Component {
                             id={"email"}
                             name={"email"}
                             label={"Email"}
-                            defaultValue={this.props.profile[0].email}
+                            defaultValue={this.props.profile[0].data.email}
                             disabled={this.state._email}
                             onChange={this.handleChange}
                         />
@@ -289,7 +289,7 @@ class UpdateProfile extends Component {
                             id={"address"}
                             name={"address"}
                             label={"Address"}
-                            defaultValue={this.props.profile[0].address}
+                            defaultValue={this.props.profile[0].data.address}
                             disabled={this.state._address}
                             onChange={this.handleChange}
                         />
@@ -315,7 +315,7 @@ class UpdateProfile extends Component {
                             id={"bdate"}
                             name={"bdate"}
                             label={"Date of Birth"}
-                            defaultValue={this.props.profile[0].bdate}
+                            defaultValue={this.props.profile[0].data.bdate}
                             disabled={this.state._bdate}
                             onChange={this.handleChange}
                         />
@@ -336,7 +336,7 @@ class UpdateProfile extends Component {
                             id={"gender"}
                             name={"gender"}
                             label={"Gender"}
-                            defaultValue={this.props.profile[0].gender}
+                            defaultValue={this.props.profile[0].data.gender}
                             disabled={this.state._gender}
                             onChange={this.handleChange}
                         />

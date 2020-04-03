@@ -21,6 +21,7 @@ function Dashboard({ fetchUserProfile, profile }) {
       }
   }, []);
 
+  Reactotron.log(profile);
   return (
     <div>
       <Paper
@@ -32,7 +33,7 @@ function Dashboard({ fetchUserProfile, profile }) {
           paddingBottom: "3vh"
         }}
       >
-        <h1 style={{color: "#2196F3"}}>Hello, {profile.length > 0 ? profile[0].username:null} !</h1>
+        <h1 style={{color: "#2196F3"}}>Hello, {profile ? profile.data.username:null} !</h1>
         <Grid container spacing={3}>
           <Grid item xs={4}>
             <CardComponent
@@ -82,7 +83,7 @@ function Dashboard({ fetchUserProfile, profile }) {
 
 function mapStateToProps(state) {
   return {
-    profile: state.profile
+    profile: state.profile[0]
   };
 }
 
