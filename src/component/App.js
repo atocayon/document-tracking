@@ -43,11 +43,9 @@ function App() {
   return (
     <div>
       <div>
-        <ToastContainer autoClose={3000} hideProgressBar />
         <Grid container spacing={3}>
           <PrimarySearchAppBar />
         </Grid>
-
         <Grid container spacing={3}>
           <Grid item xs={2}>
             <SideBarNavigation
@@ -57,6 +55,7 @@ function App() {
             />
           </Grid>
           <Grid item xs={8}>
+
             <Switch>
               <Route path={"/"} exact component={Home} />
               <Route path={"/login"} component={LoginModal} />
