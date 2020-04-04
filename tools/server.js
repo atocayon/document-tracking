@@ -264,7 +264,6 @@ router.route("/user/:id").get(function(req, res) {
 //Update Users Info
 router.route("/updateUser/:id").post(function(req, res) {
   let id = req.params.id;
-  console.log(req);
   const {
     employeeId,
     name,

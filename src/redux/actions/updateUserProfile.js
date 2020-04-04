@@ -3,7 +3,7 @@ import axios from "axios";
 import Reactotron from "reactotron-react-js";
 
 export function updateUserProfile(data) {
-    Reactotron.log(data);
+
   return function(dispatch) {
     return axios
       .post("http://localhost:4000/dts/updateUser/" + data.user_id.toString(), {
@@ -29,8 +29,10 @@ export function updateUserProfile(data) {
         }
 
         if (res.status === 500){
-            Reactotron.log(res);
-            console.log(res);
+            dispatch({
+                type: actionTypes.UPDATE_USER_PROFILE,
+                res
+            })
         }
       })
       .catch(err => {

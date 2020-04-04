@@ -7,11 +7,13 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { store } from "./redux/configureStore";
 import { Provider as ReduxProvider } from "react-redux";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import { SnackbarProvider } from "notistack";
 render(
   <ReduxProvider store={store}>
     <Router>
-      <App />
+      <SnackbarProvider maxSnack={3}>
+        <App />
+      </SnackbarProvider>
     </Router>
   </ReduxProvider>,
   document.getElementById("root")
