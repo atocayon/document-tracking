@@ -20,7 +20,9 @@ import NotFoundPage from "./screens/pageNotfound/NotFoundPage";
 
 import UserManagement from "./screens/userManagement/UserManagement";
 import UpdateProfile from "./screens/updateProfile/UpdateProfile";
-
+import {getFromStorage} from "./storage";
+import axios from "axios";
+import Reactotron from "reactotron-react-js";
 const customStyles = {
   content: {
     top: "20%",
@@ -35,6 +37,26 @@ const customStyles = {
 
 function App() {
   const [open, setOpen] = useState(true);
+  const [user, setUser] = useState([]);
+  useEffect(() => {
+    const obj = getFromStorage("documentTracking");
+    if (obj && obj.token) {
+      const { token } = obj;
+
+      axios
+          .get("http://localhost:4000/dts/user/" + token)
+          .then(user => {
+            Reactotron.log(user.data);
+            setUser(user.data);
+          })
+          .catch(err => {
+            alert(err);
+          });
+    }else{
+      alert("Invalid Session");
+    }
+
+  }, []);
 
   const handleClick = () => {
     setOpen(!open);
@@ -44,7 +66,7 @@ function App() {
     <div>
       <div>
         <Grid container spacing={3}>
-          <PrimarySearchAppBar />
+          <PrimarySearchAppBar user={user} />
         </Grid>
         <Grid container spacing={3}>
           <Grid item xs={2}>
@@ -57,7 +79,7 @@ function App() {
           <Grid item xs={8}>
 
             <Switch>
-              <Route path={"/"} exact component={Home} />
+              <Route path={"/"} exact render={props => <Home {...props} user={user} />} />
               <Route path={"/login"} component={LoginModal} />
               <Route path="/fetchUsersBySection" component={UserManagement} />
               <Route path="/trackDocument" component={TrackDocument} />
@@ -72,7 +94,6 @@ function App() {
                 component={ProcessedDocuments}
               />
               <Route path={"/user/:id"} component={Profile} />
-              <Route path={"/user"} component={Profile} />
               <Route path={"/update/:id"} component={UpdateProfile} />
               <Route path={"/users/:section"} component={UserManagement} />
 

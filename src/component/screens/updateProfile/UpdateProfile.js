@@ -110,11 +110,7 @@ class UpdateProfile extends Component {
                     paddingBottom: "5vh"
                   }}
               >
-                {/*<Snackbar open={this.state.toast} autoHideDuration={1000} >*/}
-                {/*  <Alert severity="success">*/}
-                {/*    This is a success message!*/}
-                {/*  </Alert>*/}
-                {/*</Snackbar>*/}
+
                 <div className={"jumbotron"} style={{ padding: 20 }}>
                   <div className={"row"}>
                     <div className={"col-md-2"}>
