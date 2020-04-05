@@ -88,6 +88,8 @@ class UpdateProfile extends Component {
       if (this.props.update[0].data === "update success") {
         const variant = 'success';
         this.props.enqueueSnackbar('Update Success!', {variant});
+      }else{
+        this.props.enqueueSnackbar('There is an error updating...');
       }
     }
     return (
