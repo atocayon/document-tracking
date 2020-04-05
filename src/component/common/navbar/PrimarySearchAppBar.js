@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -17,8 +17,8 @@ import LeftDrawer from "./LeftDrawer";
 import RightDrawer from "./RightDrawer";
 import MobileMenu from "./RenderMobileMenu";
 import ProfileMenu from "./ProfileMenu";
-import {getFromStorage} from "../../storage";
-
+import { getFromStorage } from "../../storage";
+import Reactotron from "reactotron-react-js";
 export default function PrimarySearchAppBar(props) {
   const classes = useStyles(); // css styles
 
@@ -69,6 +69,7 @@ export default function PrimarySearchAppBar(props) {
 
   const profileMenu = (
     <ProfileMenu
+      userId={props.user.user_id}
       anchorElProfileMenu={anchorEl}
       anchorOriginProfileMenu={{ vertical: "top", horizontal: "right" }}
       idProfileMenu={menuId}
@@ -95,7 +96,7 @@ export default function PrimarySearchAppBar(props) {
 
   const leftSideList = side => (
     <LeftDrawer
-        // section={props.user.data.section}
+      section={props.user.section}
       nameLeftDrawer={classes.list}
       leftDrawerRole={"presentation"}
       onClickFunctionLeftDrawer={toggleDrawer(side, false)}
@@ -132,10 +133,11 @@ export default function PrimarySearchAppBar(props) {
               aria-label="open drawer"
               onClick={toggleDrawer("left", true)}
             >
-            <MenuIcon />
+              <MenuIcon />
             </IconButton>
             <Typography className={classes.title} variant="h6" noWrap>
-              <img src={logo} alt={"nmp"} style={{ width: "1.7vw" }} />  | <b>Document Tracking System</b>
+              <img src={logo} alt={"nmp"} style={{ width: "1.7vw" }} /> |{" "}
+              <b>Document Tracking System</b>
             </Typography>
 
             <div className={classes.grow} />

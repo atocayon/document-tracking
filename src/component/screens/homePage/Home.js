@@ -4,32 +4,47 @@ import { connect } from "react-redux";
 import Dashboard from "./Dashboard";
 import { getFromStorage } from "../../storage";
 import { verifyToken } from "../../../redux/actions/verifyToken";
-
+import axios from "axios";
 import { Redirect } from "react-router-dom";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import CircularProgressComponent from "../../common/circularProgress/CircularProgressComponent";
 
-function Home({ token, verifyToken }) {
+function Home(props) {
   const [redirect, setRedirect] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState([]);
 
   useEffect(() => {
+    Reactotron.log("Home Component");
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
-      verifyToken(token);
+      Reactotron.log(token);
+      axios
+        .get("http://localhost:4000/dts/varifyToken/" + token)
+        .then(res => {
+          setToken(res.data);
+        })
+        .catch(err => {
+          alert(err);
+        });
     } else {
       setRedirect(true);
     }
   }, []);
 
-  return <div>{redirect ? <Redirect to={"/login"} /> : <Dashboard />}</div>;
+  Reactotron.log(token);
+  return (
+      <div>
+        {Object.keys(token).length > 0 ? (
+            <>
+              {redirect || token.success !== true ? <Redirect to={"/login"} /> : <Dashboard user={props.user} />}
+            </>
+        ):(
+           <CircularProgressComponent/>
+        )}
+
+      </div>
+  );
 }
 
-function mapStateToProps(state) {
-  return { token: state.token };
-}
-
-const mapDispatchToProps = {
-  verifyToken
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default Home;

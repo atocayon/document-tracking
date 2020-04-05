@@ -8,6 +8,11 @@ export function loadUsers(section){
                 type: actionTypes.LOAD_USER_BY_SECTION,
                 users
             });
+        }).catch(err => {
+            dispatch({
+                type: actionTypes.LOAD_USER_BY_SECTION,
+                users: err
+            })
         });
     };
 }

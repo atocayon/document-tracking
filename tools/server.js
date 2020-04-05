@@ -225,12 +225,19 @@ router.route("/getUsers").get(function(req, res) {
 router.route("/sectionUser/:section").get(function(req, res) {
   let section = req.params.section;
 
-  const sql = "SELECT * FROM users WHERE section = ?";
-  connection.query(sql, section, function(err, rows, fields) {
+  const sql = "SELECT * FROM users WHERE section = ? ORDER BY name ASC";
+  connection.query(sql, [section], function(err, rows, fields) {
     if (err) {
       res.status(500).json({
         success: false,
         message: "Server error in fetching data in users table"
+      });
+    }
+
+    if (rows.length === 0){
+      res.status(404).json({
+        success:false,
+        message: "No data Found"
       });
     }
 

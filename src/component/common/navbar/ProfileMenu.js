@@ -15,7 +15,7 @@ export default function ProfileMenu(props) {
       onClose={props.onCloseProfileMenu}
     >
       <MenuItem>
-        <Link to={"/user"} style={{ textDecoration: "none" }}>
+        <Link to={"/user/"+props.userId} style={{ textDecoration: "none" }}>
           My Account
         </Link>
       </MenuItem>

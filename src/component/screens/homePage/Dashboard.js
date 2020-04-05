@@ -12,16 +12,9 @@ import { fetchUserProfile } from "../../../redux/actions/fetchUserProfile";
 import { getFromStorage } from "../../storage";
 import {connect} from "react-redux";
 
-function Dashboard({ fetchUserProfile, profile }) {
-  useEffect(() => {
-      const obj = getFromStorage("documentTracking");
-      if (obj && obj.token) {
-          const {token} = obj;
-          fetchUserProfile(token);
-      }
-  }, []);
+function Dashboard(props) {
 
-  Reactotron.log(profile);
+
   return (
     <div>
       <Paper
@@ -33,7 +26,7 @@ function Dashboard({ fetchUserProfile, profile }) {
           paddingBottom: "3vh"
         }}
       >
-        <h1 style={{color: "#2196F3"}}>Hello, {profile ? profile.data.username:null} !</h1>
+        <h1 style={{color: "#2196F3"}}>Hello, {props.user.username} !</h1>
         <Grid container spacing={3}>
           <Grid item xs={4}>
             <CardComponent
@@ -81,14 +74,5 @@ function Dashboard({ fetchUserProfile, profile }) {
   );
 }
 
-function mapStateToProps(state) {
-  return {
-    profile: state.profile[0]
-  };
-}
 
-const mapDispatchTopProps = {
-  fetchUserProfile
-};
-
-export default connect(mapStateToProps, mapDispatchTopProps) (Dashboard);
+export default Dashboard;
