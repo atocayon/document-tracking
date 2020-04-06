@@ -1,20 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Grid from "@material-ui/core/Grid";
-
 import Paper from "@material-ui/core/Paper";
 import addImage from "../../../img/add.jpg";
 import tracking from "../../../img/tracking.png";
 import receive from "../../../img/recieve.jpg";
 import release from "../../../img/release.jpg";
 import CardComponent from "../../common/card/CardComponent";
-import Reactotron from "reactotron-react-js";
-import { fetchUserProfile } from "../../../redux/actions/fetchUserProfile";
-import { getFromStorage } from "../../storage";
-import {connect} from "react-redux";
+
 
 function Dashboard(props) {
-
-
   return (
     <div>
       <Paper
@@ -26,7 +20,7 @@ function Dashboard(props) {
           paddingBottom: "3vh"
         }}
       >
-        <h1 style={{color: "#2196F3"}}>Hello, {props.user.username} !</h1>
+        <h1 style={{ color: "#2196F3" }}>Hello, {props.user.username} !</h1>
         <Grid container spacing={3}>
           <Grid item xs={4}>
             <CardComponent
@@ -73,6 +67,5 @@ function Dashboard(props) {
     </div>
   );
 }
-
 
 export default Dashboard;

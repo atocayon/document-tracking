@@ -12,7 +12,7 @@ export default function InputField(props){
         fullWidth
         disabled={props.disabled}
         onChange={props.onChange}
-        type={props.name === "password" ? "password": "text"}
+        type={props.name === "password" || props.name === "confirmPassword" ? "password": "text"}
       />
     );
 }

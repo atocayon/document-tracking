@@ -35,7 +35,7 @@ export default function LeftDrawer(props) {
         {["Maintenance", "User Management", "Generate Reports", "About"].map(
           (text, index) => (
             <>
-              <Link to={index === 1 ? "/users/"+props.section : null}>
+              <Link to={index === 1 ? "/users" : null}>
                 <ListItem button key={text}>
                   <ListItemIcon>
                     {index === 0 ? <BuildIcon /> : null}

@@ -17,6 +17,7 @@
     "core-js": "^3.6.4",
     "cors": "^2.8.5",
     "express": "latest",
+    "material-ui-popup-state": "^1.5.4",
     "mongodb": "^3.5.5",
     "mongoose": "^5.9.6",
     "mysql": "^2.18.1",
