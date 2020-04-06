@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Home from "./screens/homePage/Home";
 import Grid from "@material-ui/core/Grid";
 import PrimarySearchAppBar from "./common/navbar/PrimarySearchAppBar";
-import { ToastContainer } from "react-toastify";
 import { Route, Switch } from "react-router-dom";
 import SideBarNavigation from "./common/sideBarNavigation/SideBarNavigation";
 
@@ -16,46 +15,35 @@ import SectionDocuments from "./screens/sectionDocuments/SectionDocuments";
 import ProcessedDocuments from "./screens/processedDocuments/ProcessedDocuments";
 import LoginModal from "./screens/login/LoginModal";
 import Profile from "./screens/profile/Profile";
+import NewUserForm from "./screens/newUserForm/NewUserForm";
 import NotFoundPage from "./screens/pageNotfound/NotFoundPage";
 
 import UserManagement from "./screens/userManagement/UserManagement";
 import UpdateProfile from "./screens/updateProfile/UpdateProfile";
-import {getFromStorage} from "./storage";
+import { getFromStorage } from "./storage";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
-const customStyles = {
-  content: {
-    top: "20%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
-    width: "30vw"
-  }
-};
+
 
 function App() {
   const [open, setOpen] = useState(true);
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState({});
+
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
-
       axios
-          .get("http://localhost:4000/dts/user/" + token)
-          .then(user => {
-            Reactotron.log(user.data);
-            setUser(user.data);
-          })
-          .catch(err => {
-            alert(err);
-          });
-    }else{
-      alert("Invalid Session");
+        .get("http://localhost:4000/dts/user/" + token)
+        .then(_user => {
+          setUser(_user.data);
+        })
+        .catch(err => {
+          alert(err);
+        });
+    } else {
+      alert("Session Expired");
     }
-
   }, []);
 
   const handleClick = () => {
@@ -77,9 +65,12 @@ function App() {
             />
           </Grid>
           <Grid item xs={8}>
-
             <Switch>
-              <Route path={"/"} exact render={props => <Home {...props} user={user} />} />
+              <Route
+                path={"/"}
+                exact
+                render={props => <Home {...props} user={user} />}
+              />
               <Route path={"/login"} component={LoginModal} />
               <Route path="/fetchUsersBySection" component={UserManagement} />
               <Route path="/trackDocument" component={TrackDocument} />
@@ -95,8 +86,8 @@ function App() {
               />
               <Route path={"/user/:id"} component={Profile} />
               <Route path={"/update/:id"} component={UpdateProfile} />
-              <Route path={"/users/:section"} component={UserManagement} />
-
+              <Route path={"/users"} component={UserManagement} />
+              <Route path={"/registration"} render={props => <NewUserForm {...props} section={user.section}/>} />
               <Route component={NotFoundPage} />
             </Switch>
           </Grid>
