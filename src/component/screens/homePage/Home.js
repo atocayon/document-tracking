@@ -6,8 +6,9 @@ import axios from "axios";
 import { Redirect } from "react-router-dom";
 import CircularProgressComponent from "../../common/circularProgress/CircularProgressComponent";
 
-function Home(props) {
+function Home() {
   const [token, setToken] = useState([]);
+  const [user, setUser] = useState({});
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
@@ -16,10 +17,21 @@ function Home(props) {
         .get("http://localhost:4000/dts/varifyToken/" + token)
         .then(res => {
           setToken([...token, res.data]);
+
+          axios
+              .get("http://localhost:4000/dts/user/" + token)
+              .then(_user => {
+                setUser(_user.data);
+              })
+              .catch(err => {
+                alert(err);
+              });
         })
         .catch(err => {
           alert(err);
         });
+    }else{
+      setToken([...token, {success: false, message: "No Session Found"}]);
     }
   }, []);
   return (
@@ -29,8 +41,9 @@ function Home(props) {
           {token[0].success === false ? (
             <Redirect to={"/login"} />
           ) : (
-            <Dashboard user={props.user} />
+              <Dashboard user={user} />
           )}
+
         </>
       ) : (
         <CircularProgressComponent />

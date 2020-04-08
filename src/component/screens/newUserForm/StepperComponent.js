@@ -13,15 +13,9 @@ const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
     },
-    button: {
+    instructions: {
         marginTop: theme.spacing(1),
-        marginRight: theme.spacing(1),
-    },
-    actionsContainer: {
-        marginBottom: theme.spacing(2),
-    },
-    resetContainer: {
-        padding: theme.spacing(3),
+        marginBottom: theme.spacing(1),
     },
 }));
 
@@ -30,43 +24,47 @@ export default function StepperComponent(props) {
   return (
     <>
         <div className={classes.root}>
-            <Stepper activeStep={props.activeStep} orientation="vertical">
-                {props.steps.map((label, index) => (
+            <Stepper activeStep={props.activeStep} alternativeLabel>
+                {props.steps.map((label) => (
                     <Step key={label}>
                         <StepLabel>{label}</StepLabel>
-                        <StepContent>
-                            <Typography>{props.getStepContent(index)}</Typography>
-                            <div className={classes.actionsContainer}>
-                                <div>
-                                    <Button
-                                        disabled={props.activeStep === 0}
-                                        onClick={props.handleBack}
-                                        className={classes.button}
-                                    >
-                                        Back
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={props.handleNext}
-                                        className={classes.button}
-                                    >
-                                        {props.activeStep === props.steps.length - 1 ? 'Finish' : 'Next'}
-                                    </Button>
-                                </div>
-                            </div>
-                        </StepContent>
                     </Step>
                 ))}
             </Stepper>
-            {props.activeStep === props.steps.length && (
-                <Paper square elevation={0} className={classes.resetContainer}>
-                    <Typography>All steps completed - you&apos;re finished</Typography>
-                    <Button onClick={props.handleReset} className={classes.button}>
-                        Submit
-                    </Button>
-                </Paper>
-            )}
+            <div>
+                {props.activeStep === props.steps.length ? (
+                    <div style={{textAlign: "right", marginRight: 50}}>
+                        <Typography className={classes.instructions}>All steps completed</Typography>
+                        <Button onClick={props.handleSubmit}>Submit</Button>
+                    </div>
+                ) : (
+                    <div>
+                        <Typography className={classes.instructions}>{props.getStepContent(props.activeStep)}</Typography>
+                        <div className={"row"}>
+                            <div className={"col-md-6"}>
+                                <div style={{textAlign: "left", marginLeft: 50}}>
+                                    <Button
+                                        disabled={props.activeStep === 0}
+                                        onClick={props.handleBack}
+                                    >
+                                        Back
+                                    </Button>
+                                </div>
+
+                            </div>
+                            <div className={"col-md-6"}>
+                                <div style={{textAlign: "right", marginRight: 50}}>
+                                    <Button variant="contained" color="primary" onClick={props.handleNext}  >
+                                        {props.activeStep === props.steps.length - 1 ? 'Finish' : 'Next'}
+                                    </Button>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                )}
+            </div>
         </div>
     </>
   );

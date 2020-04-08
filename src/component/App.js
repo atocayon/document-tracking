@@ -15,7 +15,7 @@ import SectionDocuments from "./screens/sectionDocuments/SectionDocuments";
 import ProcessedDocuments from "./screens/processedDocuments/ProcessedDocuments";
 import LoginModal from "./screens/login/LoginModal";
 import Profile from "./screens/profile/Profile";
-import NewUserForm from "./screens/newUserForm/NewUserForm";
+import RegistrationForm from "./screens/newUserForm/RegistrationForm";
 import NotFoundPage from "./screens/pageNotfound/NotFoundPage";
 
 import UserManagement from "./screens/userManagement/UserManagement";
@@ -69,7 +69,7 @@ function App() {
               <Route
                 path={"/"}
                 exact
-                render={props => <Home {...props} user={user} />}
+                component={Home}
               />
               <Route path={"/login"} component={LoginModal} />
               <Route path="/fetchUsersBySection" component={UserManagement} />
@@ -87,7 +87,7 @@ function App() {
               <Route path={"/user/:id"} component={Profile} />
               <Route path={"/update/:id"} component={UpdateProfile} />
               <Route path={"/users"} component={UserManagement} />
-              <Route path={"/registration"} render={props => <NewUserForm {...props} section={user.section}/>} />
+              <Route path={"/registration"} render={props => <RegistrationForm {...props} user={user} />} />
               <Route component={NotFoundPage} />
             </Switch>
           </Grid>

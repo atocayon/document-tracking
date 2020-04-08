@@ -4,19 +4,20 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import FormControl from "@material-ui/core/FormControl";
 
-export default function OtherInfoForm(props) {
+export default function OtherInformation(props) {
 
     return(
         <>
             <div style={{marginLeft: 30,marginTop: 30, marginBottom: 30}}>
                 <div className={"row"}>
-                    <div className={"col-md-5"}>
-                        <FormControl >
+                    <div className={"col-md-2"}></div>
+                    <div className={"col-md-8"}>
+                        <FormControl variant={"outlined"} >
                             <InputLabel htmlFor="outlined-role-native-simple">Gender</InputLabel>
                             <Select
                                 native
                                 // value={state.age}
-                                // onChange={handleChange}
+                                onChange={props.handleInput}
                                 label="Gender"
                                 inputProps={{
                                     name: 'gender',
@@ -35,9 +36,11 @@ export default function OtherInfoForm(props) {
                             id={"bdate"}
                             name={"bdate"}
                             label={"Date of Birth"}
+                            variant={"outlined"}
+                            onChange={props.handleInput}
                         />
                     </div>
-                    <div className={"col-md-7"}></div>
+                    <div className={"col-md-2"}></div>
                 </div>
             </div>
         </>

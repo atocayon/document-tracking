@@ -46,6 +46,7 @@ connection.connect(function(err) {
 router.route("/addUser").post(function(req, res) {
   const { body } = req;
   let {
+    role,
     employeeId,
     name,
     username,
@@ -56,8 +57,8 @@ router.route("/addUser").post(function(req, res) {
     section,
     position,
     address,
-    bdate,
-    gender
+    gender,
+    bdate
   } = body;
 
   email = email.toLowerCase();
@@ -76,11 +77,12 @@ router.route("/addUser").post(function(req, res) {
 
     bcrypt.hash(password, saltRounds, function(err, hash) {
       if (err) {
+        console.log(err);
         res.status(500).send("Error hashing");
       }
 
       const sql1 =
-        "INSERT INTO users (employeeId, name, username, password, contact, email, division, section, position, address, bdate, gender) VALUES ?";
+        "INSERT INTO users (employeeId, name, username, password, contact, email, division, section, position, address, gender, bdate, role) VALUES ?";
 
       const values = [
         [
@@ -95,11 +97,13 @@ router.route("/addUser").post(function(req, res) {
           position,
           address,
           bdate,
-          gender
+          gender,
+          role
         ]
       ];
       connection.query(sql1, [values], function(err, result) {
         if (err) {
+          console.log(err);
           res.status(500).send(err);
         }
 
@@ -234,9 +238,9 @@ router.route("/sectionUser/:section").get(function(req, res) {
       });
     }
 
-    if (rows.length === 0){
+    if (rows.length === 0) {
       res.status(404).json({
-        success:false,
+        success: false,
         message: "No data Found"
       });
     }

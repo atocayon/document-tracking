@@ -9,7 +9,7 @@ import Grid from "@material-ui/core/Grid";
 import AddIcon from "@material-ui/icons/Add";
 import axios from "axios";
 import ListOfUsers from "./ListOfUsers";
-
+import Reactotron from "reactotron-react-js";
 function UserManagement(props) {
   const [sectionUsers, setSectionUsers] = useState([]);
   const [token, setToken] = useState("");
@@ -27,6 +27,7 @@ function UserManagement(props) {
           axios
             .get("http://localhost:4000/dts/sectionUser/" + _user.data.section)
             .then(users => {
+              Reactotron.log(users);
               setSectionUsers([...sectionUsers, users.data]);
             })
             .catch(err => {
@@ -38,6 +39,7 @@ function UserManagement(props) {
         });
     }
   }, []);
+
 
 
   return (
