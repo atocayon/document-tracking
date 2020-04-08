@@ -4,32 +4,38 @@ import Grid from "@material-ui/core/Grid";
 import EditIcon from "@material-ui/icons/Edit";
 
 import Reactotron from "reactotron-react-js";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
 import ContactInformation from "./ContactInformation";
 
 import axios from "axios";
 import CircularProgressComponent from "../../common/circularProgress/CircularProgressComponent";
+import { getFromStorage } from "../../storage";
 
 function Profile({ match }) {
   const [user, setUser] = useState({});
-
+  const [endSession, setEndSession] = useState(false);
   useEffect(() => {
-    const id = match.params.id;
+    const obj = getFromStorage("documentTracking");
+    if (obj && obj.token) {
+      const { token } = obj;
+      let params = match.params.id ? match.params.id : token;
+      axios
+        .get("http://localhost:4000/dts/user/" + params)
+        .then(user => {
+          setUser(user.data);
+        })
+        .catch(err => {
+          alert(err);
+        });
+    }
 
-    axios
-      .get("http://localhost:4000/dts/user/" + id)
-      .then(user => {
-        Reactotron.log(user.data);
-        setUser(user.data);
-      })
-      .catch(err => {
-        alert(err);
-      });
+    setEndSession(!(obj && obj.token));
   }, []);
 
   return (
     <>
+      {endSession && <Redirect to={"/"} />}
       {Object.keys(user).length === 0 ? (
         <CircularProgressComponent />
       ) : (

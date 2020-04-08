@@ -85,6 +85,7 @@ function App() {
                 component={ProcessedDocuments}
               />
               <Route path={"/user/:id"} component={Profile} />
+              <Route path={"/user"} component={Profile} />
               <Route path={"/update/:id"} component={UpdateProfile} />
               <Route path={"/users"} component={UserManagement} />
               <Route path={"/registration"} render={props => <RegistrationForm {...props} user={user} />} />

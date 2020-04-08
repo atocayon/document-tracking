@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Paper } from "@material-ui/core";
 import { getFromStorage } from "../../storage";
-import { Link } from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import InputField from "../../common/textField/InputField";
 import SearchIcon from "@material-ui/icons/Search";
@@ -13,7 +13,8 @@ import Reactotron from "reactotron-react-js";
 function UserManagement(props) {
   const [sectionUsers, setSectionUsers] = useState([]);
   const [token, setToken] = useState("");
-  const [section, setSection] = useState('');
+  const [userRole, setUserRole] = useState('');
+  const [endSesion, setEndSession] = useState(false);
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
 
@@ -26,6 +27,7 @@ function UserManagement(props) {
         .then(_user => {
           // Reactotron.log(_user);
           let section = _user.data.section;
+          setUserRole(_user.data.role);
           axios
             .get("http://localhost:4000/dts/sectionUser/" + section.toString())
             .then(users => {
@@ -40,12 +42,14 @@ function UserManagement(props) {
           alert(err);
         });
     }
+
+    setEndSession(!(obj && obj.token));
   }, []);
 
 
-  Reactotron.log(sectionUsers.length);
   return (
     <>
+      {endSesion && <Redirect to={"/"} />}
       <Paper
         elevation={3}
         style={{
@@ -102,7 +106,7 @@ function UserManagement(props) {
           </div>
         </div>
         {sectionUsers.length > 0 && (
-            <ListOfUsers sectionUsers={sectionUsers} token={token} />
+            <ListOfUsers sectionUsers={sectionUsers} token={token} userRole={userRole} />
         )}
 
       </Paper>
