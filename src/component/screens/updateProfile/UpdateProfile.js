@@ -15,7 +15,6 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { connect } from "react-redux";
 import InputField from "../../common/textField/InputField";
-import { fetchUserProfile } from "../../../redux/actions/fetchUserProfile";
 import { updateUserProfile } from "../../../redux/actions/updateUserProfile";
 import Reactotron from "reactotron-react-js";
 import axios from "axios";
@@ -379,13 +378,12 @@ class UpdateProfile extends Component {
 
 function mapStateToProps(state) {
   return {
-    profile: state.profile,
+
     update: state.update
   };
 }
 
 const mapDispatchToProps = {
-  fetchUserProfile,
   updateUserProfile
 };
 

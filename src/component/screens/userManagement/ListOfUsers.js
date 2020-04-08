@@ -9,6 +9,9 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
 
 export default function ListOfUsers(props){
+
+    const filter = props.sectionUsers.filter(user => user.user_id !== parseInt(props.token));
+
     return(
         <table className={"table"}>
             <tbody>
@@ -51,7 +54,7 @@ export default function ListOfUsers(props){
                                     Remove as admin
                                 </Button>
                             ) }
-
+                            <Button>Transfer Office</Button>
                             <Button>Deactivate</Button>
                             <Button>Delete</Button>
                         </ButtonGroup>
