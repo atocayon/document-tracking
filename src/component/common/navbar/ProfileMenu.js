@@ -15,11 +15,11 @@ export default function ProfileMenu(props) {
       onClose={props.onCloseProfileMenu}
     >
       <MenuItem>
-        <Link to={"/user/"+props.userId} style={{ textDecoration: "none" }}>
+        <Link to={"/user"} style={{ textDecoration: "none" }}>
           My Account
         </Link>
       </MenuItem>
-      <MenuItem onClick={props.handleMenuCloseProfileMenu}>Logout</MenuItem>
+      <MenuItem onClick={props.handleLogOut}>Logout</MenuItem>
     </Menu>
   );
 }

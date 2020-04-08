@@ -2,7 +2,7 @@ import React, { Component} from "react";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import owl from "../../../img/owl.png";
-import { Link} from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
 import EditIcon from "@material-ui/icons/Edit";
 import DoneIcon from "@material-ui/icons/Done";
 
@@ -20,12 +20,13 @@ import Reactotron from "reactotron-react-js";
 import axios from "axios";
 
 import { withSnackbar } from 'notistack';
+import {getFromStorage} from "../../storage";
 class UpdateProfile extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      toast: true,
+      endSession: false,
       _employeeId: true,
       _name: true,
       _username: true,
@@ -42,9 +43,9 @@ class UpdateProfile extends Component {
   }
 
   componentDidMount() {
-    this.setState({ loading: false });
-    const id = this.props.match.params.id;
 
+    const id = this.props.match.params.id;
+    const obj = getFromStorage("documentTracking");
     axios
       .get("http://localhost:4000/dts/user/" + id)
       .then(user => {
@@ -54,6 +55,8 @@ class UpdateProfile extends Component {
       .catch(err => {
         alert(err);
       });
+
+    this.setState({endSession: !(obj && obj.token)});
   }
 
   handleChange = ({ target }) => {
@@ -91,6 +94,7 @@ class UpdateProfile extends Component {
     }
     return (
       <div>
+        {this.state.endSession && <Redirect to={"/"} />}
         {Object.keys(user).length === 0 ? (
           <div className={"row"}>
             <div className={"col-md-12"}>

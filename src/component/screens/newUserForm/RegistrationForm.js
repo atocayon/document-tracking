@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Paper } from "@material-ui/core";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import StepperComponent from "./StepperComponent";
 import Profile from "./Profile";
@@ -9,8 +9,9 @@ import Work from "./Work";
 import OtherInformation from "./OtherInformation";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
-import { withSnackbar } from 'notistack';
- function RegistrationForm(props) {
+import { withSnackbar } from "notistack";
+import { getFromStorage } from "../../storage";
+function RegistrationForm(props) {
   const [userInfo, setUserInfo] = useState({
     role: "",
     employeeId: "",
@@ -26,6 +27,13 @@ import { withSnackbar } from 'notistack';
     bdate: ""
   });
   const [error, setError] = useState({});
+  const [redirect, setRedirect] = useState(false);
+  const [endSession, setEndSession] = useState(false);
+
+  useEffect(() => {
+    const obj = getFromStorage("documentTracking");
+    setEndSession(!(obj && obj.token));
+  }, []);
 
   function getSteps() {
     return [" Profile", "Contact", "Work", "Other Information"];
@@ -42,13 +50,14 @@ import { withSnackbar } from 'notistack';
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
-  function formValidation(){
+  function formValidation() {
     const _error = {};
     if (!userInfo.role) _error.role = "Role is required";
-    if (!userInfo.employeeId) _error.employeeId= "Employee ID is required";
+    if (!userInfo.employeeId) _error.employeeId = "Employee ID is required";
     if (!userInfo.username) _error.username = "Username is required";
     if (!userInfo.password) _error.password = "Password is required";
-    if (!userInfo.confirmPassword) _error.confirmPassword = "Confirm Password is required";
+    if (!userInfo.confirmPassword)
+      _error.confirmPassword = "Confirm Password is required";
     if (!userInfo.email) _error.email = "Email is required";
     if (!userInfo.contact) _error.contact = "Contact is required";
     if (!userInfo.position) _error.position = "Position is required";
@@ -61,7 +70,7 @@ import { withSnackbar } from 'notistack';
     return Object.keys(_error).length === 0;
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     event.preventDefault();
     Reactotron.log(userInfo);
     if (!formValidation()) return;
@@ -83,13 +92,13 @@ import { withSnackbar } from 'notistack';
           bdate: userInfo.bdate
         })
         .then(res => {
-          const variant = 'success';
-          props.enqueueSnackbar('Registration Success...', {variant});
+          const variant = "success";
+          props.enqueueSnackbar("Registration Success...", { variant });
           setActiveStep(0);
-          Reactotron.log(res);
+          setRedirect(true);
         })
         .catch(err => {
-          props.enqueueSnackbar('Server Error...'+err);
+          props.enqueueSnackbar("Server Error..." + err);
         });
     } else {
       setActiveStep(0);
@@ -121,6 +130,8 @@ import { withSnackbar } from 'notistack';
 
   return (
     <>
+      {endSession && <Redirect to={"/"} />}
+      {redirect && <Redirect to={"/users"} />}
       <Paper
         elevation={3}
         style={{

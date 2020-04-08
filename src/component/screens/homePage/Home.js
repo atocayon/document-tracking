@@ -9,6 +9,7 @@ import CircularProgressComponent from "../../common/circularProgress/CircularPro
 function Home() {
   const [token, setToken] = useState([]);
   const [user, setUser] = useState({});
+
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {

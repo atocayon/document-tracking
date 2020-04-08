@@ -49,14 +49,14 @@ export default function ListOfUsers(props){
                             aria-label="text primary button group"
                             style={{ marginTop: 15 }}
                         >
-                            {user.role === "admin" && (
-                                <Button>
-                                    Remove as admin
+                            {props.userRole === "admin" && (
+                                <Button style={{color: "#2196F3"}}>
+                                    {user.role === "admin" ? "Remove as admin" : "Make as admin"}
                                 </Button>
-                            ) }
-                            <Button>Transfer Office</Button>
-                            <Button>Deactivate</Button>
-                            <Button>Delete</Button>
+                            )}
+                            <Button w>Transfer Office</Button>
+                            <Button style={{color: "#FF9800"}}>Deactivate</Button>
+                            <Button color={"secondary"}>Delete</Button>
                         </ButtonGroup>
                     </td>
                 </tr>

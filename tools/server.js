@@ -189,6 +189,21 @@ router.route("/login/:email/:password").post(function(req, res) {
   });
 });
 
+router.route("/logout/:id").post(function(req,res){
+  let id = req.params.id;
+
+  const sql = "UPDATE users_session SET isDeleted = ? WHERE userId = ?";
+  connection.query(sql, [1, id], function (err, result){
+    if (err){
+      res.status(500).send("Server Error...");
+    }
+
+    if (result){
+      res.status(200).send("Logout Success...");
+    }
+  });
+});
+
 //Verify User Token
 router.route("/varifyToken/:token").get(function(req, res) {
   let token = req.params.token;

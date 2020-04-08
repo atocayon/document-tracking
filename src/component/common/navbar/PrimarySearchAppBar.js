@@ -17,8 +17,11 @@ import LeftDrawer from "./LeftDrawer";
 import RightDrawer from "./RightDrawer";
 import MobileMenu from "./RenderMobileMenu";
 import ProfileMenu from "./ProfileMenu";
-
-export default function PrimarySearchAppBar(props) {
+import {getFromStorage} from "../../storage";
+import axios from "axios";
+import { withSnackbar } from 'notistack';
+import { Redirect } from "react-router-dom";
+function PrimarySearchAppBar(props) {
   const classes = useStyles(); // css styles
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -64,6 +67,20 @@ export default function PrimarySearchAppBar(props) {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const handleLogOut = () => {
+    const obj = getFromStorage("documentTracking");
+    if (obj && obj.token) {
+      const { token } = obj;
+      axios.post('http://localhost:4000/dts/logout/'+token).then(res => {
+        localStorage.clear();
+        props.enqueueSnackbar('Session end...');
+        window.location.reload();
+      }).catch(err => {
+        props.enqueueSnackbar('Server Error... '+err);
+      });
+    }
+  };
+
   const menuId = "primary-search-account-menu";
 
   const profileMenu = (
@@ -75,6 +92,7 @@ export default function PrimarySearchAppBar(props) {
       transformOriginProfileMenu={{ vertical: "top", horizontal: "right" }}
       openProfileMenu={isMenuOpen}
       onCloseProfileMenu={handleMenuClose}
+      handleLogOut={handleLogOut}
     />
   );
 
@@ -238,3 +256,5 @@ const useStyles = makeStyles(theme => ({
     width: "auto"
   }
 }));
+
+export default withSnackbar(PrimarySearchAppBar);
