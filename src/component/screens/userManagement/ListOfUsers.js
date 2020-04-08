@@ -10,7 +10,7 @@ import Button from "@material-ui/core/Button";
 
 export default function ListOfUsers(props){
 
-    const filter = props.sectionUsers.filter(user => user.user_id !== parseInt(props.token));
+    // const filter = props.sectionUsers.filter(user => user.user_id !== parseInt(props.token));
 
     return(
         <table className={"table"}>

@@ -13,7 +13,7 @@ import Reactotron from "reactotron-react-js";
 function UserManagement(props) {
   const [sectionUsers, setSectionUsers] = useState([]);
   const [token, setToken] = useState("");
-
+  const [section, setSection] = useState('');
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
 
@@ -24,11 +24,13 @@ function UserManagement(props) {
       axios
         .get("http://localhost:4000/dts/user/" + token)
         .then(_user => {
+          // Reactotron.log(_user);
+          let section = _user.data.section;
           axios
-            .get("http://localhost:4000/dts/sectionUser/" + _user.data.section)
+            .get("http://localhost:4000/dts/sectionUser/" + section.toString())
             .then(users => {
-              Reactotron.log(users);
-              setSectionUsers([...sectionUsers, users.data]);
+
+              setSectionUsers(users.data);
             })
             .catch(err => {
               alert(err);
@@ -41,7 +43,7 @@ function UserManagement(props) {
   }, []);
 
 
-
+  Reactotron.log(sectionUsers.length);
   return (
     <>
       <Paper
@@ -99,8 +101,10 @@ function UserManagement(props) {
             </div>
           </div>
         </div>
+        {sectionUsers.length > 0 && (
+            <ListOfUsers sectionUsers={sectionUsers} token={token} />
+        )}
 
-        <ListOfUsers sectionUsers={sectionUsers} token={token} />
       </Paper>
     </>
   );
