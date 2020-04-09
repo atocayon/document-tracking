@@ -41,7 +41,7 @@ function UserManagement(props) {
         .get("http://localhost:4000/dts/user/" + token)
         .then(_user => {
           // Reactotron.log(_user);
-          let section = _user.data.section;
+          let section = _user.data.secid;
           setUserRole(_user.data.role);
           axios
             .get("http://localhost:4000/dts/sectionUser/" + section.toString())
