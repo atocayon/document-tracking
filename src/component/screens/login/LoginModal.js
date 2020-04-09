@@ -42,37 +42,37 @@ function LoginModal(props) {
     if (!login.password) _error.password = "Password is required";
 
     setError(_error);
-   };
+  };
 
   const onSubmit = event => {
     event.preventDefault();
 
-    if (!formValidation()){
+    if (!formValidation()) {
       const variant = "error";
-      return props.enqueueSnackbar("Input fields are required...", {variant});
+      return props.enqueueSnackbar("Input fields are required...", { variant });
     }
     axios
       .post(
         "http://localhost:4000/dts/login/" + login.email + "/" + login.password
       )
       .then(res => {
-
-        if (res.status === 200){
+        if (res.status === 200) {
           const variant = "success";
-          props.enqueueSnackbar("Login Successful...", {variant});
+          props.enqueueSnackbar("Login Successful...", { variant });
           setInStorage("documentTracking", { token: res.data.token });
           setRedirect(true);
         }
 
-        if (res.status === 404){
+        if (res.status === 404) {
           const variant = "warning";
-          props.enqueueSnackbar("Login Failed Incorrect Email/Password...", {variant});
+          props.enqueueSnackbar("Login Failed Incorrect Email/Password...", {
+            variant
+          });
         }
-
       })
       .catch(err => {
         const variant = "error";
-        props.enqueueSnackbar(err, {variant});
+        props.enqueueSnackbar(err, { variant });
       });
   };
 
