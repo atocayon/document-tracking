@@ -30,6 +30,7 @@ function RegistrationForm(props) {
   const [redirect, setRedirect] = useState(false);
   const [endSession, setEndSession] = useState(false);
   const [section, setSection] = useState("");
+  const [secid, setSecid] = useState("");
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     setEndSession(!(obj && obj.token));
@@ -37,6 +38,7 @@ function RegistrationForm(props) {
       axios
         .get("http://localhost:4000/dts/user/" + obj.token)
         .then(_user => {
+          setSecid(_user.data.section);
           axios
             .post("http://localhost:4000/dts/sections/" + _user.data.section)
             .then(res => {
@@ -109,7 +111,7 @@ function RegistrationForm(props) {
           password: userInfo.password,
           email: userInfo.email,
           contact: userInfo.contact,
-          section: props.user.section,
+          section: secid,
           position: userInfo.position,
           address: userInfo.address,
           gender: userInfo.gender,
