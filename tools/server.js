@@ -364,6 +364,19 @@ router.route("/updateStatus").post(function(req, res){
       res.status(200).send("Status updated");
   });
 });
+
+
+router.route("/sections/:secid").post(function(req, res){
+  const secid = req.params.secid;
+  const sql = "SELECT * FROM sections WHERE secid = ?";
+  connection.query(sql, [parseInt(secid)], function(err, rows, fields){
+    if (err){
+      res.status(500).send("Server error");
+    }
+
+    res.status(200).send(rows);
+  });
+});
 // ==========================================================================================
 // ==========================================================================================
 // End Users Data Control
