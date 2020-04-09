@@ -88,7 +88,7 @@ function App() {
               <Route path={"/user"} component={Profile} />
               <Route path={"/update/:id"} component={UpdateProfile} />
               <Route path={"/users"} component={UserManagement} />
-              <Route path={"/registration"} render={props => <RegistrationForm {...props} user={user} />} />
+              <Route path={"/registration"} component={RegistrationForm} />
               <Route component={NotFoundPage} />
             </Switch>
           </Grid>

@@ -29,10 +29,28 @@ function RegistrationForm(props) {
   const [error, setError] = useState({});
   const [redirect, setRedirect] = useState(false);
   const [endSession, setEndSession] = useState(false);
-
+  const [section, setSection] = useState("");
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     setEndSession(!(obj && obj.token));
+    if (obj && obj.token) {
+      axios
+        .get("http://localhost:4000/dts/user/" + obj.token)
+        .then(_user => {
+          axios
+            .post("http://localhost:4000/dts/sections/" + _user.data.section)
+            .then(res => {
+              setSection(res.data[0]);
+            })
+            .catch(err => {
+              const variant = "error";
+              props.enqueueSnackbar(err, { variant });
+            });
+        })
+        .catch(err => {
+          alert(err);
+        });
+    }
   }, []);
 
   function getSteps() {
@@ -74,9 +92,11 @@ function RegistrationForm(props) {
   const handleSubmit = event => {
     event.preventDefault();
     Reactotron.log(userInfo);
-    if (!formValidation()){
+    if (!formValidation()) {
       const variant = "error";
-      props.enqueueSnackbar("Please don't leave input fields empty...", {variant});
+      props.enqueueSnackbar("Please don't leave input fields empty...", {
+        variant
+      });
       return setActiveStep(0);
     }
     if (userInfo.password === userInfo.confirmPassword) {
@@ -103,12 +123,12 @@ function RegistrationForm(props) {
         })
         .catch(err => {
           const variant = "warning";
-          props.enqueueSnackbar("Server Error..." + err, {variant});
+          props.enqueueSnackbar("Server Error..." + err, { variant });
         });
     } else {
       const variant = "error";
       setActiveStep(0);
-      props.enqueueSnackbar("Password doesn't match...", {variant});
+      props.enqueueSnackbar("Password doesn't match...", { variant });
     }
   };
 
@@ -161,14 +181,13 @@ function RegistrationForm(props) {
               </div>
             </div>
             <div className={"col-md-10"}>
-              <h4>
+              <h5>
                 <b>
                   Registration for{" "}
-                  <span style={{ color: "#2196F3" }}>
-                    {props.user.section} user account
-                  </span>
+                  <span style={{ color: "#2196F3" }}>{section.section}</span>{" "}
+                  user account
                 </b>
-              </h4>
+              </h5>
             </div>
           </div>
         </div>
