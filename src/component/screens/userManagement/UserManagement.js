@@ -19,7 +19,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Button from "@material-ui/core/Button";
-import DialogComponent from "./DialogComponent";
+import DialogComponent from "../../common/confirmationDialog/DialogComponent";
 function UserManagement(props) {
   const [sectionUsers, setSectionUsers] = useState([]);
   const [token, setToken] = useState("");
@@ -123,8 +123,10 @@ function UserManagement(props) {
         <DialogComponent
           fullscreen={fullScreen}
           openDialog={openDialog}
+          title={"Delete "+openDialog.name+" ?"}
+          content={"If this action is unintended, you can still retrieve this account in Deleted Accounts section in left drawer."}
           handleClose={handleClose}
-          handleConfirmDeletion={handleConfirmDeletion}
+          handleConfirm={handleConfirmDeletion}
         />
       )}
       {endSesion && <Redirect to={"/"} />}

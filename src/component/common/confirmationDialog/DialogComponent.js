@@ -14,17 +14,17 @@ export default function DialogComponent(props){
             onClose={props.handleClose}
             aria-labelledby="responsive-dialog-title"
         >
-            <DialogTitle id="responsive-dialog-title">{"Delete "+ props.openDialog.name +"?"}</DialogTitle>
+            <DialogTitle id="responsive-dialog-title">{props.title}</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    Note: If this action is unintended, you can still retrieve this account in <u>Deleted Accounts</u> section in left drawer.
+                    {props.content}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button autoFocus onClick={props.handleClose} color="primary">
                     cancel
                 </Button>
-                <Button onClick={props.handleConfirmDeletion} color="primary" autoFocus>
+                <Button onClick={props.handleConfirm} color="primary" autoFocus>
                     confirm
                 </Button>
             </DialogActions>
