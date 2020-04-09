@@ -189,16 +189,16 @@ router.route("/login/:email/:password").post(function(req, res) {
   });
 });
 
-router.route("/logout/:id").post(function(req,res){
+router.route("/logout/:id").post(function(req, res) {
   let id = req.params.id;
 
   const sql = "UPDATE users_session SET isDeleted = ? WHERE userId = ?";
-  connection.query(sql, [1, id], function (err, result){
-    if (err){
+  connection.query(sql, [1, id], function(err, result) {
+    if (err) {
       res.status(500).send("Server Error...");
     }
 
-    if (result){
+    if (result) {
       res.status(200).send("Logout Success...");
     }
   });
@@ -268,9 +268,10 @@ router.route("/sectionUser/:section").get(function(req, res) {
 router.route("/user/:id").get(function(req, res) {
   let id = req.params.id;
 
-  const sql = "SELECT * FROM users WHERE user_id = ?";
-  connection.query(sql, id, function(err, rows, fields) {
+  const sql = "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.password AS password, users.contact AS contact, users.email AS email, users.section AS secid, users.position AS position, users.address AS address, users.gender AS gender, users.bdate AS bdate, users.role AS role, users.status AS status ,sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid WHERE users.user_id = ?";
+  connection.query(sql, [parseInt(id)], function(err, rows, fields) {
     if (err) {
+      console.log(err);
       res.status(500).json({
         success: false,
         message: "Server error in fetching data in users table"
@@ -284,6 +285,8 @@ router.route("/user/:id").get(function(req, res) {
     if (rows) {
       res.status(200).send(rows[0]);
     }
+
+    console.log(rows);
   });
 });
 
@@ -340,11 +343,11 @@ router.route("/updateUser/:id").post(function(req, res) {
   });
 });
 
-router.route("/updateRole").post(function(req, res){
-  const {role, id} = req.body;
+router.route("/updateRole").post(function(req, res) {
+  const { role, id } = req.body;
   const sql = "UPDATE users SET role = ? WHERE user_id = ?";
-  connection.query(sql, [role, parseInt(id)], function(err, result){
-    if (err){
+  connection.query(sql, [role, parseInt(id)], function(err, result) {
+    if (err) {
       res.status(500).send("Server Error...");
     }
 
@@ -352,26 +355,41 @@ router.route("/updateRole").post(function(req, res){
   });
 });
 
-router.route("/updateStatus").post(function(req, res){
-  const {status, id} = req.body;
+router.route("/updateStatus").post(function(req, res) {
+  const { status, id } = req.body;
 
   const sql = "UPDATE users SET status = ? WHERE user_id = ?";
-  connection.query(sql, [status, parseInt(id)], function (err, result) {
-      if (err){
-        res.status(500).send("Server Error")
-      }
+  connection.query(sql, [status, parseInt(id)], function(err, result) {
+    if (err) {
+      res.status(500).send("Server Error");
+    }
 
-      res.status(200).send("Status updated");
+    res.status(200).send("Status updated");
   });
 });
 
-
-router.route("/sections/:secid").post(function(req, res){
+//Fetch section by section id
+router.route("/sections/:secid").post(function(req, res) {
   const secid = req.params.secid;
-  const sql = "SELECT * FROM sections WHERE secid = ?";
-  connection.query(sql, [parseInt(secid)], function(err, rows, fields){
-    if (err){
-      res.status(500).send("Server error");
+  const sql =
+    "SELECT sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM sections JOIN divisions ON sections.secid = divisions.depid WHERE sections.secid = ?";
+  connection.query(sql, [parseInt(secid)], function(err, rows, fields) {
+    if (err) {
+
+      res.status(500).send(err);
+    }
+
+    res.status(200).send(rows);
+  });
+});
+
+router.route("/sections").get(function(req, res){
+  const sql =
+      "SELECT sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM sections JOIN divisions ON sections.secid = divisions.depid";
+  connection.query(sql, function(err, rows, fields) {
+    if (err) {
+
+      res.status(500).send(err);
     }
 
     res.status(200).send(rows);

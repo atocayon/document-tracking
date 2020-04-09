@@ -29,8 +29,8 @@ function RegistrationForm(props) {
   const [error, setError] = useState({});
   const [redirect, setRedirect] = useState(false);
   const [endSession, setEndSession] = useState(false);
-  const [section, setSection] = useState("");
-  const [secid, setSecid] = useState("");
+  const [user, setUser] = useState({});
+
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     setEndSession(!(obj && obj.token));
@@ -38,16 +38,8 @@ function RegistrationForm(props) {
       axios
         .get("http://localhost:4000/dts/user/" + obj.token)
         .then(_user => {
-          setSecid(_user.data.section);
-          axios
-            .post("http://localhost:4000/dts/sections/" + _user.data.section)
-            .then(res => {
-              setSection(res.data[0]);
-            })
-            .catch(err => {
-              const variant = "error";
-              props.enqueueSnackbar(err, { variant });
-            });
+          Reactotron.log(_user);
+          setUser(_user.data);
         })
         .catch(err => {
           alert(err);
@@ -111,7 +103,7 @@ function RegistrationForm(props) {
           password: userInfo.password,
           email: userInfo.email,
           contact: userInfo.contact,
-          section: secid,
+          section: user.secid,
           position: userInfo.position,
           address: userInfo.address,
           gender: userInfo.gender,
@@ -156,6 +148,7 @@ function RegistrationForm(props) {
     }
   }
 
+  Reactotron.log(user);
   return (
     <>
       {endSession && <Redirect to={"/"} />}
@@ -186,8 +179,8 @@ function RegistrationForm(props) {
               <h5>
                 <b>
                   Registration for{" "}
-                  <span style={{ color: "#2196F3" }}>{section.section}</span>{" "}
-                  user account
+                  <span style={{ color: "#2196F3" }}>{user.section}</span> user
+                  account
                 </b>
               </h5>
             </div>
