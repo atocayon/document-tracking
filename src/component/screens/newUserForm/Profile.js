@@ -24,8 +24,8 @@ export default function Profile(props) {
                           }}
                       >
                           <option aria-label="None" value="" />
-                          <option value={'admin'}>Admin</option>
-                          <option value={'member'}>Member</option>
+                          <option value={'1'}>Admin</option>
+                          <option value={'2'}>Member</option>
 
                       </Select>
                   </FormControl>

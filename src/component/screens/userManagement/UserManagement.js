@@ -11,15 +11,10 @@ import axios from "axios";
 import ListOfUsers from "./ListOfUsers";
 import Reactotron from "reactotron-react-js";
 import { withSnackbar } from "notistack";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogActions from "@material-ui/core/DialogActions";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Button from "@material-ui/core/Button";
 import DialogComponent from "../../common/confirmationDialog/DialogComponent";
+
 function UserManagement(props) {
   const [sectionUsers, setSectionUsers] = useState([]);
   const [token, setToken] = useState("");
@@ -29,10 +24,12 @@ function UserManagement(props) {
     open: false,
     status: "",
     name: "",
-    id: null
+    id: null,
+    content: ""
   });
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
 
@@ -82,7 +79,20 @@ function UserManagement(props) {
 
   const handleTransferOffice = () => {};
 
-  const handleAccountStatus = () => {};
+  const handleAccountStatus = val => {
+    let m = val.status === "2" ? "Deactivate" : "Activate";
+    setOpenDialog({
+      ...openDialog,
+      open: true,
+      status: val.status,
+      name: m + " " + val.name + "?",
+      id: val.id,
+      content:
+        "When you deactivate someone's account he/she will not be able to use this system. " +
+        "If you unintentionally deactivated someone or you want them to have access again on this system, " +
+        "you can activate them anytime."
+    });
+  };
 
   const handleClose = () => {
     setOpenDialog({
@@ -96,19 +106,22 @@ function UserManagement(props) {
       ...openDialog,
       open: true,
       status: val.status,
-      name: val.name,
-      id: val.id
+      name: "Delete " + val.name + " ?",
+      id: val.id,
+      content:
+        "If this action is unintended, you can still retrieve this account in Deleted Accounts section in left drawer."
     });
   };
 
-  const handleConfirmDeletion = () => {
+  const handleConfirm = () => {
     axios
       .post("http://localhost:4000/dts/updateStatus", {
         status: openDialog.status,
         id: openDialog.id
       })
       .then(res => {
-        props.enqueueSnackbar(openDialog.name + " deleted...");
+        const variant = "warning";
+        props.enqueueSnackbar(openDialog.name + " " + res, { variant });
         window.location.reload();
       })
       .catch(err => {
@@ -123,10 +136,10 @@ function UserManagement(props) {
         <DialogComponent
           fullscreen={fullScreen}
           openDialog={openDialog}
-          title={"Delete "+openDialog.name+" ?"}
-          content={"If this action is unintended, you can still retrieve this account in Deleted Accounts section in left drawer."}
+          title={openDialog.name}
+          content={openDialog.content}
           handleClose={handleClose}
-          handleConfirm={handleConfirmDeletion}
+          handleConfirm={handleConfirm}
         />
       )}
       {endSesion && <Redirect to={"/"} />}
@@ -179,7 +192,7 @@ function UserManagement(props) {
             <div
               style={{ marginLeft: 10, marginBottom: 20, textAlign: "left" }}
             >
-              <Link to={"/registration"} className={"btn btn-sm btn-success"}>
+              <Link to={"/registration"} className={"btn btn-sm btn-info"}>
                 <AddIcon /> New Account
               </Link>
             </div>
@@ -192,6 +205,7 @@ function UserManagement(props) {
             userRole={userRole}
             handleAccountRole={handleAccountRole}
             handleAccountDeletion={handleAccountDeletion}
+            handleAccountStatus={handleAccountStatus}
           />
         )}
       </Paper>
