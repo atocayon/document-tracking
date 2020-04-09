@@ -27,21 +27,11 @@ import Reactotron from "reactotron-react-js";
 
 function App() {
   const [open, setOpen] = useState(true);
-  const [user, setUser] = useState({});
 
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
-    if (obj && obj.token) {
-      const { token } = obj;
-      axios
-        .get("http://localhost:4000/dts/user/" + token)
-        .then(_user => {
-          setUser(_user.data);
-        })
-        .catch(err => {
-          alert(err);
-        });
-    } else {
+    if (!obj && !obj.token) {
+
       alert("Session Expired");
     }
   }, []);
@@ -54,7 +44,7 @@ function App() {
     <div>
       <div>
         <Grid container spacing={3}>
-          <PrimarySearchAppBar user={user} />
+          <PrimarySearchAppBar />
         </Grid>
         <Grid container spacing={3}>
           <Grid item xs={2}>

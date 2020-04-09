@@ -17,9 +17,9 @@ import LeftDrawer from "./LeftDrawer";
 import RightDrawer from "./RightDrawer";
 import MobileMenu from "./RenderMobileMenu";
 import ProfileMenu from "./ProfileMenu";
-import {getFromStorage} from "../../storage";
+import { getFromStorage } from "../../storage";
 import axios from "axios";
-import { withSnackbar } from 'notistack';
+import { withSnackbar } from "notistack";
 import { Redirect } from "react-router-dom";
 function PrimarySearchAppBar(props) {
   const classes = useStyles(); // css styles
@@ -71,13 +71,16 @@ function PrimarySearchAppBar(props) {
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
-      axios.post('http://localhost:4000/dts/logout/'+token).then(res => {
-        localStorage.clear();
-        props.enqueueSnackbar('Session end...');
-        window.location.reload();
-      }).catch(err => {
-        props.enqueueSnackbar('Server Error... '+err);
-      });
+      axios
+        .post("http://localhost:4000/dts/logout/" + token)
+        .then(res => {
+          localStorage.clear();
+          props.enqueueSnackbar("Session end...");
+          window.location.reload();
+        })
+        .catch(err => {
+          props.enqueueSnackbar("Server Error... " + err);
+        });
     }
   };
 
@@ -85,7 +88,6 @@ function PrimarySearchAppBar(props) {
 
   const profileMenu = (
     <ProfileMenu
-      userId={props.user.user_id}
       anchorElProfileMenu={anchorEl}
       anchorOriginProfileMenu={{ vertical: "top", horizontal: "right" }}
       idProfileMenu={menuId}
@@ -113,7 +115,6 @@ function PrimarySearchAppBar(props) {
 
   const leftSideList = side => (
     <LeftDrawer
-      section={props.user.section}
       nameLeftDrawer={classes.list}
       leftDrawerRole={"presentation"}
       onClickFunctionLeftDrawer={toggleDrawer(side, false)}
@@ -159,15 +160,15 @@ function PrimarySearchAppBar(props) {
 
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
-              <IconButton
-                aria-label="show 17 new notifications"
-                color="inherit"
-                onClick={toggleDrawer("right", true)}
-              >
-                <Badge badgeContent={17} color="secondary">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
+              {/*<IconButton*/}
+              {/*  aria-label="show 17 new notifications"*/}
+              {/*  color="inherit"*/}
+              {/*  onClick={toggleDrawer("right", true)}*/}
+              {/*>*/}
+              {/*  <Badge badgeContent={17} color="secondary">*/}
+              {/*    <NotificationsIcon />*/}
+              {/*  </Badge>*/}
+              {/*</IconButton>*/}
               <IconButton
                 edge="end"
                 aria-label="account of current user"
