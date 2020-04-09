@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Paper } from "@material-ui/core";
 import { getFromStorage } from "../../storage";
-import {Link, Redirect} from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import InputField from "../../common/textField/InputField";
 import SearchIcon from "@material-ui/icons/Search";
@@ -10,10 +10,11 @@ import AddIcon from "@material-ui/icons/Add";
 import axios from "axios";
 import ListOfUsers from "./ListOfUsers";
 import Reactotron from "reactotron-react-js";
+import { withSnackbar } from 'notistack';
 function UserManagement(props) {
   const [sectionUsers, setSectionUsers] = useState([]);
   const [token, setToken] = useState("");
-  const [userRole, setUserRole] = useState('');
+  const [userRole, setUserRole] = useState("");
   const [endSesion, setEndSession] = useState(false);
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
@@ -31,7 +32,6 @@ function UserManagement(props) {
           axios
             .get("http://localhost:4000/dts/sectionUser/" + section.toString())
             .then(users => {
-
               setSectionUsers(users.data);
             })
             .catch(err => {
@@ -46,6 +46,25 @@ function UserManagement(props) {
     setEndSession(!(obj && obj.token));
   }, []);
 
+  const handleAccountRole = val => {
+    Reactotron.log(val);
+    axios
+      .post("http://localhost:4000/dts/updateRole", { role: val.status, id: val.id })
+      .then(res => {
+        const variant = "success";
+        props.enqueueSnackbar('User role updated...', {variant});
+        window.location.reload();
+      })
+      .catch(err => {
+        Reactotron.log(err);
+      });
+  };
+
+  const handleTransferOffice = () => {};
+
+  const handleAccountStatus = () => {};
+
+  const handleAccountDeletion = () => {};
 
   return (
     <>
@@ -106,12 +125,16 @@ function UserManagement(props) {
           </div>
         </div>
         {sectionUsers.length > 0 && (
-            <ListOfUsers sectionUsers={sectionUsers} token={token} userRole={userRole} />
+          <ListOfUsers
+            sectionUsers={sectionUsers}
+            token={token}
+            userRole={userRole}
+            handleAccountRole={handleAccountRole}
+          />
         )}
-
       </Paper>
     </>
   );
 }
 
-export default UserManagement;
+export default withSnackbar(UserManagement);
