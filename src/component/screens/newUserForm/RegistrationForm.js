@@ -89,7 +89,6 @@ function RegistrationForm(props) {
           password: userInfo.password,
           email: userInfo.email,
           contact: userInfo.contact,
-          division: props.user.division,
           section: props.user.section,
           position: userInfo.position,
           address: userInfo.address,

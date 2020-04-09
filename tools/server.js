@@ -96,8 +96,8 @@ router.route("/addUser").post(function(req, res) {
           section,
           position,
           address,
-          bdate,
           gender,
+          bdate,
           role
         ]
       ];
