@@ -10,12 +10,14 @@ import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import { Redirect } from "react-router-dom";
 import { getFromStorage, setInStorage } from "../../storage";
 import axios from "axios";
-
-function LoginModal() {
+import { withSnackbar } from "notistack";
+function LoginModal(props) {
   const [login, setLogin] = useState({
     email: "",
     password: ""
   });
+
+  const [error, setError] = useState({});
 
   const [redirect, setRedirect] = useState(false);
 
@@ -33,18 +35,44 @@ function LoginModal() {
     });
   };
 
+  const formValidation = () => {
+    const _error = {};
+
+    if (!login.email) _error.email = "Email is required";
+    if (!login.password) _error.password = "Password is required";
+
+    setError(_error);
+   };
+
   const onSubmit = event => {
     event.preventDefault();
+
+    if (!formValidation()){
+      const variant = "error";
+      return props.enqueueSnackbar("Input fields are required...", {variant});
+    }
     axios
       .post(
         "http://localhost:4000/dts/login/" + login.email + "/" + login.password
       )
       .then(res => {
-        setInStorage("documentTracking", { token: res.data.token });
-        setRedirect(true);
+
+        if (res.status === 200){
+          const variant = "success";
+          props.enqueueSnackbar("Login Successful...", {variant});
+          setInStorage("documentTracking", { token: res.data.token });
+          setRedirect(true);
+        }
+
+        if (res.status === 404){
+          const variant = "warning";
+          props.enqueueSnackbar("Login Failed Incorrect Email/Password...", {variant});
+        }
+
       })
       .catch(err => {
-        alert(err);
+        const variant = "error";
+        props.enqueueSnackbar(err, {variant});
       });
   };
 
@@ -65,20 +93,22 @@ function LoginModal() {
           <form onSubmit={onSubmit}>
             <DialogContent>
               <InputField
-                id={""}
+                id={"email"}
                 label={"Email"}
                 variant={"outlined"}
                 name={"email"}
                 onChange={onChange}
+                error={error.email}
               />
               <br />
               <br />
               <InputField
-                id={""}
+                id={"password"}
                 label={"Password"}
                 variant={"outlined"}
                 name={"password"}
                 onChange={onChange}
+                error={error.password}
               />
               <br />
               <br />
@@ -102,4 +132,4 @@ function LoginModal() {
   );
 }
 
-export default LoginModal;
+export default withSnackbar(LoginModal);
