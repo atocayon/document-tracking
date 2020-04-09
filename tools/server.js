@@ -351,6 +351,19 @@ router.route("/updateRole").post(function(req, res){
     res.status(200).send("User role updated...");
   });
 });
+
+router.route("/updateStatus").post(function(req, res){
+  const {status, id} = req.body;
+
+  const sql = "UPDATE users SET status = ? WHERE user_id = ?";
+  connection.query(sql, [status, parseInt(id)], function (err, result) {
+      if (err){
+        res.status(500).send("Server Error")
+      }
+
+      res.status(200).send("Status updated");
+  });
+});
 // ==========================================================================================
 // ==========================================================================================
 // End Users Data Control

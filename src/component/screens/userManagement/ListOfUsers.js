@@ -56,8 +56,8 @@ export default function ListOfUsers(props) {
                     onClick={props.handleAccountRole.bind(
                       null,
                       user.role === "admin"
-                        ? { status: "member", id: user.user_id }
-                        : { status: "admin", id: user.user_id }
+                        ? { status: "member", id: user.user_id, name: user.name }
+                        : { status: "admin", id: user.user_id, name: user.name }
                     )}
                   >
                     {user.role === "admin"
@@ -73,7 +73,16 @@ export default function ListOfUsers(props) {
                 )}
 
                 {props.userRole === "admin" && (
-                  <Button color={"secondary"}>Delete</Button>
+                  <Button
+                    color={"secondary"}
+                    onClick={props.handleAccountDeletion.bind(null, {
+                      status: "deleted",
+                      id: user.user_id,
+                      name: user.name
+                    })}
+                  >
+                    Delete
+                  </Button>
                 )}
               </ButtonGroup>
             </td>
