@@ -76,7 +76,19 @@ class UpdateProfile extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-
+    this.setState({
+      _employeeId: false,
+      _name: false,
+      _username: false,
+      _contact: false,
+      _email: false,
+      _division: false,
+      _section: false,
+      _position: false,
+      _address: false,
+      _bdate: false,
+      _gender: false
+    });
     this.props.updateUserProfile(this.state.user);
   };
 
