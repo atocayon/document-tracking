@@ -339,6 +339,18 @@ router.route("/updateUser/:id").post(function(req, res) {
     }
   });
 });
+
+router.route("/updateRole").post(function(req, res){
+  const {role, id} = req.body;
+  const sql = "UPDATE users SET role = ? WHERE user_id = ?";
+  connection.query(sql, [role, parseInt(id)], function(err, result){
+    if (err){
+      res.status(500).send("Server Error...");
+    }
+
+    res.status(200).send("User role updated...");
+  });
+});
 // ==========================================================================================
 // ==========================================================================================
 // End Users Data Control

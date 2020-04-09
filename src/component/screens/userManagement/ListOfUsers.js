@@ -51,7 +51,15 @@ export default function ListOfUsers(props) {
                 style={{ marginTop: 15 }}
               >
                 {props.userRole === "admin" && (
-                  <Button style={{ color: "#2196F3" }}>
+                  <Button
+                    style={{ color: "#2196F3" }}
+                    onClick={props.handleAccountRole.bind(
+                      null,
+                      user.role === "admin"
+                        ? { status: "member", id: user.user_id }
+                        : { status: "admin", id: user.user_id }
+                    )}
+                  >
                     {user.role === "admin"
                       ? "Remove as admin"
                       : "Make as admin"}
