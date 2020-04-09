@@ -37,6 +37,7 @@ export default function Profile(props) {
                       label={"Employee ID"}
                       variant={"outlined"}
                       onChange={props.handleInput}
+                      error={props.error.employeeId}
                   />
                   <br/>
                   <br/>
@@ -46,6 +47,7 @@ export default function Profile(props) {
                       label={"Full Name"}
                       variant={"outlined"}
                       onChange={props.handleInput}
+                      error={props.error.name}
                   />
                   <br/>
                   <br/>
@@ -55,6 +57,7 @@ export default function Profile(props) {
                       label={"Username"}
                       variant={"outlined"}
                       onChange={props.handleInput}
+                      error={props.error.username}
                   />
                   <br/>
                   <br/>
@@ -64,6 +67,7 @@ export default function Profile(props) {
                       label={"Password"}
                       variant={"outlined"}
                       onChange={props.handleInput}
+                      error={props.error.password}
                   />
                   <br/>
                   <br/>
@@ -73,6 +77,7 @@ export default function Profile(props) {
                       label={"Confirm Password"}
                       variant={"outlined"}
                       onChange={props.handleInput}
+                      error={props.error.confirmPassword}
                   />
               </div>
               <div className={"col-md-2"}></div>

@@ -38,6 +38,7 @@ export default function OtherInformation(props) {
                             label={"Date of Birth"}
                             variant={"outlined"}
                             onChange={props.handleInput}
+                            error={props.error.bdate}
                         />
                     </div>
                     <div className={"col-md-2"}></div>
