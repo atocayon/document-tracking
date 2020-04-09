@@ -15,6 +15,7 @@ export default function Contact(props){
                             label={"Email"}
                             variant={"outlined"}
                             onChange={props.handleInput}
+                            error={props.error.email}
                         />
                         <br/>
                         <br/>
@@ -24,6 +25,7 @@ export default function Contact(props){
                             label={"Mobile Number"}
                             variant={"outlined"}
                             onChange={props.handleInput}
+                            error={props.error.contact}
                         />
                         <br/>
                         <br/>
@@ -33,6 +35,7 @@ export default function Contact(props){
                             label={"Home Address"}
                             variant={"outlined"}
                             onChange={props.handleInput}
+                            error={props.error.address}
                         />
                     </div>
                     <div className={"col-md-2"}></div>

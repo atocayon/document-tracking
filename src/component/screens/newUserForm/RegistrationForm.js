@@ -54,6 +54,7 @@ function RegistrationForm(props) {
     const _error = {};
     if (!userInfo.role) _error.role = "Role is required";
     if (!userInfo.employeeId) _error.employeeId = "Employee ID is required";
+    if (!userInfo.name) _error.name = "Name is required";
     if (!userInfo.username) _error.username = "Username is required";
     if (!userInfo.password) _error.password = "Password is required";
     if (!userInfo.confirmPassword)
@@ -73,7 +74,11 @@ function RegistrationForm(props) {
   const handleSubmit = event => {
     event.preventDefault();
     Reactotron.log(userInfo);
-    if (!formValidation()) return;
+    if (!formValidation()){
+      const variant = "error";
+      props.enqueueSnackbar("Please don't leave input fields empty...", {variant});
+      return setActiveStep(0);
+    }
     if (userInfo.password === userInfo.confirmPassword) {
       axios
         .post("http://localhost:4000/dts/addUser", {
@@ -98,11 +103,13 @@ function RegistrationForm(props) {
           setRedirect(true);
         })
         .catch(err => {
-          props.enqueueSnackbar("Server Error..." + err);
+          const variant = "warning";
+          props.enqueueSnackbar("Server Error..." + err, {variant});
         });
     } else {
+      const variant = "error";
       setActiveStep(0);
-      props.enqueueSnackbar("Password doesn't match...");
+      props.enqueueSnackbar("Password doesn't match...", {variant});
     }
   };
 
@@ -116,13 +123,13 @@ function RegistrationForm(props) {
   function getStepContent(step) {
     switch (step) {
       case 0:
-        return <Profile handleInput={handleInput} />;
+        return <Profile handleInput={handleInput} error={error} />;
       case 1:
-        return <Contact handleInput={handleInput} />;
+        return <Contact handleInput={handleInput} error={error} />;
       case 2:
-        return <Work handleInput={handleInput} />;
+        return <Work handleInput={handleInput} error={error} />;
       case 3:
-        return <OtherInformation handleInput={handleInput} />;
+        return <OtherInformation handleInput={handleInput} error={error} />;
       default:
         return "Unknown step";
     }

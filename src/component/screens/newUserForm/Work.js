@@ -16,6 +16,7 @@ export default function Work(props){
                             label={"Work Position/Function"}
                             variant={"outlined"}
                             onChange={props.handleInput}
+                            error={props.error.position}
                         />
                     </div>
                     <div className={"col-md-2"}></div>
