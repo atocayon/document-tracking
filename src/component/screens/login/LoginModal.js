@@ -42,6 +42,7 @@ function LoginModal(props) {
     if (!login.password) _error.password = "Password is required";
 
     setError(_error);
+    return Object.keys(_error).length === 0;
   };
 
   const onSubmit = event => {
@@ -49,7 +50,8 @@ function LoginModal(props) {
 
     if (!formValidation()) {
       const variant = "error";
-      return props.enqueueSnackbar("Input fields are required...", { variant });
+      props.enqueueSnackbar("Input fields are required...", { variant });
+      return;
     }
     axios
       .post(
@@ -57,7 +59,7 @@ function LoginModal(props) {
       )
       .then(res => {
         if (res.status === 200) {
-          const variant = "success";
+          const variant = "info";
           props.enqueueSnackbar("Login Successful...", { variant });
           setInStorage("documentTracking", { token: res.data.token });
           setRedirect(true);

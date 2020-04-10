@@ -244,7 +244,7 @@ router.route("/getUsers").get(function(req, res) {
 router.route("/sectionUser/:section").get(function(req, res) {
   let section = req.params.section;
 
-  const sql = "SELECT * FROM users WHERE section = ? ORDER BY name ASC";
+  const sql = "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.password AS password, users.contact AS contact, users.email AS email, users.section AS secid, users.position AS position, users.address AS address, users.gender AS gender, users.bdate AS bdate, users.role AS role, users.status AS status ,sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid WHERE users.section = ? ORDER BY name ASC";
   connection.query(sql, [section], function(err, rows, fields) {
     if (err) {
       res.status(500).json({
@@ -259,7 +259,7 @@ router.route("/sectionUser/:section").get(function(req, res) {
         message: "No data Found"
       });
     }
-
+    console.log(rows);
     res.status(200).send(rows);
   });
 });
@@ -343,6 +343,7 @@ router.route("/updateUser/:id").post(function(req, res) {
   });
 });
 
+//Update User Role
 router.route("/updateRole").post(function(req, res) {
   const { role, id } = req.body;
   const sql = "UPDATE users SET role = ? WHERE user_id = ?";
@@ -355,6 +356,7 @@ router.route("/updateRole").post(function(req, res) {
   });
 });
 
+//Update user Status
 router.route("/updateStatus").post(function(req, res) {
   const { status, id } = req.body;
 
@@ -365,6 +367,22 @@ router.route("/updateStatus").post(function(req, res) {
     }
 
     res.status(200).send("Status updated");
+  });
+});
+
+//Handle Transfer Office
+router.route("/transferOffice").post(function(req, res){
+  const {id, section} = req.body;
+
+  const sql = "UPDATE users SET section = ? WHERE user_id = ?";
+  connection.query(sql, [section, parseInt(id)], function(err, result){
+    if (err){
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    console.log(result);
+    res.status(200).send("Transfer Success");
   });
 });
 
@@ -385,13 +403,14 @@ router.route("/sections/:secid").post(function(req, res) {
 
 router.route("/sections").get(function(req, res){
   const sql =
-      "SELECT sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM sections JOIN divisions ON sections.secid = divisions.depid";
+      "SELECT sections.secid, sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM sections JOIN divisions ON sections.divid = divisions.depid";
   connection.query(sql, function(err, rows, fields) {
     if (err) {
 
       res.status(500).send(err);
     }
 
+    console.log(rows);
     res.status(200).send(rows);
   });
 });

@@ -91,7 +91,8 @@ function RegistrationForm(props) {
       props.enqueueSnackbar("Please don't leave input fields empty...", {
         variant
       });
-      return setActiveStep(0);
+      setActiveStep(0);
+      return;
     }
     if (userInfo.password === userInfo.confirmPassword) {
       axios
