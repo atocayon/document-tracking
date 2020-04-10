@@ -14,6 +14,7 @@ import { withSnackbar } from "notistack";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import DialogComponent from "../../common/confirmationDialog/DialogComponent";
+import TransferOfficeDialog from "../../common/transferOfficeDialod/TransferOfficeDialog";
 
 function UserManagement(props) {
   const [sectionUsers, setSectionUsers] = useState([]);
@@ -29,6 +30,21 @@ function UserManagement(props) {
   });
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [sections, setSections] = useState([]);
+  const [transferOfficeDialog, setTransderOfficeDialog] = useState({
+    open: false,
+    secid: "",
+    section: "",
+    depshort: "",
+    department: "",
+    id: null,
+    name: ""
+  });
+
+  const [error, setError] = useState({});
+  const [transfer, setTransfer] = useState({
+    section: ""
+  });
 
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
@@ -43,17 +59,30 @@ function UserManagement(props) {
           // Reactotron.log(_user);
           let section = _user.data.secid;
           setUserRole(_user.data.role);
+
           axios
             .get("http://localhost:4000/dts/sectionUser/" + section.toString())
             .then(users => {
               setSectionUsers(users.data);
+
+              axios
+                .get("http://localhost:4000/dts/sections")
+                .then(res => {
+                  setSections(res.data);
+                })
+                .catch(err => {
+                  const variant = "error";
+                  props.enqueueSnackbar(err, { variant });
+                });
             })
             .catch(err => {
-              alert(err);
+              const variant = "error";
+              props.enqueueSnackbar(err, { variant });
             });
         })
         .catch(err => {
-          alert(err);
+          const variant = "error";
+          props.enqueueSnackbar(err, { variant });
         });
     }
 
@@ -67,7 +96,7 @@ function UserManagement(props) {
         id: val.id
       })
       .then(res => {
-        const variant = "success";
+        const variant = "info";
         props.enqueueSnackbar(val.name + " role updated...", { variant });
         window.location.reload();
       })
@@ -77,7 +106,67 @@ function UserManagement(props) {
       });
   };
 
-  const handleTransferOffice = () => {};
+  const handleTransferOffice = val => {
+    Reactotron.log(val);
+    setTransderOfficeDialog({
+      ...transferOfficeDialog,
+      open: true,
+      secid: val.secid,
+      section: val.section,
+      depshort: val.depshort,
+      department: val.department,
+      id: val.id,
+      name: val.name
+    });
+  };
+
+  const handleSelectOnChangeTransferOffice = ({ target }) => {
+    Reactotron.log(target.value);
+    setTransfer({
+      ...transfer,
+      [target.name]: target.value
+    });
+  };
+
+  const validateTransferOffice = () => {
+    const _error = {};
+    if (!transfer.section)
+      _error.section = "Please specify the office of the requested party";
+
+    setError(_error);
+
+    return Object.keys(_error).length === 0;
+  };
+
+  const handleConfirmTransferOffice = event => {
+    event.preventDefault();
+
+    if (!validateTransferOffice()) {
+      const variant = "error";
+      props.enqueueSnackbar("Office not specified", { variant });
+      return;
+    }
+
+    setTransderOfficeDialog({
+      ...transferOfficeDialog,
+      open: false
+    });
+
+    axios
+      .post("http://localhost:4000/dts/transferOffice", {
+        id: transferOfficeDialog.id,
+        section: transfer.section
+      })
+      .then(res => {
+        const variant = "success";
+        props.enqueueSnackbar("Office Transfer Success...", { variant });
+        window.location.reload();
+      })
+      .catch(err => {
+        const variant = "error";
+        props.enqueueSnackbar(err, { variant });
+      });
+  };
 
   const handleAccountStatus = val => {
     let m = val.status === "2" ? "Deactivate" : "Activate";
@@ -98,6 +187,16 @@ function UserManagement(props) {
     setOpenDialog({
       ...openDialog,
       open: false
+    });
+
+    setTransderOfficeDialog({
+      ...openDialog,
+      open: false
+    });
+
+    setTransfer({
+      ...transfer,
+      section: ""
     });
   };
 
@@ -140,6 +239,20 @@ function UserManagement(props) {
           content={openDialog.content}
           handleClose={handleClose}
           handleConfirm={handleConfirm}
+        />
+      )}
+      {transferOfficeDialog && (
+        <TransferOfficeDialog
+          fullscreen={fullScreen}
+          transferOfficeDialog={transferOfficeDialog}
+          sections={sections}
+          transfer={transfer}
+          handleClose={handleClose}
+          handleConfirmTransferOffice={handleConfirmTransferOffice}
+          handleSelectOnChangeTransferOffice={
+            handleSelectOnChangeTransferOffice
+          }
+          error={error}
         />
       )}
       {endSesion && <Redirect to={"/"} />}
@@ -198,6 +311,7 @@ function UserManagement(props) {
             </div>
           </div>
         </div>
+
         {sectionUsers.length > 0 && (
           <ListOfUsers
             sectionUsers={sectionUsers}
@@ -206,6 +320,7 @@ function UserManagement(props) {
             handleAccountRole={handleAccountRole}
             handleAccountDeletion={handleAccountDeletion}
             handleAccountStatus={handleAccountStatus}
+            handleTransferOffice={handleTransferOffice}
           />
         )}
       </Paper>

@@ -73,7 +73,14 @@ export default function ListOfUsers(props) {
                       {user.role === "1" ? "Remove as admin" : "Make as admin"}
                     </Button>
                   )}
-                  <Button w>Transfer Office</Button>
+                  <Button onClick={props.handleTransferOffice.bind(null, {
+                      secid: user.secid,
+                      section: user.section,
+                      depshort: user.depshort,
+                      department: user.department,
+                      id: user.user_id,
+                      name: user.name
+                  })}>Transfer Office</Button>
                   {props.userRole === "1" && (
                     <Button
                       style={{ color: "#FF9800" }}

@@ -24,14 +24,12 @@ import { getFromStorage } from "./storage";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
 
-
 function App() {
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
-    if (!obj && !obj.token) {
-
+    if (!obj || !obj.token) {
       alert("Session Expired");
     }
   }, []);
@@ -56,11 +54,7 @@ function App() {
           </Grid>
           <Grid item xs={8}>
             <Switch>
-              <Route
-                path={"/"}
-                exact
-                component={Home}
-              />
+              <Route path={"/"} exact component={Home} />
               <Route path={"/login"} component={LoginModal} />
               <Route path="/fetchUsersBySection" component={UserManagement} />
               <Route path="/trackDocument" component={TrackDocument} />
