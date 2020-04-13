@@ -23,14 +23,14 @@ import UpdateProfile from "./screens/updateProfile/UpdateProfile";
 import { getFromStorage } from "./storage";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
-
-function App() {
+import { withSnackbar } from "notistack";
+function App(props) {
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     if (!obj || !obj.token) {
-      alert("Session Expired");
+      props.enqueueSnackbar("No session found...");
     }
   }, []);
 
@@ -85,4 +85,4 @@ function App() {
   );
 }
 
-export default App;
+export default withSnackbar(App);

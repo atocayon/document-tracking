@@ -15,6 +15,7 @@ export default function InputField(props) {
       name={props.name}
       label={props.label}
       variant={props.variant}
+      value={props.value}
       defaultValue={props.defaultValue}
       fullWidth
       disabled={props.disabled}

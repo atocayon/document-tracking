@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Grid from "@material-ui/core/Grid";
 import InputField from "../../common/textField/InputField";
 import ButtonComponent from "../../common/button/ButtonComponent";
@@ -6,31 +6,72 @@ import Paper from "@material-ui/core/Paper";
 import { FormGroup } from "@material-ui/core";
 import CheckBox from "../../common/checkbox/CheckBox";
 import TextArea from "../../common/textArea/TextArea";
+import { Link } from "react-router-dom";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import owl from "../../../img/owl.png";
+import {withSnackbar} from "notistack";
+import TextField from "@material-ui/core/TextField";
 
-export default function AddDocument() {
+function AddDocument(props) {
+  const [date, setDate] = useState({
+    _date: new Date()
+  });
+
+  useEffect(() => {
+    const timeID = setInterval( () => tick(), 1000);
+
+    return () => {clearInterval(timeID);}
+  }, [date._date]);
+
+  const tick = () => {
+    setDate({
+      ...date,
+      _date: new Date()
+    });
+  };
+
+
   return (
-    <Paper
-      elevation={3}
-      style={{
-        paddingLeft: "2vw",
-        paddingRight: "2vw",
-        paddingTop: "2vh",
-        paddingBottom: "2vh",
-        marginTop: "2vh"
-      }}
-    >
+    <Paper elevation={3}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <h1 style={{ textAlign: "center", textDecoration: "underline" }}>
-            ROUTING SLIP
-          </h1>
-          Note: To be attached to any communications, vouchers and any other
-          document for transmission.
-          <br />
-          (To be filled-up by requesting party)
+          <div
+            className={"jumbotron"}
+            style={{ paddingTop: "2vh", paddingBottom: "2vh" }}
+          >
+            <div className={"row"}>
+              <div className={"col-md-2"}>
+                <div className={"row"}>
+                  <div className={"col-md-6"}>
+                    <Link to={"/"}>
+                      <ArrowBackIcon style={{ fontSize: "2vw" }} />
+                    </Link>
+                  </div>
+                  <div className={"col-md-6"}>
+                    <div style={{ textAlign: "right" }}></div>
+                  </div>
+                </div>
+              </div>
+              <div className={"col-md-10"}>
+                <h5 style={{ textAlign: "left", fontWeight: "bold" }}>
+                  Routing Slip Form{" "}
+                  <span style={{ color: "#2196F3" }}>
+                    (To be filled-up by requesting party)
+                  </span>
+                </h5>
+              </div>
+            </div>
+
+            {/*<small>*/}
+            {/*  Note: To be attached to any communications, vouchers and any other*/}
+            {/*  document for transmission.*/}
+            {/*  <br />*/}
+            {/*  (To be filled-up by requesting party)*/}
+            {/*</small>*/}
+          </div>
         </Grid>
 
-        <Grid item xs={4}>
+        <Grid item xs={4} style={{ paddingLeft: "2vw" }}>
           <InputField
             id={"tackDocument"}
             label={"Tracking Number"}
@@ -42,7 +83,7 @@ export default function AddDocument() {
 
         <Grid item xs={8}></Grid>
 
-        <Grid item xs={4}>
+        <Grid item xs={4} style={{ paddingLeft: "2vw" }}>
           <InputField
             id={"tackDocument"}
             label={"Requesting Party"}
@@ -60,21 +101,22 @@ export default function AddDocument() {
           />
         </Grid>
 
-        <Grid item xs={4}>
+        <Grid item xs={4} style={{ paddingRight: "2vw" }}>
+
           <InputField
             id={"tackDocument"}
             label={"Date/Time Forwarded"}
             variant={"filled"}
-            defaultValue={"Date and Time"}
+            value={date._date.toLocaleDateString() + " " +date._date.toLocaleTimeString()}
             disabled={true}
           />
         </Grid>
 
-        <Grid item xs={12}>
-          <h2>ACTION REQUIRED</h2>
+        <Grid item xs={12} style={{ paddingLeft: "2vw" }}>
+          <h5 style={{ color: "#2196F3" }}>ACTION REQUIRED</h5>
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} style={{ paddingLeft: "2vw", paddingRight: "2vw" }}>
           <FormGroup row>
             <CheckBox
               checked={false}
@@ -133,10 +175,10 @@ export default function AddDocument() {
             />
           </FormGroup>
         </Grid>
-        <Grid item xs={12}>
-          <h2>DESTINATION</h2>
+        <Grid item xs={12} style={{ paddingLeft: "2vw" }}>
+          <h5 style={{ color: "#2196F3" }}>DESTINATION</h5>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={4} style={{paddingLeft: "2vw"}}>
           <InputField
             id={"tackDocument"}
             label={"Name/Office"}
@@ -145,12 +187,12 @@ export default function AddDocument() {
         </Grid>
         <Grid item xs={8}></Grid>
 
-        <Grid item xs={12}>
-          <h2>NOTE:</h2>
+        <Grid item xs={12} style={{paddingLeft: "2vw"}}>
+          <h5 style={{ color: "#2196F3" }}>NOTE:</h5>
           <TextArea placeholder={"Write Your Note Here"} />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} style={{paddingRight: "2vw"}}>
           <div style={{ textAlign: "right" }}>
             <ButtonComponent
               variant={"contained"}
@@ -164,3 +206,5 @@ export default function AddDocument() {
     </Paper>
   );
 }
+
+export default withSnackbar(AddDocument);
