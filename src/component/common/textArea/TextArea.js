@@ -4,6 +4,7 @@ import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 export default function TextArea(props) {
   return (
     <TextareaAutosize
+        name={props.name}
       aria-label="empty textarea"
       placeholder={props.placeholder}
       style={{
@@ -13,6 +14,7 @@ export default function TextArea(props) {
         borderRadius: "5px"
       }}
       disabled={props.disabled}
+      onChange={props.onChange}
     />
   );
 }
