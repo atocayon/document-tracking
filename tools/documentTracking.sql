@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 09, 2020 at 04:30 PM
+-- Generation Time: Apr 14, 2020 at 02:22 PM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.1
 
@@ -48,6 +48,34 @@ INSERT INTO `divisions` (`depid`, `department`, `depshort`, `payrollshort`) VALU
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `documentLogs`
+--
+
+CREATE TABLE `documentLogs` (
+  `trans_id` int(11) NOT NULL,
+  `document_id` varchar(11) NOT NULL,
+  `user_id` varchar(11) NOT NULL,
+  `status` varchar(11) NOT NULL,
+  `date_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `documents`
+--
+
+CREATE TABLE `documents` (
+  `documentID` int(11) NOT NULL,
+  `creator` varchar(11) NOT NULL,
+  `subject` varchar(200) NOT NULL,
+  `note` varchar(200) NOT NULL,
+  `date_time_created` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `documentStatus`
 --
 
@@ -73,6 +101,21 @@ INSERT INTO `documentStatus` (`statid`, `stat_remarks`, `on_remarks`) VALUES
 (10, 'COMPLETED', 1),
 (11, 'CANCELLED', 1),
 (99, 'System Admin', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `documentTransactions`
+--
+
+CREATE TABLE `documentTransactions` (
+  `doc_log_id` int(11) NOT NULL,
+  `documentID` varchar(11) NOT NULL,
+  `sender` varchar(11) NOT NULL,
+  `receiver` varchar(11) NOT NULL,
+  `status` int(11) NOT NULL,
+  `date_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -157,7 +200,7 @@ INSERT INTO `users` (`user_id`, `employeeId`, `name`, `username`, `password`, `c
 (3, '20190931', 'Aljon C. Tocayon', 'actWhiteHat27', '$2b$10$Ua01PGxt4Jh46MA91UtS4O68HxIx/EsylWXg/D2k1BDXRohWAnqce', '09051680244', 'atocayon27@gmail.com', '1', 'Computer Programmer', 'Jaro, Leyte', 'Male', '1996-10-05', '1', '1'),
 (4, 'Voluptatem omnis ab', 'Keegan Craft', 'luligyb', '$2b$10$IwL0xBwUoJpXbudPV1tHreW8IsSaAyODtRn5NeOxdHCpUTe3Sy6u6', '752', 'xyxu@mailinator.com', '1', 'Nostrum quis est ut ', 'Cupiditate aut dolor', '29-Jan-1973', 'female', '2', '1'),
 (5, 'Blanditiis quo venia', 'Pandora Morse', 'qowukev', '$2b$10$9z1b7mdDFs5b5D819wrWTe3UB.rWMNDu9jii2U9e4oEBA2RPaMX6y', '589', 'vodunonem@mailinator.net', '1', 'Vel officia sunt quo', 'Consectetur et atqu', '18-Feb-2017', 'other', '1', '1'),
-(6, 'Consequatur blandit', 'Tarik Silva', 'jaxirynu', '$2b$10$To7uZxVVIYsjzVzkMJA2S.IxlbnmvMSOgw3OXzqCZxsJhvfToUHEq', '955', 'wowog@mailinator.com', '1', 'Impedit excepteur s', 'Sit ut et quae exce', '20-Aug-1970', 'male', '1', '1'),
+(6, 'Consequatur blandit', 'Tarik Silva', 'jaxirynu', '$2b$10$To7uZxVVIYsjzVzkMJA2S.IxlbnmvMSOgw3OXzqCZxsJhvfToUHEq', '955', 'wowog@mailinator.com', '2', 'Impedit excepteur s', 'Sit ut et quae exce', '20-Aug-1970', 'male', '1', '1'),
 (7, '', '', '', '$2b$10$wIoEgbeN3YfeWRK75CxbqeBhKCbmtHmP2B0xNdTepH6i..TP0ystS', '', '', '1', '', '', '', '', '1', '3');
 
 -- --------------------------------------------------------
@@ -197,7 +240,7 @@ CREATE TABLE `users_session` (
 --
 
 INSERT INTO `users_session` (`id`, `userId`, `timeStamp`, `isDeleted`) VALUES
-(1, '3', '2020-04-08 13:25:29', 0);
+(1, '3', '2020-04-10 12:18:32', 0);
 
 -- --------------------------------------------------------
 
@@ -230,10 +273,22 @@ ALTER TABLE `divisions`
   ADD PRIMARY KEY (`depid`);
 
 --
+-- Indexes for table `documentLogs`
+--
+ALTER TABLE `documentLogs`
+  ADD PRIMARY KEY (`trans_id`);
+
+--
 -- Indexes for table `documentStatus`
 --
 ALTER TABLE `documentStatus`
   ADD PRIMARY KEY (`statid`);
+
+--
+-- Indexes for table `documentTransactions`
+--
+ALTER TABLE `documentTransactions`
+  ADD PRIMARY KEY (`doc_log_id`);
 
 --
 -- Indexes for table `sections`
@@ -278,10 +333,22 @@ ALTER TABLE `divisions`
   MODIFY `depid` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT for table `documentLogs`
+--
+ALTER TABLE `documentLogs`
+  MODIFY `trans_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `documentStatus`
 --
 ALTER TABLE `documentStatus`
   MODIFY `statid` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
+
+--
+-- AUTO_INCREMENT for table `documentTransactions`
+--
+ALTER TABLE `documentTransactions`
+  MODIFY `doc_log_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `sections`
