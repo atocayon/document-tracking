@@ -7,8 +7,8 @@ export default function TextArea(props) {
       aria-label="empty textarea"
       placeholder={props.placeholder}
       style={{
-        width: "30vw",
-        height: "10vh",
+        width: "50vw",
+        height: "20vh",
         padding: "1vw",
         borderRadius: "5px"
       }}
