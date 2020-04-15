@@ -9,9 +9,10 @@ export default function TrackDocument() {
       elevation={3}
       style={{
         paddingLeft: "2vw",
-        paddingTop: "2vh",
+        paddingTop: "5vh",
         paddingBottom: "2vh",
-        marginTop: "2vh"
+        marginTop: 70,
+          height: "100vh"
       }}
     >
       <Grid container spacing={3}>

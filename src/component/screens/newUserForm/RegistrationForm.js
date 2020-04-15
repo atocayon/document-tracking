@@ -159,6 +159,8 @@ function RegistrationForm(props) {
         style={{
           marginBottom: 0,
           bottom: 0,
+          marginTop: 70,
+          paddingBottom: 50,
           height: "100vh"
         }}
       >
@@ -178,11 +180,11 @@ function RegistrationForm(props) {
             </div>
             <div className={"col-md-10"}>
               <h5>
-                <b>
+
                   Registration for{" "}
                   <span style={{ color: "#2196F3" }}>{user.section}</span> user
                   account
-                </b>
+
               </h5>
             </div>
           </div>

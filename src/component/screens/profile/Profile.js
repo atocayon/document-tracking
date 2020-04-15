@@ -44,7 +44,8 @@ function Profile({ match }) {
           style={{
             color: "#263238",
             paddingBottom: "3vh",
-            height: "100vh"
+            height: "100vh",
+            marginTop: 70
           }}
         >
           <div className={"jumbotron"}></div>

@@ -18,7 +18,8 @@ function Dashboard(props) {
           paddingLeft: "2vw",
           paddingRight: "2vw",
           paddingTop: "5vh",
-          paddingBottom: "3vh"
+          paddingBottom: "3vh",
+            marginTop: 70
         }}
       >
         <h1 style={{ color: "#2196F3" }}>Hello, {props.user.username} !</h1>

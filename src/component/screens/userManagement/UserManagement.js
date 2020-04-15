@@ -261,7 +261,8 @@ function UserManagement(props) {
         style={{
           marginBottom: 0,
           bottom: 0,
-          height: "100vh"
+          height: "100vh",
+          marginTop: 70
         }}
       >
         <div className={"jumbotron"} style={{ padding: 20 }}>
@@ -279,8 +280,21 @@ function UserManagement(props) {
               </div>
             </div>
             <div className={"col-md-10"}>
+              <h5>User Management</h5>
+            </div>
+          </div>
+        </div>
+
+        <div className={"row"}>
+          <div className={"col-md-1"}></div>
+          <div className={"col-md-10"}>
+            <div style={{ marginBottom: 20 }}>
               <div className={"row"}>
-                <div className={"col-md-6"}></div>
+                <div className={"col-md-6"}>
+                  <Link to={"/registration"} className={"btn btn-sm btn-info"}>
+                    <AddIcon /> New Account
+                  </Link>
+                </div>
                 <div className={"col-md-6"}>
                   <Grid container spacing={1} alignItems="flex-end">
                     <Grid item>
@@ -297,32 +311,21 @@ function UserManagement(props) {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className={"row"}>
-          <div className={"col-md-12"}>
-            <div
-              style={{ marginLeft: 10, marginBottom: 20, textAlign: "left" }}
-            >
-              <Link to={"/registration"} className={"btn btn-sm btn-info"}>
-                <AddIcon /> New Account
-              </Link>
-            </div>
+            {sectionUsers.length > 0 && (
+              <ListOfUsers
+                sectionUsers={sectionUsers}
+                token={token}
+                userRole={userRole}
+                handleAccountRole={handleAccountRole}
+                handleAccountDeletion={handleAccountDeletion}
+                handleAccountStatus={handleAccountStatus}
+                handleTransferOffice={handleTransferOffice}
+              />
+            )}
           </div>
+          <div className={"col-md-1"}></div>
         </div>
-
-        {sectionUsers.length > 0 && (
-          <ListOfUsers
-            sectionUsers={sectionUsers}
-            token={token}
-            userRole={userRole}
-            handleAccountRole={handleAccountRole}
-            handleAccountDeletion={handleAccountDeletion}
-            handleAccountStatus={handleAccountStatus}
-            handleTransferOffice={handleTransferOffice}
-          />
-        )}
       </Paper>
     </>
   );
