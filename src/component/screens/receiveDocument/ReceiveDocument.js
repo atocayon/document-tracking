@@ -12,9 +12,10 @@ export default function ReceiveDocument() {
       style={{
         paddingLeft: "2vw",
         paddingRight: "2vw",
-        paddingTop: "2vh",
+        paddingTop: "5vh",
         paddingBottom: "2vh",
-        marginTop: "2vh"
+        marginTop: 70,
+        height: "100vh"
       }}
     >
       <Grid container spacing={3}>

@@ -4,6 +4,12 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
+import SelectField from "../../common/selectField/SelectField";
+
+const role = [
+    {id: "1", type: "Admin"},
+    {id: "2", type: "Member"}
+];
 
 export default function Profile(props) {
   return (
@@ -11,24 +17,16 @@ export default function Profile(props) {
           <div className={"row"}>
               <div className={"col-md-2"}></div>
               <div className={"col-md-8"}>
-                  <FormControl variant={"outlined"} >
-                      <InputLabel htmlFor="outlined-role-native-simple">Role</InputLabel>
-                      <Select
-                          native
-                          // value={state.age}
-                          onChange={props.handleInput}
-                          label="Role"
-                          inputProps={{
-                              name: 'role',
-                              id: 'outlined-role-native-simple',
-                          }}
-                      >
-                          <option aria-label="None" value="" />
-                          <option value={'1'}>Admin</option>
-                          <option value={'2'}>Member</option>
+                  <SelectField
+                      id={"role"}
+                      name={"role"}
+                      onChange={props.handleInput}
+                      label={"role"}
+                      options={role}
+                      variant={"outlined"}
+                      error={props.error.role}
+                  />
 
-                      </Select>
-                  </FormControl>
                   <br/>
                   <br/>
                   <InputField

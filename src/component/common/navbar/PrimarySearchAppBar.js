@@ -139,8 +139,9 @@ function PrimarySearchAppBar(props) {
           style={{
             backgroundColor: "#fafafa",
             color: "#263238",
-            width: "100%",
-            marginTop: "1vh"
+            width: "100vw",
+            marginTop: "1vh",
+            position: "fixed"
           }}
         >
           <Toolbar>

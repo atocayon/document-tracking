@@ -3,6 +3,13 @@ import InputField from "../../common/textField/InputField";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import FormControl from "@material-ui/core/FormControl";
+import SelectField from "../../common/selectField/SelectField";
+
+const gender = [
+    {id: 'male', type: 'male'},
+    {id: 'female', type: 'female'},
+    {id: 'other', type: 'other'}
+];
 
 export default function OtherInformation(props) {
 
@@ -12,24 +19,15 @@ export default function OtherInformation(props) {
                 <div className={"row"}>
                     <div className={"col-md-2"}></div>
                     <div className={"col-md-8"}>
-                        <FormControl variant={"outlined"} >
-                            <InputLabel htmlFor="outlined-role-native-simple">Gender</InputLabel>
-                            <Select
-                                native
-                                // value={state.age}
-                                onChange={props.handleInput}
-                                label="Gender"
-                                inputProps={{
-                                    name: 'gender',
-                                    id: 'outlined-role-native-simple',
-                                }}
-                            >
-                                <option aria-label="None" value="" />
-                                <option value={'male'}>Male</option>
-                                <option value={'female'}>Female</option>
-                                <option value={'other'}>Other</option>
-                            </Select>
-                        </FormControl>
+                        <SelectField
+                            id={"gender"}
+                            name={"gender"}
+                            onChange={props.handleInput}
+                            label={"Gender"}
+                            options={gender}
+                            variant={"outlined"}
+                            error={props.error.gender}
+                        />
                         <br/>
                         <br/>
                         <InputField

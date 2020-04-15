@@ -244,7 +244,8 @@ router.route("/getUsers").get(function(req, res) {
 router.route("/sectionUser/:section").get(function(req, res) {
   let section = req.params.section;
 
-  const sql = "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.password AS password, users.contact AS contact, users.email AS email, users.section AS secid, users.position AS position, users.address AS address, users.gender AS gender, users.bdate AS bdate, users.role AS role, users.status AS status ,sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid WHERE users.section = ? ORDER BY name ASC";
+  const sql =
+    "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.password AS password, users.contact AS contact, users.email AS email, users.section AS secid, users.position AS position, users.address AS address, users.gender AS gender, users.bdate AS bdate, users.role AS role, users.status AS status ,sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid WHERE users.section = ? ORDER BY name ASC";
   connection.query(sql, [section], function(err, rows, fields) {
     if (err) {
       res.status(500).json({
@@ -268,7 +269,8 @@ router.route("/sectionUser/:section").get(function(req, res) {
 router.route("/user/:id").get(function(req, res) {
   let id = req.params.id;
 
-  const sql = "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.password AS password, users.contact AS contact, users.email AS email, users.section AS secid, users.position AS position, users.address AS address, users.gender AS gender, users.bdate AS bdate, users.role AS role, users.status AS status ,sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid WHERE users.user_id = ?";
+  const sql =
+    "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.password AS password, users.contact AS contact, users.email AS email, users.section AS secid, users.position AS position, users.address AS address, users.gender AS gender, users.bdate AS bdate, users.role AS role, users.status AS status ,sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid WHERE users.user_id = ?";
   connection.query(sql, [parseInt(id)], function(err, rows, fields) {
     if (err) {
       console.log(err);
@@ -371,12 +373,12 @@ router.route("/updateStatus").post(function(req, res) {
 });
 
 //Handle Transfer Office
-router.route("/transferOffice").post(function(req, res){
-  const {id, section} = req.body;
+router.route("/transferOffice").post(function(req, res) {
+  const { id, section } = req.body;
 
   const sql = "UPDATE users SET section = ? WHERE user_id = ?";
-  connection.query(sql, [section, parseInt(id)], function(err, result){
-    if (err){
+  connection.query(sql, [section, parseInt(id)], function(err, result) {
+    if (err) {
       console.log(err);
       res.status(500).send(err);
     }
@@ -393,7 +395,6 @@ router.route("/sections/:secid").post(function(req, res) {
     "SELECT sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM sections JOIN divisions ON sections.secid = divisions.depid WHERE sections.secid = ?";
   connection.query(sql, [parseInt(secid)], function(err, rows, fields) {
     if (err) {
-
       res.status(500).send(err);
     }
 
@@ -401,12 +402,11 @@ router.route("/sections/:secid").post(function(req, res) {
   });
 });
 
-router.route("/sections").get(function(req, res){
+router.route("/sections").get(function(req, res) {
   const sql =
-      "SELECT sections.secid, sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM sections JOIN divisions ON sections.divid = divisions.depid";
+    "SELECT sections.secid, sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM sections JOIN divisions ON sections.divid = divisions.depid";
   connection.query(sql, function(err, rows, fields) {
     if (err) {
-
       res.status(500).send(err);
     }
 
@@ -414,12 +414,12 @@ router.route("/sections").get(function(req, res){
     res.status(200).send(rows);
   });
 });
+
 // ==========================================================================================
 // ==========================================================================================
 // End Users Data Control
 //===========================================================================================
 //===========================================================================================
-
 
 // ==========================================================================================
 // ==========================================================================================
@@ -428,38 +428,43 @@ router.route("/sections").get(function(req, res){
 //===========================================================================================
 
 //Assign Document Tracking ID
-router.route("/documentId").get(function(req,res){
-
+router.route("/documentId").get(function(req, res) {
   const sql = "SELECT * FROM documents";
 
-  connection.query(sql, function(err, rows, fields){
-    if (err){
+  connection.query(sql, function(err, rows, fields) {
+    if (err) {
       console.log(err);
       res.status(500).send(err);
     }
 
-    if (rows.length > 0){
-      const sql1 = "SELECT documentID FROM documents ORDER BY documentID DESC LIMIT 1";
-      connection.query(sql1, function (err, rows, fields){
-        if (err){
+    if (rows.length > 0) {
+      const sql1 =
+        "SELECT documentID FROM documents ORDER BY documentID DESC LIMIT 1";
+      connection.query(sql1, function(err, rows, fields) {
+        if (err) {
           res.status(500).send(err);
         }
         console.log(rows);
         res.status(200).send(rows[0]);
       });
-    }else{
+    } else {
       console.log(rows);
-      res.status(200).send({documentID: '00000000001'});
+      res.status(200).send({ documentID: "00000000001" });
     }
-
-
-
   });
-
-
-
 });
 
+// Fetch Document Type
+router.route("/documentType").get(function(req, res) {
+  const sql = "SELECT * FROM document_type";
+  connection.query(sql, function(err, rows, fields) {
+    if (err) {
+      res.status(500).send(err);
+    }
+
+    res.status(200).send(rows);
+  });
+});
 
 // ==========================================================================================
 // ==========================================================================================

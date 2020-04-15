@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 14, 2020 at 02:22 PM
+-- Generation Time: Apr 15, 2020 at 12:34 PM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.1
 
@@ -55,6 +55,7 @@ CREATE TABLE `documentLogs` (
   `trans_id` int(11) NOT NULL,
   `document_id` varchar(11) NOT NULL,
   `user_id` varchar(11) NOT NULL,
+  `destination` varchar(11) NOT NULL,
   `status` varchar(11) NOT NULL,
   `date_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -101,21 +102,6 @@ INSERT INTO `documentStatus` (`statid`, `stat_remarks`, `on_remarks`) VALUES
 (10, 'COMPLETED', 1),
 (11, 'CANCELLED', 1),
 (99, 'System Admin', 0);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `documentTransactions`
---
-
-CREATE TABLE `documentTransactions` (
-  `doc_log_id` int(11) NOT NULL,
-  `documentID` varchar(11) NOT NULL,
-  `sender` varchar(11) NOT NULL,
-  `receiver` varchar(11) NOT NULL,
-  `status` int(11) NOT NULL,
-  `date_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -285,12 +271,6 @@ ALTER TABLE `documentStatus`
   ADD PRIMARY KEY (`statid`);
 
 --
--- Indexes for table `documentTransactions`
---
-ALTER TABLE `documentTransactions`
-  ADD PRIMARY KEY (`doc_log_id`);
-
---
 -- Indexes for table `sections`
 --
 ALTER TABLE `sections`
@@ -343,12 +323,6 @@ ALTER TABLE `documentLogs`
 --
 ALTER TABLE `documentStatus`
   MODIFY `statid` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
-
---
--- AUTO_INCREMENT for table `documentTransactions`
---
-ALTER TABLE `documentTransactions`
-  MODIFY `doc_log_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `sections`
