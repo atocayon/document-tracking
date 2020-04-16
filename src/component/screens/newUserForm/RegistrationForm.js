@@ -11,6 +11,7 @@ import axios from "axios";
 import Reactotron from "reactotron-react-js";
 import { withSnackbar } from "notistack";
 import { getFromStorage } from "../../storage";
+import Grid from "@material-ui/core/Grid";
 function RegistrationForm(props) {
   const [userInfo, setUserInfo] = useState({
     role: "",
@@ -47,21 +48,6 @@ function RegistrationForm(props) {
     }
   }, []);
 
-  function getSteps() {
-    return [" Profile", "Contact", "Work", "Other Information"];
-  }
-
-  const [activeStep, setActiveStep] = React.useState(0);
-  const steps = getSteps();
-
-  const handleNext = () => {
-    setActiveStep(prevActiveStep => prevActiveStep + 1);
-  };
-
-  const handleBack = () => {
-    setActiveStep(prevActiveStep => prevActiveStep - 1);
-  };
-
   function formValidation() {
     const _error = {};
     if (!userInfo.role) _error.role = "Role is required";
@@ -91,7 +77,6 @@ function RegistrationForm(props) {
       props.enqueueSnackbar("Please don't leave input fields empty...", {
         variant
       });
-      setActiveStep(0);
       return;
     }
     if (userInfo.password === userInfo.confirmPassword) {
@@ -113,7 +98,7 @@ function RegistrationForm(props) {
         .then(res => {
           const variant = "success";
           props.enqueueSnackbar("Registration Success...", { variant });
-          setActiveStep(0);
+
           setRedirect(true);
         })
         .catch(err => {
@@ -122,7 +107,7 @@ function RegistrationForm(props) {
         });
     } else {
       const variant = "error";
-      setActiveStep(0);
+
       props.enqueueSnackbar("Password doesn't match...", { variant });
     }
   };
@@ -132,24 +117,11 @@ function RegistrationForm(props) {
       ...userInfo,
       [target.name]: target.value
     });
+
+    Reactotron.log(target.name);
   };
 
-  function getStepContent(step) {
-    switch (step) {
-      case 0:
-        return <Profile handleInput={handleInput} error={error} />;
-      case 1:
-        return <Contact handleInput={handleInput} error={error} />;
-      case 2:
-        return <Work handleInput={handleInput} error={error} />;
-      case 3:
-        return <OtherInformation handleInput={handleInput} error={error} />;
-      default:
-        return "Unknown step";
-    }
-  }
 
-  Reactotron.log(user);
   return (
     <>
       {endSession && <Redirect to={"/"} />}
@@ -160,44 +132,72 @@ function RegistrationForm(props) {
           marginBottom: 0,
           bottom: 0,
           marginTop: 70,
-          paddingBottom: 50,
-          height: "100vh"
+          paddingBottom: 50
         }}
       >
-        <div className={"jumbotron"} style={{ padding: 20 }}>
-          <div className={"row"}>
-            <div className={"col-md-2"}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <div className={"jumbotron"} style={{ padding: 20 }}>
               <div className={"row"}>
-                <div className={"col-md-6"}>
-                  <Link to={"/users"}>
-                    <ArrowBackIcon style={{ fontSize: "2vw" }} />
-                  </Link>
+                <div className={"col-md-2"}>
+                  <div className={"row"}>
+                    <div className={"col-md-6"}>
+                      <Link to={"/users"}>
+                        <ArrowBackIcon style={{ fontSize: "2vw" }} />
+                      </Link>
+                    </div>
+                    <div className={"col-md-6"}>
+                      <div style={{ textAlign: "right" }}></div>
+                    </div>
+                  </div>
                 </div>
-                <div className={"col-md-6"}>
-                  <div style={{ textAlign: "right" }}></div>
+                <div className={"col-md-8"}>
+                  <h5>
+                    Registration for{" "}
+                    <span style={{ color: "#2196F3" }}>{user.section}</span>{" "}
+                    user account
+                  </h5>
                 </div>
+
+                <div className={"col-md-2"}></div>
               </div>
             </div>
-            <div className={"col-md-10"}>
-              <h5>
+          </Grid>
 
-                  Registration for{" "}
-                  <span style={{ color: "#2196F3" }}>{user.section}</span> user
-                  account
+          <Grid item xs={12}>
+            <div className={"row"}>
+              <div className={"col-md-2"}></div>
+              <div className={"col-md-8"}>
+                <Profile handleInput={handleInput} error={error} />
 
-              </h5>
+                <Contact handleInput={handleInput} error={error} />
+
+                <Work handleInput={handleInput} error={error} />
+
+                <OtherInformation handleInput={handleInput} error={error} />
+
+                <br />
+                <br />
+                <br />
+                <div style={{ textAlign: "right" }}>
+                  <button className={"btn btn-info"} onClick={handleSubmit}>
+                    Submit
+                  </button>
+                </div>
+              </div>
+              <div className={"col-md-2"}></div>
             </div>
-          </div>
-        </div>
+          </Grid>
+        </Grid>
 
-        <StepperComponent
-          activeStep={activeStep}
-          steps={steps}
-          handleBack={handleBack}
-          handleNext={handleNext}
-          handleSubmit={handleSubmit}
-          getStepContent={getStepContent}
-        />
+        {/*<StepperComponent*/}
+        {/*  activeStep={activeStep}*/}
+        {/*  steps={steps}*/}
+        {/*  handleBack={handleBack}*/}
+        {/*  handleNext={handleNext}*/}
+        {/*  handleSubmit={handleSubmit}*/}
+        {/*  getStepContent={getStepContent}*/}
+        {/*/>*/}
       </Paper>
     </>
   );
