@@ -17,6 +17,7 @@ export default function Work(props) {
         variant={"outlined"}
         onChange={props.handleInput}
         error={props.error.position}
+        type={"text"}
       />
     </>
   );

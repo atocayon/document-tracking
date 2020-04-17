@@ -16,6 +16,7 @@ export default function TextArea(props) {
               }}
               disabled={props.disabled}
               onChange={props.onChange}
+              value={props.value}
           />
           <br />
           {props.error && (<span style={{color: "red"}}><small>Note is required</small></span>)}

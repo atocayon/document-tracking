@@ -18,6 +18,7 @@ export default function Contact(props) {
           variant={"outlined"}
           onChange={props.handleInput}
           error={props.error.email}
+          type={"email"}
         />
         <br />
         <br />
@@ -28,6 +29,7 @@ export default function Contact(props) {
           variant={"outlined"}
           onChange={props.handleInput}
           error={props.error.contact}
+          type={"text"}
         />
         <br />
         <br />
@@ -38,6 +40,7 @@ export default function Contact(props) {
           variant={"outlined"}
           onChange={props.handleInput}
           error={props.error.address}
+          type={"text"}
         />
       </div>
     </>

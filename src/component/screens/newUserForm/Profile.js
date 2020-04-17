@@ -38,6 +38,7 @@ export default function Profile(props) {
         variant={"outlined"}
         onChange={props.handleInput}
         error={props.error.employeeId}
+        type={"number"}
       />
       <br />
       <br />
@@ -48,6 +49,7 @@ export default function Profile(props) {
         variant={"outlined"}
         onChange={props.handleInput}
         error={props.error.name}
+        type={"text"}
       />
       <br />
       <br />
@@ -58,6 +60,7 @@ export default function Profile(props) {
         variant={"outlined"}
         onChange={props.handleInput}
         error={props.error.username}
+        type={"text"}
       />
       <br />
       <br />
@@ -68,6 +71,7 @@ export default function Profile(props) {
         variant={"outlined"}
         onChange={props.handleInput}
         error={props.error.password}
+        type={"password"}
       />
       <br />
       <br />
@@ -78,6 +82,7 @@ export default function Profile(props) {
         variant={"outlined"}
         onChange={props.handleInput}
         error={props.error.confirmPassword}
+        type={"password"}
       />
     </div>
   );
