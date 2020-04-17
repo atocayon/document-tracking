@@ -24,40 +24,18 @@ import FeedbackIcon from "@material-ui/icons/Feedback";
 import CommentIcon from "@material-ui/icons/Comment";
 import FinalizeDocument from "./FinalizeDocument";
 const checkboxItem = [
-  "For Approval",
-  "For Signature",
-  "For Endorsement",
-  "For Recommendation",
-  "For Action",
-  "For Comment",
-  "For Information",
-  "For File"
+  { id: 0, value: "For Approval"},
+  {id: 1, value: "For Signature"},
+  {id: 2 , value: "For Endorsement"},
+  {id: 3, value: "For Recommendation"},
+  {id: 4, value: "For Action"},
+  {id: 5, value: "For Comment"},
+  {id: 6, value: "For Information"},
+  {id: 7, value: "For File"}
 ];
 
-// const selectItem = [
-//   {value: "Certificate of Service" , text: "Certificate of Service"},
-//   {value: "Disbursement Voucher" , text: "Disbursement Voucher"},
-//   {value: "Inventory and Inspection Report" , text: "Inventory and Inspection Report"},
-//   {value: "Letter" , text: "Letter"},
-//   {value: "Liquidation Report" , text: "Liquidation Report"},
-//   {value: "Memorandum" , text: "Memorandum"},
-//   {value: "Memorandum of Agreement" , text: "Memorandum of Agreement"},
-//   {value: "Memorandum Receipt" , text: "Memorandum Receipt"},
-//   {value: "Official Cash Book" , text: "Official Cash Book"},
-//   {value: "Personal Data Sheet" , text: "Personal Data Sheet"},
-//   {value: "Purchase Order" , text: "Purchase Order"},
-//   {value: "Purchase Request" , text: "Purchase Request"},
-//   {value: "Referral Slip" , text: "Referral Slip"},
-//   {value: "Request for Obligation of Allotments" , text: "Request for Obligation of Allotments"},
-//   {value: "Requisition and Issue Voucher" , text: "Requisition and Issue Voucher"},
-//   {value: "Unclassified" , text: "Unclassified"}
-// ];
-
 function AddDocument(props) {
-  const wrapper_ref = useRef();
   const [endSession, setEndSession] = useState(false);
-
-  // let selectedCheckboxes = new Set();
 
   const [date, setDate] = useState({
     _date: new Date()
@@ -79,7 +57,16 @@ function AddDocument(props) {
   const [validateActionReq, setValidateActionReq] = useState(false);
   const [error, setError] = useState({});
   const [finalize, setFinalize] = useState(false);
-
+  const [boolCheckbox, setBoolCheckbox] = useState({
+    "For Approval" :  false,
+    "For Signature": false,
+    "For Endorsement": false,
+    "For Recommendation": false,
+    "For Action": false,
+    "For Comment": false,
+    "For Information": false,
+    "For File": false
+  });
   useEffect(() => {
     const timeID = setInterval(() => tick(), 1000);
 
@@ -138,10 +125,15 @@ function AddDocument(props) {
     if (target.type !== "checkbox") {
       val = target.value;
     } else {
+      setBoolCheckbox({
+        ...boolCheckbox,
+        [target.value]: !boolCheckbox[target.value]
+      });
       const checkeds = document.getElementsByTagName("input");
       for (let i = 0; i < checkeds.length; i++) {
         if (checkeds[i].checked) {
           checkedArr.push(checkeds[i].value);
+
         }
       }
 
@@ -153,7 +145,10 @@ function AddDocument(props) {
       [target.name]: val
     });
 
-    Reactotron.log(target.name);
+
+
+
+    Reactotron.log(boolCheckbox);
   };
 
   const formValidation = () => {
@@ -194,7 +189,6 @@ function AddDocument(props) {
       setValidateActionReq(false);
     }
 
-    Reactotron.log(formData);
     setFinalize(true);
     // let content = document.getElementById('printarea');
     // const iframe = document.createElement('iframe');
@@ -211,18 +205,26 @@ function AddDocument(props) {
     // pri.print();
   };
 
-  const createCheckbox = label => (
-    <CheckBox
-      // checked={false}
-      onChange={handleChange}
-      key={label}
-      label={label}
-      value={label}
-      name={"action_req"}
-    />
-  );
+  const handleGoBack = () => {
+    setFinalize(false);
+  };
+
+  const createCheckbox = label => {
+
+      return (
+          <CheckBox
+              checked={boolCheckbox[label.value]}
+              onChange={handleChange}
+              key={label.id}
+              label={label.value}
+              value={label.value}
+              name={"action_req"}
+          />
+      ) ;
+};
 
   const createCheckboxes = () => checkboxItem.map(createCheckbox);
+
 
   return (
     <>
@@ -231,7 +233,6 @@ function AddDocument(props) {
         elevation={3}
         style={{
           marginTop: 80,
-          // height: "100vh",
           paddingTop: 0
         }}
       >
@@ -262,12 +263,14 @@ function AddDocument(props) {
                   </div>
                 </div>
                 <div className={"col-md-8"}>
-                  <h5 style={{ textAlign: "left" }}>
-                    Add New Document &nbsp;
-                    <span style={{ color: "#2196F3" }}>
-                      (To be filled-up by requesting party)
-                    </span>
-                  </h5>
+                  {!finalize && (
+                    <h5 style={{ textAlign: "left" }}>
+                      Add New Document &nbsp;
+                      <span style={{ color: "#2196F3" }}>
+                        (To be filled-up by requesting party)
+                      </span>
+                    </h5>
+                  )}
                 </div>
                 <div className={"col-md-2"}>
                   <span>
@@ -279,13 +282,6 @@ function AddDocument(props) {
                   </span>
                 </div>
               </div>
-
-              {/*<small>*/}
-              {/*  Note: To be attached to any communications, vouchers and any other*/}
-              {/*  document for transmission.*/}
-              {/*  <br />*/}
-              {/*  (To be filled-up by requesting party)*/}
-              {/*</small>*/}
             </div>
           </Grid>
 
@@ -298,7 +294,12 @@ function AddDocument(props) {
               <div className={"col-md-2"}></div>
               <div className={"col-md-8"}>
                 {finalize ? (
-                  <FinalizeDocument />
+                  <FinalizeDocument
+                    trackingNumber={documentID}
+                    data={formData}
+                    documentType={documentType}
+                    handleGoBack={handleGoBack}
+                  />
                 ) : (
                   <>
                     <div>
@@ -317,6 +318,7 @@ function AddDocument(props) {
                         Object.keys(documentID).length > 0 &&
                         documentID.documentID
                       }
+                      type={"number"}
                     />
                     <br />
                     <br />
@@ -327,6 +329,8 @@ function AddDocument(props) {
                       variant={"outlined"}
                       onChange={handleChange}
                       error={error.subject}
+                      type={"text"}
+                      value={formData.subject}
                     />
                     <small>
                       - You may remove any sensitive information (e.g monetary
@@ -345,6 +349,7 @@ function AddDocument(props) {
                       error={error.documentType}
                       onChange={handleChange}
                       variant={"outlined"}
+                      value={formData.documentType}
                     />
 
                     <br />
@@ -375,6 +380,7 @@ function AddDocument(props) {
                       name={"note"}
                       onChange={handleChange}
                       error={error.note}
+                      value={formData.note}
                     />
 
                     <br />

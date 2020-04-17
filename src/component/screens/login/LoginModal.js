@@ -101,6 +101,7 @@ function LoginModal(props) {
                 name={"email"}
                 onChange={onChange}
                 error={error.email}
+                type={"email"}
               />
               <br />
               <br />
@@ -111,6 +112,7 @@ function LoginModal(props) {
                 name={"password"}
                 onChange={onChange}
                 error={error.password}
+                type={"password"}
               />
               <br />
               <br />

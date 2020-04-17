@@ -135,12 +135,10 @@ function PrimarySearchAppBar(props) {
     <>
       <div className={classes.grow}>
         <AppBar
-          position="static"
+
           style={{
             backgroundColor: "#fafafa",
             color: "#263238",
-            width: "100vw",
-            marginTop: "1vh",
             position: "fixed"
           }}
         >
@@ -219,7 +217,7 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1
   },
   menuButton: {
-    marginRight: theme.spacing(3)
+    marginRight: theme.spacing(0)
   },
   title: {
     display: "none",

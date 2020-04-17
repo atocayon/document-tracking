@@ -20,11 +20,7 @@ export default function InputField(props) {
       fullWidth
       disabled={props.disabled}
       onChange={props.onChange}
-      type={
-        props.name === "password" || props.name === "confirmPassword"
-          ? "password"
-          : "text"
-      }
+      type={props.type}
       helperText={props.error ? props.error:""}
     />
   );

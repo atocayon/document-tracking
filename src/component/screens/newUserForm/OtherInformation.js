@@ -31,13 +31,14 @@ export default function OtherInformation(props) {
       />
       <br />
       <br />
+      <label>Date of Birth</label>
       <InputField
         id={"bdate"}
         name={"bdate"}
-        label={"Date of Birth"}
         variant={"outlined"}
         onChange={props.handleInput}
         error={props.error.bdate}
+        type={"date"}
       />
     </>
   );
