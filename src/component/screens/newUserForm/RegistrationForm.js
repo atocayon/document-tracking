@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Paper } from "@material-ui/core";
 import { Link, Redirect } from "react-router-dom";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import CancelIcon from '@material-ui/icons/Cancel';
 import StepperComponent from "./StepperComponent";
 import Profile from "./Profile";
 import Contact from "./Contact";
@@ -12,6 +12,8 @@ import Reactotron from "reactotron-react-js";
 import { withSnackbar } from "notistack";
 import { getFromStorage } from "../../storage";
 import Grid from "@material-ui/core/Grid";
+import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
+import SaveIcon from '@material-ui/icons/Save';
 function RegistrationForm(props) {
   const [userInfo, setUserInfo] = useState({
     role: "",
@@ -31,7 +33,7 @@ function RegistrationForm(props) {
   const [redirect, setRedirect] = useState(false);
   const [endSession, setEndSession] = useState(false);
   const [user, setUser] = useState({});
-
+  const [open, setOpen] = useState(true);
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     setEndSession(!(obj && obj.token));
@@ -122,84 +124,103 @@ function RegistrationForm(props) {
   };
 
 
+  const handleClick = () => {
+    setOpen(!open);
+  };
+
   return (
-    <>
-      {endSession && <Redirect to={"/"} />}
-      {redirect && <Redirect to={"/users"} />}
-      <Paper
-        elevation={3}
-        style={{
-          marginBottom: 0,
-          bottom: 0,
-          marginTop: 70,
-          paddingBottom: 50
-        }}
-      >
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <div className={"jumbotron"} style={{ padding: 20 }}>
-              <div className={"row"}>
-                <div className={"col-md-2"}>
-                  <div className={"row"}>
-                    <div className={"col-md-6"}>
-                      <Link to={"/users"}>
-                        <ArrowBackIcon style={{ fontSize: "2vw" }} />
-                      </Link>
-                    </div>
-                    <div className={"col-md-6"}>
-                      <div style={{ textAlign: "right" }}></div>
+    <Grid container spacing={3}>
+      <Grid item xs={2}>
+        <SideBarNavigation
+            open={open}
+            setOpen={setOpen}
+            handleClick={handleClick}
+        />
+      </Grid>
+      <Grid item xs={8}>
+        {endSession && <Redirect to={"/"} />}
+        {redirect && <Redirect to={"/users"} />}
+        <Paper
+            elevation={3}
+            style={{
+              marginBottom: 0,
+              bottom: 0,
+              marginTop: 70,
+              paddingBottom: 50,
+              height: "100vh",
+              overflow: "auto"
+            }}
+        >
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <div className={"jumbotron"} style={{ padding: 50 }}>
+                <div className={"row"}>
+                  <div className={"col-md-2"}>
+                    <div className={"row"}>
+                      <div className={"col-md-6"}>
+
+                      </div>
+                      <div className={"col-md-6"}>
+                        <div style={{ textAlign: "right" }}></div>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className={"col-md-8"}>
-                  <h5>
-                    Registration for{" "}
-                    <span style={{ color: "#2196F3" }}>{user.section}</span>{" "}
-                    user account
-                  </h5>
-                </div>
+                  <div className={"col-md-8"}>
+                    <h5>
+                      Registration for{" "}
+                      <span style={{ color: "#2196F3" }}>{user.section}</span>{" "}
+                      user account
+                    </h5>
+                  </div>
 
+                  <div className={"col-md-2"}></div>
+                </div>
+              </div>
+            </Grid>
+
+            <Grid item xs={12}>
+              <div className={"row"}>
+                <div className={"col-md-2"}></div>
+                <div className={"col-md-8"}>
+                  <Profile handleInput={handleInput} error={error} />
+
+                  <Contact handleInput={handleInput} error={error} />
+
+                  <Work handleInput={handleInput} error={error} />
+
+                  <OtherInformation handleInput={handleInput} error={error} />
+
+                  <br />
+                  <br />
+                  <br />
+                  <div style={{ textAlign: "right" }}>
+                    <Link to={"/users"} className={"btn btn-outline-info"}>
+                      <CancelIcon /> &nbsp;&nbsp; Cancel
+                    </Link>
+                    &nbsp;&nbsp;&nbsp;
+                    <button className={"btn btn-info"} onClick={handleSubmit}>
+                      <SaveIcon/>&nbsp;&nbsp; Save
+                    </button>
+                  </div>
+                </div>
                 <div className={"col-md-2"}></div>
               </div>
-            </div>
+            </Grid>
           </Grid>
 
-          <Grid item xs={12}>
-            <div className={"row"}>
-              <div className={"col-md-2"}></div>
-              <div className={"col-md-8"}>
-                <Profile handleInput={handleInput} error={error} />
+          {/*<StepperComponent*/}
+          {/*  activeStep={activeStep}*/}
+          {/*  steps={steps}*/}
+          {/*  handleBack={handleBack}*/}
+          {/*  handleNext={handleNext}*/}
+          {/*  handleSubmit={handleSubmit}*/}
+          {/*  getStepContent={getStepContent}*/}
+          {/*/>*/}
+        </Paper>
+      </Grid>
+      <Grid item xs={2}></Grid>
 
-                <Contact handleInput={handleInput} error={error} />
-
-                <Work handleInput={handleInput} error={error} />
-
-                <OtherInformation handleInput={handleInput} error={error} />
-
-                <br />
-                <br />
-                <br />
-                <div style={{ textAlign: "right" }}>
-                  <button className={"btn btn-info"} onClick={handleSubmit}>
-                    Submit
-                  </button>
-                </div>
-              </div>
-              <div className={"col-md-2"}></div>
-            </div>
-          </Grid>
-        </Grid>
-
-        {/*<StepperComponent*/}
-        {/*  activeStep={activeStep}*/}
-        {/*  steps={steps}*/}
-        {/*  handleBack={handleBack}*/}
-        {/*  handleNext={handleNext}*/}
-        {/*  handleSubmit={handleSubmit}*/}
-        {/*  getStepContent={getStepContent}*/}
-        {/*/>*/}
-      </Paper>
-    </>
+    </Grid>
   );
 }
 export default withSnackbar(RegistrationForm);

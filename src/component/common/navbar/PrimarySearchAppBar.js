@@ -20,7 +20,7 @@ import ProfileMenu from "./ProfileMenu";
 import { getFromStorage } from "../../storage";
 import axios from "axios";
 import { withSnackbar } from "notistack";
-import { Redirect } from "react-router-dom";
+import SettingsIcon from '@material-ui/icons/Settings';
 function PrimarySearchAppBar(props) {
   const classes = useStyles(); // css styles
 
@@ -135,11 +135,11 @@ function PrimarySearchAppBar(props) {
     <>
       <div className={classes.grow}>
         <AppBar
-
+          position={"fixed"}
           style={{
             backgroundColor: "#fafafa",
-            color: "#263238",
-            position: "fixed"
+            color: "#263238"
+
           }}
         >
           <Toolbar>
@@ -149,6 +149,7 @@ function PrimarySearchAppBar(props) {
               color="inherit"
               aria-label="open drawer"
               onClick={toggleDrawer("left", true)}
+
             >
               <MenuIcon />
             </IconButton>
@@ -176,7 +177,7 @@ function PrimarySearchAppBar(props) {
                 onClick={handleProfileMenuOpen}
                 color="inherit"
               >
-                <AccountCircle />
+                <SettingsIcon />
               </IconButton>
             </div>
             <div className={classes.sectionMobile}>
@@ -217,11 +218,15 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1
   },
   menuButton: {
-    marginRight: theme.spacing(0)
+    display: "block",
+    marginRight: theme.spacing(0),
+    [theme.breakpoints.up("lg")]: {
+      display: "none"
+    }
   },
   title: {
     display: "none",
-    [theme.breakpoints.up("sm")]: {
+    [theme.breakpoints.up("lg")]: {
       display: "block"
     }
   },

@@ -1,5 +1,5 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useEffect, useState } from "react";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
@@ -10,13 +10,26 @@ import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import FolderIcon from "@material-ui/icons/Folder";
 import ListItemComponent from "./ListItemComponent";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import Avatar from "@material-ui/core/Avatar";
+import Typography from "@material-ui/core/Typography";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import { getFromStorage } from "../../storage";
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 const useStyles = makeStyles(theme => ({
   root: {
+    display: "none",
     width: "100%",
+    height: "100vh",
     maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
-    marginTop: "10vh"
+    marginTop: 50,
+    paddingLeft: theme.spacing(2),
+    [theme.breakpoints.up("lg")]: {
+      display: "block"
+    }
   },
   nested: {
     paddingLeft: theme.spacing(4)
@@ -34,7 +47,51 @@ export default function SideBarNavigation(props) {
     <>
       <div className={classes.root}>
         <List component="nav" aria-label="main mailbox folders">
-          <ListItemComponent primary="Home" />
+          {props.user ? (
+            <Link to={"/"} style={{ textDecoration: "none" }}>
+              <ListItem
+                style={{ paddingTop: 70, paddingBottom: 30, color: "#2196F3" }}
+              >
+                <ListItemAvatar>
+                  <Avatar
+                    alt={props.user.name}
+                    src="/static/images/avatar/1.jpg"
+                  />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={props.user.name}
+                  secondary={
+                    <React.Fragment>
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        className={classes.inline}
+                        color="textPrimary"
+                      >
+                        {props.user.position}
+                      </Typography>
+                    </React.Fragment>
+                  }
+                />
+              </ListItem>
+
+            </Link>
+          ) : (
+              <Link to={"/"}>
+                <ListItem style={{ paddingTop: 50, paddingBottom: 20, color: "#2196F3" }}>
+                  <ListItemIcon>
+                    <ArrowBackIcon />
+                  </ListItemIcon>
+                  <ListItemText>
+                    Go Back Home
+                  </ListItemText>
+
+                </ListItem>
+              </Link>
+
+
+          )}
+          <Divider />
           <ListItem button onClick={props.handleClick}>
             <ListItemIcon>
               <FolderIcon />
@@ -45,6 +102,8 @@ export default function SideBarNavigation(props) {
 
           <Collapse in={props.open} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
+              <ListItemComponent primary="New" className={classes.nested} />
+              <ListItemComponent primary="Drafts" className={classes.nested} />
               <ListItemComponent primary="Pending" className={classes.nested} />
 
               <ListItemComponent
@@ -67,7 +126,15 @@ export default function SideBarNavigation(props) {
         <Divider />
 
         <List component="nav" aria-label="secondary mailbox folders">
-          <ListItemComponent primary="Internal Tracking" />
+          <ListItemComponent primary="User Management" />
+        </List>
+
+        <List component="nav" aria-label="secondary mailbox folders">
+          <ListItemComponent primary="Generate Reports" />
+        </List>
+
+        <List component="nav" aria-label="secondary mailbox folders">
+          <ListItemComponent primary="About" />
         </List>
       </div>
     </>

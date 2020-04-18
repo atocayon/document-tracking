@@ -8,9 +8,19 @@ import FolderSharedIcon from "@material-ui/icons/FolderShared";
 import ArchiveIcon from "@material-ui/icons/Archive";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import HomeIcon from "@material-ui/icons/Home";
+import DraftsIcon from '@material-ui/icons/Drafts';
+import AddBoxIcon from '@material-ui/icons/AddBox';
 import { NavLink } from "react-router-dom";
+import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
+import PrintIcon from "@material-ui/icons/Print";
+import InfoIcon from '@material-ui/icons/Info';
 export default function ListItemComponent(props) {
   function icon() {
+
+    if (props.primary === "Drafts") {
+      return <DraftsIcon />;
+    }
+
     if (props.primary === "Pending") {
       return <QueryBuilderIcon />;
     }
@@ -27,16 +37,31 @@ export default function ListItemComponent(props) {
       return <ArchiveIcon />;
     }
 
-    if (props.primary === "Internal Tracking") {
-      return <AssessmentIcon />;
+    if (props.primary === "New") {
+      return <AddBoxIcon />;
     }
 
     if (props.primary === "Home") {
       return <HomeIcon />;
     }
+
+    if (props.primary === "User Management"){
+      return <SupervisorAccountIcon />;
+    }
+
+    if (props.primary === 'Generate Reports'){
+      return <PrintIcon />;
+    }
+
+    if (props.primary === "About"){
+      return <InfoIcon />;
+    }
   }
 
   function route() {
+    if (props.primary === "Drafts") {
+      return "/drafts";
+    }
     if (props.primary === "Pending") {
       return "/pending";
     }
@@ -53,12 +78,24 @@ export default function ListItemComponent(props) {
       return "/processedDocuments";
     }
 
-    if (props.primary === "Internal Tracking") {
-      return "/internal";
+    if (props.primary === "New") {
+      return "/addDocument";
     }
 
     if (props.primary === "Home") {
       return "/";
+    }
+
+    if (props.primary === "User Management"){
+      return "/users";
+    }
+
+    if (props.primary === 'Generate Reports'){
+      return "/reports";
+    }
+
+    if (props.primary === "About"){
+      return "/about";
     }
   }
 
