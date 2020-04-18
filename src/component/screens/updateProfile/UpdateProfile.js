@@ -1,8 +1,8 @@
-import React, { Component} from "react";
+import React, { Component } from "react";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import owl from "../../../img/owl.png";
-import {Link, Redirect} from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import EditIcon from "@material-ui/icons/Edit";
 import DoneIcon from "@material-ui/icons/Done";
 
@@ -19,8 +19,9 @@ import { updateUserProfile } from "../../../redux/actions/updateUserProfile";
 import Reactotron from "reactotron-react-js";
 import axios from "axios";
 
-import { withSnackbar } from 'notistack';
-import {getFromStorage} from "../../storage";
+import { withSnackbar } from "notistack";
+import { getFromStorage } from "../../storage";
+import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 class UpdateProfile extends Component {
   constructor(props) {
     super(props);
@@ -38,12 +39,12 @@ class UpdateProfile extends Component {
       _address: true,
       _bdate: true,
       _gender: true,
-      user: []
+      user: [],
+      open: true
     };
   }
 
   componentDidMount() {
-
     const id = this.props.match.params.id;
     const obj = getFromStorage("documentTracking");
     axios
@@ -56,7 +57,7 @@ class UpdateProfile extends Component {
         alert(err);
       });
 
-    this.setState({endSession: !(obj && obj.token)});
+    this.setState({ endSession: !(obj && obj.token) });
   }
 
   handleChange = ({ target }) => {
@@ -92,313 +93,410 @@ class UpdateProfile extends Component {
     this.props.updateUserProfile(this.state.user);
   };
 
+  handleClickSidebar = () => {
+    this.setState({open : !this.state.open});
+  };
 
   render() {
     const { user } = this.state;
     if (this.props.update.length > 0) {
       Reactotron.log(this.props.update[0].data);
       if (this.props.update[0].data === "update success") {
-        const variant = 'success';
-        this.props.enqueueSnackbar('Update Success!', {variant});
-      }else{
-        this.props.enqueueSnackbar('There is an error updating...');
+        const variant = "success";
+        this.props.enqueueSnackbar("Update Success!", { variant });
+      } else {
+        this.props.enqueueSnackbar("There is an error updating...");
       }
     }
     return (
-      <div style={{marginTop: 70}}>
-        {this.state.endSession && <Redirect to={"/"} />}
-        {Object.keys(user).length === 0 ? (
-          <div className={"row"}>
-            <div className={"col-md-12"}>
-              <div style={{ textAlign: "center", marginTop: 70 }}>
-                <CircularProgress />
-              </div>
-            </div>
-          </div>
-        ) : (
-          <Paper
-            elevation={3}
-            style={{
-              color: "#263238",
-              paddingBottom: "5vh"
-            }}
-          >
-            <div className={"jumbotron"} style={{ padding: 20 }}>
+      <Grid container spacing={3}>
+        <Grid item xs={2}>
+          <SideBarNavigation
+            open={this.state.open}
+            handleClick={this.handleClickSidebar}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <div style={{ marginTop: 70 }}>
+            {this.state.endSession && <Redirect to={"/"} />}
+            {Object.keys(user).length === 0 ? (
               <div className={"row"}>
-                <div className={"col-md-2"}>
+                <div className={"col-md-12"}>
+                  <div style={{ textAlign: "center", marginTop: 70 }}>
+                    <CircularProgress />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <Paper
+                elevation={3}
+                style={{
+                  color: "#263238",
+                  paddingBottom: "5vh",
+                  height: "100vh",
+                  overflow: "auto"
+                }}
+              >
+                <div className={"jumbotron"} style={{ padding: 50 }}>
                   <div className={"row"}>
-                    <div className={"col-md-6"}>
-                      <Link to={"/user/" + this.props.match.params.id}>
-                        <ArrowBackIcon style={{ fontSize: "2vw" }} />
-                      </Link>
-                    </div>
-                    <div className={"col-md-6"}>
-                      <div style={{ textAlign: "right" }}>
-                        <img
-                          src={owl}
-                          alt={"owl"}
-                          style={{ width: "3vw", paddingLeft: "1vw" }}
-                        />
+                    <div className={"col-md-2"}>
+                      <div className={"row"}>
+                        <div className={"col-md-6"}>
+
+                        </div>
+                        <div className={"col-md-6"}>
+                          <div style={{ textAlign: "right" }}>
+                            <img
+                              src={owl}
+                              alt={"owl"}
+                              style={{ width: "3vw", paddingLeft: "1vw" }}
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
+                    <div className={"col-md-10"}>
+                      <h5>
+                        Details you select will update{" "}
+                        <span style={{ color: "#2196F3" }}>
+                          Profile Information
+                        </span>
+                      </h5>
+                    </div>
                   </div>
                 </div>
-                <div className={"col-md-10"}>
-                  <h5>
-                    Details you select will update{" "}
-                    <span style={{ color: "#2196F3" }}>
-                      Profile Information
-                    </span>
-                  </h5>
-                </div>
-              </div>
-            </div>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <div className={"row"}>
-                  <div className={"col-md-2"}></div>
-                  <div className={"col-md-8"}>
-                    <table className={"table table-borderless"}>
-                      <tbody>
-                      <tr>
-                        <td style={{ background: "#E9ECEF",color: "#2196F3" }}>
-                          <PersonIcon />
-                          &nbsp;&nbsp;Account
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <InputField
-                              id={"employeeId"}
-                              name={"employeeId"}
-                              label={"Employee ID"}
-                              defaultValue={user.employeeId}
-                              disabled={this.state._employeeId}
-                              onChange={this.handleChange}
-                          />
-                        </td>
-                        <td>
-                          <button
-                              className={"btn"}
-                              onClick={this.handleClick.bind(null, "_employeeId")}
-                          >
-                            {this.state._employeeId ? <EditIcon /> : <DoneIcon />}
-                          </button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <InputField
-                              id={"name"}
-                              name={"name"}
-                              label={"Full Name"}
-                              defaultValue={user.name}
-                              disabled={this.state._name}
-                              onChange={this.handleChange}
-                          />
-                        </td>
-                        <td>
-                          <button
-                              className={"btn"}
-                              onClick={this.handleClick.bind(null, "_name")}
-                          >
-                            {this.state._name ? <EditIcon /> : <DoneIcon />}
-                          </button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <InputField
-                              id={"username"}
-                              name={"username"}
-                              label={"Username"}
-                              defaultValue={user.username}
-                              disabled={this.state._username}
-                              onChange={this.handleChange}
-                          />
-                        </td>
-                        <td>
-                          <button
-                              className={"btn"}
-                              onClick={this.handleClick.bind(null, "_username")}
-                          >
-                            {this.state._username ? <EditIcon /> : <DoneIcon />}
-                          </button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style={{ background: "#E9ECEF",color: "#2196F3" }}>
-                          <WorkIcon />
-                          &nbsp;&nbsp;Work
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <InputField
-                              id={"position"}
-                              name={"position"}
-                              label={"Current Position"}
-                              defaultValue={user.position}
-                              disabled={this.state._position}
-                              onChange={this.handleChange}
-                          />
-                        </td>
-                        <td>
-                          <button
-                              className={"btn"}
-                              onClick={this.handleClick.bind(null, "_position")}
-                          >
-                            {this.state._position ? <EditIcon /> : <DoneIcon />}
-                          </button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style={{ background: "#E9ECEF",color: "#2196F3" }}>
-                          <ContactPhoneIcon />
-                          &nbsp;&nbsp;Contact Information
-                        </td>
-                      </tr>
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <div className={"row"}>
+                      <div className={"col-md-2"}></div>
+                      <div className={"col-md-8"}>
+                        <table className={"table table-borderless"}>
+                          <tbody>
+                            <tr>
+                              <td
+                                style={{
+                                  background: "#E9ECEF",
+                                  color: "#2196F3"
+                                }}
+                              >
+                                <PersonIcon />
+                                &nbsp;&nbsp;Account
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <InputField
+                                  id={"employeeId"}
+                                  name={"employeeId"}
+                                  label={"Employee ID"}
+                                  defaultValue={user.employeeId}
+                                  disabled={this.state._employeeId}
+                                  onChange={this.handleChange}
+                                />
+                              </td>
+                              <td>
+                                <button
+                                  className={"btn"}
+                                  onClick={this.handleClick.bind(
+                                    null,
+                                    "_employeeId"
+                                  )}
+                                >
+                                  {this.state._employeeId ? (
+                                    <EditIcon />
+                                  ) : (
+                                    <DoneIcon />
+                                  )}
+                                </button>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <InputField
+                                  id={"name"}
+                                  name={"name"}
+                                  label={"Full Name"}
+                                  defaultValue={user.name}
+                                  disabled={this.state._name}
+                                  onChange={this.handleChange}
+                                />
+                              </td>
+                              <td>
+                                <button
+                                  className={"btn"}
+                                  onClick={this.handleClick.bind(null, "_name")}
+                                >
+                                  {this.state._name ? (
+                                    <EditIcon />
+                                  ) : (
+                                    <DoneIcon />
+                                  )}
+                                </button>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <InputField
+                                  id={"username"}
+                                  name={"username"}
+                                  label={"Username"}
+                                  defaultValue={user.username}
+                                  disabled={this.state._username}
+                                  onChange={this.handleChange}
+                                />
+                              </td>
+                              <td>
+                                <button
+                                  className={"btn"}
+                                  onClick={this.handleClick.bind(
+                                    null,
+                                    "_username"
+                                  )}
+                                >
+                                  {this.state._username ? (
+                                    <EditIcon />
+                                  ) : (
+                                    <DoneIcon />
+                                  )}
+                                </button>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td
+                                style={{
+                                  background: "#E9ECEF",
+                                  color: "#2196F3"
+                                }}
+                              >
+                                <WorkIcon />
+                                &nbsp;&nbsp;Work
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <InputField
+                                  id={"position"}
+                                  name={"position"}
+                                  label={"Current Position"}
+                                  defaultValue={user.position}
+                                  disabled={this.state._position}
+                                  onChange={this.handleChange}
+                                />
+                              </td>
+                              <td>
+                                <button
+                                  className={"btn"}
+                                  onClick={this.handleClick.bind(
+                                    null,
+                                    "_position"
+                                  )}
+                                >
+                                  {this.state._position ? (
+                                    <EditIcon />
+                                  ) : (
+                                    <DoneIcon />
+                                  )}
+                                </button>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td
+                                style={{
+                                  background: "#E9ECEF",
+                                  color: "#2196F3"
+                                }}
+                              >
+                                <ContactPhoneIcon />
+                                &nbsp;&nbsp;Contact Information
+                              </td>
+                            </tr>
 
-                      <tr>
-                        <td>
-                          <InputField
-                              id={"contact"}
-                              name={"contact"}
-                              label={"Contact No."}
-                              defaultValue={user.contact}
-                              disabled={this.state._contact}
-                              onChange={this.handleChange}
-                          />
-                        </td>
-                        <td>
-                          <button
-                              className={"btn"}
-                              onClick={this.handleClick.bind(null, "_contact")}
-                          >
-                            {this.state._contact ? <EditIcon /> : <DoneIcon />}
-                          </button>
-                        </td>
-                      </tr>
+                            <tr>
+                              <td>
+                                <InputField
+                                  id={"contact"}
+                                  name={"contact"}
+                                  label={"Contact No."}
+                                  defaultValue={user.contact}
+                                  disabled={this.state._contact}
+                                  onChange={this.handleChange}
+                                />
+                              </td>
+                              <td>
+                                <button
+                                  className={"btn"}
+                                  onClick={this.handleClick.bind(
+                                    null,
+                                    "_contact"
+                                  )}
+                                >
+                                  {this.state._contact ? (
+                                    <EditIcon />
+                                  ) : (
+                                    <DoneIcon />
+                                  )}
+                                </button>
+                              </td>
+                            </tr>
 
-                      <tr>
-                        <td>
-                          <InputField
-                              id={"email"}
-                              name={"email"}
-                              label={"Email"}
-                              defaultValue={user.email}
-                              disabled={this.state._email}
-                              onChange={this.handleChange}
-                          />
-                        </td>
-                        <td>
-                          <button
-                              className={"btn"}
-                              onClick={this.handleClick.bind(null, "_email")}
-                          >
-                            {this.state._email ? <EditIcon /> : <DoneIcon />}
-                          </button>
-                        </td>
-                      </tr>
+                            <tr>
+                              <td>
+                                <InputField
+                                  id={"email"}
+                                  name={"email"}
+                                  label={"Email"}
+                                  defaultValue={user.email}
+                                  disabled={this.state._email}
+                                  onChange={this.handleChange}
+                                />
+                              </td>
+                              <td>
+                                <button
+                                  className={"btn"}
+                                  onClick={this.handleClick.bind(
+                                    null,
+                                    "_email"
+                                  )}
+                                >
+                                  {this.state._email ? (
+                                    <EditIcon />
+                                  ) : (
+                                    <DoneIcon />
+                                  )}
+                                </button>
+                              </td>
+                            </tr>
 
-                      <tr>
-                        <td>
-                          <InputField
-                              id={"address"}
-                              name={"address"}
-                              label={"Address"}
-                              defaultValue={user.address}
-                              disabled={this.state._address}
-                              onChange={this.handleChange}
-                          />
-                        </td>
-                        <td>
-                          <button
-                              className={"btn"}
-                              onClick={this.handleClick.bind(null, "_address")}
-                          >
-                            {this.state._address ? <EditIcon /> : <DoneIcon />}
-                          </button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style={{ background: "#E9ECEF",color: "#2196F3" }}>
-                          <ContactSupportIcon />
-                          &nbsp;&nbsp;Other Information
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <InputField
-                              id={"bdate"}
-                              name={"bdate"}
-                              label={"Date of Birth"}
-                              defaultValue={user.bdate}
-                              disabled={this.state._bdate}
-                              onChange={this.handleChange}
-                          />
-                        </td>
-                        <td>
-                          <button
-                              className={"btn"}
-                              onClick={this.handleClick.bind(null, "_bdate")}
-                          >
-                            {this.state._bdate ? <EditIcon /> : <DoneIcon />}
-                          </button>
-                        </td>
-                      </tr>
+                            <tr>
+                              <td>
+                                <InputField
+                                  id={"address"}
+                                  name={"address"}
+                                  label={"Address"}
+                                  defaultValue={user.address}
+                                  disabled={this.state._address}
+                                  onChange={this.handleChange}
+                                />
+                              </td>
+                              <td>
+                                <button
+                                  className={"btn"}
+                                  onClick={this.handleClick.bind(
+                                    null,
+                                    "_address"
+                                  )}
+                                >
+                                  {this.state._address ? (
+                                    <EditIcon />
+                                  ) : (
+                                    <DoneIcon />
+                                  )}
+                                </button>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td
+                                style={{
+                                  background: "#E9ECEF",
+                                  color: "#2196F3"
+                                }}
+                              >
+                                <ContactSupportIcon />
+                                &nbsp;&nbsp;Other Information
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <InputField
+                                  id={"bdate"}
+                                  name={"bdate"}
+                                  label={"Date of Birth"}
+                                  defaultValue={user.bdate}
+                                  disabled={this.state._bdate}
+                                  onChange={this.handleChange}
+                                />
+                              </td>
+                              <td>
+                                <button
+                                  className={"btn"}
+                                  onClick={this.handleClick.bind(
+                                    null,
+                                    "_bdate"
+                                  )}
+                                >
+                                  {this.state._bdate ? (
+                                    <EditIcon />
+                                  ) : (
+                                    <DoneIcon />
+                                  )}
+                                </button>
+                              </td>
+                            </tr>
 
-                      <tr>
-                        <td>
-                          <InputField
-                              id={"gender"}
-                              name={"gender"}
-                              label={"Gender"}
-                              defaultValue={user.gender}
-                              disabled={this.state._gender}
-                              onChange={this.handleChange}
-                          />
-                        </td>
-                        <td>
-                          <button
-                              className={"btn"}
-                              onClick={this.handleClick.bind(null, "_gender")}
-                          >
-                            {this.state._gender ? <EditIcon /> : <DoneIcon />}
-                          </button>
-                        </td>
-                      </tr>
+                            <tr>
+                              <td>
+                                <InputField
+                                  id={"gender"}
+                                  name={"gender"}
+                                  label={"Gender"}
+                                  defaultValue={user.gender}
+                                  disabled={this.state._gender}
+                                  onChange={this.handleChange}
+                                />
+                              </td>
+                              <td>
+                                <button
+                                  className={"btn"}
+                                  onClick={this.handleClick.bind(
+                                    null,
+                                    "_gender"
+                                  )}
+                                >
+                                  {this.state._gender ? (
+                                    <EditIcon />
+                                  ) : (
+                                    <DoneIcon />
+                                  )}
+                                </button>
+                              </td>
+                            </tr>
 
-                      <tr>
-                        <td>
-                          <div style={{ textAlign: "right" }}>
-                            <button
-                                className={"btn btn-info btn-sm"}
-                                onClick={this.handleSubmit}
-                            >
-                              <SaveIcon />
-                              &nbsp;&nbsp; Save Changes
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className={"col-md-2"}></div>
-                </div>
-              </Grid>
-            </Grid>
-          </Paper>
-        )}
-      </div>
+                            <tr>
+                              <td>
+                                <div style={{ textAlign: "right" }}>
+                                  <Link className={"btn btn-outline-info btn-sm"} to={"/user/" + this.props.match.params.id}>
+                                    <ArrowBackIcon />&nbsp;&nbsp; Back to Profile
+                                  </Link>
+                                  &nbsp;&nbsp;&nbsp;
+                                  <button
+                                    className={"btn btn-info btn-sm"}
+                                    onClick={this.handleSubmit}
+                                  >
+                                    <SaveIcon />
+                                    &nbsp;&nbsp; Save Changes
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div className={"col-md-2"}></div>
+                    </div>
+                  </Grid>
+                </Grid>
+              </Paper>
+            )}
+          </div>
+        </Grid>
+        <Grid item xs={2}></Grid>
+      </Grid>
     );
   }
 }
 
 function mapStateToProps(state) {
   return {
-
     update: state.update
   };
 }
@@ -407,4 +505,7 @@ const mapDispatchToProps = {
   updateUserProfile
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withSnackbar(UpdateProfile));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withSnackbar(UpdateProfile));
