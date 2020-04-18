@@ -69,7 +69,6 @@ function AddDocument(props) {
     "For File": false
   });
   const [open, setOpen] = useState(true);
-
   useEffect(() => {
     const timeID = setInterval(() => tick(), 1000);
 
@@ -204,10 +203,27 @@ function AddDocument(props) {
     // pri.document.close();
     // pri.focus();
     // pri.print();
+
+
+
+
   };
 
   const handleGoBack = () => {
     setFinalize(false);
+  };
+
+  const handleRelease = () => {
+    // Convert the div to image (canvas)
+    html2canvas(document.getElementById("printarea")).then(function (canvas) {
+
+      // Get the image data as JPEG and 0.9 quality (0.0 - 1.0)
+      Reactotron.log(canvas.toDataURL("image/jpeg", 0.9));
+      let element = document.createElement("a");
+      element.href = canvas.toDataURL("image/jpeg", 0.9);
+      element.download = "NMP Document Tracking Number: "+documentID.documentID;
+      element.click();
+    });
   };
 
   const createCheckbox = label => {
@@ -226,197 +242,194 @@ function AddDocument(props) {
   const createCheckboxes = () => checkboxItem.map(createCheckbox);
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={2}>
-        <SideBarNavigation
-          open={open}
-          setOpen={setOpen}
-          handleClick={handleClick}
-        />
-      </Grid>
-      <Grid item xs={8}>
-        {endSession && <Redirect to={"/"} />}
-        <Paper
-          elevation={3}
-          style={{
-            marginTop: 80,
-            paddingTop: 0,
-            height: "100vh",
-            overflow: "auto"
-          }}
-        >
-          {/*<div id={"printarea"}>*/}
-          {/*  <Barcode*/}
-          {/*      value={Object.keys(documentID).length > 0 && documentID.documentID}*/}
-          {/*  />*/}
-          {/*</div>*/}
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <div className={"jumbotron"} style={{ padding: 50 }}>
-                <div className={"row"}>
-                  <div className={"col-md-2"}>
+      <>
+
+        <Grid container spacing={3}>
+          <Grid item xs={2}>
+            <SideBarNavigation
+                open={open}
+                setOpen={setOpen}
+                handleClick={handleClick}
+            />
+          </Grid>
+          <Grid item xs={8}>
+            {endSession && <Redirect to={"/"} />}
+            <Paper
+                elevation={3}
+                style={{
+                  marginTop: 70,
+                  paddingTop: 0,
+                  height: "100vh",
+                  overflow: "auto"
+                }}
+            >
+
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <div className={"jumbotron"} style={{ padding: 50 }}>
                     <div className={"row"}>
-                      <div className={"col-md-6"}>
-                        {/*{!finalize && (*/}
-                        {/*    <Link to={"/"}>*/}
-                        {/*      <ArrowBackIcon style={{ fontSize: "2vw" }} />*/}
-                        {/*    </Link>*/}
-                        {/*)}*/}
+                      <div className={"col-md-2"}>
+                        <div className={"row"}>
+                          <div className={"col-md-6"}>
+
+                          </div>
+                          <div className={"col-md-6"}>
+                            <div style={{ textAlign: "right" }}></div>
+                          </div>
+                        </div>
                       </div>
-                      <div className={"col-md-6"}>
-                        <div style={{ textAlign: "right" }}></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className={"col-md-8"}>
-                    <h5 style={{ textAlign: "left" }}>
-                      Add New Document &nbsp;
-                      <span style={{ color: "#2196F3" }}>
+                      <div className={"col-md-8"}>
+                        <h5 style={{ textAlign: "left" }}>
+                          Add New Document &nbsp;
+                          <span style={{ color: "#2196F3" }}>
                         (To be filled-up by requesting party)
                       </span>
-                    </h5>
-                  </div>
-                  <div className={"col-md-2"}>
+                        </h5>
+                      </div>
+                      <div className={"col-md-2"}>
                     <span>
                       <small>
                         {date._date.toLocaleDateString() +
-                          " " +
-                          date._date.toLocaleTimeString()}
+                        " " +
+                        date._date.toLocaleTimeString()}
                       </small>
                     </span>
-                  </div>
-                </div>
-              </div>
-            </Grid>
-
-            <Grid
-              item
-              xs={12}
-              style={{ paddingLeft: "2vw", paddingRight: "2vw" }}
-            >
-              <div className={"row"}>
-                <div className={"col-md-2"}></div>
-                <div className={"col-md-8"}>
-                  {finalize ? (
-                    <FinalizeDocument
-                      trackingNumber={documentID}
-                      data={formData}
-                      documentType={documentType}
-                      handleGoBack={handleGoBack}
-                    />
-                  ) : (
-                    <>
-                      <div>
-                        <h5 style={{ color: "#2196F3" }}>
-                          <DescriptionIcon />
-                          &nbsp;Document Information
-                        </h5>
-                        <br />
                       </div>
-                      <InputField
-                        id={"tackDocument"}
-                        label={"Tracking Number"}
-                        variant={"outlined"}
-                        disabled={true}
-                        value={
-                          Object.keys(documentID).length > 0 &&
-                          documentID.documentID
-                        }
-                        type={"number"}
-                      />
-                      <br />
-                      <br />
-                      <InputField
-                        id={"tackDocument"}
-                        label={"Subject"}
-                        name={"subject"}
-                        variant={"outlined"}
-                        onChange={handleChange}
-                        error={error.subject}
-                        type={"text"}
-                        value={formData.subject}
-                      />
-                      <small>
-                        - You may remove any sensitive information (e.g monetary
-                        amounts, names, etc.) from the subject if they are not
-                        necessary in tracking the document.
-                      </small>
+                    </div>
+                  </div>
+                </Grid>
 
-                      <br />
-                      <br />
+                <Grid
+                    item
+                    xs={12}
+                    style={{ paddingLeft: "2vw", paddingRight: "2vw" }}
+                >
+                  <div className={"row"}>
+                    <div className={"col-md-2"}></div>
+                    <div className={"col-md-8"}>
+                      {finalize ? (
+                          <FinalizeDocument
+                              trackingNumber={documentID}
+                              data={formData}
+                              documentType={documentType}
+                              handleGoBack={handleGoBack}
+                              handleRelease={handleRelease}
+                          />
+                      ) : (
+                          <>
+                            <div>
+                              <h5 style={{ color: "#2196F3" }}>
+                                <DescriptionIcon />
+                                &nbsp;Document Information
+                              </h5>
+                              <br />
+                            </div>
+                            <InputField
+                                id={"tackDocument"}
+                                label={"Tracking Number"}
+                                variant={"outlined"}
+                                disabled={true}
+                                value={
+                                  Object.keys(documentID).length > 0 &&
+                                  documentID.documentID
+                                }
+                                type={"number"}
+                            />
+                            <br />
+                            <br />
+                            <InputField
+                                id={"tackDocument"}
+                                label={"Subject"}
+                                name={"subject"}
+                                variant={"outlined"}
+                                onChange={handleChange}
+                                error={error.subject}
+                                type={"text"}
+                                value={formData.subject}
+                            />
+                            <small>
+                              - You may remove any sensitive information (e.g monetary
+                              amounts, names, etc.) from the subject if they are not
+                              necessary in tracking the document.
+                            </small>
 
-                      <SelectField
-                        id={"documentType"}
-                        name={"documentType"}
-                        label={"Document Type"}
-                        options={documentType}
-                        error={error.documentType}
-                        onChange={handleChange}
-                        variant={"outlined"}
-                        value={formData.documentType}
-                      />
+                            <br />
+                            <br />
 
-                      <br />
-                      <br />
+                            <SelectField
+                                id={"documentType"}
+                                name={"documentType"}
+                                label={"Document Type"}
+                                options={documentType}
+                                error={error.documentType}
+                                onChange={handleChange}
+                                variant={"outlined"}
+                                value={formData.documentType}
+                            />
 
-                      <h5 style={{ color: "#2196F3" }}>
-                        <FeedbackIcon />
-                        &nbsp;Action Required
-                      </h5>
-                      {validateActionReq && (
-                        <span style={{ color: "red" }}>
+                            <br />
+                            <br />
+
+                            <h5 style={{ color: "#2196F3" }}>
+                              <FeedbackIcon />
+                              &nbsp;Action Required
+                            </h5>
+                            {validateActionReq && (
+                                <span style={{ color: "red" }}>
                           <small>Kindly check at least one action</small>
                         </span>
+                            )}
+
+                            <br />
+                            <FormGroup>{createCheckboxes()}</FormGroup>
+
+                            <br />
+                            <br />
+
+                            <h5 style={{ color: "#2196F3" }}>
+                              <CommentIcon />
+                              &nbsp;Note
+                            </h5>
+                            <TextArea
+                                placeholder={"Write Your Note Here"}
+                                name={"note"}
+                                onChange={handleChange}
+                                error={error.note}
+                                value={formData.note}
+                            />
+
+                            <br />
+                            <br />
+
+                            <div style={{ textAlign: "right", marginBottom: 200 }}>
+                              <button className={"btn btn-outline-info"}>
+                                <DraftsIcon />
+                                &nbsp;Save as Draft
+                              </button>
+                              &nbsp;&nbsp;&nbsp;
+                              <button
+                                  className={"btn btn-info"}
+                                  onClick={handleSubmit}
+                              >
+                                <DoneIcon />
+                                &nbsp;Finalize
+                              </button>
+                            </div>
+                          </>
                       )}
+                    </div>
+                    <div className={"col-md-2"}></div>
+                  </div>
+                </Grid>
 
-                      <br />
-                      <FormGroup>{createCheckboxes()}</FormGroup>
-
-                      <br />
-                      <br />
-
-                      <h5 style={{ color: "#2196F3" }}>
-                        <CommentIcon />
-                        &nbsp;Note
-                      </h5>
-                      <TextArea
-                        placeholder={"Write Your Note Here"}
-                        name={"note"}
-                        onChange={handleChange}
-                        error={error.note}
-                        value={formData.note}
-                      />
-
-                      <br />
-                      <br />
-
-                      <div style={{ textAlign: "right", marginBottom: 50 }}>
-                        <button className={"btn btn-outline-info"}>
-                          <DraftsIcon />
-                          &nbsp;Save as Draft
-                        </button>
-                        &nbsp;&nbsp;&nbsp;
-                        <button
-                          className={"btn btn-info"}
-                          onClick={handleSubmit}
-                        >
-                          <DoneIcon />
-                          &nbsp;Finalize
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
-                <div className={"col-md-2"}></div>
-              </div>
-            </Grid>
-
-            <Grid item xs={12} style={{ paddingRight: "2vw" }}></Grid>
+                <Grid item xs={12} style={{ paddingRight: "2vw" }}></Grid>
+              </Grid>
+            </Paper>
           </Grid>
-        </Paper>
-      </Grid>
-      <Grid item xs={2}></Grid>
-    </Grid>
+          <Grid item xs={2}></Grid>
+        </Grid>
+      </>
+
   );
 }
 

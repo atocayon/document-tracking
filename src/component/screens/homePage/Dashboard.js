@@ -46,11 +46,7 @@ function Dashboard(props) {
                   <div className={"col-md-2"}>
                     <div className={"row"}>
                       <div className={"col-md-6"}>
-                        {/*{!finalize && (*/}
-                        {/*    <Link to={"/"}>*/}
-                        {/*      <ArrowBackIcon style={{ fontSize: "2vw" }} />*/}
-                        {/*    </Link>*/}
-                        {/*)}*/}
+
                       </div>
                       <div className={"col-md-6"}>
                         <div style={{ textAlign: "right" }}></div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { withSnackbar } from "notistack";
 import DescriptionIcon from "@material-ui/icons/Description";
 import FeedbackIcon from "@material-ui/icons/Feedback";
@@ -13,10 +13,13 @@ import SelectField from "../../common/selectField/SelectField";
 import TextArea from "../../common/textArea/TextArea";
 import DraftsIcon from "@material-ui/icons/Drafts";
 import DoneIcon from "@material-ui/icons/Done";
+import Barcode from "react-barcode";
 function FinalizeDocument(props) {
+
   const docType = props.documentType.filter(
     doc => doc.id === parseInt(props.data.documentType)
   );
+
 
   return (
     <>
@@ -37,14 +40,18 @@ function FinalizeDocument(props) {
           </h5>
           <br />
         </div>
-        <InputField
-          id={"tackDocument"}
-          label={"Tracking Number"}
-          variant={"outlined"}
-          disabled={true}
-          value={props.trackingNumber.documentID}
-          type={"number"}
-        />
+        <div id={"printarea"} style={{width: 250}}>
+          <div style={{textAlign:"center"}}>
+            <small>
+              DOCUMENT TRACKING NUMBER
+            </small>
+          </div>
+
+          <Barcode
+              value={Object.keys(props.trackingNumber).length > 0 && props.trackingNumber.documentID}
+              height={50}
+          />
+        </div>
         <br />
         <br />
         <InputField
@@ -112,7 +119,7 @@ function FinalizeDocument(props) {
             &nbsp;&nbsp;Cancel
           </button>
           &nbsp;&nbsp;&nbsp;
-          <button className={"btn btn-info"}>
+          <button className={"btn btn-info"} onClick={props.handleRelease}>
             <SendIcon />
             &nbsp;&nbsp;Release
           </button>
