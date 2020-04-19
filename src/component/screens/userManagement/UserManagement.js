@@ -14,7 +14,7 @@ import { withSnackbar } from "notistack";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import DialogComponent from "../../common/confirmationDialog/DialogComponent";
-import TransferOfficeDialog from "../../common/transferOfficeDialod/TransferOfficeDialog";
+import TransferOfficeDialog from "../../common/transferOfficeDialog/TransferOfficeDialog";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 
 function UserManagement(props) {
@@ -109,7 +109,6 @@ function UserManagement(props) {
   };
 
   const handleTransferOffice = val => {
-    Reactotron.log(val);
     setTransderOfficeDialog({
       ...transferOfficeDialog,
       open: true,
@@ -123,7 +122,7 @@ function UserManagement(props) {
   };
 
   const handleSelectOnChangeTransferOffice = ({ target }) => {
-    Reactotron.log(target.value);
+
     setTransfer({
       ...transfer,
       [target.name]: target.value

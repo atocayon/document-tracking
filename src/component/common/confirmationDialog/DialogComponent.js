@@ -10,7 +10,7 @@ export default function DialogComponent(props){
     return(
         <Dialog
             fullScreen={props.fullScreen}
-            open={props.openDialog.open}
+            open={props.openDialog}
             onClose={props.handleClose}
             aria-labelledby="responsive-dialog-title"
         >

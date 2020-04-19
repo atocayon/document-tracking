@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 15, 2020 at 12:34 PM
+-- Generation Time: Apr 19, 2020 at 03:13 PM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.1
 
@@ -55,7 +55,7 @@ CREATE TABLE `documentLogs` (
   `trans_id` int(11) NOT NULL,
   `document_id` varchar(11) NOT NULL,
   `user_id` varchar(11) NOT NULL,
-  `destination` varchar(11) NOT NULL,
+  `remarks` varchar(120) NOT NULL,
   `status` varchar(11) NOT NULL,
   `date_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -70,6 +70,7 @@ CREATE TABLE `documents` (
   `documentID` int(11) NOT NULL,
   `creator` varchar(11) NOT NULL,
   `subject` varchar(200) NOT NULL,
+  `doc_type` varchar(11) NOT NULL,
   `note` varchar(200) NOT NULL,
   `date_time_created` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -82,26 +83,70 @@ CREATE TABLE `documents` (
 
 CREATE TABLE `documentStatus` (
   `statid` int(5) NOT NULL,
-  `stat_remarks` varchar(150) NOT NULL,
-  `on_remarks` int(1) NOT NULL
+  `status` varchar(150) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `documentStatus`
 --
 
-INSERT INTO `documentStatus` (`statid`, `stat_remarks`, `on_remarks`) VALUES
-(1, 'MRMS', 1),
-(2, 'BAC', 1),
-(3, 'AFMD', 1),
-(4, 'END USER', 1),
-(5, 'AFMD Canvasser', 1),
-(6, 'MTAD Canvasser', 1),
-(7, 'MRDD Canvasser', 1),
-(9, 'General Canvasser', 1),
-(10, 'COMPLETED', 1),
-(11, 'CANCELLED', 1),
-(99, 'System Admin', 0);
+INSERT INTO `documentStatus` (`statid`, `status`) VALUES
+(1, 'receive'),
+(2, 'forwarded'),
+(3, 'return'),
+(4, 'completed'),
+(5, 'created'),
+(6, 'MTAD Canvasser'),
+(7, 'MRDD Canvasser'),
+(9, 'General Canvasser'),
+(10, 'COMPLETED'),
+(11, 'CANCELLED'),
+(99, 'System Admin');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `document_action_req`
+--
+
+CREATE TABLE `document_action_req` (
+  `document_action_req_id` int(11) NOT NULL,
+  `documentID` varchar(11) NOT NULL,
+  `action_req` varchar(120) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `document_type`
+--
+
+CREATE TABLE `document_type` (
+  `id` int(11) NOT NULL,
+  `type` varchar(120) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `document_type`
+--
+
+INSERT INTO `document_type` (`id`, `type`) VALUES
+(1, 'Certificate of Service'),
+(2, 'Disbursement Voucher'),
+(3, 'Inventory and Inspection Report'),
+(4, 'Letter'),
+(5, 'Liquidation Report'),
+(6, 'Memorandum'),
+(7, 'Memorandum of Agreement'),
+(8, 'Memorandum Receipt'),
+(9, 'Official Cash Book'),
+(10, 'Personal Data Sheet'),
+(11, 'Purchase Order'),
+(12, 'Purchase Request'),
+(13, 'Referral Slip'),
+(14, 'Request for Obligation of Allotments'),
+(15, 'Requisition and Issue Voucher'),
+(16, 'Unclassified');
 
 -- --------------------------------------------------------
 
@@ -154,6 +199,19 @@ INSERT INTO `sections` (`secid`, `divid`, `section`, `secshort`, `active`, `type
 (28, 0, 'COA', 'COA', 1, 0, 0),
 (29, 3, 'Finance Section', 'Finance', 1, 0, 0),
 (30, 0, 'Various Sections', 'Various Sec', 1, 0, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `system_logs`
+--
+
+CREATE TABLE `system_logs` (
+  `system_logs_id` int(11) NOT NULL,
+  `user_id` varchar(11) NOT NULL,
+  `activity` varchar(120) NOT NULL,
+  `date_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -226,7 +284,7 @@ CREATE TABLE `users_session` (
 --
 
 INSERT INTO `users_session` (`id`, `userId`, `timeStamp`, `isDeleted`) VALUES
-(1, '3', '2020-04-10 12:18:32', 0);
+(1, '3', '2020-04-18 08:26:26', 0);
 
 -- --------------------------------------------------------
 
@@ -271,12 +329,30 @@ ALTER TABLE `documentStatus`
   ADD PRIMARY KEY (`statid`);
 
 --
+-- Indexes for table `document_action_req`
+--
+ALTER TABLE `document_action_req`
+  ADD PRIMARY KEY (`document_action_req_id`);
+
+--
+-- Indexes for table `document_type`
+--
+ALTER TABLE `document_type`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `sections`
 --
 ALTER TABLE `sections`
   ADD PRIMARY KEY (`secid`),
   ADD UNIQUE KEY `section` (`section`),
   ADD KEY `divid` (`divid`);
+
+--
+-- Indexes for table `system_logs`
+--
+ALTER TABLE `system_logs`
+  ADD PRIMARY KEY (`system_logs_id`);
 
 --
 -- Indexes for table `users`
@@ -325,10 +401,28 @@ ALTER TABLE `documentStatus`
   MODIFY `statid` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
 
 --
+-- AUTO_INCREMENT for table `document_action_req`
+--
+ALTER TABLE `document_action_req`
+  MODIFY `document_action_req_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `document_type`
+--
+ALTER TABLE `document_type`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
 -- AUTO_INCREMENT for table `sections`
 --
 ALTER TABLE `sections`
   MODIFY `secid` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+--
+-- AUTO_INCREMENT for table `system_logs`
+--
+ALTER TABLE `system_logs`
+  MODIFY `system_logs_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `users`

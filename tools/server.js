@@ -31,6 +31,7 @@ const connection = mysql.createConnection({
 connection.connect(function(err) {
   if (err) {
     console.log(err);
+    alert(err);
   }
 
   console.log("MySQL database connection established successfully!!!");
@@ -67,7 +68,7 @@ router.route("/addUser").post(function(req, res) {
   const sql = "SELECT * FROM users WHERE email = ? ";
   connection.query(sql, [email], function(err, rows, fields) {
     if (err) {
-      console.log(err);
+      // console.log(err);
       res.send(err);
     }
 
@@ -77,8 +78,8 @@ router.route("/addUser").post(function(req, res) {
 
     bcrypt.hash(password, saltRounds, function(err, hash) {
       if (err) {
-        console.log(err);
-        res.status(500).send("Error hashing");
+        // console.log(err);
+        res.status(500).send(err);
       }
 
       const sql1 =
@@ -103,7 +104,7 @@ router.route("/addUser").post(function(req, res) {
       ];
       connection.query(sql1, [values], function(err, result) {
         if (err) {
-          console.log(err);
+          // console.log(err);
           res.status(500).send(err);
         }
 
@@ -122,7 +123,7 @@ router.route("/login/:email/:password").post(function(req, res) {
 
   connection.query(sql, [email], function(err, rows, fields) {
     if (err) {
-      res.status(500).send("Server Error");
+      res.status(500).send(err);
     }
 
     if (rows.length === 0) {
@@ -131,7 +132,7 @@ router.route("/login/:email/:password").post(function(req, res) {
 
     bcrypt.compare(password, rows[0].password, function(err, result) {
       if (err) {
-        res.status(500).send("Server Error");
+        res.status(500).send(err);
       }
 
       if (!result) {
@@ -260,7 +261,7 @@ router.route("/sectionUser/:section").get(function(req, res) {
         message: "No data Found"
       });
     }
-    console.log(rows);
+    // console.log(rows);
     res.status(200).send(rows);
   });
 });
@@ -273,7 +274,7 @@ router.route("/user/:id").get(function(req, res) {
     "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.password AS password, users.contact AS contact, users.email AS email, users.section AS secid, users.position AS position, users.address AS address, users.gender AS gender, users.bdate AS bdate, users.role AS role, users.status AS status ,sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid WHERE users.user_id = ?";
   connection.query(sql, [parseInt(id)], function(err, rows, fields) {
     if (err) {
-      console.log(err);
+      // console.log(err);
       res.status(500).json({
         success: false,
         message: "Server error in fetching data in users table"
@@ -288,7 +289,7 @@ router.route("/user/:id").get(function(req, res) {
       res.status(200).send(rows[0]);
     }
 
-    console.log(rows);
+    // console.log(rows);
   });
 });
 
@@ -379,11 +380,11 @@ router.route("/transferOffice").post(function(req, res) {
   const sql = "UPDATE users SET section = ? WHERE user_id = ?";
   connection.query(sql, [section, parseInt(id)], function(err, result) {
     if (err) {
-      console.log(err);
+      // console.log(err);
       res.status(500).send(err);
     }
 
-    console.log(result);
+    // console.log(result);
     res.status(200).send("Transfer Success");
   });
 });
@@ -410,7 +411,7 @@ router.route("/sections").get(function(req, res) {
       res.status(500).send(err);
     }
 
-    console.log(rows);
+    // console.log(rows);
     res.status(200).send(rows);
   });
 });
@@ -439,17 +440,18 @@ router.route("/documentId").get(function(req, res) {
 
     if (rows.length > 0) {
       const sql1 =
-        "SELECT documentID FROM documents ORDER BY documentID DESC LIMIT 1";
+        "SELECT documentID+1 as documentID FROM documents ORDER BY documentID DESC LIMIT 1";
       connection.query(sql1, function(err, rows, fields) {
         if (err) {
           res.status(500).send(err);
         }
-        console.log(rows);
+        // console.log(rows);
         res.status(200).send(rows[0]);
       });
     } else {
-      console.log(rows);
-      res.status(200).send({ documentID: "00000000001" });
+      // console.log(rows);
+      const defaultValue = 1000000000;
+      res.status(200).send({ documentID: defaultValue });
     }
   });
 });
@@ -463,6 +465,45 @@ router.route("/documentType").get(function(req, res) {
     }
 
     res.status(200).send(rows);
+  });
+});
+
+//Insert New Document
+router.route("/addNewDocument").post(function(req, res) {
+  const { documentID, creator, subject, doc_type, note, action_req } = req.body;
+
+  const sql =
+    "INSERT INTO documents (documentID, creator, subject, doc_type, note) VALUES ?";
+  const values = [[documentID, creator, subject, doc_type, note]];
+  connection.query(sql, [values], function(err, result) {
+    if (err) {
+      // console.log(err);
+      res.status(500).send(err);
+    }
+
+    const sql1 =
+      "INSERT INTO document_action_req (documentID, action_req) VALUES ?";
+
+    connection.query(sql1, [action_req], function(err, result) {
+      if (err) {
+        // console.log(err);
+        res.status(500).send(err);
+      }
+
+      const sql2 =
+        "INSERT INTO documentLogs (document_id, user_id, remarks, status) VALUES ?";
+      const values2 = [[documentID, creator, "none", "5"]];
+
+      connection.query(sql2, [values2], function(err, result) {
+        if (err) {
+          // console.log(err);
+          res.status(500).send(err);
+        }
+
+        // console.log(result);
+        res.status(200).send(result);
+      });
+    });
   });
 });
 
