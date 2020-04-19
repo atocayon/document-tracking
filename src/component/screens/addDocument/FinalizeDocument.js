@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import { withSnackbar } from "notistack";
 import DescriptionIcon from "@material-ui/icons/Description";
 import FeedbackIcon from "@material-ui/icons/Feedback";
@@ -15,11 +15,9 @@ import DraftsIcon from "@material-ui/icons/Drafts";
 import DoneIcon from "@material-ui/icons/Done";
 import Barcode from "react-barcode";
 function FinalizeDocument(props) {
-
   const docType = props.documentType.filter(
     doc => doc.id === parseInt(props.data.documentType)
   );
-
 
   return (
     <>
@@ -40,16 +38,16 @@ function FinalizeDocument(props) {
           </h5>
           <br />
         </div>
-        <div id={"printarea"} style={{width: 250}}>
-          <div style={{textAlign:"center"}}>
-            <small>
-              DOCUMENT TRACKING NUMBER
-            </small>
-          </div>
-
+        <div style={{ textAlign: "left" }}>
+          <small>&nbsp;&nbsp;DOCUMENT TRACKING NUMBER</small>
+        </div>
+        <div id={"printarea"} style={{ width: 200 }}>
           <Barcode
-              value={Object.keys(props.trackingNumber).length > 0 && props.trackingNumber.documentID}
-              height={50}
+            value={
+              Object.keys(props.trackingNumber).length > 0 &&
+              props.trackingNumber.documentID
+            }
+            height={50}
           />
         </div>
         <br />
@@ -90,9 +88,9 @@ function FinalizeDocument(props) {
           {props.data.action_req.map(action => (
             <CheckBox
               checked={true}
-              key={action}
-              label={action}
-              value={action}
+              key={action[1]}
+              label={action[1]}
+              value={action[1]}
               name={"action_req"}
             />
           ))}

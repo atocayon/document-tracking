@@ -20,7 +20,7 @@ export default function SelectField(props) {
         {props.value ? (
           <>
             {docType.map(res => (
-              <option value={res.id}>{res.type}</option>
+              <option key={res.id} value={res.id}>{res.type}</option>
             ))}
           </>
         ) : (
