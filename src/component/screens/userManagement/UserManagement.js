@@ -16,6 +16,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import DialogComponent from "../../common/confirmationDialog/DialogComponent";
 import TransferOfficeDialog from "../../common/transferOfficeDialog/TransferOfficeDialog";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
+import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 
 function UserManagement(props) {
   const [sectionUsers, setSectionUsers] = useState([]);
@@ -236,6 +237,7 @@ function UserManagement(props) {
 
   return (
     <Grid container spacing={3}>
+      <PrimarySearchAppBar />
       <Grid item xs={2}>
         <SideBarNavigation
             open={open}
@@ -247,7 +249,7 @@ function UserManagement(props) {
         {openDialog && (
             <DialogComponent
                 fullscreen={fullScreen}
-                openDialog={openDialog}
+                openDialog={openDialog.open}
                 title={openDialog.name}
                 content={openDialog.content}
                 handleClose={handleClose}

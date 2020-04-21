@@ -12,6 +12,7 @@ import axios from "axios";
 import CircularProgressComponent from "../../common/circularProgress/CircularProgressComponent";
 import { getFromStorage } from "../../storage";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
+import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 
 function Profile({ match }) {
   const [user, setUser] = useState({});
@@ -42,6 +43,7 @@ function Profile({ match }) {
 
   return (
     <Grid container spacing={3}>
+        <PrimarySearchAppBar />
       <Grid item xs={2}>
         <SideBarNavigation
             open={open}
