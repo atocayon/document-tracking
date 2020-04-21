@@ -70,6 +70,7 @@ function AddDocument(props) {
   const [openDialog, setOpenDialog] = useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  
   useEffect(() => {
     const timeID = setInterval(() => tick(), 1000);
 
@@ -189,21 +190,7 @@ function AddDocument(props) {
     if (formData.action_req.length > 0) {
       setValidateActionReq(false);
     }
-    Reactotron.log(formData);
     setFinalize(true);
-    // let content = document.getElementById('printarea');
-    // const iframe = document.createElement('iframe');
-    // let pri;
-    // iframe.setAttribute('title', documentID.documentID);
-    // iframe.setAttribute('id', documentID.documentID);
-    // iframe.setAttribute('style', 'height: 0px; width: 0px; position: absolute;');
-    // document.body.appendChild(iframe);
-    // pri = iframe.contentWindow;
-    // pri.document.open();
-    // pri.document.write(content.innerHTML);
-    // pri.document.close();
-    // pri.focus();
-    // pri.print();
   };
 
   const handleGoBack = () => {
@@ -247,13 +234,71 @@ function AddDocument(props) {
             props.enqueueSnackbar("Document release successfully...", {
               variant
             });
-            window.location.reload();
+            setFinalize(false);
+            setValidateActionReq(false);
+            setFormData({
+              ...formData,
+              subject: "",
+              documentType: "",
+              action_req: [],
+              note: ""
+            });
           });
         }
       })
       .catch(err => {
         const variant = "error";
         props.enqueueSnackbar(err, { variant });
+      });
+  };
+
+  const handleSaveAsDraft = () => {
+    if (!formValidation() || formData.action_req.length === 0) {
+      setValidateActionReq(true);
+      const variant = "error";
+      props.enqueueSnackbar("Fill out all required fields...", { variant });
+      return;
+    }
+
+    if (formData.action_req.length === 0) {
+      setValidateActionReq(true);
+      return;
+    }
+
+    if (formData.action_req.length > 0) {
+      setValidateActionReq(false);
+    }
+
+    axios
+      .post("http://localhost:4000/dts/draft", {
+        documentID: documentID.documentID,
+        creator: user.user_id,
+        subject: formData.subject,
+        doc_type: formData.documentType,
+        note: formData.note,
+        action_req: formData.action_req
+      })
+      .then(res => {
+        if (res.status === 200) {
+          const variant = "info";
+          props.enqueueSnackbar("Document saved as draft...", {
+            variant
+          });
+          setValidateActionReq(false);
+          setFormData({
+            ...formData,
+            subject: "",
+            documentType: "",
+            action_req: [],
+            note: ""
+          });
+        }
+      })
+      .catch(err => {
+        const variant = "error";
+        props.enqueueSnackbar(err, {
+          variant
+        });
       });
   };
 
@@ -354,6 +399,7 @@ function AddDocument(props) {
                         documentType={documentType}
                         handleGoBack={handleGoBack}
                         handleRelease={handleRelease}
+
                       />
                     ) : (
                       <>
@@ -442,7 +488,7 @@ function AddDocument(props) {
                         <br />
 
                         <div style={{ textAlign: "right", marginBottom: 200 }}>
-                          <button className={"btn btn-outline-info"}>
+                          <button className={"btn btn-outline-info"} onClick={handleSaveAsDraft}>
                             <DraftsIcon />
                             &nbsp;Save as Draft
                           </button>

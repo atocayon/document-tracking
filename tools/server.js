@@ -472,40 +472,118 @@ router.route("/documentType").get(function(req, res) {
 router.route("/addNewDocument").post(function(req, res) {
   const { documentID, creator, subject, doc_type, note, action_req } = req.body;
 
-  const sql =
-    "INSERT INTO documents (documentID, creator, subject, doc_type, note) VALUES ?";
-  const values = [[documentID, creator, subject, doc_type, note]];
-  connection.query(sql, [values], function(err, result) {
+  const check = "SELECT * FROM documents WHERE documentID = ?";
+  connection.query(check, [documentID], function(err, rows, fields) {
     if (err) {
-      // console.log(err);
+      console.log(err);
       res.status(500).send(err);
     }
 
-    const sql1 =
-      "INSERT INTO document_action_req (documentID, action_req) VALUES ?";
+    if (rows.length > 0) {
+      const update =
+        "UPDATE documents SET creator = ?, subject= ?, doc_type = ?, note = ?, status = ? WHERE documentID = ?";
+      connection.query(
+        update,
+        [creator, subject, doc_type, note, "1"],
+        function(err, result) {
+          if (err) {
+            res.status(500).send(err);
+          }
 
-    connection.query(sql1, [action_req], function(err, result) {
-      if (err) {
-        // console.log(err);
-        res.status(500).send(err);
-      }
+          const draft = "DELETE FROM documentDrafts WHERE documentID = ?";
+          connection.query(draft, [documentID], function(err, result) {
+            if (err) {
+              res.status(500).send(err);
+            }
 
-      const sql2 =
-        "INSERT INTO documentLogs (document_id, user_id, remarks, status) VALUES ?";
-      const values2 = [[documentID, creator, "none", "5"]];
+            const sql =
+              "INSERT INTO documentLogs (document_id, user_id, remarks, status) VALUES ?";
+            const values2 = [[documentID, creator, "none", "5"]];
 
-      connection.query(sql2, [values2], function(err, result) {
+            connection.query(sql, [values2], function(err, result) {
+              if (err) {
+                // console.log(err);
+                res.status(500).send(err);
+              }
+
+              // console.log(result);
+              res.status(200).send(result);
+            });
+          });
+        }
+      );
+    } else {
+      const sql1 =
+        "INSERT INTO documents (documentID, creator, subject, doc_type, note, status) VALUES ?";
+      const values = [[documentID, creator, subject, doc_type, note, "1"]];
+      connection.query(sql1, [values], function(err, result) {
         if (err) {
           // console.log(err);
           res.status(500).send(err);
         }
 
-        // console.log(result);
+        const sql2 =
+          "INSERT INTO document_action_req (documentID, action_req) VALUES ?";
+
+        connection.query(sql2, [action_req], function(err, result) {
+          if (err) {
+            // console.log(err);
+            res.status(500).send(err);
+          }
+
+          const sql3 =
+            "INSERT INTO documentLogs (document_id, user_id, remarks, status) VALUES ?";
+          const values2 = [[documentID, creator, "none", "5"]];
+
+          connection.query(sql3, [values2], function(err, result) {
+            if (err) {
+              // console.log(err);
+              res.status(500).send(err);
+            }
+
+            // console.log(result);
+            res.status(200).send(result);
+          });
+        });
+      });
+    }
+  });
+});
+
+router.route("/draft").post(function(req, res) {
+  const { documentID, creator, subject, doc_type, note, action_req } = req.body;
+  const sql =
+    "INSERT INTO documents (documentID, creator, subject, doc_type, note, status) VALUES ?";
+  const values = [[documentID, creator, subject, doc_type, note, "0"]];
+  connection.query(sql, [values], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    const action_req =
+      "INSERT INTO document_action_req (documentID, action_req) VALUES ?";
+    connection.query(action_req, [action_req], function(err, result) {
+      if (err) {
+        console.log(err);
+        res.status(500).send(err);
+      }
+
+      const draft = "INSERT INTO documentDrafts (documentID) VALUES ?";
+      connection.query(draft, [documentID], function(err, result) {
+        if (err) {
+          console.log(err);
+          res.status(500).send(err);
+        }
+
+        console.log(result);
         res.status(200).send(result);
       });
     });
   });
 });
+
+//
 
 // ==========================================================================================
 // ==========================================================================================
