@@ -22,6 +22,7 @@ import axios from "axios";
 import { withSnackbar } from "notistack";
 import { getFromStorage } from "../../storage";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
+import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 class UpdateProfile extends Component {
   constructor(props) {
     super(props);
@@ -110,6 +111,7 @@ class UpdateProfile extends Component {
     }
     return (
       <Grid container spacing={3}>
+        <PrimarySearchAppBar />
         <Grid item xs={2}>
           <SideBarNavigation
             open={this.state.open}

@@ -13,7 +13,7 @@ import PendingForRelease from "./screens/pendingForRelease/PendingForRelease";
 import MyDocuments from "./screens/myDocuments/MyDocuments";
 import SectionDocuments from "./screens/sectionDocuments/SectionDocuments";
 import ProcessedDocuments from "./screens/processedDocuments/ProcessedDocuments";
-import LoginModal from "./screens/login/LoginModal";
+import LoginModal from "./screens/login/Login";
 import Profile from "./screens/profile/Profile";
 import RegistrationForm from "./screens/newUserForm/RegistrationForm";
 import NotFoundPage from "./screens/pageNotfound/NotFoundPage";
@@ -33,10 +33,9 @@ function App(props) {
   return (
     <div>
       <div>
-        <Grid container spacing={3}>
-          <PrimarySearchAppBar />
-        </Grid>
-
+        {/*<Grid container spacing={3}>*/}
+        {/*  <PrimarySearchAppBar />*/}
+        {/*</Grid>*/}
         <Switch>
           <Route path={"/"} exact component={Home} />
           <Route path={"/login"} component={LoginModal} />

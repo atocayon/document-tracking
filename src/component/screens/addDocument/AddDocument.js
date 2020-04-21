@@ -22,6 +22,7 @@ import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation"
 import DialogComponent from "../../common/confirmationDialog/DialogComponent";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 const checkboxItem = [
   { id: 0, value: "For Approval" },
   { id: 1, value: "For Signature" },
@@ -274,6 +275,7 @@ function AddDocument(props) {
   return (
     <>
       <Grid container spacing={3}>
+        <PrimarySearchAppBar />
         <Grid item xs={2}>
           <SideBarNavigation
             open={open}

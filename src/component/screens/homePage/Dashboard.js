@@ -8,6 +8,7 @@ import release from "../../../img/release.jpg";
 import CardComponent from "../../common/card/CardComponent";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 import InputField from "../../common/textField/InputField";
+import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
@@ -16,6 +17,8 @@ function Dashboard(props) {
   };
   return (
     <Grid container spacing={3}>
+      <PrimarySearchAppBar />
+
       <Grid item xs={2}>
         <SideBarNavigation
           dashboard={true}
@@ -45,40 +48,38 @@ function Dashboard(props) {
                 <div className={"row"}>
                   <div className={"col-md-2"}>
                     <div className={"row"}>
-                      <div className={"col-md-6"}>
-
-                      </div>
+                      <div className={"col-md-6"}></div>
                       <div className={"col-md-6"}>
                         <div style={{ textAlign: "right" }}></div>
                       </div>
                     </div>
                   </div>
                   <div className={"col-md-8"}>
-
-                      <InputField
-                          id={"tackDocument"}
-                          label={"Document Tracking Number"}
-                          variant={"outlined"}
-                      />
-                      <small>
-                          - Type the tracking number or scan the barcode of the document to track its progress.
-                      </small>
+                    <InputField
+                      id={"tackDocument"}
+                      label={"Document Tracking Number"}
+                      variant={"outlined"}
+                    />
+                    <small>
+                      - Type the tracking number or scan the barcode of the
+                      document to track its progress.
+                    </small>
                   </div>
                   <div className={"col-md-2"}>
-                      <button className={"btn btn-lg btn-info"}>Track</button>
+                    <button className={"btn btn-lg btn-info"}>Track</button>
                   </div>
                 </div>
               </div>
 
-                <div className={"row"}>
-                    <div className={"col-md-12"}>
-                        <div style={{textAlign: "center", marginTop: "30vh"}}>
-                            <h6 style={{color: "#9E9E9E"}}>
-                                Document track will show here
-                            </h6>
-                        </div>
-                    </div>
+              <div className={"row"}>
+                <div className={"col-md-12"}>
+                  <div style={{ textAlign: "center", marginTop: "30vh" }}>
+                    <h6 style={{ color: "#9E9E9E" }}>
+                      Document track will show here
+                    </h6>
+                  </div>
                 </div>
+              </div>
             </Grid>
 
             {/*<Grid item xs={4}>*/}
