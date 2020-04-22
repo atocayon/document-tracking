@@ -22,6 +22,7 @@ import UpdateProfile from "./screens/updateProfile/UpdateProfile";
 import { getFromStorage } from "./storage";
 
 import { withSnackbar } from "notistack";
+import Drafts from "./screens/drafts/Drafts";
 function App(props) {
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
@@ -33,26 +34,25 @@ function App(props) {
   return (
     <div>
       <div>
-        {/*<Grid container spacing={3}>*/}
-        {/*  <PrimarySearchAppBar />*/}
-        {/*</Grid>*/}
         <Switch>
           <Route path={"/"} exact component={Home} />
           <Route path={"/login"} component={LoginModal} />
-          <Route path="/fetchUsersBySection" component={UserManagement} />
-          <Route path="/trackDocument" component={TrackDocument} />
-          <Route path="/addDocument" component={AddDocument} />
-          <Route path="/receiveDocument" component={ReceiveDocument} />
-          <Route path="/releasedDocument" component={ReleaseDocument} />
-          <Route path="/pending" component={PendingForRelease} />
-          <Route path="/myDocuments" component={MyDocuments} />
-          <Route path="/sectionDocuments" component={SectionDocuments} />
-          <Route path="/processedDocuments" component={ProcessedDocuments} />
+          <Route path={"/fetchUsersBySection"} component={UserManagement} />
+          <Route path={"/trackDocument"} component={TrackDocument} />
+          <Route path={"/addDocument/:id"} component={AddDocument} />
+          <Route path={"/addDocument"} component={AddDocument} />
+          <Route path={"/receiveDocument"} component={ReceiveDocument} />
+          <Route path={"/releasedDocument"} component={ReleaseDocument} />
+          <Route path={"/pending"} component={PendingForRelease} />
+          <Route path={"/myDocuments"} component={MyDocuments} />
+          <Route path={"/sectionDocuments"} component={SectionDocuments} />
+          <Route path={"/processedDocuments"} component={ProcessedDocuments} />
           <Route path={"/user/:id"} component={Profile} />
           <Route path={"/user"} component={Profile} />
           <Route path={"/update/:id"} component={UpdateProfile} />
           <Route path={"/users"} component={UserManagement} />
           <Route path={"/registration"} component={RegistrationForm} />
+          <Route path={"/drafts"} component={Drafts} />
           <Route component={NotFoundPage} />
         </Switch>
       </div>
