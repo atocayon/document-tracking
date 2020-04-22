@@ -23,18 +23,18 @@ import DialogComponent from "../../common/confirmationDialog/DialogComponent";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
-const checkboxItem = [
-  { id: 0, value: "For Approval" },
-  { id: 1, value: "For Signature" },
-  { id: 2, value: "For Endorsement" },
-  { id: 3, value: "For Recommendation" },
-  { id: 4, value: "For Action" },
-  { id: 5, value: "For Comment" },
-  { id: 6, value: "For Information" },
-  { id: 7, value: "For File" }
-];
 
-function AddDocument(props) {
+function AddDocument({ match, enqueueSnackbar }) {
+  const checkboxItem = [
+    { id: 0, value: "For Approval" },
+    { id: 1, value: "For Signature" },
+    { id: 2, value: "For Endorsement" },
+    { id: 3, value: "For Recommendation" },
+    { id: 4, value: "For Action" },
+    { id: 5, value: "For Comment" },
+    { id: 6, value: "For Information" },
+    { id: 7, value: "For File" }
+  ];
   const [endSession, setEndSession] = useState(false);
   const [date, setDate] = useState({
     _date: new Date()
@@ -70,7 +70,7 @@ function AddDocument(props) {
   const [openDialog, setOpenDialog] = useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  
+
   useEffect(() => {
     const timeID = setInterval(() => tick(), 1000);
 
@@ -78,43 +78,96 @@ function AddDocument(props) {
 
     if (obj && obj.token) {
       const { token } = obj;
+      if (match.params.id) {
+        setDocumentID({ ...documentID, documentID: match.params.id });
+        axios
+          .get("http://localhost:4000/dts/fetchDocument/" + match.params.id)
+          .then(res1 => {
+            axios
+              .get("http://localhost:4000/dts/documentType")
+              .then(res2 => {
+                setDocumentType(res2.data);
 
-      axios
-        .get("http://localhost:4000/dts/documentId")
-        .then(res => {
-          setDocumentID(res.data);
+                axios
+                  .get(
+                    "http://localhost:4000/dts/fetchActionReq/" +
+                      match.params.id
+                  )
+                  .then(res3 => {
+                    const checkedArr = [];
+                    const checkbox = {};
+                    for (let i = 0; i < res3.data.length; i++) {
+                      if (res3.data[i]) {
+                        checkedArr.push([
+                          match.params.id,
+                          res3.data[i].action_req
+                        ]);
+                        checkbox[res3.data[i].action_req] = true;
+                      }
+                    }
+                    //Duplicate and replace checkbox check
+                    setBoolCheckbox({ ...boolCheckbox, ...checkbox });
 
-          axios
-            .get("http://localhost:4000/dts/user/" + token)
-            .then(user => {
-              setUser(user.data);
+                    setFormData({
+                      ...formData,
+                      subject: res1.data.subject,
+                      documentType: res1.data.id.toString(),
+                      action_req: checkedArr,
+                      note: res1.data.note
+                    });
+                  })
+                  .catch(err => {
+                    const variant = "error";
+                    enqueueSnackbar(err, { variant });
+                  });
+              })
+              .catch(err => {
+                const variant = "error";
+                enqueueSnackbar(err, { variant });
+              });
+          })
+          .catch(err => {
+            const variant = "error";
+            enqueueSnackbar(err, { variant });
+          });
+      } else {
+        axios
+          .get("http://localhost:4000/dts/documentId")
+          .then(res => {
+            setDocumentID(res.data);
 
-              axios
-                .get("http://localhost:4000/dts/documentType")
-                .then(res => {
-                  setDocumentType(res.data);
-                })
-                .catch(err => {
-                  const variant = "error";
-                  props.enqueueSnackbar(err, { variant });
-                });
-            })
-            .catch(err => {
-              const variant = "error";
-              props.enqueueSnackbar(err, { variant });
-            });
-        })
-        .catch(err => {
-          const variant = "error";
-          props.enqueueSnackbar(err, { variant });
-        });
+            axios
+              .get("http://localhost:4000/dts/user/" + token)
+              .then(user => {
+                setUser(user.data);
+
+                axios
+                  .get("http://localhost:4000/dts/documentType")
+                  .then(res => {
+                    setDocumentType(res.data);
+                  })
+                  .catch(err => {
+                    const variant = "error";
+                    enqueueSnackbar(err, { variant });
+                  });
+              })
+              .catch(err => {
+                const variant = "error";
+                enqueueSnackbar(err, { variant });
+              });
+          })
+          .catch(err => {
+            const variant = "error";
+            enqueueSnackbar(err, { variant });
+          });
+      }
     }
 
     setEndSession(!(obj && obj.token));
     return () => {
       clearInterval(timeID);
     };
-  }, []);
+  }, [match.params.id]);
 
   const handleClick = () => {
     setOpen(!open);
@@ -178,7 +231,7 @@ function AddDocument(props) {
     if (!formValidation() || formData.action_req.length === 0) {
       setValidateActionReq(true);
       const variant = "error";
-      props.enqueueSnackbar("Fill out all required fields...", { variant });
+      enqueueSnackbar("Fill out all required fields...", { variant });
       return;
     }
 
@@ -231,7 +284,7 @@ function AddDocument(props) {
               "NMP Document Tracking Number: " + documentID.documentID;
             element.click();
             const variant = "info";
-            props.enqueueSnackbar("Document release successfully...", {
+            enqueueSnackbar("Document release successfully...", {
               variant
             });
             setFinalize(false);
@@ -248,7 +301,7 @@ function AddDocument(props) {
       })
       .catch(err => {
         const variant = "error";
-        props.enqueueSnackbar(err, { variant });
+        enqueueSnackbar(err, { variant });
       });
   };
 
@@ -256,7 +309,7 @@ function AddDocument(props) {
     if (!formValidation() || formData.action_req.length === 0) {
       setValidateActionReq(true);
       const variant = "error";
-      props.enqueueSnackbar("Fill out all required fields...", { variant });
+      enqueueSnackbar("Fill out all required fields...", { variant });
       return;
     }
 
@@ -281,7 +334,7 @@ function AddDocument(props) {
       .then(res => {
         if (res.status === 200) {
           const variant = "info";
-          props.enqueueSnackbar("Document saved as draft...", {
+          enqueueSnackbar("Document saved as draft...", {
             variant
           });
           setValidateActionReq(false);
@@ -292,11 +345,28 @@ function AddDocument(props) {
             action_req: [],
             note: ""
           });
+
+          setBoolCheckbox({
+            ...boolCheckbox,
+            "For Approval": false,
+            "For Signature": false,
+            "For Endorsement": false,
+            "For Recommendation": false,
+            "For Action": false,
+            "For Comment": false,
+            "For Information": false,
+            "For File": false
+          });
+
+          setDocumentID({
+            ...documentID,
+            documentID: documentID.documentID + 1
+          });
         }
       })
       .catch(err => {
         const variant = "error";
-        props.enqueueSnackbar(err, {
+        enqueueSnackbar(err, {
           variant
         });
       });
@@ -317,6 +387,7 @@ function AddDocument(props) {
 
   const createCheckboxes = () => checkboxItem.map(createCheckbox);
 
+  // Reactotron.log(boolCheckbox);
   return (
     <>
       <Grid container spacing={3}>
@@ -399,7 +470,6 @@ function AddDocument(props) {
                         documentType={documentType}
                         handleGoBack={handleGoBack}
                         handleRelease={handleRelease}
-
                       />
                     ) : (
                       <>
@@ -488,7 +558,10 @@ function AddDocument(props) {
                         <br />
 
                         <div style={{ textAlign: "right", marginBottom: 200 }}>
-                          <button className={"btn btn-outline-info"} onClick={handleSaveAsDraft}>
+                          <button
+                            className={"btn btn-outline-info"}
+                            onClick={handleSaveAsDraft}
+                          >
                             <DraftsIcon />
                             &nbsp;Save as Draft
                           </button>

@@ -549,7 +549,7 @@ router.route("/addNewDocument").post(function(req, res) {
     }
   });
 });
-
+//Insert Draft
 router.route("/draft").post(function(req, res) {
   const { documentID, creator, subject, doc_type, note, action_req } = req.body;
   const sql =
@@ -561,16 +561,17 @@ router.route("/draft").post(function(req, res) {
       res.status(500).send(err);
     }
 
-    const action_req =
+    const sql_action_req =
       "INSERT INTO document_action_req (documentID, action_req) VALUES ?";
-    connection.query(action_req, [action_req], function(err, result) {
+    connection.query(sql_action_req, [action_req], function(err, result) {
       if (err) {
         console.log(err);
         res.status(500).send(err);
       }
 
       const draft = "INSERT INTO documentDrafts (documentID) VALUES ?";
-      connection.query(draft, [documentID], function(err, result) {
+      const draftVal = [[documentID]];
+      connection.query(draft, [draftVal], function(err, result) {
         if (err) {
           console.log(err);
           res.status(500).send(err);
@@ -583,7 +584,55 @@ router.route("/draft").post(function(req, res) {
   });
 });
 
-//
+//Get users draft
+router.route("/getDrafts/:user").get(function(req, res) {
+  const userID = req.params.user;
+  const sql =
+    "SELECT documentDrafts.documentID as documentID, documents.subject as subject, document_type.type as doc_type FROM documentDrafts JOIN documents ON documentDrafts.documentID = documents.documentID JOIN document_type ON documents.doc_type = document_type.id WHERE documents.creator = ?";
+
+  connection.query(sql, [userID], function(err, rows, fields) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    if (rows.length === 0) {
+      res.status(404).send("No Drafts Found");
+    }
+
+    res.status(200).send(rows);
+  });
+});
+
+//Fetch Document By ID
+router.route("/fetchDocument/:doc_id").get(function(req, res) {
+  const doc = req.params.doc_id;
+  const sql =
+    "SELECT documents.subject as subject, document_type.id as id, document_type.type as type, documents.note FROM documents JOIN document_type ON documents.doc_type = document_type.id WHERE documents.documentID = ?";
+  connection.query(sql, [doc], function(err, rows, fields) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    console.log(rows);
+    res.status(200).send(rows[0]);
+  });
+});
+
+//Fetch Document Action Required
+router.route("/fetchActionReq/:doc_id").get(function(req, res){
+  const doc = req.params.doc_id;
+  const sql = "SELECT * FROM document_action_req WHERE documentID = ?";
+  connection.query(sql, [doc], function(err, rows, fields){
+    if (err){
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    res.status(200).send(rows);
+  });
+});
 
 // ==========================================================================================
 // ==========================================================================================

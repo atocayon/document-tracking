@@ -20,6 +20,7 @@ function Profile({ match }) {
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
+
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;

@@ -12,10 +12,11 @@ import Button from "@material-ui/core/Button";
 import Alert from "@material-ui/lab/Alert";
 import Box from "@material-ui/core/Box";
 import HelpIcon from "@material-ui/icons/Help";
+import {Link} from "react-router-dom";
 
 const StyledTableCell = withStyles(theme => ({
   head: {
-    backgroundColor: theme.palette.common.black,
+    backgroundColor:  "#2196F3",
     color: theme.palette.common.white
   },
   body: {
@@ -26,7 +27,7 @@ const StyledTableCell = withStyles(theme => ({
 const StyledTableRow = withStyles(theme => ({
   root: {
     "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.background.default
+      backgroundColor: "theme.palette.background.default"
     }
   }
 }))(TableRow);
@@ -53,41 +54,41 @@ export default function CustomizedTables(props) {
   return (
     <React.Fragment>
       <Box display="flex" flexDirection="row">
-        <h3 style={{ color: "#FF9800" }}>Outgoing Documents</h3>
+        <h3 style={{ color: "#2196F3" }}>{props.title}</h3>
         <div style={{ flexGrow: 1 }}></div>
-        <HelpIcon style={{ marginTop: "2vh", color: "#FF9800" }} />
       </Box>
 
       <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>Name</StyledTableCell>
-              <StyledTableCell align="right">Position</StyledTableCell>
-              <StyledTableCell align="right"></StyledTableCell>
+              {props.head.map(th => (
+                <StyledTableCell key={th}>{th}</StyledTableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.sectionUsers
+            {props.content
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => (
-                <StyledTableRow key={row.data._id}>
+                <StyledTableRow key={row.documentID}>
                   <StyledTableCell component="th" scope="row">
-                    <Alert icon={false} onClose={() => {}} severity={"info"}>
-                      <Button component="span">{row.data.fname}</Button>
-                    </Alert>
+                    {row.documentID}
                   </StyledTableCell>
-
-                  <StyledTableCell align="right">{row.carbs}</StyledTableCell>
+                  <StyledTableCell>{row.subject}</StyledTableCell>
+                  <StyledTableCell>{row.doc_type}</StyledTableCell>
+                  <StyledTableCell>
+                    <Link to={"/addDocument/"+row.documentID} >View Document</Link>
+                  </StyledTableCell>
                 </StyledTableRow>
               ))}
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[5, 10, 20, 30, 50, 70, 80, 100]}
         component="div"
-        count={props.sectionUsers.length}
+        count={props.content.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={handleChangePage}
