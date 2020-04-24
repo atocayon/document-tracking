@@ -14,6 +14,7 @@ import { getFromStorage } from "../../storage";
 import Grid from "@material-ui/core/Grid";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 import SaveIcon from '@material-ui/icons/Save';
+import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 function RegistrationForm(props) {
   const [userInfo, setUserInfo] = useState({
     role: "",
@@ -105,7 +106,7 @@ function RegistrationForm(props) {
         })
         .catch(err => {
           const variant = "warning";
-          props.enqueueSnackbar("Server Error..." + err, { variant });
+          props.enqueueSnackbar("Server Error...", { variant });
         });
     } else {
       const variant = "error";
@@ -130,6 +131,7 @@ function RegistrationForm(props) {
 
   return (
     <Grid container spacing={3}>
+      <PrimarySearchAppBar />
       <Grid item xs={2}>
         <SideBarNavigation
             open={open}
@@ -146,7 +148,7 @@ function RegistrationForm(props) {
               marginBottom: 0,
               bottom: 0,
               marginTop: 70,
-              paddingBottom: 50,
+              paddingBottom: 100,
               height: "100vh",
               overflow: "auto"
             }}

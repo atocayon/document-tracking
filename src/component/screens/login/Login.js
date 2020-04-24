@@ -13,6 +13,7 @@ import axios from "axios";
 import { withSnackbar } from "notistack";
 import logo from "../../../img/logo.png";
 import Paper from "@material-ui/core/Paper";
+import Reactotron from "reactotron-react-js";
 function Login(props) {
   const [login, setLogin] = useState({
     email: "",
@@ -52,7 +53,7 @@ function Login(props) {
 
     if (!formValidation()) {
       const variant = "error";
-      props.enqueueSnackbar("Input fields are required...", { variant });
+      props.enqueueSnackbar("Please provide your login credentials...", { variant });
       return;
     }
     axios
@@ -60,23 +61,22 @@ function Login(props) {
         "http://localhost:4000/dts/login/" + login.email + "/" + login.password
       )
       .then(res => {
+        Reactotron.log(res);
         if (res.status === 200) {
           const variant = "info";
           props.enqueueSnackbar("Login Successful...", { variant });
           setInStorage("documentTracking", { token: res.data.token });
           setRedirect(true);
         }
-
-        if (res.status === 404) {
-          const variant = "warning";
-          props.enqueueSnackbar("Login Failed Incorrect Email/Password...", {
-            variant
-          });
-        }
+        
       })
       .catch(err => {
+        const _error = {};
+        _error.email = "Incorrect Email";
+        _error.password = "Incorrect Password";
+        setError(_error);
         const variant = "error";
-        props.enqueueSnackbar(err, { variant });
+        props.enqueueSnackbar("Login Failed", { variant });
       });
   };
 

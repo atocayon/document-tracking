@@ -83,7 +83,7 @@ export default function SideBarNavigation(props) {
                     <ArrowBackIcon />
                   </ListItemIcon>
                   <ListItemText>
-                    Go Back Home
+                    <b>Home</b>
                   </ListItemText>
 
                 </ListItem>

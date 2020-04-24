@@ -123,6 +123,7 @@ router.route("/login/:email/:password").post(function(req, res) {
 
   connection.query(sql, [email], function(err, rows, fields) {
     if (err) {
+      console.log(err);
       res.status(500).send(err);
     }
 
@@ -130,63 +131,72 @@ router.route("/login/:email/:password").post(function(req, res) {
       res.status(404).send("Unrecognized email");
     }
 
-    bcrypt.compare(password, rows[0].password, function(err, result) {
-      if (err) {
-        res.status(500).send(err);
-      }
-
-      if (!result) {
-        res.status(404).send("Unrecognized password");
-      }
-
-      const id = rows[0].user_id.toString();
-
-      const check_session_query =
-        "SELECT * FROM users_session WHERE userId = ?";
-      connection.query(check_session_query, [id], function(err, rows, fields) {
+    if (rows.length > 0){
+      bcrypt.compare(password, rows[0].password, function(err, result) {
         if (err) {
-          res.status(500).json({
-            success: false,
-            message: "Server error in checking session"
-          });
+          console.log(err);
+          res.status(500).send(err);
         }
 
-        if (!rows) {
-          const sql1 = "INSERT INTO users_session (userId, isDeleted) VALUES ?";
-          const values = [[id, 0]];
-          connection.query(sql1, [values], function(err, result) {
-            if (err) {
-              res.status(500).send("Server Error inserting new session");
-            }
-
-            res
-              .status(200)
-              .json({ success: true, message: "New User", token: id });
-          });
+        if (!result) {
+          console.log(result);
+          res.status(404).json({ success: false, message: "failed" });
         }
 
-        if (rows) {
-          const update_session =
-            "UPDATE users_session SET isDeleted = ? WHERE userId = ?";
-          connection.query(update_session, [0, id], function(err, result) {
-            if (err) {
-              res.status(500).json({
-                success: false,
-                message: "Server error in updating session"
-              });
-            }
+        console.log(result);
 
-            if (result) {
-              res.status(200).json({
-                success: true,
-                message: "Record Found, Login Success!",
-                token: id
-              });
-            }
-          });
-        }
+        const id = rows[0].user_id.toString();
+
+        const check_session_query =
+            "SELECT * FROM users_session WHERE userId = ?";
+        connection.query(check_session_query, [id], function(err, rows, fields) {
+          if (err) {
+            console.log(err);
+            res.status(500).send("Server error in checking session");
+          }
+          console.log(rows);
+          if (!rows) {
+            const sql1 = "INSERT INTO users_session (userId, isDeleted) VALUES ?";
+            const values = [[id, 0]];
+            connection.query(sql1, [values], function(err, result) {
+              if (err) {
+                console.log(err);
+                res.status(500).send("Server Error inserting new session");
+              }
+
+              console.log(result);
+              res
+                  .status(200)
+                  .json({ success: true, message: "New User", token: id });
+            });
+          }
+
+          if (rows) {
+            const update_session =
+                "UPDATE users_session SET isDeleted = ? WHERE userId = ?";
+            connection.query(update_session, [0, id], function(err, result) {
+              if (err) {
+                console.log(err);
+                res.status(500).json({
+                  success: false,
+                  message: "Server error in updating session"
+                });
+              }
+              console.log(result);
+              if (result) {
+                res.status(200).json({
+                  success: true,
+                  message: "Record Found, Login Success!",
+                  token: id
+                });
+              }
+            });
+          }
+        });
       });
-    });
+    }
+
+
   });
 });
 
@@ -584,11 +594,11 @@ router.route("/draft").post(function(req, res) {
   });
 });
 
-//Get users draft
+//Get draft by user
 router.route("/getDrafts/:user").get(function(req, res) {
   const userID = req.params.user;
   const sql =
-    "SELECT documentDrafts.documentID as documentID, documents.subject as subject, document_type.type as doc_type FROM documentDrafts JOIN documents ON documentDrafts.documentID = documents.documentID JOIN document_type ON documents.doc_type = document_type.id WHERE documents.creator = ?";
+    "SELECT documentDrafts.documentID as documentID, documents.subject as subject, document_type.type as doc_type FROM documentDrafts JOIN documents ON documentDrafts.documentID = documents.documentID JOIN document_type ON documents.doc_type = document_type.id WHERE documents.creator = ? ORDER BY documents.date_time_created DESC";
 
   connection.query(sql, [userID], function(err, rows, fields) {
     if (err) {
@@ -608,7 +618,7 @@ router.route("/getDrafts/:user").get(function(req, res) {
 router.route("/fetchDocument/:doc_id").get(function(req, res) {
   const doc = req.params.doc_id;
   const sql =
-    "SELECT documents.subject as subject, document_type.id as id, document_type.type as type, documents.note FROM documents JOIN document_type ON documents.doc_type = document_type.id WHERE documents.documentID = ?";
+    "SELECT documents.subject as subject, document_type.id as docType_id, document_type.type as type, documents.note FROM documents JOIN document_type ON documents.doc_type = document_type.id WHERE documents.documentID = ?";
   connection.query(sql, [doc], function(err, rows, fields) {
     if (err) {
       console.log(err);
@@ -620,7 +630,7 @@ router.route("/fetchDocument/:doc_id").get(function(req, res) {
   });
 });
 
-//Fetch Document Action Required
+//Fetch  Action Required of Document
 router.route("/fetchActionReq/:doc_id").get(function(req, res){
   const doc = req.params.doc_id;
   const sql = "SELECT * FROM document_action_req WHERE documentID = ?";
@@ -630,6 +640,21 @@ router.route("/fetchActionReq/:doc_id").get(function(req, res){
       res.status(500).send(err);
     }
 
+    res.status(200).send(rows);
+  });
+});
+
+//Fetch Document of User
+router.route("/fetchUserDocuments/:userID").get(function(req, res){
+  const userID = req.params.userID;
+  const sql = "SELECT documents.documentID as documentID, documents.subject as subject, document_type.id as docType_id, document_type.type as type, documents.note FROM documents JOIN document_type ON documents.doc_type = document_type.id WHERE documents.creator = ? AND status = ?";
+  connection.query(sql, [userID, 1], function(err, rows, fields){
+    if (err){
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    console.log(rows);
     res.status(200).send(rows);
   });
 });

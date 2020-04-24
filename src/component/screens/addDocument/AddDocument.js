@@ -118,17 +118,17 @@ function AddDocument({ match, enqueueSnackbar }) {
                   })
                   .catch(err => {
                     const variant = "error";
-                    enqueueSnackbar(err, { variant });
+                    enqueueSnackbar(JSON.stringify(err), { variant });
                   });
               })
               .catch(err => {
                 const variant = "error";
-                enqueueSnackbar(err, { variant });
+                enqueueSnackbar(JSON.stringify(err), { variant });
               });
           })
           .catch(err => {
             const variant = "error";
-            enqueueSnackbar(err, { variant });
+            enqueueSnackbar(JSON.stringify(err), { variant });
           });
       } else {
         axios
@@ -148,17 +148,17 @@ function AddDocument({ match, enqueueSnackbar }) {
                   })
                   .catch(err => {
                     const variant = "error";
-                    enqueueSnackbar(err, { variant });
+                    enqueueSnackbar(JSON.stringify(err), { variant });
                   });
               })
               .catch(err => {
                 const variant = "error";
-                enqueueSnackbar(err, { variant });
+                enqueueSnackbar(JSON.stringify(err), { variant });
               });
           })
           .catch(err => {
             const variant = "error";
-            enqueueSnackbar(err, { variant });
+            enqueueSnackbar(JSON.stringify(err), { variant });
           });
       }
     }
