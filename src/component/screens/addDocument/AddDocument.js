@@ -23,7 +23,7 @@ import DialogComponent from "../../common/confirmationDialog/DialogComponent";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
-
+import canvas from "../../canvas";
 function AddDocument({ match, enqueueSnackbar }) {
   const checkboxItem = [
     { id: 0, value: "For Approval" },
@@ -107,7 +107,7 @@ function AddDocument({ match, enqueueSnackbar }) {
                     }
                     //Duplicate and replace checkbox check
                     setBoolCheckbox({ ...boolCheckbox, ...checkbox });
-
+                    setUser({...user, user_id: token });
                     setFormData({
                       ...formData,
                       subject: res1.data.subject,
@@ -272,21 +272,7 @@ function AddDocument({ match, enqueueSnackbar }) {
       .then(res => {
         Reactotron.log(res);
         if (res.status === 200) {
-          // Convert the div to image (canvas)
-          html2canvas(document.getElementById("printarea")).then(function(
-            canvas
-          ) {
-            // Get the image data as JPEG and 0.9 quality (0.0 - 1.0)
-            Reactotron.log(canvas.toDataURL("image/jpeg", 0.9));
-            let element = document.createElement("a");
-            element.href = canvas.toDataURL("image/jpeg", 0.9);
-            element.download =
-              "NMP Document Tracking Number: " + documentID.documentID;
-            element.click();
-            const variant = "info";
-            enqueueSnackbar("Document release successfully...", {
-              variant
-            });
+          if (canvas("#printarea", documentID.documentID)){
             setFinalize(false);
             setValidateActionReq(false);
             setFormData({
@@ -296,12 +282,17 @@ function AddDocument({ match, enqueueSnackbar }) {
               action_req: [],
               note: ""
             });
-          });
+
+            const variant = "info";
+            enqueueSnackbar("Document release successfully...", {
+              variant
+            });
+          }
         }
       })
       .catch(err => {
         const variant = "error";
-        enqueueSnackbar(err, { variant });
+        enqueueSnackbar("Server Error", { variant });
       });
   };
 
