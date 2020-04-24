@@ -607,10 +607,6 @@ router.route("/getDrafts/:user").get(function(req, res) {
       res.status(500).send(err);
     }
 
-    if (rows.length === 0) {
-      res.status(404).send("No Drafts Found");
-    }
-
     res.status(200).send(rows);
   });
 });

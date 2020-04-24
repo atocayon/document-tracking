@@ -30,7 +30,7 @@ function MyDocuments(props) {
         })
         .catch(err => {
           const variant = "error";
-          props.enqueueSnackbar(JSON.stringify(err), {variant});
+          props.enqueueSnackbar("Server Error", {variant});
         });
     }
     setEndSession(!(obj && obj.token));
