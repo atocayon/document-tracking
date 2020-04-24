@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 19, 2020 at 03:13 PM
+-- Generation Time: Apr 24, 2020 at 11:07 AM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.1
 
@@ -48,6 +48,26 @@ INSERT INTO `divisions` (`depid`, `department`, `depshort`, `payrollshort`) VALU
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `documentDrafts`
+--
+
+CREATE TABLE `documentDrafts` (
+  `draft_id` int(11) NOT NULL,
+  `documentID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `documentDrafts`
+--
+
+INSERT INTO `documentDrafts` (`draft_id`, `documentID`) VALUES
+(1, 1000000000),
+(2, 1000000001),
+(3, 1000000002);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `documentLogs`
 --
 
@@ -72,8 +92,18 @@ CREATE TABLE `documents` (
   `subject` varchar(200) NOT NULL,
   `doc_type` varchar(11) NOT NULL,
   `note` varchar(200) NOT NULL,
-  `date_time_created` timestamp NOT NULL DEFAULT current_timestamp()
+  `date_time_created` timestamp NOT NULL DEFAULT current_timestamp(),
+  `status` varchar(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `documents`
+--
+
+INSERT INTO `documents` (`documentID`, `creator`, `subject`, `doc_type`, `note`, `date_time_created`, `status`) VALUES
+(1000000000, '3', '725', '3', 'Culpa unde veniam ', '2020-04-22 11:22:15', '1'),
+(1000000001, '3', '854', '9', 'Impedit non nisi vo', '2020-04-22 11:24:16', '1'),
+(1000000002, '3', '47', '2', 'Impedit velit volup', '2020-04-22 11:25:33', '0');
 
 -- --------------------------------------------------------
 
@@ -114,6 +144,23 @@ CREATE TABLE `document_action_req` (
   `documentID` varchar(11) NOT NULL,
   `action_req` varchar(120) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `document_action_req`
+--
+
+INSERT INTO `document_action_req` (`document_action_req_id`, `documentID`, `action_req`) VALUES
+(1, '1000000000', 'For Action'),
+(2, '1000000000', 'For Comment'),
+(3, '1000000000', 'For Information'),
+(4, '1000000000', 'For File'),
+(5, '1000000001', 'For Approval'),
+(6, '1000000001', 'For Endorsement'),
+(7, '1000000001', 'For Recommendation'),
+(8, '1000000002', 'For Signature'),
+(9, '1000000002', 'For Endorsement'),
+(10, '1000000002', 'For Recommendation'),
+(11, '1000000002', 'For File');
 
 -- --------------------------------------------------------
 
@@ -284,7 +331,7 @@ CREATE TABLE `users_session` (
 --
 
 INSERT INTO `users_session` (`id`, `userId`, `timeStamp`, `isDeleted`) VALUES
-(1, '3', '2020-04-18 08:26:26', 0);
+(1, '3', '2020-04-24 08:50:49', 0);
 
 -- --------------------------------------------------------
 
@@ -317,10 +364,22 @@ ALTER TABLE `divisions`
   ADD PRIMARY KEY (`depid`);
 
 --
+-- Indexes for table `documentDrafts`
+--
+ALTER TABLE `documentDrafts`
+  ADD PRIMARY KEY (`draft_id`);
+
+--
 -- Indexes for table `documentLogs`
 --
 ALTER TABLE `documentLogs`
   ADD PRIMARY KEY (`trans_id`);
+
+--
+-- Indexes for table `documents`
+--
+ALTER TABLE `documents`
+  ADD PRIMARY KEY (`documentID`);
 
 --
 -- Indexes for table `documentStatus`
@@ -389,6 +448,12 @@ ALTER TABLE `divisions`
   MODIFY `depid` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT for table `documentDrafts`
+--
+ALTER TABLE `documentDrafts`
+  MODIFY `draft_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `documentLogs`
 --
 ALTER TABLE `documentLogs`
@@ -404,7 +469,7 @@ ALTER TABLE `documentStatus`
 -- AUTO_INCREMENT for table `document_action_req`
 --
 ALTER TABLE `document_action_req`
-  MODIFY `document_action_req_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `document_action_req_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `document_type`
