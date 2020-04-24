@@ -111,7 +111,7 @@ function AddDocument({ match, enqueueSnackbar }) {
                     setFormData({
                       ...formData,
                       subject: res1.data.subject,
-                      documentType: res1.data.id.toString(),
+                      documentType: res1.data.docType_id.toString(),
                       action_req: checkedArr,
                       note: res1.data.note
                     });
