@@ -493,15 +493,17 @@ router.route("/addNewDocument").post(function(req, res) {
         "UPDATE documents SET creator = ?, subject= ?, doc_type = ?, note = ?, status = ? WHERE documentID = ?";
       connection.query(
         update,
-        [creator, subject, doc_type, note, "1"],
+        [creator, subject, doc_type, note, "1", documentID],
         function(err, result) {
           if (err) {
+            console.log(err);
             res.status(500).send(err);
           }
 
           const draft = "DELETE FROM documentDrafts WHERE documentID = ?";
           connection.query(draft, [documentID], function(err, result) {
             if (err) {
+              console.log(err);
               res.status(500).send(err);
             }
 
@@ -511,11 +513,11 @@ router.route("/addNewDocument").post(function(req, res) {
 
             connection.query(sql, [values2], function(err, result) {
               if (err) {
-                // console.log(err);
+                console.log(err);
                 res.status(500).send(err);
               }
 
-              // console.log(result);
+              console.log(result);
               res.status(200).send(result);
             });
           });
@@ -527,7 +529,7 @@ router.route("/addNewDocument").post(function(req, res) {
       const values = [[documentID, creator, subject, doc_type, note, "1"]];
       connection.query(sql1, [values], function(err, result) {
         if (err) {
-          // console.log(err);
+          console.log(err);
           res.status(500).send(err);
         }
 
@@ -536,7 +538,7 @@ router.route("/addNewDocument").post(function(req, res) {
 
         connection.query(sql2, [action_req], function(err, result) {
           if (err) {
-            // console.log(err);
+            console.log(err);
             res.status(500).send(err);
           }
 
@@ -546,11 +548,11 @@ router.route("/addNewDocument").post(function(req, res) {
 
           connection.query(sql3, [values2], function(err, result) {
             if (err) {
-              // console.log(err);
+              console.log(err);
               res.status(500).send(err);
             }
 
-            // console.log(result);
+            console.log(result);
             res.status(200).send(result);
           });
         });
