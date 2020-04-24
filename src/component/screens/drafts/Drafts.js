@@ -5,10 +5,17 @@ import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 import Paper from "@material-ui/core/Paper";
 import { getFromStorage } from "../../storage";
-import { Redirect } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import TableDocument from "../../common/table/TableDocument";
 import Reactotron from "reactotron-react-js";
 import axios from "axios";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import Avatar from "@material-ui/core/Avatar";
+import DescriptionIcon from "@material-ui/icons/Description";
+import ListItemText from "@material-ui/core/ListItemText";
+import Divider from "@material-ui/core/Divider";
 const head = ["Document ID", "Subject", "Document Type", ""];
 
 function Draft(props) {
@@ -24,7 +31,10 @@ function Draft(props) {
           // Reactotron.log(res);
           setDrafts(res.data);
         })
-        .catch(err => {});
+        .catch(err => {
+          const variant = "error";
+          props.enqueueSnackbar(JSON.stringify(err), {variant});
+        });
     }
 
     setEndSession(!(obj && obj.token));
@@ -66,16 +76,41 @@ function Draft(props) {
                   </div>
                 </div>
               </div>
-              <div className={"col-md-8"}></div>
+              <div className={"col-md-8"}>
+                {/*<h5 style={{ textAlign: "left" }}>Draft Documents</h5>*/}
+              </div>
               <div className={"col-md-2"}></div>
             </div>
           </div>
 
-          <div style={{ marginLeft: 10, marginRight: 10 }}>
+          <div style={{ marginLeft: 50, marginRight: 10 }}>
             <div className={"row"}>
-              <div className={"col-md-12"}>
-                <TableDocument head={head} content={drafts} />
+              <div className={"col-md-8"}>
+                <List>
+                  {drafts.length > 0
+                    ? drafts.map(doc => (
+                        <Link
+                          to={"/addDocument/" + doc.documentID}
+                          style={{ textDecoration: "none" }}
+                        >
+                          <ListItem>
+                            <ListItemAvatar>
+                              <Avatar>
+                                <DescriptionIcon />
+                              </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText
+                              primary={doc.subject}
+                              secondary={doc.doc_type}
+                            />
+                          </ListItem>
+                          {/*<Divider />*/}
+                        </Link>
+                      ))
+                    : null}
+                </List>
               </div>
+              <div className={"col-md-4"}></div>
             </div>
           </div>
         </Paper>
