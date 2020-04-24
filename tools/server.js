@@ -68,7 +68,7 @@ router.route("/addUser").post(function(req, res) {
   const sql = "SELECT * FROM users WHERE email = ? ";
   connection.query(sql, [email], function(err, rows, fields) {
     if (err) {
-      // console.log(err);
+      console.log(err);
       res.send(err);
     }
 
@@ -78,12 +78,12 @@ router.route("/addUser").post(function(req, res) {
 
     bcrypt.hash(password, saltRounds, function(err, hash) {
       if (err) {
-        // console.log(err);
+        console.log(err);
         res.status(500).send(err);
       }
 
       const sql1 =
-        "INSERT INTO users (employeeId, name, username, password, contact, email, division, section, position, address, gender, bdate, role) VALUES ?";
+        "INSERT INTO users (employeeId, name, username, password, contact, email, section, position, address, gender, bdate, role) VALUES ?";
 
       const values = [
         [
@@ -93,7 +93,6 @@ router.route("/addUser").post(function(req, res) {
           hash,
           contact,
           email,
-          division,
           section,
           position,
           address,
@@ -104,7 +103,7 @@ router.route("/addUser").post(function(req, res) {
       ];
       connection.query(sql1, [values], function(err, result) {
         if (err) {
-          // console.log(err);
+          console.log(err);
           res.status(500).send(err);
         }
 
@@ -640,6 +639,7 @@ router.route("/fetchActionReq/:doc_id").get(function(req, res){
       res.status(500).send(err);
     }
 
+    console.log(rows);
     res.status(200).send(rows);
   });
 });

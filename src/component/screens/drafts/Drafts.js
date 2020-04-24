@@ -33,7 +33,7 @@ function Draft(props) {
         })
         .catch(err => {
           const variant = "error";
-          props.enqueueSnackbar(JSON.stringify(err), {variant});
+          props.enqueueSnackbar("Server Error", {variant});
         });
     }
 
