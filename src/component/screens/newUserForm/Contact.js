@@ -31,17 +31,7 @@ export default function Contact(props) {
           error={props.error.contact}
           type={"text"}
         />
-        <br />
-        <br />
-        <InputField
-          id={"address"}
-          name={"address"}
-          label={"Home Address"}
-          variant={"outlined"}
-          onChange={props.handleInput}
-          error={props.error.address}
-          type={"text"}
-        />
+
       </div>
     </>
   );

@@ -82,13 +82,17 @@ function Draft(props) {
               <div className={"col-md-2"}></div>
             </div>
           </div>
-
+          {drafts.length === 0 && (
+              <div style={{textAlign: "center", marginTop: 200}}>
+                <h6 style={{ color: "#9E9E9E" }}>You don't have any drafts yet</h6>
+              </div>
+          )}
           <div style={{ marginLeft: 50, marginRight: 10 }}>
             <div className={"row"}>
               <div className={"col-md-8"}>
                 <List>
                   {drafts.length > 0
-                    ? drafts.map(doc => (
+                    && drafts.map(doc => (
                         <Link
                           to={"/addDocument/" + doc.documentID}
                           style={{ textDecoration: "none" }}
@@ -107,7 +111,7 @@ function Draft(props) {
                           {/*<Divider />*/}
                         </Link>
                       ))
-                    : null}
+                    }
                 </List>
               </div>
               <div className={"col-md-4"}></div>
