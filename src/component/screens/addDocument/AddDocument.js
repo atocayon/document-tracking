@@ -10,7 +10,6 @@ import { withSnackbar } from "notistack";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
 import { getFromStorage } from "../../storage";
-import html2canvas from "html2canvas";
 import SelectField from "../../common/selectField/SelectField";
 import DoneIcon from "@material-ui/icons/Done";
 import DraftsIcon from "@material-ui/icons/Drafts";
@@ -24,6 +23,8 @@ import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import canvas from "../../canvas";
+import ExploreIcon from "@material-ui/icons/Explore";
+import Radio from "@material-ui/core/Radio";
 function AddDocument({ match, enqueueSnackbar }) {
   const checkboxItem = [
     { id: 0, value: "For Approval" },
@@ -35,6 +36,7 @@ function AddDocument({ match, enqueueSnackbar }) {
     { id: 6, value: "For Information" },
     { id: 7, value: "For File" }
   ];
+
   const [endSession, setEndSession] = useState(false);
   const [date, setDate] = useState({
     _date: new Date()
@@ -48,7 +50,8 @@ function AddDocument({ match, enqueueSnackbar }) {
     subject: "",
     documentType: "",
     action_req: [],
-    note: ""
+    note: "",
+    destination: ""
   });
 
   const [documentType, setDocumentType] = useState([]);
@@ -66,6 +69,8 @@ function AddDocument({ match, enqueueSnackbar }) {
     "For Information": false,
     "For File": false
   });
+  const [destination, setDestination] = useState("");
+  const [section, setSection] = useState([]);
   const [open, setOpen] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const theme = useTheme();
@@ -82,59 +87,61 @@ function AddDocument({ match, enqueueSnackbar }) {
         setDocumentID({ ...documentID, documentID: match.params.id });
         axios
           .get("http://localhost:4000/dts/fetchDocument/" + match.params.id)
-          .then(res1 => {
+          .then(doc => {
             axios
               .get("http://localhost:4000/dts/documentType")
-              .then(res2 => {
-                setDocumentType(res2.data);
+              .then(docType => {
+                setDocumentType(docType.data);
 
                 axios
                   .get(
                     "http://localhost:4000/dts/fetchActionReq/" +
                       match.params.id
                   )
-                  .then(res3 => {
+                  .then(actionReq => {
                     const checkedArr = [];
                     const checkbox = {};
-                    for (let i = 0; i < res3.data.length; i++) {
-                      if (res3.data[i]) {
+                    for (let i = 0; i < actionReq.data.length; i++) {
+                      if (actionReq.data[i]) {
                         checkedArr.push([
                           match.params.id,
-                          res3.data[i].action_req
+                          actionReq.data[i].action_req
                         ]);
-                        checkbox[res3.data[i].action_req] = true;
+                        checkbox[actionReq.data[i].action_req] = true;
                       }
                     }
                     //Duplicate and replace checkbox check
                     setBoolCheckbox({ ...boolCheckbox, ...checkbox });
-                    setUser({...user, user_id: token });
+                    setUser({ ...user, user_id: token });
                     setFormData({
                       ...formData,
-                      subject: res1.data.subject,
-                      documentType: res1.data.docType_id.toString(),
+                      subject: doc.data.subject,
+                      documentType: doc.data.docType_id.toString(),
                       action_req: checkedArr,
-                      note: res1.data.note
+                      note: doc.data.note
                     });
                   })
                   .catch(err => {
                     const variant = "error";
-                    enqueueSnackbar("Server Error", { variant });
+                    enqueueSnackbar("Error Fetching Document Action Request", {
+                      variant
+                    });
                   });
               })
               .catch(err => {
                 const variant = "error";
-                enqueueSnackbar("Server Error", { variant });
+                enqueueSnackbar("Error Fetching Document Type", { variant });
               });
           })
           .catch(err => {
             const variant = "error";
-            enqueueSnackbar("Server Error", { variant });
+            enqueueSnackbar("Error Fetching Documents", { variant });
           });
       } else {
         axios
           .get("http://localhost:4000/dts/documentId")
-          .then(res => {
-            setDocumentID(res.data);
+          .then(docId => {
+            setDocumentID(docId.data);
 
             axios
               .get("http://localhost:4000/dts/user/" + token)
@@ -143,22 +150,45 @@ function AddDocument({ match, enqueueSnackbar }) {
 
                 axios
                   .get("http://localhost:4000/dts/documentType")
-                  .then(res => {
-                    setDocumentType(res.data);
+                  .then(docType => {
+                    setDocumentType(docType.data);
+
+                    axios
+                      .get("http://localhost:4000/dts/sections")
+                      .then(_section => {
+                        const res_section = [];
+                        for (let i = 0; i < _section.data.length; i++) {
+                          res_section.push({
+                            id: _section.data[i].secshort,
+                            type:
+                              _section.data[i].section +
+                              "(" +
+                              _section.data[i].depshort +
+                              ")"
+                          });
+                        }
+                        setSection(res_section);
+                      })
+                      .catch(err => {
+                        const variant = "error";
+                        enqueueSnackbar("Error Fetching Section", { variant });
+                      });
                   })
                   .catch(err => {
                     const variant = "error";
-                    enqueueSnackbar("Server Error", { variant });
+                    enqueueSnackbar("Error Fetching Document Type", {
+                      variant
+                    });
                   });
               })
               .catch(err => {
                 const variant = "error";
-                enqueueSnackbar("Server Error", { variant });
+                enqueueSnackbar("Error Fetching User", { variant });
               });
           })
           .catch(err => {
             const variant = "error";
-            enqueueSnackbar("Server Error", { variant });
+            enqueueSnackbar("Error Fetching Document ID", { variant });
           });
       }
     }
@@ -272,7 +302,7 @@ function AddDocument({ match, enqueueSnackbar }) {
       .then(res => {
         Reactotron.log(res);
         if (res.status === 200) {
-          if (canvas("#printarea", documentID.documentID)){
+          if (canvas("#printarea", documentID.documentID)) {
             setFinalize(false);
             setValidateActionReq(false);
             setFormData({
@@ -361,6 +391,10 @@ function AddDocument({ match, enqueueSnackbar }) {
           variant
         });
       });
+  };
+
+  const handleChangeDestination = ({ target }) => {
+    setDestination(target.value);
   };
 
   const createCheckbox = label => {
@@ -499,10 +533,8 @@ function AddDocument({ match, enqueueSnackbar }) {
                           monetary amounts, names, etc.) from the subject if
                           they are not necessary in tracking the document.
                         </small>
-
                         <br />
                         <br />
-
                         <SelectField
                           id={"documentType"}
                           name={"documentType"}
@@ -513,10 +545,8 @@ function AddDocument({ match, enqueueSnackbar }) {
                           variant={"outlined"}
                           value={formData.documentType}
                         />
-
                         <br />
                         <br />
-
                         <h5 style={{ color: "#2196F3" }}>
                           <FeedbackIcon />
                           &nbsp;Action Required
@@ -526,13 +556,10 @@ function AddDocument({ match, enqueueSnackbar }) {
                             <small>Kindly check at least one action</small>
                           </span>
                         )}
-
                         <br />
                         <FormGroup>{createCheckboxes()}</FormGroup>
-
                         <br />
                         <br />
-
                         <h5 style={{ color: "#2196F3" }}>
                           <CommentIcon />
                           &nbsp;Note
@@ -544,11 +571,65 @@ function AddDocument({ match, enqueueSnackbar }) {
                           error={error.note}
                           value={formData.note}
                         />
-
                         <br />
                         <br />
-
-                        <div style={{ textAlign: "right", marginBottom: 200 }}>
+                        <h5 style={{ color: "#2196F3" }}>
+                          <ExploreIcon />
+                          &nbsp;Destination
+                        </h5>
+                        <br />
+                        <Radio
+                          checked={destination === "internal"}
+                          onChange={handleChangeDestination}
+                          value="internal"
+                          name="radio-button-demo"
+                          inputProps={{ "aria-label": "A" }}
+                        />
+                        <label>Internal</label>
+                        &nbsp;&nbsp;&nbsp;
+                        <Radio
+                          checked={destination === "external"}
+                          onChange={handleChangeDestination}
+                          value="external"
+                          name="radio-button-demo"
+                          inputProps={{ "aria-label": "B" }}
+                        />
+                        <label>External</label>
+                        <br />
+                        <br />
+                        {destination === "internal" && (
+                          <SelectField
+                            id={"section"}
+                            name={"destination"}
+                            label={"Internal Office/Section"}
+                            options={section}
+                            error={error.section}
+                            onChange={handleChange}
+                            variant={"outlined"}
+                            value={formData.documentType}
+                          />
+                        )}
+                        {destination === "external" && (
+                          <InputField
+                            id={"external"}
+                            label={"External Destination"}
+                            name={"destination"}
+                            variant={"outlined"}
+                            onChange={handleChange}
+                            error={error.subject}
+                            type={"text"}
+                            value={formData.subject}
+                          />
+                        )}
+                        <br />
+                        <br />
+                        <div
+                          style={{
+                            textAlign: "right",
+                            marginBottom: 100,
+                            marginTop: 50
+                          }}
+                        >
                           <button
                             className={"btn btn-outline-info"}
                             onClick={handleSaveAsDraft}

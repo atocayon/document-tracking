@@ -134,9 +134,9 @@ class UpdateProfile extends Component {
                 elevation={3}
                 style={{
                   color: "#263238",
-                  paddingBottom: "5vh",
+                  paddingBottom: 100,
                   height: "100vh",
-                  overflow: "auto"
+                  overflow: "auto",
                 }}
               >
                 <div className={"jumbotron"} style={{ padding: 50 }}>
@@ -371,101 +371,7 @@ class UpdateProfile extends Component {
 
                             <tr>
                               <td>
-                                <InputField
-                                  id={"address"}
-                                  name={"address"}
-                                  label={"Address"}
-                                  defaultValue={user.address}
-                                  disabled={this.state._address}
-                                  onChange={this.handleChange}
-                                />
-                              </td>
-                              <td>
-                                <button
-                                  className={"btn"}
-                                  onClick={this.handleClick.bind(
-                                    null,
-                                    "_address"
-                                  )}
-                                >
-                                  {this.state._address ? (
-                                    <EditIcon />
-                                  ) : (
-                                    <DoneIcon />
-                                  )}
-                                </button>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td
-                                style={{
-                                  background: "#E9ECEF",
-                                  color: "#2196F3"
-                                }}
-                              >
-                                <ContactSupportIcon />
-                                &nbsp;&nbsp;Other Information
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <InputField
-                                  id={"bdate"}
-                                  name={"bdate"}
-                                  label={"Date of Birth"}
-                                  defaultValue={user.bdate}
-                                  disabled={this.state._bdate}
-                                  onChange={this.handleChange}
-                                />
-                              </td>
-                              <td>
-                                <button
-                                  className={"btn"}
-                                  onClick={this.handleClick.bind(
-                                    null,
-                                    "_bdate"
-                                  )}
-                                >
-                                  {this.state._bdate ? (
-                                    <EditIcon />
-                                  ) : (
-                                    <DoneIcon />
-                                  )}
-                                </button>
-                              </td>
-                            </tr>
-
-                            <tr>
-                              <td>
-                                <InputField
-                                  id={"gender"}
-                                  name={"gender"}
-                                  label={"Gender"}
-                                  defaultValue={user.gender}
-                                  disabled={this.state._gender}
-                                  onChange={this.handleChange}
-                                />
-                              </td>
-                              <td>
-                                <button
-                                  className={"btn"}
-                                  onClick={this.handleClick.bind(
-                                    null,
-                                    "_gender"
-                                  )}
-                                >
-                                  {this.state._gender ? (
-                                    <EditIcon />
-                                  ) : (
-                                    <DoneIcon />
-                                  )}
-                                </button>
-                              </td>
-                            </tr>
-
-                            <tr>
-                              <td>
-                                <div style={{ textAlign: "right" }}>
+                                <div style={{ textAlign: "right", marginTop: 50 }}>
                                   <Link className={"btn btn-outline-info btn-sm"} to={"/user/" + this.props.match.params.id}>
                                     <ArrowBackIcon />&nbsp;&nbsp; Back to Profile
                                   </Link>

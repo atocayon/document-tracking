@@ -26,9 +26,7 @@ function RegistrationForm(props) {
     email: "",
     contact: "",
     position: "",
-    address: "",
-    gender: "",
-    bdate: ""
+
   });
   const [error, setError] = useState({});
   const [redirect, setRedirect] = useState(false);
@@ -63,9 +61,7 @@ function RegistrationForm(props) {
     if (!userInfo.email) _error.email = "Email is required";
     if (!userInfo.contact) _error.contact = "Contact is required";
     if (!userInfo.position) _error.position = "Position is required";
-    if (!userInfo.address) _error.address = "Address is required";
-    if (!userInfo.gender) _error.gender = "Gender is required";
-    if (!userInfo.bdate) _error.bdate = "Date of Birth is required";
+
 
     setError(_error);
 
@@ -93,10 +89,7 @@ function RegistrationForm(props) {
           email: userInfo.email,
           contact: userInfo.contact,
           section: user.secid,
-          position: userInfo.position,
-          address: userInfo.address,
-          gender: userInfo.gender,
-          bdate: userInfo.bdate
+          position: userInfo.position
         })
         .then(res => {
           const variant = "success";
@@ -190,12 +183,10 @@ function RegistrationForm(props) {
 
                   <Work handleInput={handleInput} error={error} />
 
-                  <OtherInformation handleInput={handleInput} error={error} />
 
                   <br />
                   <br />
-                  <br />
-                  <div style={{ textAlign: "right" }}>
+                  <div style={{ textAlign: "right", marginTop: 50, marginBottom: 100 }}>
                     <Link to={"/users"} className={"btn btn-outline-info"}>
                       <CancelIcon /> &nbsp;&nbsp; Cancel
                     </Link>

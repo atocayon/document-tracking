@@ -77,6 +77,12 @@ function MyDocuments(props) {
             </div>
           </div>
 
+          {documents.length === 0 && (
+              <div style={{textAlign: "center", marginTop: 200}}>
+                  <h6 style={{ color: "#9E9E9E" }}>You don't have any documents yet</h6>
+              </div>
+          )}
+
           <div style={{ marginLeft: 50, marginRight: 10 }}>
             <div className={"row"}>
               <div className={"col-md-8"}>
@@ -95,6 +101,8 @@ function MyDocuments(props) {
                   ))}
 
                 </List>
+
+
               </div>
               <div className={"col-md-4"}></div>
             </div>
