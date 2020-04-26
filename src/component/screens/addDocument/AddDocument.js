@@ -51,12 +51,12 @@ function AddDocument({ match, enqueueSnackbar }) {
     documentType: "",
     action_req: [],
     note: "",
-    destination: ""
+    internalDestination: "",
+    externalDestination: ""
   });
 
   const [documentType, setDocumentType] = useState([]);
 
-  const [validateActionReq, setValidateActionReq] = useState(false);
   const [error, setError] = useState({});
   const [finalize, setFinalize] = useState(false);
   const [boolCheckbox, setBoolCheckbox] = useState({
@@ -250,6 +250,22 @@ function AddDocument({ match, enqueueSnackbar }) {
       _error.documentType = "Document type is required";
     }
 
+    if (destination === "internal" && !formData.internalDestination) {
+      _error.internalDestination = "Destination is Required";
+    }
+
+    if (destination === "external" && !formData.externalDestination){
+      _error.externalDestination = "Destination is Required";
+    }
+
+    if (!destination) {
+      _error.radDestination = "Please specify destination";
+    }
+
+    if (formData.action_req.length === 0) {
+      _error.action_req = "Please select at least one action required";
+    }
+
     setError(_error);
 
     return Object.keys(_error).length === 0;
@@ -258,21 +274,12 @@ function AddDocument({ match, enqueueSnackbar }) {
   const handleSubmit = event => {
     event.preventDefault();
 
-    if (!formValidation() || formData.action_req.length === 0) {
-      setValidateActionReq(true);
+    if (!formValidation()) {
       const variant = "error";
       enqueueSnackbar("Fill out all required fields...", { variant });
       return;
     }
 
-    if (formData.action_req.length === 0) {
-      setValidateActionReq(true);
-      return;
-    }
-
-    if (formData.action_req.length > 0) {
-      setValidateActionReq(false);
-    }
     setFinalize(true);
   };
 
@@ -304,7 +311,6 @@ function AddDocument({ match, enqueueSnackbar }) {
         if (res.status === 200) {
           if (canvas("#printarea", documentID.documentID)) {
             setFinalize(false);
-            setValidateActionReq(false);
             setFormData({
               ...formData,
               subject: "",
@@ -327,20 +333,11 @@ function AddDocument({ match, enqueueSnackbar }) {
   };
 
   const handleSaveAsDraft = () => {
-    if (!formValidation() || formData.action_req.length === 0) {
-      setValidateActionReq(true);
+    if (!formValidation) {
+
       const variant = "error";
       enqueueSnackbar("Fill out all required fields...", { variant });
       return;
-    }
-
-    if (formData.action_req.length === 0) {
-      setValidateActionReq(true);
-      return;
-    }
-
-    if (formData.action_req.length > 0) {
-      setValidateActionReq(false);
     }
 
     axios
@@ -358,7 +355,7 @@ function AddDocument({ match, enqueueSnackbar }) {
           enqueueSnackbar("Document saved as draft...", {
             variant
           });
-          setValidateActionReq(false);
+
           setFormData({
             ...formData,
             subject: "",
@@ -495,6 +492,7 @@ function AddDocument({ match, enqueueSnackbar }) {
                         documentType={documentType}
                         handleGoBack={handleGoBack}
                         handleRelease={handleRelease}
+                        documentDestination={destination}
                       />
                     ) : (
                       <>
@@ -551,9 +549,9 @@ function AddDocument({ match, enqueueSnackbar }) {
                           <FeedbackIcon />
                           &nbsp;Action Required
                         </h5>
-                        {validateActionReq && (
+                        {error.action_req && (
                           <span style={{ color: "red" }}>
-                            <small>Kindly check at least one action</small>
+                            <small>{error.action_req}</small>
                           </span>
                         )}
                         <br />
@@ -577,48 +575,53 @@ function AddDocument({ match, enqueueSnackbar }) {
                           <ExploreIcon />
                           &nbsp;Destination
                         </h5>
+                        {error.radDestination && (
+                          <span style={{ color: "red" }}>
+                            <small>{error.radDestination}</small>
+                          </span>
+                        )}
                         <br />
                         <Radio
-                          checked={destination === "internal"}
+                          checked={destination === "Internal"}
                           onChange={handleChangeDestination}
-                          value="internal"
+                          value="Internal"
                           name="radio-button-demo"
                           inputProps={{ "aria-label": "A" }}
                         />
                         <label>Internal</label>
                         &nbsp;&nbsp;&nbsp;
                         <Radio
-                          checked={destination === "external"}
+                          checked={destination === "External"}
                           onChange={handleChangeDestination}
-                          value="external"
+                          value="External"
                           name="radio-button-demo"
                           inputProps={{ "aria-label": "B" }}
                         />
                         <label>External</label>
                         <br />
                         <br />
-                        {destination === "internal" && (
+                        {destination === "Internal" && (
                           <SelectField
                             id={"section"}
-                            name={"destination"}
+                            name={"internalDestination"}
                             label={"Internal Office/Section"}
                             options={section}
-                            error={error.section}
+                            error={error.internalDestination}
                             onChange={handleChange}
                             variant={"outlined"}
-                            value={formData.documentType}
+                            value={formData.internalDestination}
                           />
                         )}
-                        {destination === "external" && (
+                        {destination === "External" && (
                           <InputField
                             id={"external"}
                             label={"External Destination"}
-                            name={"destination"}
+                            name={"externalDestination"}
                             variant={"outlined"}
                             onChange={handleChange}
-                            error={error.subject}
+                            error={error.externalDestination}
                             type={"text"}
-                            value={formData.subject}
+                            value={formData.externalDestination}
                           />
                         )}
                         <br />

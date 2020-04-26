@@ -14,6 +14,8 @@ import TextArea from "../../common/textArea/TextArea";
 import DraftsIcon from "@material-ui/icons/Drafts";
 import DoneIcon from "@material-ui/icons/Done";
 import Barcode from "react-barcode";
+import ExploreIcon from "@material-ui/icons/Explore";
+import Radio from "@material-ui/core/Radio";
 function FinalizeDocument(props) {
   const docType = props.documentType.filter(
     doc => doc.id === parseInt(props.data.documentType)
@@ -105,6 +107,29 @@ function FinalizeDocument(props) {
         </h5>
         <div>{props.data.note}</div>
 
+        <br />
+        <br />
+        <h5 style={{ color: "#2196F3" }}>
+          <ExploreIcon />
+          &nbsp;Destination
+        </h5>
+        <Radio
+            checked={true}
+            value={props.documentDestination}
+            name="radio-button-demo"
+            inputProps={{ "aria-label": "B" }}
+        />
+        <label>{props.documentDestination}</label>
+        <br/>
+        <InputField
+            id={"destination"}
+            label={"Document Destination"}
+            name={"destination"}
+            variant={"outlined"}
+            disabled={true}
+            type={"text"}
+            value={props.data.externalDestination ? props.data.externalDestination : props.data.internalDestination}
+        />
         <br />
         <br />
 
