@@ -7,7 +7,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Reactotron from "reactotron-react-js";
 
 export default function SelectField(props) {
-  const docType = props.options.filter(doc => doc.id === parseInt(props.value));
+  // const docType = props.options.filter(doc => doc.id === parseInt(props.value));
 
   return (
     <>
@@ -17,13 +17,6 @@ export default function SelectField(props) {
         name={props.name}
         onChange={props.onChange}
       >
-        {props.value ? (
-          <>
-            {docType.map(res => (
-              <option key={res.id} value={res.id}>{res.type}</option>
-            ))}
-          </>
-        ) : (
           <>
             <option value={props.value}>{props.label}</option>
             {props.options.map(option => (
