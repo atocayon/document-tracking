@@ -131,13 +131,13 @@ function FinalizeDocument(props) {
         {props.data.destination.map(destination => (
             <>
               <Chip
-                  key={destination[1]}
+                  key={destination[4]}
                   avatar={
                     <Avatar>
                       <BusinessIcon />
                     </Avatar>
                   }
-                  label={destination[1]}
+                  label={destination[4]}
               />&nbsp;&nbsp;
             </>
         ))}
