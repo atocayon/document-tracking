@@ -16,7 +16,8 @@ import Avatar from "@material-ui/core/Avatar";
 import DescriptionIcon from "@material-ui/icons/Description";
 import ListItemText from "@material-ui/core/ListItemText";
 import Divider from "@material-ui/core/Divider";
-const head = ["Document ID", "Subject", "Document Type", ""];
+
+
 
 function Draft(props) {
   const [open, setOpen] = useState(true);
