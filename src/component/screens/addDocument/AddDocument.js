@@ -299,7 +299,7 @@ function AddDocument({ match, enqueueSnackbar }) {
       _error.documentType = "Document type is required";
     }
 
-    if (formData.destination === 0) {
+    if (formData.destination.length === 0) {
       _error.destination = "Destination is Required";
     }
 
@@ -618,6 +618,13 @@ function AddDocument({ match, enqueueSnackbar }) {
                         {error.radDestination && (
                           <span style={{ color: "red" }}>
                             <small>{error.radDestination}</small>
+                             <br/>
+                          </span>
+                        )}
+
+                        {error.destination && (
+                            <span style={{ color: "red" }}>
+                            <small>{error.destination}</small>
                           </span>
                         )}
                         <br />
@@ -647,7 +654,6 @@ function AddDocument({ match, enqueueSnackbar }) {
                               name={"internalDestination"}
                               label={"Internal Office/Section"}
                               options={section}
-                              error={error.destination}
                               // onChange={handleChange}
                               variant={"outlined"}
                             />
