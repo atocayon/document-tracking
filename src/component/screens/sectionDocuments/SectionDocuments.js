@@ -88,7 +88,7 @@ function SectionDocuments(props) {
                     {documents.length > 0 &&
                     documents.map(document => {
                       let secondaryText =
-                          document.creatorID === userID ? "Me" : document.creator;
+                          document.creatorID === userID ? "You" : document.creator;
                       return (
                           <Link
                               to={"/doc/" + document.documentID}

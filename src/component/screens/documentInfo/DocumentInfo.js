@@ -17,12 +17,16 @@ import CommentIcon from "@material-ui/icons/Comment";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import canvas from "../../canvas";
 import Reactotron from "reactotron-react-js";
-
+import ExploreIcon from "@material-ui/icons/Explore";
+import Chip from "@material-ui/core/Chip";
+import Avatar from "@material-ui/core/Avatar";
+import BusinessIcon from "@material-ui/icons/Business";
 function DocumentInfo(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
   const [document, setDocument] = useState({});
   const [actionRequired, setActionRequired] = useState([]);
+  const [destination, setDestination] = useState([]);
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
@@ -41,6 +45,19 @@ function DocumentInfo(props) {
             )
             .then(res => {
               setActionRequired(res.data);
+
+              axios
+                .get(
+                  "http://localhost:4000/dts/fetchDocumentDestination/" +
+                    props.match.params.doc_id
+                )
+                .then(_destination => {
+                  setDestination(_destination.data);
+                })
+                .catch(err => {
+                  const variant = "error";
+                  props.enqueueSnackbar("Server Error", { variant });
+                });
             })
             .catch(err => {
               const variant = "error";
@@ -177,6 +194,32 @@ function DocumentInfo(props) {
                 &nbsp;Note
               </h5>
               <div>{document.note}</div>
+
+              {destination.length > 0 && (
+                <>
+                  <br />
+                  <br />
+                  <h5 style={{ color: "#2196F3" }}>
+                    <ExploreIcon />
+                    &nbsp;Destination
+                  </h5>
+                  <br />
+                  {destination.map(res => (
+                    <>
+                      <Chip
+                        key={res.destination}
+                        avatar={
+                          <Avatar>
+                            <BusinessIcon />
+                          </Avatar>
+                        }
+                        label={res.destination}
+                      />
+                      &nbsp;&nbsp;
+                    </>
+                  ))}
+                </>
+              )}
               <br />
               <br />
               <div style={{ textAlign: "right", marginTop: 50 }}>

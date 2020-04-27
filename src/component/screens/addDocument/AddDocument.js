@@ -342,7 +342,7 @@ function AddDocument({ match, enqueueSnackbar }) {
 
   const handleConfirm = () => {
     setOpenDialog(false);
-    formData.destination.splice(-1,0, [documentID.documentID, user.user_id, "none", destination, "none", "5"]);
+    formData.destination.splice(0,0, [documentID.documentID, user.user_id, "none", destination, "none", "5"]);
     axios
       .post("http://localhost:4000/dts/addNewDocument", {
         documentID: documentID.documentID,
@@ -400,7 +400,7 @@ function AddDocument({ match, enqueueSnackbar }) {
       return;
     }
 
-    formData.destination.splice(-1,0, [documentID.documentID, user.user_id, "none", destination, "none", "5"]);
+    // formData.destination.splice(-1,0, [documentID.documentID, user.user_id, "none", destination, "none", "5"]);
 
     axios
       .post("http://localhost:4000/dts/draft", {
@@ -409,8 +409,7 @@ function AddDocument({ match, enqueueSnackbar }) {
         subject: formData.subject,
         doc_type: formData.documentType,
         note: formData.note,
-        action_req: formData.action_req,
-        documentLogs: formData.destination
+        action_req: formData.action_req
       })
       .then(res => {
         if (res.status === 200) {

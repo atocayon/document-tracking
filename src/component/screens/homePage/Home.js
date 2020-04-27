@@ -5,6 +5,7 @@ import { getFromStorage } from "../../storage";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
 import CircularProgressComponent from "../../common/circularProgress/CircularProgressComponent";
+import ControlPanel from "./ControlPanel";
 
 function Home() {
   const [token, setToken] = useState([]);
@@ -42,7 +43,14 @@ function Home() {
           {token[0].success === false ? (
             <Redirect to={"/login"} />
           ) : (
-              <Dashboard user={user} />
+              <>
+                  {user.role === "1" || user.role === "2" ? (
+                      <Dashboard user={user} />
+                  ):(
+                      <ControlPanel user={user} />
+                  )}
+              </>
+
           )}
 
         </>
