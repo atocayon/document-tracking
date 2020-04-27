@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import addImage from "../../../img/add.jpg";
-import tracking from "../../../img/tracking.png";
-import receive from "../../../img/recieve.jpg";
-import release from "../../../img/release.jpg";
-import CardComponent from "../../common/card/CardComponent";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 import InputField from "../../common/textField/InputField";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
