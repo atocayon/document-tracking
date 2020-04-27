@@ -243,7 +243,7 @@ function AddDocument({ match, enqueueSnackbar }) {
     const _destination = [];
     const internal = document.getElementById("internalDestination").value;
 
-    _destination.push([documentID.documentID, internal]);
+    _destination.push([documentID.documentID, user.user_id, "none", destination, internal, "2"]);
     setFormData({
       ...formData,
       destination: [...formData.destination, ..._destination]
@@ -258,7 +258,7 @@ function AddDocument({ match, enqueueSnackbar }) {
       _error.externalDestination = "Type Something";
       setError(_error);
     } else {
-      _destination.push([documentID.documentID, external]);
+      _destination.push([documentID.documentID, user.user_id, "none", destination, external, "2"]);
       setFormData({
         ...formData,
         externalDestination: "",
@@ -342,6 +342,7 @@ function AddDocument({ match, enqueueSnackbar }) {
 
   const handleConfirm = () => {
     setOpenDialog(false);
+    formData.destination.splice(-1,0, [documentID.documentID, user.user_id, "none", destination, "none", "5"]);
     axios
       .post("http://localhost:4000/dts/addNewDocument", {
         documentID: documentID.documentID,
@@ -349,19 +350,34 @@ function AddDocument({ match, enqueueSnackbar }) {
         subject: formData.subject,
         doc_type: formData.documentType,
         note: formData.note,
-        action_req: formData.action_req
+        action_req: formData.action_req,
+        documentLogs: formData.destination
       })
       .then(res => {
         Reactotron.log(res);
         if (res.status === 200) {
           if (canvas("#printarea", documentID.documentID)) {
             setFinalize(false);
+            setDestination("");
             setFormData({
               ...formData,
               subject: "",
               documentType: "",
               action_req: [],
-              note: ""
+              note: "",
+              externalDestination: "",
+              destination: []
+            });
+            setBoolCheckbox({
+              ...boolCheckbox,
+              "For Approval": false,
+              "For Signature": false,
+              "For Endorsement": false,
+              "For Recommendation": false,
+              "For Action": false,
+              "For Comment": false,
+              "For Information": false,
+              "For File": false
             });
 
             const variant = "info";
@@ -384,6 +400,8 @@ function AddDocument({ match, enqueueSnackbar }) {
       return;
     }
 
+    formData.destination.splice(-1,0, [documentID.documentID, user.user_id, "none", destination, "none", "5"]);
+
     axios
       .post("http://localhost:4000/dts/draft", {
         documentID: documentID.documentID,
@@ -391,7 +409,8 @@ function AddDocument({ match, enqueueSnackbar }) {
         subject: formData.subject,
         doc_type: formData.documentType,
         note: formData.note,
-        action_req: formData.action_req
+        action_req: formData.action_req,
+        documentLogs: formData.destination
       })
       .then(res => {
         if (res.status === 200) {
@@ -700,7 +719,7 @@ function AddDocument({ match, enqueueSnackbar }) {
                                         <BusinessIcon />
                                       </Avatar>
                                     }
-                                    label={des[1]}
+                                    label={des[4]}
                                     onDelete={handleRemoveDestination(index)}
                                 />&nbsp;&nbsp;
                               </>

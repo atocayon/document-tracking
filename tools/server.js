@@ -469,7 +469,7 @@ router.route("/documentType").get(function(req, res) {
 
 //Insert New Document
 router.route("/addNewDocument").post(function(req, res) {
-  const { documentID, creator, subject, doc_type, note, action_req } = req.body;
+  const { documentID, creator, subject, doc_type, note, action_req, documentLogs } = req.body;
 
   const check = "SELECT * FROM documents WHERE documentID = ?";
   connection.query(check, [documentID], function(err, rows, fields) {
@@ -498,13 +498,9 @@ router.route("/addNewDocument").post(function(req, res) {
             }
 
             const sql =
-              "INSERT INTO documentLogs (document_id, user_id, remarks, status, destination) VALUES ?";
-            const values2 = [
-              [documentID, creator, "none", "5", "none"],
-              [documentID, creator, "none", "2", "destination"]
-            ];
+              "INSERT INTO documentLogs (document_id, user_id, remarks, destinationType, destination, status) VALUES ?";
 
-            connection.query(sql, [values2], function(err, result) {
+            connection.query(sql, [documentLogs], function(err, result) {
               if (err) {
                 console.log(err);
                 res.status(500).send(err);
@@ -512,6 +508,18 @@ router.route("/addNewDocument").post(function(req, res) {
 
               console.log(result);
               res.status(200).send(result);
+
+              // const destination_query = "INSERT INTO destination (documentID, type, destination, status) VALUES ?";
+              // connection.query(destination_query, [destination], function(err, result){
+              //   if (err){
+              //     console.log(err);
+              //     res.status(500).send(err);
+              //   }
+              //
+              //   console.log(result);
+              //   res.status(200).send(result);
+              // });
+
             });
           });
         }
@@ -536,10 +544,9 @@ router.route("/addNewDocument").post(function(req, res) {
           }
 
           const sql3 =
-            "INSERT INTO documentLogs (document_id, user_id, remarks, status) VALUES ?";
-          const values2 = [[documentID, creator, "none", "5"]];
+            "INSERT INTO documentLogs (document_id, user_id, remarks, destinationType, destination, status) VALUES ?";
 
-          connection.query(sql3, [values2], function(err, result) {
+          connection.query(sql3, [documentLogs], function(err, result) {
             if (err) {
               console.log(err);
               res.status(500).send(err);
