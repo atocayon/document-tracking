@@ -54,19 +54,18 @@ function Dashboard(props) {
                       </div>
                     </div>
                   </div>
-                  <div className={"col-md-8"}>
+                  <div className={"col-md-6"}>
                     <InputField
                       id={"tackDocument"}
                       label={"Document Tracking Number"}
                       variant={"outlined"}
                     />
-                    <small>
-                      - Type the tracking number or scan the barcode of the
-                      document to track its progress.
-                    </small>
+
                   </div>
-                  <div className={"col-md-2"}>
+                  <div className={"col-md-4"}>
                     <button className={"btn btn-lg btn-info"}>Track</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button className={"btn btn-lg btn-outline-info"}>Receive</button>
                   </div>
                 </div>
               </div>
@@ -75,7 +74,7 @@ function Dashboard(props) {
                 <div className={"col-md-12"}>
                   <div style={{ textAlign: "center", marginTop: "30vh" }}>
                     <h6 style={{ color: "#9E9E9E" }}>
-                      Document track will show here
+                      Document track / information will show here
                     </h6>
                   </div>
                 </div>
