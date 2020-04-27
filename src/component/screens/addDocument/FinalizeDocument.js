@@ -16,6 +16,9 @@ import DoneIcon from "@material-ui/icons/Done";
 import Barcode from "react-barcode";
 import ExploreIcon from "@material-ui/icons/Explore";
 import Radio from "@material-ui/core/Radio";
+import Chip from "@material-ui/core/Chip";
+import Avatar from "@material-ui/core/Avatar";
+import BusinessIcon from "@material-ui/icons/Business";
 function FinalizeDocument(props) {
   const docType = props.documentType.filter(
     doc => doc.id === parseInt(props.data.documentType)
@@ -113,23 +116,31 @@ function FinalizeDocument(props) {
           <ExploreIcon />
           &nbsp;Destination
         </h5>
-        <Radio
-            checked={true}
-            value={props.documentDestination}
-            name="radio-button-demo"
-            inputProps={{ "aria-label": "B" }}
-        />
-        <label>{props.documentDestination}</label>
+        <FormGroup>
+          <CheckBox
+              checked={true}
+              key={props.documentDestination}
+              label={props.documentDestination}
+              value={props.documentDestination}
+              name={props.documentDestination}
+          />
+
+        </FormGroup>
+
         <br/>
-        <InputField
-            id={"destination"}
-            label={"Document Destination"}
-            name={"destination"}
-            variant={"outlined"}
-            disabled={true}
-            type={"text"}
-            value={props.data.externalDestination ? props.data.externalDestination : props.data.internalDestination}
-        />
+        {props.data.destination.map(destination => (
+            <>
+              <Chip
+                  key={destination[1]}
+                  avatar={
+                    <Avatar>
+                      <BusinessIcon />
+                    </Avatar>
+                  }
+                  label={destination[1]}
+              />&nbsp;&nbsp;
+            </>
+        ))}
         <br />
         <br />
 

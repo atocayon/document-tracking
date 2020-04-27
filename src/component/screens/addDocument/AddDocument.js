@@ -25,6 +25,9 @@ import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import canvas from "../../canvas";
 import ExploreIcon from "@material-ui/icons/Explore";
 import Radio from "@material-ui/core/Radio";
+import Chip from "@material-ui/core/Chip";
+import Avatar from "@material-ui/core/Avatar";
+import BusinessIcon from '@material-ui/icons/Business';
 function AddDocument({ match, enqueueSnackbar }) {
   const checkboxItem = [
     { id: 0, value: "For Approval" },
@@ -51,8 +54,8 @@ function AddDocument({ match, enqueueSnackbar }) {
     documentType: "",
     action_req: [],
     note: "",
-    internalDestination: "",
-    externalDestination: ""
+    externalDestination: "",
+    destination: []
   });
 
   const [documentType, setDocumentType] = useState([]);
@@ -236,6 +239,52 @@ function AddDocument({ match, enqueueSnackbar }) {
     });
   };
 
+  const handleAddDestinationInternal = () => {
+    const _destination = [];
+    const internal = document.getElementById("internalDestination").value;
+
+    _destination.push([documentID.documentID, internal]);
+    setFormData({
+      ...formData,
+      destination: [...formData.destination, ..._destination]
+    });
+  };
+
+  const handleAddDestinationExternal = () => {
+    const _destination = [];
+    const external = formData.externalDestination;
+    const _error = {};
+    if (external === "") {
+      _error.externalDestination = "Type Something";
+      setError(_error);
+    } else {
+      _destination.push([documentID.documentID, external]);
+      setFormData({
+        ...formData,
+        externalDestination: "",
+        destination: [...formData.destination, ..._destination]
+      });
+    }
+
+  };
+
+  const handleChangeDestination = ({ target }) => {
+    setDestination(target.value);
+    setFormData({ ...formData, destination: [] });
+  };
+
+  const handleRemoveDestination = name => event => {
+    const desArray = [...formData.destination];
+    Reactotron.log(desArray);
+
+    desArray.splice(name, 1);
+
+    setFormData({
+      ...formData,
+      destination: desArray
+    });
+  };
+
   const formValidation = () => {
     const _error = {};
 
@@ -250,12 +299,8 @@ function AddDocument({ match, enqueueSnackbar }) {
       _error.documentType = "Document type is required";
     }
 
-    if (destination === "internal" && !formData.internalDestination) {
-      _error.internalDestination = "Destination is Required";
-    }
-
-    if (destination === "external" && !formData.externalDestination){
-      _error.externalDestination = "Destination is Required";
+    if (formData.destination === 0) {
+      _error.destination = "Destination is Required";
     }
 
     if (!destination) {
@@ -334,7 +379,6 @@ function AddDocument({ match, enqueueSnackbar }) {
 
   const handleSaveAsDraft = () => {
     if (!formValidation) {
-
       const variant = "error";
       enqueueSnackbar("Fill out all required fields...", { variant });
       return;
@@ -388,10 +432,6 @@ function AddDocument({ match, enqueueSnackbar }) {
           variant
         });
       });
-  };
-
-  const handleChangeDestination = ({ target }) => {
-    setDestination(target.value);
   };
 
   const createCheckbox = label => {
@@ -601,30 +641,65 @@ function AddDocument({ match, enqueueSnackbar }) {
                         <br />
                         <br />
                         {destination === "Internal" && (
-                          <SelectField
-                            id={"section"}
-                            name={"internalDestination"}
-                            label={"Internal Office/Section"}
-                            options={section}
-                            error={error.internalDestination}
-                            onChange={handleChange}
-                            variant={"outlined"}
-                            value={formData.internalDestination}
-                          />
+                          <>
+                            <SelectField
+                              id={"internalDestination"}
+                              name={"internalDestination"}
+                              label={"Internal Office/Section"}
+                              options={section}
+                              error={error.destination}
+                              // onChange={handleChange}
+                              variant={"outlined"}
+                            />
+                            <br />
+                            <button
+                              className={"btn btn-sm btn-primary"}
+                              onClick={handleAddDestinationInternal}
+                            >
+                              Add
+                            </button>
+                          </>
                         )}
                         {destination === "External" && (
-                          <InputField
-                            id={"external"}
-                            label={"External Destination"}
-                            name={"externalDestination"}
-                            variant={"outlined"}
-                            onChange={handleChange}
-                            error={error.externalDestination}
-                            type={"text"}
-                            value={formData.externalDestination}
-                          />
+                          <>
+                            <InputField
+                              id={"external"}
+                              label={"External Destination"}
+                              name={"externalDestination"}
+                              variant={"outlined"}
+                              error={error.externalDestination}
+                              type={"text"}
+                              onChange={handleChange}
+                              value={formData.externalDestination}
+                            />
+                            <br />
+                            <br />
+                            <button
+                              className={"btn btn-sm btn-primary"}
+                              onClick={handleAddDestinationExternal}
+                            >
+                              Add
+                            </button>
+                          </>
                         )}
                         <br />
+                        <br />
+                        {formData.destination.length > 0 &&
+                          formData.destination.map((des, index) => (
+                              <>
+                                <Chip
+                                    key={index}
+                                    avatar={
+                                      <Avatar>
+                                        <BusinessIcon />
+                                      </Avatar>
+                                    }
+                                    label={des[1]}
+                                    onDelete={handleRemoveDestination(index)}
+                                />&nbsp;&nbsp;
+                              </>
+
+                          ))}
                         <br />
                         <div
                           style={{
