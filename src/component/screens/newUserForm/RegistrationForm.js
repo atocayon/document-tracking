@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Paper } from "@material-ui/core";
 import { Link, Redirect } from "react-router-dom";
-import CancelIcon from '@material-ui/icons/Cancel';
+import CancelIcon from "@material-ui/icons/Cancel";
 import StepperComponent from "./StepperComponent";
 import Profile from "./Profile";
 import Contact from "./Contact";
@@ -13,7 +13,7 @@ import { withSnackbar } from "notistack";
 import { getFromStorage } from "../../storage";
 import Grid from "@material-ui/core/Grid";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
-import SaveIcon from '@material-ui/icons/Save';
+import SaveIcon from "@material-ui/icons/Save";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 function RegistrationForm(props) {
   const [userInfo, setUserInfo] = useState({
@@ -25,8 +25,7 @@ function RegistrationForm(props) {
     confirmPassword: "",
     email: "",
     contact: "",
-    position: "",
-
+    position: ""
   });
   const [error, setError] = useState({});
   const [redirect, setRedirect] = useState(false);
@@ -62,7 +61,6 @@ function RegistrationForm(props) {
     if (!userInfo.contact) _error.contact = "Contact is required";
     if (!userInfo.position) _error.position = "Position is required";
 
-
     setError(_error);
 
     return Object.keys(_error).length === 0;
@@ -92,18 +90,30 @@ function RegistrationForm(props) {
           position: userInfo.position
         })
         .then(res => {
-          const variant = "success";
-          props.enqueueSnackbar("Registration Success...", { variant });
-
-          setRedirect(true);
+          if (res.status === 200) {
+            if (res.data.success) {
+              const variant = "success";
+              props.enqueueSnackbar("Registration Success...", { variant });
+              setRedirect(true);
+            } else {
+              const _error = {};
+              _error.email = "Email is already taken...";
+              setError(_error);
+              const variant = "warning";
+              props.enqueueSnackbar("Email is already taken...", { variant });
+            }
+          }
         })
         .catch(err => {
-          const variant = "warning";
-          props.enqueueSnackbar("Server Error...", { variant });
+          const variant = "error";
+          props.enqueueSnackbar("Server error...", { variant });
         });
     } else {
+      const _error = {};
+      _error.password = "Password Don't match";
+      _error.confirmPassword = "Password Don't match";
+      setError(_error);
       const variant = "error";
-
       props.enqueueSnackbar("Password doesn't match...", { variant });
     }
   };
@@ -117,7 +127,6 @@ function RegistrationForm(props) {
     Reactotron.log(target.name);
   };
 
-
   const handleClick = () => {
     setOpen(!open);
   };
@@ -127,24 +136,24 @@ function RegistrationForm(props) {
       <PrimarySearchAppBar />
       <Grid item xs={2}>
         <SideBarNavigation
-            open={open}
-            setOpen={setOpen}
-            handleClick={handleClick}
+          open={open}
+          setOpen={setOpen}
+          handleClick={handleClick}
         />
       </Grid>
       <Grid item xs={8}>
         {endSession && <Redirect to={"/"} />}
         {redirect && <Redirect to={"/users"} />}
         <Paper
-            elevation={3}
-            style={{
-              marginBottom: 0,
-              bottom: 0,
-              marginTop: 70,
-              paddingBottom: 100,
-              height: "100vh",
-              overflow: "auto"
-            }}
+          elevation={3}
+          style={{
+            marginBottom: 0,
+            bottom: 0,
+            marginTop: 70,
+            paddingBottom: 100,
+            height: "100vh",
+            overflow: "auto"
+          }}
         >
           <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -152,9 +161,7 @@ function RegistrationForm(props) {
                 <div className={"row"}>
                   <div className={"col-md-2"}>
                     <div className={"row"}>
-                      <div className={"col-md-6"}>
-
-                      </div>
+                      <div className={"col-md-6"}></div>
                       <div className={"col-md-6"}>
                         <div style={{ textAlign: "right" }}></div>
                       </div>
@@ -183,16 +190,22 @@ function RegistrationForm(props) {
 
                   <Work handleInput={handleInput} error={error} />
 
-
                   <br />
                   <br />
-                  <div style={{ textAlign: "right", marginTop: 50, marginBottom: 100 }}>
+                  <div
+                    style={{
+                      textAlign: "right",
+                      marginTop: 50,
+                      marginBottom: 100
+                    }}
+                  >
                     <Link to={"/users"} className={"btn btn-outline-info"}>
                       <CancelIcon /> &nbsp;&nbsp; Cancel
                     </Link>
                     &nbsp;&nbsp;&nbsp;
                     <button className={"btn btn-info"} onClick={handleSubmit}>
-                      <SaveIcon/>&nbsp;&nbsp; Save
+                      <SaveIcon />
+                      &nbsp;&nbsp; Save
                     </button>
                   </div>
                 </div>
@@ -212,7 +225,6 @@ function RegistrationForm(props) {
         </Paper>
       </Grid>
       <Grid item xs={2}></Grid>
-
     </Grid>
   );
 }

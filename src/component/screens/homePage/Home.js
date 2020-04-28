@@ -5,14 +5,15 @@ import { getFromStorage } from "../../storage";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
 import CircularProgressComponent from "../../common/circularProgress/CircularProgressComponent";
-import ControlPanel from "./ControlPanel";
+import ControlPanel from "../controlPanel/ControlPanel";
 
 function Home() {
   const [token, setToken] = useState([]);
   const [user, setUser] = useState({});
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
+
     if (obj && obj.token) {
       const { token } = obj;
       axios
@@ -21,42 +22,33 @@ function Home() {
           setToken([...token, res.data]);
 
           axios
-              .get("http://localhost:4000/dts/user/" + token)
-              .then(_user => {
-                setUser(_user.data);
-              })
-              .catch(err => {
-                alert(err);
-              });
+            .get("http://localhost:4000/dts/user/" + token)
+            .then(_user => {
+              setUser(_user.data);
+              setLoading(false);
+            })
+            .catch(err => {
+              alert(err);
+            });
         })
         .catch(err => {
           alert(err);
         });
-    }else{
-      setToken([...token, {success: false, message: "No Session Found"}]);
     }
   }, []);
   return (
     <div>
-      {token.length > 0 ? (
+      {token.length > 0 && (
         <>
-          {token[0].success === false ? (
-            <Redirect to={"/login"} />
-          ) : (
-              <>
-                  {user.role === "1" || user.role === "2" ? (
-                      <Dashboard user={user} />
-                  ):(
-                      <ControlPanel user={user} />
-                  )}
-              </>
-
-          )}
-
+          {token[0].success === false && <Redirect to={"/login"} />}
+          {user.role === "3" && <ControlPanel user={user} />}
+          {user.role === "2" && <Dashboard user={user} />}
+          {user.role === "1" && <Dashboard user={user} />}
         </>
-      ) : (
-        <CircularProgressComponent />
       )}
+      {token.length === 0 && <CircularProgressComponent />}
+
+      {loading && <CircularProgressComponent />}
     </div>
   );
 }

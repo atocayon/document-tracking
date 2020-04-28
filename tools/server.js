@@ -69,40 +69,40 @@ router.route("/addUser").post(function(req, res) {
     }
 
     if (rows.length > 0) {
-      res.status(409).send("Email is already in used");
-    }
-
-    bcrypt.hash(password, saltRounds, function(err, hash) {
-      if (err) {
-        console.log(err);
-        res.status(500).send(err);
-      }
-
-      const sql1 =
-        "INSERT INTO users (employeeId, name, username, password, contact, email, section, position, role) VALUES ?";
-
-      const values = [
-        [
-          employeeId,
-          name,
-          username,
-          hash,
-          contact,
-          email,
-          section,
-          position,
-          role
-        ]
-      ];
-      connection.query(sql1, [values], function(err, result) {
+      res.status(200).send({ success: false });
+    } else {
+      bcrypt.hash(password, saltRounds, function(err, hash) {
         if (err) {
           console.log(err);
           res.status(500).send(err);
         }
 
-        res.status(200).send("Registration successful" + result);
+        const sql1 =
+          "INSERT INTO users (employeeId, name, username, password, contact, email, section, position, role) VALUES ?";
+
+        const values = [
+          [
+            employeeId,
+            name,
+            username,
+            hash,
+            contact,
+            email,
+            section,
+            position,
+            role
+          ]
+        ];
+        connection.query(sql1, [values], function(err, result) {
+          if (err) {
+            console.log(err);
+            res.status(500).send(err);
+          }
+
+          res.status(200).send({ success: true });
+        });
       });
-    });
+    }
   });
 });
 
@@ -111,7 +111,8 @@ router.route("/login/:email/:password").post(function(req, res) {
   let email = req.params.email;
   let password = req.params.password;
 
-  const sql = "SELECT users.user_id AS user_id, users.password AS password, users_role.role AS role FROM users JOIN users_role ON users.role = users_role.role_id WHERE email = ?";
+  const sql =
+    "SELECT users.user_id AS user_id, users.password AS password, users_role.role AS role FROM users JOIN users_role ON users.role = users_role.role_id WHERE email = ?";
 
   connection.query(sql, [email], function(err, rows, fields) {
     if (err) {
@@ -162,9 +163,12 @@ router.route("/login/:email/:password").post(function(req, res) {
               }
 
               console.log(result);
-              res
-                .status(200)
-                .json({ success: true, message: "New User", role: role ,token: id });
+              res.status(200).json({
+                success: true,
+                message: "New User",
+                role: role,
+                token: id
+              });
             });
           }
 
@@ -233,18 +237,17 @@ router.route("/varifyToken/:token").get(function(req, res) {
   });
 });
 
-// //Fetch all users
+//Fetch all users
 router.route("/getUsers").get(function(req, res) {
-  const sql = "SELECT * FROM users";
+  const sql =
+    "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.contact AS contact, users.email AS email, users.section AS secid, sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort,users.position AS position, users.role AS role_id, users_role.role AS role, users_status.status AS accnt_status FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid JOIN users_role ON users.role = users_role.role_id JOIN users_status ON users.status = users_status.status_id ORDER BY users.name ASC";
   connection.query(sql, function(err, rows, fields) {
     if (err) {
-      res.status(500).json({
-        success: false,
-        message: "Server Error in fetching data in users table"
-      });
+      console.log(err);
+      res.status(500).send(err);
     }
-
-    res.status(200).send(rows[0]);
+    console.log(rows);
+    res.status(200).send(rows);
   });
 });
 
@@ -253,22 +256,14 @@ router.route("/sectionUser/:section").get(function(req, res) {
   let section = req.params.section;
 
   const sql =
-    "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.password AS password, users.contact AS contact, users.email AS email, users.section AS secid, users.position AS position, users.address AS address, users.gender AS gender, users.bdate AS bdate, users.role AS role, users.status AS status ,sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid WHERE users.section = ? ORDER BY name ASC";
+    "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.password AS password, users.contact AS contact, users.email AS email, users.section AS secid, users.position AS position, users.role AS role, users.status AS status ,sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid WHERE users.section = ? ORDER BY name ASC";
   connection.query(sql, [section], function(err, rows, fields) {
     if (err) {
-      res.status(500).json({
-        success: false,
-        message: "Server error in fetching data in users table"
-      });
+      console.log(err);
+      res.status(500).send(err);
     }
 
-    if (rows.length === 0) {
-      res.status(404).json({
-        success: false,
-        message: "No data Found"
-      });
-    }
-    // console.log(rows);
+    console.log(rows);
     res.status(200).send(rows);
   });
 });
@@ -678,7 +673,7 @@ router.route("/fetchSectionDocuments/:userID").get(function(req, res) {
 router.route("/fetchDocumentDestination/:doc_id").get(function(req, res) {
   const documentID = req.params.doc_id;
   const sql =
-    "SELECT documentLogs.destination as destination, documentLogs.user_id as creator,documentStatus.status as documentStatus FROM documentLogs JOIN documentStatus ON documentLogs.status = documentStatus.statid WHERE document_id = ? AND destination != ?";
+    "SELECT DISTINCT documentLogs.destination as destination, documentLogs.user_id as creator,documentStatus.status as documentStatus FROM documentLogs JOIN documentStatus ON documentLogs.status = documentStatus.statid WHERE document_id = ? AND destination != ?";
   connection.query(sql, [documentID, "none"], function(err, rows, fields) {
     if (err) {
       console.log(err);
