@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { withSnackbar } from "notistack";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
@@ -14,6 +14,7 @@ import EqualizerIcon from "@material-ui/icons/Equalizer";
 import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
 import { getFromStorage } from "../../storage";
 import axios from "axios";
+import Users from "./Users";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -59,6 +60,19 @@ const useStyles = makeStyles(theme => ({
 function ControlPanel(props) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
+  const [systemUsers, setSystemUsers] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:4000/dts/getUsers")
+      .then(_users => {
+        setSystemUsers(_users.data);
+      })
+      .catch(err => {
+        const variant = "error";
+        props.enqueueSnackbar("Server error...", { variant });
+      });
+  }, []);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -131,7 +145,7 @@ function ControlPanel(props) {
             </Tabs>
           </AppBar>
           <TabPanel value={value} index={0}>
-            Item One
+            <Users systemUsers={systemUsers} />
           </TabPanel>
           <TabPanel value={value} index={1}>
             Item Two

@@ -75,17 +75,17 @@ function UserManagement(props) {
                 })
                 .catch(err => {
                   const variant = "error";
-                  props.enqueueSnackbar(err, { variant });
+                  props.enqueueSnackbar("Error on fetching sections", { variant });
                 });
             })
             .catch(err => {
               const variant = "error";
-              props.enqueueSnackbar(err, { variant });
+              props.enqueueSnackbar("Error on fetching users", { variant });
             });
         })
         .catch(err => {
           const variant = "error";
-          props.enqueueSnackbar(err, { variant });
+          props.enqueueSnackbar("Error on fetching users", { variant });
         });
     }
 
