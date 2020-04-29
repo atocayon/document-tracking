@@ -34,6 +34,8 @@ function Home() {
         .catch(err => {
           alert(err);
         });
+    }else{
+      setToken([...token, {success: false}]);
     }
   }, []);
   return (
@@ -46,7 +48,6 @@ function Home() {
           {user.role === "1" && <Dashboard user={user} />}
         </>
       )}
-      {token.length === 0 && <CircularProgressComponent />}
 
       {loading && <CircularProgressComponent />}
     </div>

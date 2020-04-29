@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { withSnackbar } from "notistack";
-import PropTypes from "prop-types";
+import PropTypes, { func } from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
@@ -15,6 +15,8 @@ import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
 import { getFromStorage } from "../../storage";
 import axios from "axios";
 import Users from "./Users";
+import { connect } from "react-redux";
+import { userRegistration } from "../../../redux/actions/userRegistration";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -59,23 +61,63 @@ const useStyles = makeStyles(theme => ({
 
 function ControlPanel(props) {
   const classes = useStyles();
+  const [openUserRegistration, setOpenUserRegistration] = useState(false);
   const [value, setValue] = React.useState(0);
   const [systemUsers, setSystemUsers] = useState([]);
-
+  const [sections, setSections] = useState([]);
+  const [error, setError] = useState({});
+  const [userInfo, setUserInfo] = useState({
+    section: "",
+    user_role: "",
+    employeeId: "",
+    name: "",
+    username: "",
+    password: "",
+    confirmPassword: "",
+    email: "",
+    contact: "",
+    position: ""
+  });
   useEffect(() => {
     axios
       .get("http://localhost:4000/dts/getUsers")
       .then(_users => {
         setSystemUsers(_users.data);
+
+        axios
+          .get("http://localhost:4000/dts/sections")
+          .then(_sections => {
+            const section = [];
+            for (let i = 0; i < _sections.data.length; i++) {
+              section.push({
+                id: _sections.data[i].secid,
+                type: _sections.data[i].section
+              });
+            }
+
+            setSections(section);
+          })
+          .catch(err => {
+            const variant = "error";
+            props.enqueueSnackbar("Error in fetching sections...", { variant });
+          });
       })
       .catch(err => {
         const variant = "error";
-        props.enqueueSnackbar("Server error...", { variant });
+        props.enqueueSnackbar("Error in fetching users...", { variant });
       });
   }, []);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const handleClickOpen = () => {
+    setOpenUserRegistration(true);
+  };
+
+  const handleClose = () => {
+    setOpenUserRegistration(false);
   };
 
   const handleLogOutControlPanel = () => {
@@ -90,8 +132,81 @@ function ControlPanel(props) {
           window.location.reload();
         })
         .catch(err => {
-          props.enqueueSnackbar("Server Error... " + err);
+          const variant = "error";
+          props.enqueueSnackbar("Server Error... ", { variant });
         });
+    }
+  };
+
+  const handleInputChange = ({ target }) => {
+    setUserInfo({ ...userInfo, [target.name]: target.value });
+  };
+
+  const formValidation = () => {
+    const _error = {};
+    if (!userInfo.section) _error.section = "Section is required";
+    if (!userInfo.user_role) _error.user_role = "User role is required";
+    if (!userInfo.employeeId) _error.employeeId = "Employee ID is required";
+    if (!userInfo.name) _error.name = "Name is required";
+    if (!userInfo.username) _error.username = "Username is required";
+    if (!userInfo.password) _error.password = "Password is required";
+    if (!userInfo.confirmPassword)
+      _error.confirmPassword = "Confirm password is required";
+    if (!userInfo.email) _error.email = "Email is required";
+    if (!userInfo.contact) _error.contact = "Contact is required";
+    if (!userInfo.position) _error.position = "Work position is required";
+
+    setError(_error);
+
+    return Object.keys(_error).length === 0;
+  };
+
+  const handleSubmitUserRegistration = async () => {
+    if (!formValidation()) {
+      const variant = "error";
+      props.enqueueSnackbar("All fields are required", { variant });
+      return;
+    }
+
+    if (userInfo.password === userInfo.confirmPassword) {
+      await props.userRegistration(
+        userInfo.section,
+        userInfo.user_role,
+        userInfo.employeeId,
+        userInfo.name,
+        userInfo.username,
+        userInfo.password,
+        userInfo.confirmPassword,
+        userInfo.email,
+        userInfo.contact,
+        userInfo.position
+      );
+
+      await setUserInfo({
+        ...userInfo,
+        section: "",
+        user_role: "",
+        employeeId: "",
+        name: "",
+        username: "",
+        password: "",
+        confirmPassword: "",
+        email: "",
+        contact: "",
+        position: ""
+      });
+
+      await setOpenUserRegistration(false);
+
+      const variant = "info";
+      await props.enqueueSnackbar("Registration Success", { variant });
+    } else {
+      const _error = {};
+      _error.password = "Password and Confirm password don't match";
+      _error.confirmPassword = "Password and Confirm password don't match";
+      setError(_error);
+      const variant = "error";
+      props.enqueueSnackbar("All fields are required", { variant });
     }
   };
 
@@ -145,7 +260,16 @@ function ControlPanel(props) {
             </Tabs>
           </AppBar>
           <TabPanel value={value} index={0}>
-            <Users systemUsers={systemUsers} />
+            <Users
+              systemUsers={systemUsers}
+              sections={sections}
+              open={openUserRegistration}
+              handleClickOpen={handleClickOpen}
+              handleClose={handleClose}
+              handleInputChange={handleInputChange}
+              handleSubmitUserRegistration={handleSubmitUserRegistration}
+              error={error}
+            />
           </TabPanel>
           <TabPanel value={value} index={1}>
             Item Two
@@ -172,4 +296,17 @@ function ControlPanel(props) {
   );
 }
 
-export default withSnackbar(ControlPanel);
+function mapStateToProps(state) {
+  return {
+    userRegistration: state.userRegistration
+  };
+}
+
+const mapDispatchToProps = {
+  userRegistration
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withSnackbar(ControlPanel));

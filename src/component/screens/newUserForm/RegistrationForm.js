@@ -6,7 +6,6 @@ import StepperComponent from "./StepperComponent";
 import Profile from "./Profile";
 import Contact from "./Contact";
 import Work from "./Work";
-import OtherInformation from "./OtherInformation";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
 import { withSnackbar } from "notistack";
