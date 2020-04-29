@@ -3,25 +3,26 @@ import { withSnackbar } from "notistack";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import EditIcon from "@material-ui/icons/Edit";
 import AddNewUser from "./AddNewUser";
-
+import Reactotron from "reactotron-react-js";
 function Users(props) {
   const users = props.systemUsers.filter(res => res.role !== "super_admin");
 
-  const [open, setOpen] = useState(false);
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   return (
-    <>
-      <AddNewUser open={open} handleClose={handleClose} />
+    <div style={{ paddingBottom: 200,height: "100vh", overflow: "auto"}}>
+      <AddNewUser
+        open={props.open}
+        handleClose={props.handleClose}
+        sections={props.sections}
+        handleInputChange={props.handleInputChange}
+        handleSubmitUserRegistration={props.handleSubmitUserRegistration}
+        error={props.error}
+      />
 
       <div style={{ textAlign: "right", marginBottom: 10 }}>
-        <button className={"btn btn-sm btn-success"} onClick={handleClickOpen}>
+        <button
+          className={"btn btn-sm btn-success"}
+          onClick={props.handleClickOpen}
+        >
           Add New User
         </button>
       </div>
@@ -64,13 +65,12 @@ function Users(props) {
                     <DeleteOutlineIcon />
                   </button>
                 </div>
-
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-    </>
+    </div>
   );
 }
 

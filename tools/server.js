@@ -78,7 +78,7 @@ router.route("/addUser").post(function(req, res) {
         }
 
         const sql1 =
-          "INSERT INTO users (employeeId, name, username, password, contact, email, section, position, role) VALUES ?";
+          "INSERT INTO users (employeeId, name, username, password, contact, email, section, position, role, status) VALUES ?";
 
         const values = [
           [
@@ -90,7 +90,8 @@ router.route("/addUser").post(function(req, res) {
             email,
             section,
             position,
-            role
+            role,
+              "1"
           ]
         ];
         connection.query(sql1, [values], function(err, result) {
@@ -395,6 +396,7 @@ router.route("/sections").get(function(req, res) {
     "SELECT sections.secid AS secid, sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM sections JOIN divisions ON sections.divid = divisions.depid";
   connection.query(sql, function(err, rows, fields) {
     if (err) {
+      console.log(err);
       res.status(500).send(err);
     }
 
