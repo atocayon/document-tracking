@@ -23,8 +23,11 @@ function Users(props) {
           open={props.openEditUser}
           handleClose={props.handleClose}
           userInfo={props.userInfo}
-          editUser={props.editUser}
+          editUser={props.editUserInfo}
           sections={props.sections}
+          handleSaveEditUser={props.handleSaveEditUser}
+          handleOnChangeEditUser={props.handleOnChangeEditUser}
+
       />
 
       <div style={{ textAlign: "right", marginBottom: 10 }}>
@@ -71,7 +74,7 @@ function Users(props) {
                     <EditIcon />
                   </button>
                   <button className={"btn btn-sm "}>
-                    <DeleteOutlineIcon />
+                    <DeleteOutlineIcon onClick={props.handleDeleteUser.bind(null, user.user_id)} />
                   </button>
                 </div>
               </td>

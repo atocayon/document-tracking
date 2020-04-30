@@ -3,42 +3,30 @@ import axios from "axios";
 import Reactotron from "reactotron-react-js";
 
 export function updateUserProfile(data) {
-
   return function(dispatch) {
     return axios
-      .post("http://localhost:4000/dts/updateUser/" + data.user_id.toString(), {
+      .post("http://localhost:4000/dts/updateUser/" + parseInt(data.user_id), {
         employeeId: data.employeeId,
         name: data.name,
         username: data.username,
         contact: data.contact,
         email: data.email,
-        division: data.division,
-        section: data.section,
+        section: data.secid,
         position: data.position,
-        address: data.address,
-        bdate: data.bdate,
-        gender: data.gender
+        role: data.role
       })
-      .then(res => {
-
-        if (res.status === 200) {
+      .then(_res => {
+        if (_res.status === 200) {
           dispatch({
             type: actionTypes.UPDATE_USER_PROFILE,
-            res
+            res: true
           });
-        }
-
-        if (res.status === 500){
-            dispatch({
-                type: actionTypes.UPDATE_USER_PROFILE,
-                res
-            })
         }
       })
       .catch(err => {
         dispatch({
-            type: actionTypes.UPDATE_USER_PROFILE,
-            res: err
+          type: actionTypes.UPDATE_USER_PROFILE,
+          res: false
         });
       });
   };
