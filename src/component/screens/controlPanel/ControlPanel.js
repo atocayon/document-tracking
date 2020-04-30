@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { withSnackbar } from "notistack";
 import PropTypes, { func } from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
@@ -18,6 +18,10 @@ import Users from "./Users";
 import { connect } from "react-redux";
 import { userRegistration } from "../../../redux/actions/userRegistration";
 import { fetchUserById } from "../../../redux/actions/fetchUserById";
+import { fetchAllUsers } from "../../../redux/actions/fetchAllUsers";
+import { fetchAllSections } from "../../../redux/actions/fetchAllSections";
+import { updateUserProfile } from "../../../redux/actions/updateUserProfile";
+import {deleteUser} from "../../../redux/actions/deleteUser";
 import Reactotron from "reactotron-react-js";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -65,8 +69,8 @@ function ControlPanel(props) {
   const [openUserRegistration, setOpenUserRegistration] = useState(false);
   const [openEditUser, setOpenEditUser] = useState(false);
   const [value, setValue] = React.useState(0);
-  const [systemUsers, setSystemUsers] = useState([]);
-  const [sections, setSections] = useState([]);
+  // const [systemUsers, setSystemUsers] = useState([...props.fetch_all_user]);
+  // const [sections, setSections] = useState([]);
   const [error, setError] = useState({});
   const [userInfo, setUserInfo] = useState({
     section: "",
@@ -80,42 +84,51 @@ function ControlPanel(props) {
     contact: "",
     position: ""
   });
-  const [editUserInfo, setEditUserInfo] = useState({...props.fetch_user});
+  const [editUserInfo, setEditUserInfo] = useState({ ...props.fetch_user });
 
   useEffect(() => {
-    axios
-      .get("http://localhost:4000/dts/getUsers")
-      .then(_users => {
-        setSystemUsers(_users.data);
+    async function fetchUsers() {
+      await props.fetchAllUsers();
+    }
 
-        axios
-          .get("http://localhost:4000/dts/sections")
-          .then(_sections => {
-            const section = [];
-            for (let i = 0; i < _sections.data.length; i++) {
-              section.push({
-                id: _sections.data[i].secid,
-                type: _sections.data[i].section
-              });
-            }
+    async function fetchSections() {
+      await props.fetchAllSections();
+    }
 
-            setSections(section);
-          })
-          .catch(err => {
-            const variant = "error";
-            props.enqueueSnackbar("Error in fetching sections...", { variant });
-          });
-      })
-      .catch(err => {
+    fetchUsers().catch(err => {
+      throw err;
+    });
+    fetchSections().catch(err => {
+      throw err;
+    });
+
+    if (Object.keys(props.fetch_user).length > 0) {
+      setEditUserInfo({ ...editUserInfo, ...props.fetch_user });
+    }
+
+    if (props.update_user !== null){
+      if (props.update_user === true){
+        const variant = "info";
+        props.enqueueSnackbar("Update Success", { variant });
+        window.location.reload();
+      }else{
         const variant = "error";
-        props.enqueueSnackbar("Error in fetching users...", { variant });
-      });
-      Reactotron.log(props.fetch_user);
-      if (Object.keys(props.fetch_user).length > 0){
-        setEditUserInfo({...editUserInfo, ...props.fetch_user});
+        props.enqueueSnackbar("Update Failed", { variant });
       }
+    }
 
-  }, [props.fetch_user]);
+    if (props.delete_user !== null){
+      if (props.delete_user === true){
+        const variant = "warning";
+        props.enqueueSnackbar("Deleted", { variant });
+        window.location.reload();
+      }else{
+        const variant = "error";
+        props.enqueueSnackbar("Delete Failed", { variant });
+      }
+    }
+
+  }, [props.fetch_user, props.update_user, props.delete_user]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -126,8 +139,7 @@ function ControlPanel(props) {
   };
 
   const handleClose = () => {
-    setOpenUserRegistration(false);
-    setOpenEditUser(false);
+    window.location.reload();
   };
 
   const handleLogOutControlPanel = () => {
@@ -231,6 +243,19 @@ function ControlPanel(props) {
     await props.fetchUserById(id);
   };
 
+  const handleOnChangeEditUser = ({ target }) => {
+    setEditUserInfo({ ...editUserInfo, [target.name]: target.value });
+  };
+
+  const handleSaveEditUser = async () => {
+    await props.updateUserProfile(editUserInfo);
+  };
+
+  const handleDeleteUser = async (val) => {
+    let id = val;
+    await props.deleteUser(id);
+  };
+
   return (
     <div className={"row"}>
       <div className={"col-md-2"}></div>
@@ -282,8 +307,8 @@ function ControlPanel(props) {
           </AppBar>
           <TabPanel value={value} index={0}>
             <Users
-              systemUsers={systemUsers}
-              sections={sections}
+              systemUsers={props.fetch_all_user}
+              sections={props.fetch_sections}
               open={openUserRegistration}
               handleClickOpen={handleClickOpen}
               handleClose={handleClose}
@@ -293,7 +318,10 @@ function ControlPanel(props) {
               openEditUser={openEditUser}
               error={error}
               userInfo={props.fetch_user}
-              editUser={editUserInfo}
+              editUserInfo={editUserInfo}
+              handleSaveEditUser={handleSaveEditUser}
+              handleOnChangeEditUser={handleOnChangeEditUser}
+              handleDeleteUser={handleDeleteUser}
             />
           </TabPanel>
           <TabPanel value={value} index={1}>
@@ -324,13 +352,21 @@ function ControlPanel(props) {
 function mapStateToProps(state) {
   return {
     user_reg: state.userRegistration,
-    fetch_user: state.fetchUserById
+    fetch_user: state.fetchUserById,
+    fetch_all_user: state.fetchAllUsers,
+    fetch_sections: state.fetchAllSections,
+    update_user: state.updateUserProfile,
+    delete_user: state.deleteUser
   };
 }
 
 const mapDispatchToProps = {
   userRegistration,
-  fetchUserById
+  fetchUserById,
+  fetchAllUsers,
+  fetchAllSections,
+  updateUserProfile,
+  deleteUser
 };
 
 export default connect(

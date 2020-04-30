@@ -23,6 +23,7 @@ export default function fetchUserById(state = defaultState, action) {
         depshort: action.data.depshort,
         success: true
       };
+
     default:
       return state;
   }

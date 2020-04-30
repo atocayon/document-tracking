@@ -11,7 +11,7 @@ import { SnackbarProvider } from "notistack";
 render(
   <ReduxProvider store={store}>
     <Router>
-      <SnackbarProvider maxSnack={3}>
+      <SnackbarProvider maxSnack={2}>
         <App />
       </SnackbarProvider>
     </Router>

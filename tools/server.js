@@ -91,7 +91,7 @@ router.route("/addUser").post(function(req, res) {
             section,
             position,
             role,
-              "1"
+            "1"
           ]
         ];
         connection.query(sql1, [values], function(err, result) {
@@ -281,12 +281,8 @@ router.route("/user/:id").get(function(req, res) {
       res.status(500).send(err);
     }
 
-
-      console.log(rows);
-      res.status(200).send(rows[0]);
-
-
-
+    console.log(rows);
+    res.status(200).send(rows[0]);
   });
 });
 
@@ -300,27 +296,40 @@ router.route("/updateUser/:id").post(function(req, res) {
     contact,
     email,
     section,
-    position
+    position,
+    role
   } = req.body;
 
   const sql = "SELECT * FROM users WHERE user_id = ?";
-  connection.query(sql, [id.toString()], function(err, rows, fields) {
+  connection.query(sql, [id], function(err, rows, fields) {
     if (err) {
+      console.log(err);
       res.status(500).send(err);
     }
 
     if (rows.length > 0) {
       const sql1 =
-        "UPDATE users SET employeeId = ? , name = ?, username = ?, contact = ?, email = ?, section = ?, position = ?";
+        "UPDATE users SET employeeId = ? , name = ?, username = ?, contact = ?, email = ?, section = ?, position = ?, role = ? WHERE user_id = ?";
       connection.query(
         sql1,
-        [employeeId, name, username, contact, email, section, position],
+        [
+          employeeId,
+          name,
+          username,
+          contact,
+          email,
+          section,
+          position,
+          role,
+          id
+        ],
         function(err, result) {
           if (err) {
+            console.log(err);
             res.status(500).send(err);
           }
-
-          res.status(200).send("update success");
+          console.log(result);
+          res.status(200).send(true);
         }
       );
     }
@@ -351,6 +360,19 @@ router.route("/updateStatus").post(function(req, res) {
     }
 
     res.status(200).send("Status updated");
+  });
+});
+
+router.route("/deleteUser").post(function(req, res) {
+  const { id } = req.body;
+  const sql = "DELETE FROM users WHERE user_id = ?";
+  connection.query(sql, [id], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.status(500).send("Server error");
+    }
+
+    res.status(200).send("Deleted");
   });
 });
 
