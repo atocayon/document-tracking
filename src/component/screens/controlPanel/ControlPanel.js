@@ -17,7 +17,7 @@ import axios from "axios";
 import Users from "./Users";
 import { connect } from "react-redux";
 import { userRegistration } from "../../../redux/actions/userRegistration";
-
+import Reactotron from "reactotron-react-js";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -182,24 +182,30 @@ function ControlPanel(props) {
         userInfo.position
       );
 
-      await setUserInfo({
-        ...userInfo,
-        section: "",
-        user_role: "",
-        employeeId: "",
-        name: "",
-        username: "",
-        password: "",
-        confirmPassword: "",
-        email: "",
-        contact: "",
-        position: ""
-      });
+      let result = (await props.user_reg) !== null;
+      Reactotron.log(result);
 
-      await setOpenUserRegistration(false);
+      if (result) {
+        props.enqueueSnackbar("Registration Success");
+        setOpenUserRegistration(false);
+        setUserInfo({
+          ...userInfo,
+          section: "",
+          user_role: "",
+          employeeId: "",
+          name: "",
+          username: "",
+          password: "",
+          confirmPassword: "",
+          email: "",
+          contact: "",
+          position: ""
+        });
+      }
 
-      const variant = "info";
-      await props.enqueueSnackbar("Registration Success", { variant });
+      if (!result) {
+        props.enqueueSnackbar("Registration Failed");
+      }
     } else {
       const _error = {};
       _error.password = "Password and Confirm password don't match";
@@ -298,7 +304,7 @@ function ControlPanel(props) {
 
 function mapStateToProps(state) {
   return {
-    userRegistration: state.userRegistration
+    user_reg: state.userRegistration
   };
 }
 
