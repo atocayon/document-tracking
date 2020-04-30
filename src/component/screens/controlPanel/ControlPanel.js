@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { withSnackbar } from "notistack";
 import PropTypes, { func } from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
@@ -17,6 +17,7 @@ import axios from "axios";
 import Users from "./Users";
 import { connect } from "react-redux";
 import { userRegistration } from "../../../redux/actions/userRegistration";
+import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import Reactotron from "reactotron-react-js";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -62,6 +63,7 @@ const useStyles = makeStyles(theme => ({
 function ControlPanel(props) {
   const classes = useStyles();
   const [openUserRegistration, setOpenUserRegistration] = useState(false);
+  const [openEditUser, setOpenEditUser] = useState(false);
   const [value, setValue] = React.useState(0);
   const [systemUsers, setSystemUsers] = useState([]);
   const [sections, setSections] = useState([]);
@@ -78,6 +80,8 @@ function ControlPanel(props) {
     contact: "",
     position: ""
   });
+  const [editUserInfo, setEditUserInfo] = useState({...props.fetch_user});
+
   useEffect(() => {
     axios
       .get("http://localhost:4000/dts/getUsers")
@@ -106,7 +110,12 @@ function ControlPanel(props) {
         const variant = "error";
         props.enqueueSnackbar("Error in fetching users...", { variant });
       });
-  }, []);
+      Reactotron.log(props.fetch_user);
+      if (Object.keys(props.fetch_user).length > 0){
+        setEditUserInfo({...editUserInfo, ...props.fetch_user});
+      }
+
+  }, [props.fetch_user]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -118,6 +127,7 @@ function ControlPanel(props) {
 
   const handleClose = () => {
     setOpenUserRegistration(false);
+    setOpenEditUser(false);
   };
 
   const handleLogOutControlPanel = () => {
@@ -183,7 +193,6 @@ function ControlPanel(props) {
       );
 
       let result = (await props.user_reg) !== null;
-      Reactotron.log(result);
 
       if (result) {
         props.enqueueSnackbar("Registration Success");
@@ -214,6 +223,12 @@ function ControlPanel(props) {
       const variant = "error";
       props.enqueueSnackbar("All fields are required", { variant });
     }
+  };
+
+  const handleEditUser = async val => {
+    let id = val;
+    setOpenEditUser(true);
+    await props.fetchUserById(id);
   };
 
   return (
@@ -274,7 +289,11 @@ function ControlPanel(props) {
               handleClose={handleClose}
               handleInputChange={handleInputChange}
               handleSubmitUserRegistration={handleSubmitUserRegistration}
+              handleEditUser={handleEditUser}
+              openEditUser={openEditUser}
               error={error}
+              userInfo={props.fetch_user}
+              editUser={editUserInfo}
             />
           </TabPanel>
           <TabPanel value={value} index={1}>
@@ -304,12 +323,14 @@ function ControlPanel(props) {
 
 function mapStateToProps(state) {
   return {
-    user_reg: state.userRegistration
+    user_reg: state.userRegistration,
+    fetch_user: state.fetchUserById
   };
 }
 
 const mapDispatchToProps = {
-  userRegistration
+  userRegistration,
+  fetchUserById
 };
 
 export default connect(
