@@ -277,22 +277,16 @@ router.route("/user/:id").get(function(req, res) {
     "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.password AS password, users.contact AS contact, users.email AS email, users.section AS secid, users.position AS position, users.role AS role, users.status AS status ,sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid WHERE users.user_id = ?";
   connection.query(sql, [parseInt(id)], function(err, rows, fields) {
     if (err) {
-      // console.log(err);
-      res.status(500).json({
-        success: false,
-        message: "Server error in fetching data in users table"
-      });
+      console.log(err);
+      res.status(500).send(err);
     }
 
-    if (!rows) {
-      res.status(404).json({ success: false, message: "No Records Found" });
-    }
 
-    if (rows) {
+      console.log(rows);
       res.status(200).send(rows[0]);
-    }
 
-    // console.log(rows);
+
+
   });
 });
 

@@ -4,6 +4,7 @@ import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import EditIcon from "@material-ui/icons/Edit";
 import AddNewUser from "./AddNewUser";
 import Reactotron from "reactotron-react-js";
+import EditUser from "./EditUser";
 function Users(props) {
   const users = props.systemUsers.filter(res => res.role !== "super_admin");
 
@@ -16,6 +17,14 @@ function Users(props) {
         handleInputChange={props.handleInputChange}
         handleSubmitUserRegistration={props.handleSubmitUserRegistration}
         error={props.error}
+      />
+
+      <EditUser
+          open={props.openEditUser}
+          handleClose={props.handleClose}
+          userInfo={props.userInfo}
+          editUser={props.editUser}
+          sections={props.sections}
       />
 
       <div style={{ textAlign: "right", marginBottom: 10 }}>
@@ -58,7 +67,7 @@ function Users(props) {
               </td>
               <td>
                 <div>
-                  <button className={"btn btn-sm "}>
+                  <button className={"btn btn-sm "} onClick={props.handleEditUser.bind(null, user.user_id)}>
                     <EditIcon />
                   </button>
                   <button className={"btn btn-sm "}>
