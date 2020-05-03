@@ -14,6 +14,7 @@ import Grid from "@material-ui/core/Grid";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 import SaveIcon from "@material-ui/icons/Save";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
+
 function RegistrationForm(props) {
   const [userInfo, setUserInfo] = useState({
     role: "",

@@ -20,7 +20,7 @@ export function fetchAllSections() {
         });
       })
       .catch(err => {
-        alert("Server error...");
+        alert(err);
       });
   };
 }
