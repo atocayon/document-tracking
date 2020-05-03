@@ -23,7 +23,6 @@ function Users(props) {
           open={props.openEditUser}
           handleClose={props.handleClose}
           userInfo={props.userInfo}
-          editUser={props.editUserInfo}
           sections={props.sections}
           handleSaveEditUser={props.handleSaveEditUser}
           handleOnChangeEditUser={props.handleOnChangeEditUser}
