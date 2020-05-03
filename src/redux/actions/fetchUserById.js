@@ -9,7 +9,7 @@ export function fetchUserById(id){
                 data: _user.data
             });
         }).catch(err => {
-            alert("Server Error");
+            alert(err);
         });
     }
 }

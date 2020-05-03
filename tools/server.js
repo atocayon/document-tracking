@@ -363,6 +363,7 @@ router.route("/updateStatus").post(function(req, res) {
   });
 });
 
+//Delete User
 router.route("/deleteUser").post(function(req, res) {
   const { id } = req.body;
   const sql = "DELETE FROM users WHERE user_id = ?";
@@ -418,6 +419,85 @@ router.route("/sections").get(function(req, res) {
 
     console.log(rows);
     res.status(200).send(rows);
+  });
+});
+
+//Fetch Divisions
+router.route("/fetchDivisions").get(function(req, res) {
+  const sql = "SELECT * FROM divisions";
+  connection.query(sql, function(err, rows, fields) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    console.log(rows);
+    res.status(200).send(rows);
+  });
+});
+
+//Fetch Division By ID
+router.route("/fetchDivisionById/:id").get(function(req, res) {
+  let id = req.params.id;
+  const sql = "SELECT * FROM divisions WHERE depid= ?";
+  connection.query(sql, [parseInt(id)], function(err, rows, fields) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+    console.log(rows);
+    res.status(200).send(rows[0]);
+  });
+});
+
+//Add Division
+router.route("/addDivision").post(function(req, res) {
+  const { department, depshort, payrollshort } = req.body;
+  const sql =
+    "INSERT INTO divisions (department, depshort, payrollshort) VALUES ?";
+  const values = [[department, depshort, payrollshort]];
+  connection.query(sql, [values], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+    console.log(result);
+    res.status(200).send("success");
+  });
+});
+
+//Update Division
+router.route("/updateDivision/:id").post(function(req, res) {
+  let id = req.params.id;
+  const { department, depshort, payrollshort } = req.body;
+  const sql =
+    "UPDATE divisions SET department = ?, depshort = ?, payrollshort = ? WHERE depid = ?";
+  connection.query(
+    sql,
+    [department, depshort, payrollshort, parseInt(id)],
+    function(err, result) {
+      if (err) {
+        console.log(err);
+        res.status(500).send(err);
+      }
+
+      console.log(result);
+      res.status(200).send("success");
+    }
+  );
+});
+
+router.route("/deleteDivision/:id").post(function(req, res) {
+  let id = req.params.id;
+
+  const sql = "DELETE FROM divisions WHERE depid = ?";
+  connection.query(sql, [parseInt(id)], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+    console.log(result);
+    res.status(200).send("success");
   });
 });
 

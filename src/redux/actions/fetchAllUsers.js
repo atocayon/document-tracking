@@ -12,7 +12,7 @@ export function fetchAllUsers() {
         });
       })
       .catch(err => {
-        alert("Server error...");
+        alert(err);
       });
   };
 }

@@ -1,9 +1,11 @@
 import actionTypes from "../actions/actionTypes";
+
 const defaultState = null;
-export default function userRegistration(state= defaultState, action) {
+
+export default function logout(state=defaultState, action) {
     switch (action.type) {
-        case actionTypes.ADD_USER:
-            return state = action.res;
+        case actionTypes.LOG_OUT:
+            return state = action.logout;
         default:
             return state;
     }

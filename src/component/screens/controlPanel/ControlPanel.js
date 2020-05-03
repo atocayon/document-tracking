@@ -13,17 +13,25 @@ import DescriptionIcon from "@material-ui/icons/Description";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
 import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
 import { getFromStorage } from "../../storage";
+import { Redirect } from "react-router-dom";
 import axios from "axios";
 import Users from "./Users";
 import { connect } from "react-redux";
 import { userRegistration } from "../../../redux/actions/userRegistration";
+import { addNewDivision } from "../../../redux/actions/addNewDivision";
 import { fetchUserById } from "../../../redux/actions/fetchUserById";
+import { fetchDivisionById } from "../../../redux/actions/fetchDivisionById";
 import { fetchAllUsers } from "../../../redux/actions/fetchAllUsers";
 import { fetchAllSections } from "../../../redux/actions/fetchAllSections";
+import { fetchDivisions } from "../../../redux/actions/fetchDivisions";
 import { updateUserProfile } from "../../../redux/actions/updateUserProfile";
+import { updateDivision } from "../../../redux/actions/updateDivision";
 import { deleteUser } from "../../../redux/actions/deleteUser";
+import { deleteDivision } from "../../../redux/actions/deleteDivision";
 import { inputChange } from "../../../redux/actions/inputChange";
+import { logout } from "../../../redux/actions/logout";
 import Reactotron from "reactotron-react-js";
+import Divisions from "./Divisions";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -67,8 +75,12 @@ const useStyles = makeStyles(theme => ({
 
 function ControlPanel(props) {
   const classes = useStyles();
+  const [token, setToken] = useState("");
+  const [endSession, setEndSession] = useState(false);
   const [openUserRegistration, setOpenUserRegistration] = useState(false);
   const [openEditUser, setOpenEditUser] = useState(false);
+  const [openAddNewDivision, setOpenAddNewDivision] = useState(false);
+  const [openEditDivision, setOpenEditDivision] = useState(false);
   const [value, setValue] = React.useState(0);
   const [error, setError] = useState({});
   const [userInfo, setUserInfo] = useState({
@@ -84,16 +96,38 @@ function ControlPanel(props) {
     position: ""
   });
 
-  useEffect(() => {
-    async function fetch() {
-      await props.fetchAllUsers();
-      await props.fetchAllSections();
-    }
+  const [division, setDivision] = useState({
+    department: "",
+    depshort: "",
+    payroll: ""
+  });
 
-    fetch().catch(err => {
-      throw err;
-    });
-  }, []);
+  useEffect(() => {
+    const obj = getFromStorage("documentTracking");
+    setEndSession(!(obj && obj.token));
+    if (obj && obj.token) {
+      setToken(obj.token);
+      async function fetch() {
+        await props.fetchAllUsers();
+        await props.fetchAllSections();
+        await props.fetchDivisions();
+      }
+
+      fetch().catch(err => {
+        throw err;
+      });
+
+      if (props.user_logout !== null) {
+        if (props.user_logout === true) {
+          localStorage.clear();
+          window.location.reload();
+        } else {
+          const variant = "error";
+          props.enqueueSnackbar("Logout Failed", { variant });
+        }
+      }
+    }
+  }, [props.user_logout]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -103,31 +137,32 @@ function ControlPanel(props) {
     setOpenUserRegistration(true);
   };
 
+  const handleClickOpenAddNewDivision = () => {
+    setOpenAddNewDivision(true);
+  };
+
   const handleClose = () => {
     setOpenUserRegistration(false);
     setOpenEditUser(false);
+    setOpenAddNewDivision(false);
+    setOpenEditDivision(false);
   };
 
-  const handleLogOutControlPanel = () => {
-    const obj = getFromStorage("documentTracking");
+  const handleLogOutControlPanel = async () => {
+    const obj = await getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
-      axios
-        .post("http://localhost:4000/dts/logout/" + token)
-        .then(res => {
-          localStorage.clear();
-          props.enqueueSnackbar("Session end...");
-          window.location.reload();
-        })
-        .catch(err => {
-          const variant = "error";
-          props.enqueueSnackbar("Server Error... ", { variant });
-        });
+      await props.logout(token);
     }
   };
 
   const handleInputChange = ({ target }) => {
     setUserInfo({ ...userInfo, [target.name]: target.value });
+  };
+
+  const handleInputChangeAddNewDivision = ({ target }) => {
+    Reactotron.log(target.value);
+    setDivision({ ...division, [target.name]: target.value });
   };
 
   const formValidation = () => {
@@ -143,6 +178,18 @@ function ControlPanel(props) {
     if (!userInfo.email) _error.email = "Email is required";
     if (!userInfo.contact) _error.contact = "Contact is required";
     if (!userInfo.position) _error.position = "Work position is required";
+
+    setError(_error);
+
+    return Object.keys(_error).length === 0;
+  };
+
+  const formValidationAddNewDivision = () => {
+    const _error = {};
+    if (!division.department) _error.department = "Department is required";
+    if (!division.depshort) _error.depshort = "Provide Department Acronym";
+    if (!division.payroll)
+      _error.payroll = "Provide Department name that will appear in payroll";
 
     setError(_error);
 
@@ -170,41 +217,54 @@ function ControlPanel(props) {
         userInfo.position
       );
 
-      let result = (await props.user_reg) !== null;
-
-      if (result) {
-        props.enqueueSnackbar("Registration Success");
-        setOpenUserRegistration(false);
-        setUserInfo({
-          ...userInfo,
-          section: "",
-          user_role: "",
-          employeeId: "",
-          name: "",
-          username: "",
-          password: "",
-          confirmPassword: "",
-          email: "",
-          contact: "",
-          position: ""
-        });
-      }
-
-      if (!result) {
-        props.enqueueSnackbar("Registration Failed");
-      }
+      const variant = "info";
+      props.enqueueSnackbar("Registration Success", { variant });
+      setOpenUserRegistration(false);
+      setUserInfo({
+        ...userInfo,
+        section: "",
+        user_role: "",
+        employeeId: "",
+        name: "",
+        username: "",
+        password: "",
+        confirmPassword: "",
+        email: "",
+        contact: "",
+        position: ""
+      });
     } else {
       const _error = {};
       _error.password = "Password and Confirm password don't match";
       _error.confirmPassword = "Password and Confirm password don't match";
       setError(_error);
       const variant = "error";
-      props.enqueueSnackbar("All fields are required", { variant });
+      props.enqueueSnackbar("Password and Confirm password don't match", {
+        variant
+      });
     }
   };
 
+  const handleSubmitAddNewDivision = async () => {
+    if (!formValidationAddNewDivision()) {
+      const variant = "error";
+      props.enqueueSnackbar("All fields are required", { variant });
+      return;
+    }
+
+    await props.addNewDivision(division);
+
+    setOpenAddNewDivision(false);
+    setDivision({
+      ...division,
+      department: "",
+      depshort: "",
+      payroll: ""
+    });
+  };
+
   const handleEditUser = async val => {
-    let id = val;
+    let id = await val;
     setOpenEditUser(true);
     await props.fetchUserById(id);
   };
@@ -217,14 +277,37 @@ function ControlPanel(props) {
   };
 
   const handleDeleteUser = async val => {
-    let id = val;
+    let id = val.id;
+    let name = val.name;
     await props.deleteUser(id);
     const variant = "warning";
-    props.enqueueSnackbar("Delete Success", { variant });
+    props.enqueueSnackbar(name + " Deleted", { variant });
+  };
+
+  const handleEditDivision = async val => {
+    let id = val.depid;
+    setOpenEditDivision(true);
+    await props.fetchDivisionById(id);
+  };
+
+  const handleSaveEditDivision = async () => {
+    await props.updateDivision(props.fetch_division);
+    const variant = "info";
+    props.enqueueSnackbar("Update Success", { variant });
+    setOpenEditDivision(false);
+  };
+
+  const handleDeleteDivision = async val => {
+    let id = val.depid;
+    let depshort = val.depshort;
+    await props.deleteDivision(id);
+    const variant = "warning";
+    props.enqueueSnackbar(depshort +" Deleted", { variant });
   };
 
   return (
     <div className={"row"}>
+      {endSession && <Redirect to={"/"} />}
       <div className={"col-md-2"}></div>
       <div className={"col-md-8"}>
         <div className={classes.root}>
@@ -274,6 +357,7 @@ function ControlPanel(props) {
           </AppBar>
           <TabPanel value={value} index={0}>
             <Users
+              token={token}
               systemUsers={props.fetch_all_user}
               sections={props.fetch_sections}
               open={openUserRegistration}
@@ -291,7 +375,22 @@ function ControlPanel(props) {
             />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            Item Two
+            <Divisions
+              addNewDivisionInputValue={division}
+              open={openAddNewDivision}
+              openEditDivision={openEditDivision}
+              handleClickOpenAddNewDivision={handleClickOpenAddNewDivision}
+              handleClose={handleClose}
+              divisions={props.fetch_all_divisions}
+              handleInputChangeAddNewDivision={handleInputChangeAddNewDivision}
+              handleSubmitAddNewDivision={handleSubmitAddNewDivision}
+              error={error}
+              handleEditDivision={handleEditDivision}
+              divisionInfo={props.fetch_division}
+              handleOnChangeEditDivision={props.inputChange}
+              handleSaveEditDivision={handleSaveEditDivision}
+              handleDeleteDivision={handleDeleteDivision}
+            />
           </TabPanel>
           <TabPanel value={value} index={2}>
             Item Three
@@ -317,23 +416,31 @@ function ControlPanel(props) {
 
 function mapStateToProps(state) {
   return {
-    user_reg: state.userRegistration,
     fetch_user: state.fetchUserById,
     fetch_all_user: state.fetchAllUsers,
     fetch_sections: state.fetchAllSections,
+    fetch_division: state.fetchDivisionById,
+    fetch_all_divisions: state.fetchDivisions,
     update_user: state.updateUserProfile,
-    delete_user: state.deleteUser
+    delete_user: state.deleteUser,
+    user_logout: state.logout
   };
 }
 
 const mapDispatchToProps = {
   userRegistration,
+  addNewDivision,
   fetchUserById,
+  fetchDivisionById,
   fetchAllUsers,
   fetchAllSections,
+  fetchDivisions,
   updateUserProfile,
+  updateDivision,
   deleteUser,
-  inputChange
+  deleteDivision,
+  inputChange,
+  logout
 };
 
 export default connect(
