@@ -3,7 +3,6 @@ import Reatotron from "reactotron-react-js";
 
 const defaultState = {};
 export default function fetchUserById(state = defaultState, action) {
-
   switch (action.type) {
     case actionTypes.FETCH_USER_BY_ID:
       return {
@@ -21,8 +20,12 @@ export default function fetchUserById(state = defaultState, action) {
         role: action.data.role,
         department: action.data.department,
         depshort: action.data.depshort,
-        success: true
       };
+
+    case actionTypes.INPUT_CHANGE:
+      return Object.assign({}, state, {
+        [action.text.name]: action.text.value
+      });
 
     default:
       return state;

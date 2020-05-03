@@ -21,7 +21,8 @@ import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import { fetchAllUsers } from "../../../redux/actions/fetchAllUsers";
 import { fetchAllSections } from "../../../redux/actions/fetchAllSections";
 import { updateUserProfile } from "../../../redux/actions/updateUserProfile";
-import {deleteUser} from "../../../redux/actions/deleteUser";
+import { deleteUser } from "../../../redux/actions/deleteUser";
+import { inputChange } from "../../../redux/actions/inputChange";
 import Reactotron from "reactotron-react-js";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -69,8 +70,6 @@ function ControlPanel(props) {
   const [openUserRegistration, setOpenUserRegistration] = useState(false);
   const [openEditUser, setOpenEditUser] = useState(false);
   const [value, setValue] = React.useState(0);
-  // const [systemUsers, setSystemUsers] = useState([...props.fetch_all_user]);
-  // const [sections, setSections] = useState([]);
   const [error, setError] = useState({});
   const [userInfo, setUserInfo] = useState({
     section: "",
@@ -84,51 +83,17 @@ function ControlPanel(props) {
     contact: "",
     position: ""
   });
-  const [editUserInfo, setEditUserInfo] = useState({ ...props.fetch_user });
 
   useEffect(() => {
-    async function fetchUsers() {
+    async function fetch() {
       await props.fetchAllUsers();
-    }
-
-    async function fetchSections() {
       await props.fetchAllSections();
     }
 
-    fetchUsers().catch(err => {
+    fetch().catch(err => {
       throw err;
     });
-    fetchSections().catch(err => {
-      throw err;
-    });
-
-    if (Object.keys(props.fetch_user).length > 0) {
-      setEditUserInfo({ ...editUserInfo, ...props.fetch_user });
-    }
-
-    if (props.update_user !== null){
-      if (props.update_user === true){
-        const variant = "info";
-        props.enqueueSnackbar("Update Success", { variant });
-        window.location.reload();
-      }else{
-        const variant = "error";
-        props.enqueueSnackbar("Update Failed", { variant });
-      }
-    }
-
-    if (props.delete_user !== null){
-      if (props.delete_user === true){
-        const variant = "warning";
-        props.enqueueSnackbar("Deleted", { variant });
-        window.location.reload();
-      }else{
-        const variant = "error";
-        props.enqueueSnackbar("Delete Failed", { variant });
-      }
-    }
-
-  }, [props.fetch_user, props.update_user, props.delete_user]);
+  }, []);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -139,7 +104,8 @@ function ControlPanel(props) {
   };
 
   const handleClose = () => {
-    window.location.reload();
+    setOpenUserRegistration(false);
+    setOpenEditUser(false);
   };
 
   const handleLogOutControlPanel = () => {
@@ -243,17 +209,18 @@ function ControlPanel(props) {
     await props.fetchUserById(id);
   };
 
-  const handleOnChangeEditUser = ({ target }) => {
-    setEditUserInfo({ ...editUserInfo, [target.name]: target.value });
-  };
-
   const handleSaveEditUser = async () => {
-    await props.updateUserProfile(editUserInfo);
+    await props.updateUserProfile(props.fetch_user);
+    const variant = "info";
+    props.enqueueSnackbar("Update Success", { variant });
+    setOpenEditUser(false);
   };
 
-  const handleDeleteUser = async (val) => {
+  const handleDeleteUser = async val => {
     let id = val;
     await props.deleteUser(id);
+    const variant = "warning";
+    props.enqueueSnackbar("Delete Success", { variant });
   };
 
   return (
@@ -318,9 +285,8 @@ function ControlPanel(props) {
               openEditUser={openEditUser}
               error={error}
               userInfo={props.fetch_user}
-              editUserInfo={editUserInfo}
               handleSaveEditUser={handleSaveEditUser}
-              handleOnChangeEditUser={handleOnChangeEditUser}
+              handleOnChangeEditUser={props.inputChange}
               handleDeleteUser={handleDeleteUser}
             />
           </TabPanel>
@@ -366,7 +332,8 @@ const mapDispatchToProps = {
   fetchAllUsers,
   fetchAllSections,
   updateUserProfile,
-  deleteUser
+  deleteUser,
+  inputChange
 };
 
 export default connect(

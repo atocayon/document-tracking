@@ -82,24 +82,24 @@ function EditUser(props){
                                 <div className={"col-md-4"}>
                                     <SelectField
                                         id={"cPanel_edit_section"}
-                                        name={"section"}
+                                        name={"secid"}
                                         onChange={props.handleOnChangeEditUser}
-                                        label={props.editUser.section}
+                                        label={props.userInfo.section}
                                         options={props.sections}
                                         variant={"outlined"}
-                                        value={props.editUser.secid}
+                                        value={props.userInfo.secid}
                                         // error={props.error.section}
                                     />
                                     <br />
 
                                     <SelectField
                                         id={"cPanel_edit_user_role"}
-                                        name={"user_role"}
+                                        name={"role"}
                                         onChange={props.handleOnChangeEditUser}
-                                        label={props.editUser.role === "1" ? "Admin" : props.editUser.role === "2" ? "Member" : "Super Admin"}
+                                        label={props.userInfo.role === "1" ? "Admin" : props.userInfo.role === "2" ? "Member" : "Super Admin"}
                                         options={user_role}
                                         variant={"outlined"}
-                                        value={props.editUser.role}
+                                        value={props.userInfo.role}
                                         // error={props.error.user_role}
                                     />
                                 </div>
@@ -112,7 +112,7 @@ function EditUser(props){
                                 label={"Employee ID"}
                                 variant={"outlined"}
                                 onChange={props.handleOnChangeEditUser}
-                                value={props.editUser.employeeId || ''}
+                                value={props.userInfo.employeeId || ''}
                                 type={"number"}
                             />
                             <br />
@@ -123,7 +123,7 @@ function EditUser(props){
                                 label={"Full Name"}
                                 variant={"outlined"}
                                 onChange={props.handleOnChangeEditUser}
-                                value={props.editUser.name || ''}
+                                value={props.userInfo.name || ''}
                                 type={"text"}
                             />
                             <br />
@@ -134,7 +134,7 @@ function EditUser(props){
                                 label={"Username"}
                                 variant={"outlined"}
                                 onChange={props.handleOnChangeEditUser}
-                                value={props.editUser.username || ''}
+                                value={props.userInfo.username || ''}
                                 type={"text"}
                             />
                             <br />
@@ -151,7 +151,7 @@ function EditUser(props){
                                 label={"Email"}
                                 variant={"outlined"}
                                 onChange={props.handleOnChangeEditUser}
-                                value={props.editUser.email || ''}
+                                value={props.userInfo.email || ''}
                                 type={"email"}
                             />
                             <br />
@@ -162,7 +162,7 @@ function EditUser(props){
                                 label={"Mobile Number"}
                                 variant={"outlined"}
                                 onChange={props.handleOnChangeEditUser}
-                                value={props.editUser.contact || ''}
+                                value={props.userInfo.contact || ''}
                                 type={"text"}
                             />
                             <br />
@@ -178,7 +178,7 @@ function EditUser(props){
                                 label={"Work Position/Function"}
                                 variant={"outlined"}
                                 onChange={props.handleOnChangeEditUser}
-                                value={props.editUser.position || ''}
+                                value={props.userInfo.position || ''}
                                 type={"text"}
                             />
                         </div>
