@@ -6,7 +6,9 @@ import AddNewUser from "./AddNewUser";
 import Reactotron from "reactotron-react-js";
 import EditUser from "./EditUser";
 function Users(props) {
-  const users = props.systemUsers.filter(res => res.user_id !== parseInt(props.token));
+  const users = props.systemUsers.filter(
+    res => res.user_id !== parseInt(props.token)
+  );
 
   return (
     <div style={{ paddingBottom: 200, height: "100vh", overflow: "auto" }}>
@@ -37,9 +39,10 @@ function Users(props) {
         </button>
       </div>
 
-      <table className={"table table-striped"}>
+      <table className={"table table-striped table-bordered"}>
         <thead>
           <tr style={{ background: "#2196F3", color: "#fff" }}>
+            <th>#</th>
             <th>Employee ID</th>
             <th>Name</th>
             <th>Section</th>
@@ -57,6 +60,7 @@ function Users(props) {
 
             return (
               <tr key={index}>
+                <td>{++index}</td>
                 <td>{user.employeeId}</td>
                 <td>{user.name}</td>
                 <td>
@@ -65,7 +69,13 @@ function Users(props) {
                   ))}
                 </td>
                 <td>{user.position}</td>
-                <td>{user.role_id === "1"?"Admin": user.role_id === "2" ? "Member": "Super Admin"}</td>
+                <td>
+                  {user.role_id === "1"
+                    ? "Admin"
+                    : user.role_id === "2"
+                    ? "Member"
+                    : "Super Admin"}
+                </td>
                 <td>
                   {user.accnt_status === "deleted" ? (
                     <span style={{ color: "red" }}>Deleted</span>
@@ -85,10 +95,10 @@ function Users(props) {
                     </button>
                     <button className={"btn btn-sm "}>
                       <DeleteOutlineIcon
-                        onClick={props.handleDeleteUser.bind(
-                          null,
-                            {id : user.user_id, name: user.name}
-                        )}
+                        onClick={props.handleDeleteUser.bind(null, {
+                          id: user.user_id,
+                          name: user.name
+                        })}
                       />
                     </button>
                   </div>
