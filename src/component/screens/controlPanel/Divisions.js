@@ -33,9 +33,10 @@ function Division(props) {
         </button>
       </div>
 
-      <table className={"table table-striped"}>
+      <table className={"table table-striped table-bordered"}>
         <thead>
           <tr style={{ background: "#2196F3", color: "#fff" }}>
+              <th>#</th>
             <th>Department</th>
             <th>Acronym</th>
             <th>Payroll name</th>
@@ -45,6 +46,7 @@ function Division(props) {
         <tbody>
           {props.divisions.map((division, index) => (
             <tr key={index}>
+                <td>{++index}</td>
               <td>{division.department}</td>
               <td>{division.depshort}</td>
               <td>{division.payrollshort}</td>

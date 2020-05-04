@@ -24,9 +24,10 @@ function Sections(props) {
           Add New Section
         </button>
 
-        <table className={"table table-striped"}>
+        <table className={"table table-striped table-bordered"}>
           <thead>
             <tr style={{ background: "#2196F3", color: "#fff" }}>
+              <th>#</th>
               <th>Division / Department</th>
               <th>Section</th>
               <th>Status</th>
@@ -41,6 +42,7 @@ function Sections(props) {
 
               return (
                 <tr key={index}>
+                  <td>{++index}</td>
                   <td>
                     {division.map(div => (
                       <>{div.department}</>
