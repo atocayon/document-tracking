@@ -7,6 +7,7 @@ import deleteUser from "./deleteUser";
 import logout from "./logout";
 import fetchDivisions from "./fetchDivisions";
 import fetchDivisionById from "./fetchDivisionById";
+import fetchSectionsList from "./fetchSectionsList";
 const rootReducer = combineReducers({
   updateUserProfile: update,
   fetchUserById: fetchUserById,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   fetchAllSections: fetchAllSections,
   fetchDivisions: fetchDivisions,
   fetchDivisionById: fetchDivisionById,
+  fetchSectionsList: fetchSectionsList,
   deleteUser: deleteUser,
   logout: logout,
 });

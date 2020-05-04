@@ -19,11 +19,13 @@ import Users from "./Users";
 import { connect } from "react-redux";
 import { userRegistration } from "../../../redux/actions/userRegistration";
 import { addNewDivision } from "../../../redux/actions/addNewDivision";
+import {addNewSection} from "../../../redux/actions/addNewSection";
 import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import { fetchDivisionById } from "../../../redux/actions/fetchDivisionById";
 import { fetchAllUsers } from "../../../redux/actions/fetchAllUsers";
 import { fetchAllSections } from "../../../redux/actions/fetchAllSections";
 import { fetchDivisions } from "../../../redux/actions/fetchDivisions";
+import { fetchSectionsList } from "../../../redux/actions/fetchSectionsList";
 import { updateUserProfile } from "../../../redux/actions/updateUserProfile";
 import { updateDivision } from "../../../redux/actions/updateDivision";
 import { deleteUser } from "../../../redux/actions/deleteUser";
@@ -32,6 +34,7 @@ import { inputChange } from "../../../redux/actions/inputChange";
 import { logout } from "../../../redux/actions/logout";
 import Reactotron from "reactotron-react-js";
 import Divisions from "./Divisions";
+import Sections from "./Sections";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -81,6 +84,8 @@ function ControlPanel(props) {
   const [openEditUser, setOpenEditUser] = useState(false);
   const [openAddNewDivision, setOpenAddNewDivision] = useState(false);
   const [openEditDivision, setOpenEditDivision] = useState(false);
+  const [openAddNewSection, setOpenAddNewSection] = useState(false);
+  const [openEditSection, setOpenEditSection] = useState(false);
   const [value, setValue] = React.useState(0);
   const [error, setError] = useState({});
   const [userInfo, setUserInfo] = useState({
@@ -102,15 +107,23 @@ function ControlPanel(props) {
     payroll: ""
   });
 
+  const [section, setSection] = useState({
+    division: "",
+    section: "",
+    secshort: ""
+  });
+
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     setEndSession(!(obj && obj.token));
     if (obj && obj.token) {
       setToken(obj.token);
+
       async function fetch() {
         await props.fetchAllUsers();
         await props.fetchAllSections();
         await props.fetchDivisions();
+        await props.fetchSectionsList();
       }
 
       fetch().catch(err => {
@@ -141,11 +154,17 @@ function ControlPanel(props) {
     setOpenAddNewDivision(true);
   };
 
+  const handleClickOpenAddNewSection = () => {
+    setOpenAddNewSection(true);
+  };
+
   const handleClose = () => {
     setOpenUserRegistration(false);
     setOpenEditUser(false);
     setOpenAddNewDivision(false);
     setOpenEditDivision(false);
+    setOpenAddNewSection(false);
+    setOpenEditSection(false);
   };
 
   const handleLogOutControlPanel = async () => {
@@ -161,8 +180,12 @@ function ControlPanel(props) {
   };
 
   const handleInputChangeAddNewDivision = ({ target }) => {
-    Reactotron.log(target.value);
+    // Reactotron.log(target.value);
     setDivision({ ...division, [target.name]: target.value });
+  };
+
+  const handleInputChangeAddNewSection = ({target}) => {
+    setSection({...section, [target.name]: target.value});
   };
 
   const formValidation = () => {
@@ -193,6 +216,16 @@ function ControlPanel(props) {
 
     setError(_error);
 
+    return Object.keys(_error).length === 0;
+  };
+
+  const formValidationAddNewSection = () => {
+    const _error = {};
+    if (!section.division) _error.addNewSection_division = "Division is required";
+    if (!section.section) _error.addNewSection_section = "Section is required";
+    if (!section.secshort) _error.addNewSection_secshort = "Provide the section acronym / short name";
+
+    setError(_error);
     return Object.keys(_error).length === 0;
   };
 
@@ -263,6 +296,24 @@ function ControlPanel(props) {
     });
   };
 
+  const handleSubmitAddNewSection = async () => {
+    if (!formValidationAddNewSection()){
+      const variant = "error";
+      props.enqueueSnackbar("All fields are required", { variant });
+      return;
+    }
+
+    await props.addNewSection(section);
+
+    setOpenAddNewSection(false);
+    setSection({
+      ...section,
+      division: "",
+      section: "",
+      secshort: ""
+    });
+
+  };
   const handleEditUser = async val => {
     let id = await val;
     setOpenEditUser(true);
@@ -302,7 +353,7 @@ function ControlPanel(props) {
     let depshort = val.depshort;
     await props.deleteDivision(id);
     const variant = "warning";
-    props.enqueueSnackbar(depshort +" Deleted", { variant });
+    props.enqueueSnackbar(depshort + " Deleted", { variant });
   };
 
   return (
@@ -393,7 +444,17 @@ function ControlPanel(props) {
             />
           </TabPanel>
           <TabPanel value={value} index={2}>
-            Item Three
+            <Sections
+              sections={props.fetch_sections_list}
+              divisions={props.fetch_all_divisions}
+              openAddNewSection={openAddNewSection}
+              openEditSection={openEditSection}
+              handleClose={handleClose}
+              handleClickOpenAddNewSection={handleClickOpenAddNewSection}
+              handleInputChangeAddNewSection={handleInputChangeAddNewSection}
+              handleSubmitAddNewSection={handleSubmitAddNewSection}
+              error={error}
+            />
           </TabPanel>
           <TabPanel value={value} index={3}>
             Item Four
@@ -419,6 +480,7 @@ function mapStateToProps(state) {
     fetch_user: state.fetchUserById,
     fetch_all_user: state.fetchAllUsers,
     fetch_sections: state.fetchAllSections,
+    fetch_sections_list: state.fetchSectionsList,
     fetch_division: state.fetchDivisionById,
     fetch_all_divisions: state.fetchDivisions,
     update_user: state.updateUserProfile,
@@ -430,11 +492,13 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   userRegistration,
   addNewDivision,
+  addNewSection,
   fetchUserById,
   fetchDivisionById,
   fetchAllUsers,
   fetchAllSections,
   fetchDivisions,
+  fetchSectionsList,
   updateUserProfile,
   updateDivision,
   deleteUser,
