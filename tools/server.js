@@ -410,7 +410,7 @@ router.route("/sections/:secid").post(function(req, res) {
 //Fetch Section
 router.route("/sections").get(function(req, res) {
   const sql =
-    "SELECT sections.secid AS secid, sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM sections JOIN divisions ON sections.divid = divisions.depid";
+    "SELECT sections.divid AS divid, sections.secid AS secid, sections.section AS section, sections.secshort AS secshort, sections.active AS active, divisions.department AS department, divisions.depshort AS depshort  FROM sections JOIN divisions ON sections.divid = divisions.depid ORDER BY sections.secid ASC";
   connection.query(sql, function(err, rows, fields) {
     if (err) {
       console.log(err);
@@ -419,6 +419,22 @@ router.route("/sections").get(function(req, res) {
 
     console.log(rows);
     res.status(200).send(rows);
+  });
+});
+
+router.route("/addNewSection").post(function(req, res) {
+  const { division, section, secshort } = req.body;
+  const sql =
+    "INSERT INTO sections (divid, section, secshort, active) VALUES ?";
+  const values = [[division, section, secshort, 1]];
+  connection.query(sql, [values], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    console.log(result);
+    res.status(200).send("success");
   });
 });
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 24, 2020 at 11:07 AM
+-- Generation Time: May 04, 2020 at 04:45 PM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.1
 
@@ -29,11 +29,11 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `divisions` (
-  `depid` int(3) NOT NULL,
-  `department` varchar(50) NOT NULL,
-  `depshort` varchar(20) NOT NULL,
-  `payrollshort` varchar(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `depid` int(11) NOT NULL,
+  `department` varchar(120) NOT NULL,
+  `depshort` varchar(120) NOT NULL,
+  `payrollshort` varchar(120) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `divisions`
@@ -56,15 +56,6 @@ CREATE TABLE `documentDrafts` (
   `documentID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `documentDrafts`
---
-
-INSERT INTO `documentDrafts` (`draft_id`, `documentID`) VALUES
-(1, 1000000000),
-(2, 1000000001),
-(3, 1000000002);
-
 -- --------------------------------------------------------
 
 --
@@ -76,9 +67,20 @@ CREATE TABLE `documentLogs` (
   `document_id` varchar(11) NOT NULL,
   `user_id` varchar(11) NOT NULL,
   `remarks` varchar(120) NOT NULL,
+  `destinationType` varchar(120) NOT NULL,
+  `destination` varchar(120) NOT NULL,
   `status` varchar(11) NOT NULL,
   `date_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `documentLogs`
+--
+
+INSERT INTO `documentLogs` (`trans_id`, `document_id`, `user_id`, `remarks`, `destinationType`, `destination`, `status`, `date_time`) VALUES
+(1, '1000000000', '3', 'none', 'Internal', 'Registrar', '2', '2020-04-27 09:46:41'),
+(2, '1000000000', '3', 'none', 'Internal', 'none', '5', '2020-04-27 09:46:41'),
+(3, '1000000000', '3', 'none', 'Internal', 'GSAS', '2', '2020-04-27 09:46:41');
 
 -- --------------------------------------------------------
 
@@ -101,9 +103,7 @@ CREATE TABLE `documents` (
 --
 
 INSERT INTO `documents` (`documentID`, `creator`, `subject`, `doc_type`, `note`, `date_time_created`, `status`) VALUES
-(1000000000, '3', '725', '3', 'Culpa unde veniam ', '2020-04-22 11:22:15', '1'),
-(1000000001, '3', '854', '9', 'Impedit non nisi vo', '2020-04-22 11:24:16', '1'),
-(1000000002, '3', '47', '2', 'Impedit velit volup', '2020-04-22 11:25:33', '0');
+(1000000000, '3', '402', '9', 'Impedit dicta quia ', '2020-04-27 09:46:41', '1');
 
 -- --------------------------------------------------------
 
@@ -126,7 +126,7 @@ INSERT INTO `documentStatus` (`statid`, `status`) VALUES
 (3, 'return'),
 (4, 'completed'),
 (5, 'created'),
-(6, 'MTAD Canvasser'),
+(6, 'external'),
 (7, 'MRDD Canvasser'),
 (9, 'General Canvasser'),
 (10, 'COMPLETED'),
@@ -150,17 +150,12 @@ CREATE TABLE `document_action_req` (
 --
 
 INSERT INTO `document_action_req` (`document_action_req_id`, `documentID`, `action_req`) VALUES
-(1, '1000000000', 'For Action'),
-(2, '1000000000', 'For Comment'),
-(3, '1000000000', 'For Information'),
-(4, '1000000000', 'For File'),
-(5, '1000000001', 'For Approval'),
-(6, '1000000001', 'For Endorsement'),
-(7, '1000000001', 'For Recommendation'),
-(8, '1000000002', 'For Signature'),
-(9, '1000000002', 'For Endorsement'),
-(10, '1000000002', 'For Recommendation'),
-(11, '1000000002', 'For File');
+(1, '1000000000', 'For Approval'),
+(2, '1000000000', 'For Signature'),
+(3, '1000000000', 'For Action'),
+(4, '1000000000', 'For Comment'),
+(5, '1000000000', 'For Information'),
+(6, '1000000000', 'For File');
 
 -- --------------------------------------------------------
 
@@ -206,46 +201,47 @@ CREATE TABLE `sections` (
   `divid` int(4) NOT NULL,
   `section` varchar(50) NOT NULL,
   `secshort` varchar(20) NOT NULL,
-  `active` int(1) NOT NULL,
-  `types` int(11) NOT NULL,
-  `orderby` int(3) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `active` int(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `sections`
 --
 
-INSERT INTO `sections` (`secid`, `divid`, `section`, `secshort`, `active`, `types`, `orderby`) VALUES
-(1, 2, 'Information and Marketing Section', 'IMS', 1, 0, 0),
-(2, 2, 'Research Section', 'Research', 1, 0, 0),
-(3, 4, 'Office of the Executive Director', 'OED', 1, 0, 2),
-(4, 4, 'Deputy Executive Directors Office', 'DED', 1, 0, 1),
-(5, 3, 'Cash Section', 'Cash', 1, 0, 0),
-(6, 3, 'Accounting Unit', 'Accounting', 1, 29, 0),
-(7, 2, 'Planning Section', 'Planning', 1, 0, 0),
-(8, 4, 'NMP Manila Office', 'NMPMNL', 1, 0, 0),
-(9, 4, 'Quality Management Section', 'QMS', 1, 0, 0),
-(10, 1, 'Maritime Training Section', 'MTS', 1, 0, 0),
-(11, 4, 'Bids and Awards Committee', 'BAC', 1, 0, 0),
-(12, 2, 'Learning Resource Section', 'LRS', 1, 0, 0),
-(13, 3, 'Domiciliary Section', 'Dorm', 1, 0, 0),
-(14, 3, 'Human Resource Management Section', 'HRMS', 1, 0, 0),
-(15, 3, 'Office of the Head, AFMD', 'AFMD', 1, 0, 1),
-(16, 3, 'General Services and Auxiliary Section', 'GSAS', 1, 0, 0),
-(17, 3, 'Budget Unit', 'Budget', 1, 29, 0),
-(18, 3, 'Material Resource Management Section', 'MRMS', 1, 0, 0),
-(19, 3, 'Records Section', 'Records', 1, 0, 0),
-(20, 3, 'Motor Pool Unit', 'Motor Pool', 1, 0, 0),
-(21, 1, 'Office of the Head, MTAD', 'MTAD', 1, 0, 1),
-(22, 1, 'PDC Unit', 'PDC', 1, 0, 0),
-(23, 1, 'Maritime Assessment Section', 'MAS', 1, 0, 0),
-(24, 1, 'Support to MTAD Operations Section', 'SMOS', 1, 0, 0),
-(25, 1, 'Registration and Certification Unit', 'Registrar', 1, 0, 0),
-(26, 1, 'Technical Operations and Secretarial Pool Unit', 'TOS', 1, 0, 0),
-(27, 2, 'Office of the Head, MRDD', 'MRDD', 1, 0, 1),
-(28, 0, 'COA', 'COA', 1, 0, 0),
-(29, 3, 'Finance Section', 'Finance', 1, 0, 0),
-(30, 0, 'Various Sections', 'Various Sec', 1, 0, 0);
+INSERT INTO `sections` (`secid`, `divid`, `section`, `secshort`, `active`) VALUES
+(1, 2, 'Information and Marketing Section', 'IMS', 1),
+(2, 2, 'Research Section', 'Research', 1),
+(3, 4, 'Office of the Executive Director', 'OED', 1),
+(4, 4, 'Deputy Executive Directors Office', 'DED', 1),
+(5, 3, 'Cash Section', 'Cash', 1),
+(6, 3, 'Accounting Unit', 'Accounting', 1),
+(7, 2, 'Planning Section', 'Planning', 1),
+(8, 4, 'NMP Manila Office', 'NMPMNL', 1),
+(9, 4, 'Quality Management Section', 'QMS', 1),
+(10, 1, 'Maritime Training Section', 'MTS', 1),
+(11, 4, 'Bids and Awards Committee', 'BAC', 1),
+(12, 2, 'Learning Resource Section', 'LRS', 1),
+(13, 3, 'Domiciliary Section', 'Dorm', 1),
+(14, 3, 'Human Resource Management Section', 'HRMS', 1),
+(15, 3, 'Office of the Head, AFMD', 'AFMD', 1),
+(16, 3, 'General Services and Auxiliary Section', 'GSAS', 1),
+(17, 3, 'Budget Unit', 'Budget', 1),
+(18, 3, 'Material Resource Management Section', 'MRMS', 1),
+(19, 3, 'Records Section', 'Records', 1),
+(20, 3, 'Motor Pool Unit', 'Motor Pool', 1),
+(21, 1, 'Office of the Head, MTAD', 'MTAD', 1),
+(22, 1, 'PDC Unit', 'PDC', 1),
+(23, 1, 'Maritime Assessment Section', 'MAS', 1),
+(24, 1, 'Support to MTAD Operations Section', 'SMOS', 1),
+(25, 1, 'Registration and Certification Unit', 'Registrar', 1),
+(26, 1, 'Technical Operations and Secretarial Pool Unit', 'TOS', 1),
+(27, 2, 'Office of the Head, MRDD', 'MRDD', 1),
+(28, 0, 'COA', 'COA', 1),
+(29, 3, 'Finance Section', 'Finance', 1),
+(30, 0, 'Various Sections', 'Various Sec', 1),
+(31, 1, '29', 'Cedric Acosta', 1),
+(33, 2, 'Naida Mann', 'Sybil Cohen', 1),
+(34, 3, 'Aaron Brock', 'Melanie King', 1);
 
 -- --------------------------------------------------------
 
@@ -276,9 +272,6 @@ CREATE TABLE `users` (
   `email` varchar(120) NOT NULL,
   `section` varchar(11) NOT NULL,
   `position` varchar(120) NOT NULL,
-  `address` varchar(120) NOT NULL,
-  `gender` varchar(120) NOT NULL,
-  `bdate` varchar(120) NOT NULL,
   `role` varchar(11) NOT NULL,
   `status` varchar(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -287,12 +280,30 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `employeeId`, `name`, `username`, `password`, `contact`, `email`, `section`, `position`, `address`, `gender`, `bdate`, `role`, `status`) VALUES
-(3, '20190931', 'Aljon C. Tocayon', 'actWhiteHat27', '$2b$10$Ua01PGxt4Jh46MA91UtS4O68HxIx/EsylWXg/D2k1BDXRohWAnqce', '09051680244', 'atocayon27@gmail.com', '1', 'Computer Programmer', 'Jaro, Leyte', 'Male', '1996-10-05', '1', '1'),
-(4, 'Voluptatem omnis ab', 'Keegan Craft', 'luligyb', '$2b$10$IwL0xBwUoJpXbudPV1tHreW8IsSaAyODtRn5NeOxdHCpUTe3Sy6u6', '752', 'xyxu@mailinator.com', '1', 'Nostrum quis est ut ', 'Cupiditate aut dolor', '29-Jan-1973', 'female', '2', '1'),
-(5, 'Blanditiis quo venia', 'Pandora Morse', 'qowukev', '$2b$10$9z1b7mdDFs5b5D819wrWTe3UB.rWMNDu9jii2U9e4oEBA2RPaMX6y', '589', 'vodunonem@mailinator.net', '1', 'Vel officia sunt quo', 'Consectetur et atqu', '18-Feb-2017', 'other', '1', '1'),
-(6, 'Consequatur blandit', 'Tarik Silva', 'jaxirynu', '$2b$10$To7uZxVVIYsjzVzkMJA2S.IxlbnmvMSOgw3OXzqCZxsJhvfToUHEq', '955', 'wowog@mailinator.com', '2', 'Impedit excepteur s', 'Sit ut et quae exce', '20-Aug-1970', 'male', '1', '1'),
-(7, '', '', '', '$2b$10$wIoEgbeN3YfeWRK75CxbqeBhKCbmtHmP2B0xNdTepH6i..TP0ystS', '', '', '1', '', '', '', '', '1', '3');
+INSERT INTO `users` (`user_id`, `employeeId`, `name`, `username`, `password`, `contact`, `email`, `section`, `position`, `role`, `status`) VALUES
+(3, '1246579', 'Aljon C. Tocayon', 'kixomadiso', '$2b$10$Ua01PGxt4Jh46MA91UtS4O68HxIx/EsylWXg/D2k1BDXRohWAnqce', '819', 'atocayon27@gmail.com', '1', 'Delectus velit mag', '3', '1'),
+(5, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$9z1b7mdDFs5b5D819wrWTe3UB.rWMNDu9jii2U9e4oEBA2RPaMX6y', '819', 'wefezez@mailinator.com', '12', 'Delectus velit mag', '3', '1'),
+(7, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$wIoEgbeN3YfeWRK75CxbqeBhKCbmtHmP2B0xNdTepH6i..TP0ystS', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '3'),
+(9, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$bDqhM9nKpL5t/.7Ijpx/WODLN38ngzNsMgN.ai1XWrQsWX1TmefA6', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '2', '1'),
+(12, '32', 'Ahmed Lambasddqwert', 'kixomadiso', '$2b$10$YhzEHCruGsyj1.y9XIJrhOXaxxi46JeJVNYhsLJkIQ9M.sBD5dssu', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
+(14, '32123344', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$WC/sstI4UMjOQ/4J4QGkJebdkRZu/f4JVJj7eVcyYRI3DCQUFk832', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '2', '1'),
+(16, '32', 'Ahmed Lambasddasdd', 'kixomadiso', '$2b$10$y3L7XiC0UxHyq/X6cB8UbuohgmuppyGSViXkEZkDpbBdzVBRGu4Zi', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
+(17, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$hfHkZheFBiIZKuw24CjCJuyUXKZSmpH1uBjb62T1ImzvV01ssDHx6', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
+(18, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$.Mk656fY0go05skBJJRHTunnCUg3bEpCSYLIYIxAePrI9XAPyUvOi', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
+(20, '12', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$e/CpdYhCzvboBbVV.7b8MOkJ1HQLwyv28X919WTmICGWK4YnElYAS', '819', 'wefezez@mailinator.com', '10', 'Delectus velit mag', '1', '1'),
+(21, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$471/iMXLwaCpq3UG0NxbA.1uShH2aX42COOtgD.ZvcLjTdwMB.Vty', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
+(22, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$H5TLJuMSXeubqCk3zeyLAunol07QqqQoLjyXJIdAv.7e.yPnoRrzm', '819', 'wefezez@mailinator.com', '6', 'Delectus velit mag', '1', '1'),
+(25, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$Ft11BD7iD6TtVerko5FYR.bKpBsEzXzYyFMN5O7IoRZaBQF1G.dBm', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '2', '1'),
+(31, '32', 'Ahmed Lambasddop', 'kixomadiso', '$2b$10$sPk1L/EWivjEvqkidf408O8O84mVoRXdp3x1ZYzVFpSkV/9mHl7h.', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
+(34, '32', 'Ahmedasdasd', 'kixomadisoasdasd', '$2b$10$Per9ar/I4FjxWo8Ery.WSeCMg37hEpLjEwkozLSSW9WS6YqwINyCK', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
+(36, '32', 'Ahmed sddd', 'kixomadiso', '$2b$10$ALNbinyMFUdY1Zg0lm5qU.CGkQno/lGAoWSQJh0NaVD.IRNZnwt.i', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
+(37, '7895456', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$sthMqzu1bCupzP3uB7MakO4vOsi8kBw5zDALdK7veGfIriA5BYio6', '819', 'wefezez@mailinator.com', '13', 'Delectus velit mag', '1', '1'),
+(38, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$Sp9v2NsySFbKYv5PLJ0D6eHfskZ0TGsBq.c6pcHKYasn6jxxy3ppe', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
+(39, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$VbFoNWKo.0jNifPpj.0Z8Ohjg8D720fYTM1ynXTegQENQYMGt/bxi', '819', 'wefezez@mailinator.com', '17', 'Delectus velit mag', '1', '1'),
+(41, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$cpDUNhP0tXrfjbssE3iOMeoa.65N5oJWx5UUZY4nVHGx0Rs7s9P3O', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
+(42, '3212', 'Ahmed Lambasddzxcc', 'kixomadisozxcc', '$2b$10$1NFtuTfW/4WntYSjWYwS2.F9SLV9TryTtC2C/qymdqYeLkfduxLZ.', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
+(44, '47', 'Judah Washington', 'qaqul', '$2b$10$Nb9V/sxTuOhBuJG17WkFLOgx8P7QmUMJQD6b7viuKdD9lYeQO96uW', '16', 'limut@mailinator.net', '22', 'Vel aliquip non dolo', '1', '1'),
+(45, '96', 'Camden Roberts', 'fatetyqi', '$2b$10$.hcvR3Op7bXRP6GdYaOkUuT3mW8zmkdt96VrI09FTK.Aofq3LjK7a', '328', 'sizadu@mailinator.net', '24', 'Minim do asperiores ', '1', '1');
 
 -- --------------------------------------------------------
 
@@ -311,7 +322,8 @@ CREATE TABLE `users_role` (
 
 INSERT INTO `users_role` (`role_id`, `role`) VALUES
 (1, 'admin'),
-(2, 'member');
+(2, 'member'),
+(3, 'super_admin');
 
 -- --------------------------------------------------------
 
@@ -331,7 +343,7 @@ CREATE TABLE `users_session` (
 --
 
 INSERT INTO `users_session` (`id`, `userId`, `timeStamp`, `isDeleted`) VALUES
-(1, '3', '2020-04-24 08:50:49', 0);
+(1, '3', '2020-05-03 03:09:11', 0);
 
 -- --------------------------------------------------------
 
@@ -445,7 +457,7 @@ ALTER TABLE `users_status`
 -- AUTO_INCREMENT for table `divisions`
 --
 ALTER TABLE `divisions`
-  MODIFY `depid` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `depid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `documentDrafts`
@@ -457,7 +469,7 @@ ALTER TABLE `documentDrafts`
 -- AUTO_INCREMENT for table `documentLogs`
 --
 ALTER TABLE `documentLogs`
-  MODIFY `trans_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `trans_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `documentStatus`
@@ -469,7 +481,7 @@ ALTER TABLE `documentStatus`
 -- AUTO_INCREMENT for table `document_action_req`
 --
 ALTER TABLE `document_action_req`
-  MODIFY `document_action_req_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `document_action_req_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `document_type`
@@ -481,7 +493,7 @@ ALTER TABLE `document_type`
 -- AUTO_INCREMENT for table `sections`
 --
 ALTER TABLE `sections`
-  MODIFY `secid` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `secid` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `system_logs`
@@ -493,13 +505,13 @@ ALTER TABLE `system_logs`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `users_role`
 --
 ALTER TABLE `users_role`
-  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `users_session`
