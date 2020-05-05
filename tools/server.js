@@ -113,7 +113,7 @@ router.route("/login/:email/:password").post(function(req, res) {
   let password = req.params.password;
 
   const sql =
-    "SELECT users.user_id AS user_id, users.password AS password, users_role.role AS role FROM users JOIN users_role ON users.role = users_role.role_id WHERE email = ?";
+    "SELECT users.user_id AS user_id, users.name AS name, users.password AS password, users_role.role AS role FROM users JOIN users_role ON users.role = users_role.role_id WHERE email = ?";
 
   connection.query(sql, [email], function(err, rows, fields) {
     if (err) {
@@ -122,7 +122,7 @@ router.route("/login/:email/:password").post(function(req, res) {
     }
 
     if (rows.length === 0) {
-      res.status(404).send("Unrecognized email");
+      res.status(200).json({success:false, message: "Unrecognize email"});
     }
 
     if (rows.length > 0) {
@@ -134,13 +134,14 @@ router.route("/login/:email/:password").post(function(req, res) {
 
         if (!result) {
           console.log(result);
-          res.status(404).json({ success: false, message: "failed" });
+          res.status(200).json({ success: false, message: "Incorrect Password" });
         }
 
         console.log(result);
 
         const id = rows[0].user_id.toString();
         const role = rows[0].role;
+        const name = rows[0].name;
         const check_session_query =
           "SELECT * FROM users_session WHERE userId = ?";
         connection.query(check_session_query, [id], function(
@@ -150,7 +151,7 @@ router.route("/login/:email/:password").post(function(req, res) {
         ) {
           if (err) {
             console.log(err);
-            res.status(500).send("Server error in checking session");
+            res.status(500).send(err);
           }
           console.log(rows);
           if (!rows) {
@@ -160,7 +161,7 @@ router.route("/login/:email/:password").post(function(req, res) {
             connection.query(sql1, [values], function(err, result) {
               if (err) {
                 console.log(err);
-                res.status(500).send("Server Error inserting new session");
+                res.status(500).send(err);
               }
 
               console.log(result);
@@ -168,7 +169,8 @@ router.route("/login/:email/:password").post(function(req, res) {
                 success: true,
                 message: "New User",
                 role: role,
-                token: id
+                token: id,
+                name: name
               });
             });
           }
@@ -190,7 +192,8 @@ router.route("/login/:email/:password").post(function(req, res) {
                   success: true,
                   role: role,
                   message: "Record Found, Login Success!",
-                  token: id
+                  token: id,
+                  name: name
                 });
               }
             });

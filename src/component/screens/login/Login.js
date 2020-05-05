@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
 import InputField from "../../common/textField/InputField";
-import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import { Redirect } from "react-router-dom";
 import { getFromStorage, setInStorage } from "../../storage";
 import axios from "axios";
@@ -14,6 +7,9 @@ import { withSnackbar } from "notistack";
 import logo from "../../../img/logo.png";
 import Paper from "@material-ui/core/Paper";
 import Reactotron from "reactotron-react-js";
+import { connect } from "react-redux";
+import { login } from "../../../redux/actions/login";
+
 function Login(props) {
   const [login, setLogin] = useState({
     email: "",
@@ -21,7 +17,6 @@ function Login(props) {
   });
 
   const [error, setError] = useState({});
-
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -29,7 +24,24 @@ function Login(props) {
     if (obj && obj.token) {
       setRedirect(true);
     }
-  }, []);
+    if (Object.keys(props._login).length > 0) {
+      if (props._login.success === true) {
+        const variant = "info";
+        props.enqueueSnackbar("Welcome " + props._login.name, {
+          variant
+        });
+        setRedirect(true);
+      } else {
+        const _error = {};
+        _error.email = "Incorrect Email";
+        _error.password = "Incorrect Password";
+        setError(_error);
+
+        const variant = "error";
+        props.enqueueSnackbar("Unregistered user", { variant });
+      }
+    }
+  }, [props._login]);
 
   const onChange = ({ target }) => {
     setLogin({
@@ -48,36 +60,18 @@ function Login(props) {
     return Object.keys(_error).length === 0;
   };
 
-  const onSubmit = event => {
+  const onSubmit = async event => {
     event.preventDefault();
 
     if (!formValidation()) {
       const variant = "error";
-      props.enqueueSnackbar("Please provide your login credentials...", { variant });
+      props.enqueueSnackbar("Email and Password is required...", {
+        variant
+      });
       return;
     }
-    axios
-      .post(
-        "http://localhost:4000/dts/login/" + login.email + "/" + login.password
-      )
-      .then(res => {
-        Reactotron.log(res);
-        if (res.status === 200) {
-          const variant = "info";
-          props.enqueueSnackbar("Login Successful...", { variant });
-          setInStorage("documentTracking", { token: res.data.token });
-          setRedirect(true);
-        }
-        
-      })
-      .catch(err => {
-        const _error = {};
-        _error.email = "Incorrect Email";
-        _error.password = "Incorrect Password";
-        setError(_error);
-        const variant = "error";
-        props.enqueueSnackbar("Login Failed", { variant });
-      });
+
+    await props.login(login);
   };
 
   return (
@@ -143,7 +137,10 @@ function Login(props) {
                       <br />
                       <br />
                       <div style={{ textAlign: "right", marginTop: 50 }}>
-                        <button className={"btn btn-primary"} onClick={onSubmit}>
+                        <button
+                          className={"btn btn-primary"}
+                          onClick={onSubmit}
+                        >
                           Login
                         </button>
                       </div>
@@ -160,4 +157,17 @@ function Login(props) {
   );
 }
 
-export default withSnackbar(Login);
+function mapStateToProps(state) {
+  return {
+    _login: state.login
+  };
+}
+
+const mapDispatchToProps = {
+  login
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withSnackbar(Login));
