@@ -3,6 +3,7 @@ import { withSnackbar } from "notistack";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import AddNewSection from "./AddNewSection";
+import EditSection from "./EditSection";
 
 function Sections(props) {
   return (
@@ -14,6 +15,15 @@ function Sections(props) {
         handleInputChangeAddNewSection={props.handleInputChangeAddNewSection}
         handleSubmitAddNewSection={props.handleSubmitAddNewSection}
         error={props.error}
+      />
+
+      <EditSection
+        open={props.openEditSection}
+        handleClose={props.handleClose}
+        section={props.section}
+        divisions={props.divisions}
+        handleOnChangeEditSection={props.handleOnChangeEditSection}
+        handleSaveEditSection={props.handleSaveEditSection}
       />
 
       <div style={{ textAlign: "right", marginBottom: 10 }}>
@@ -59,10 +69,13 @@ function Sections(props) {
                     )}
                   </td>
                   <td>
-                    <button className={"btn btn-sm "}>
+                    <button
+                      className={"btn btn-sm "}
+                      onClick={props.handleEditSection.bind(null, res.secid)}
+                    >
                       <EditIcon />
                     </button>
-                    <button className={"btn btn-sm "}>
+                    <button className={"btn btn-sm "} onClick={props.handleDeleteSection.bind(null, {id: res.secid, section: res.section})}>
                       <DeleteOutlineIcon />
                     </button>
                   </td>
