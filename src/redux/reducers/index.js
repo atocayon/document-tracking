@@ -9,6 +9,8 @@ import fetchDivisions from "./fetchDivisions";
 import fetchDivisionById from "./fetchDivisionById";
 import fetchSectionsList from "./fetchSectionsList";
 import fetchSectionById from "./fetchSectionById";
+import fetchDocumentTypes from "./fetchDocumentTypes";
+import fetchDocumentById from "./fetchDocumentById";
 const rootReducer = combineReducers({
   updateUserProfile: update,
   fetchUserById: fetchUserById,
@@ -18,6 +20,8 @@ const rootReducer = combineReducers({
   fetchDivisionById: fetchDivisionById,
   fetchSectionsList: fetchSectionsList,
   fetchSectionById: fetchSectionById,
+  fetchDocumentTypes: fetchDocumentTypes,
+  fetchDocumentById: fetchDocumentById,
   deleteUser: deleteUser,
   logout: logout,
 });

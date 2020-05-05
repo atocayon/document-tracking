@@ -540,6 +540,7 @@ router.route("/updateDivision/:id").post(function(req, res) {
   );
 });
 
+//Delete Division
 router.route("/deleteDivision/:id").post(function(req, res) {
   let id = req.params.id;
 
@@ -554,6 +555,64 @@ router.route("/deleteDivision/:id").post(function(req, res) {
   });
 });
 
+//Fetch Document Type By ID
+router.route("/fetchDocumentType/:id").get(function(req, res) {
+  let id = req.params.id;
+  const sql = "SELECT * FROM document_type WHERE id = ?";
+  connection.query(sql, [parseInt(id)], function(err, rows, fields) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    console.log(rows[0]);
+    res.status(200).send(rows[0]);
+  });
+});
+
+//Add Document Type
+router.route("/addDocumentType").post(function(req, res) {
+  const { type } = req.body;
+  const sql = "INSERT INTO document_type (type) VALUES ?";
+  const values = [[type]];
+  connection.query(sql, [values], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    console.log(result);
+    res.status(200).send("success");
+  });
+});
+
+//Update Document Type
+router.route("/updateDocumentType").post(function(req, res) {
+  const { id, type } = req.body;
+  const sql = "UPDATE document_type SET type = ? WHERE id = ?";
+  connection.query(sql, [type, parseInt(id)], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    console.log(result);
+    res.status(200).send("success");
+  });
+});
+
+router.route("/deleteDocumentType/:id").post(function(req, res){
+  let id = req.params.id;
+  const sql = "DELETE FROM document_type WHERE id = ?";
+  connection.query(sql, [parseInt(id)], function(err, result){
+    if (err){
+      console.log(err);
+      res.status(500).send(err);
+    }
+    console.log(result);
+    res.status(200).send("success");
+  });
+});
 // ==========================================================================================
 // ==========================================================================================
 // End Users Data Control
@@ -600,9 +659,11 @@ router.route("/documentType").get(function(req, res) {
   const sql = "SELECT * FROM document_type";
   connection.query(sql, function(err, rows, fields) {
     if (err) {
+      console.log(err);
       res.status(500).send(err);
     }
 
+    console.log(rows);
     res.status(200).send(rows);
   });
 });
