@@ -11,6 +11,7 @@ import fetchSectionsList from "./fetchSectionsList";
 import fetchSectionById from "./fetchSectionById";
 import fetchDocumentTypes from "./fetchDocumentTypes";
 import fetchDocumentById from "./fetchDocumentById";
+import login from "./login";
 const rootReducer = combineReducers({
   updateUserProfile: update,
   fetchUserById: fetchUserById,
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   fetchDocumentById: fetchDocumentById,
   deleteUser: deleteUser,
   logout: logout,
+  login: login
 });
 
 export default rootReducer;

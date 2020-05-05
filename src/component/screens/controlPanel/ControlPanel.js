@@ -260,7 +260,8 @@ function ControlPanel(props) {
     return Object.keys(_error).length === 0;
   };
 
-  const handleSubmitUserRegistration = async () => {
+  const handleSubmitUserRegistration = async (e) => {
+    e.preventDefault();
     if (!formValidation()) {
       const variant = "error";
       props.enqueueSnackbar("All fields are required", { variant });
@@ -309,7 +310,8 @@ function ControlPanel(props) {
     }
   };
 
-  const handleSubmitAddNewDivision = async () => {
+  const handleSubmitAddNewDivision = async (e) => {
+    e.preventDefault();
     if (!formValidationAddNewDivision()) {
       const variant = "error";
       props.enqueueSnackbar("All fields are required", { variant });
@@ -328,7 +330,8 @@ function ControlPanel(props) {
     });
   };
 
-  const handleSubmitAddNewSection = async () => {
+  const handleSubmitAddNewSection = async (e) => {
+    e.preventDefault();
     if (!formValidationAddNewSection()) {
       const variant = "error";
       props.enqueueSnackbar("All fields are required", { variant });
@@ -347,7 +350,8 @@ function ControlPanel(props) {
     });
   };
 
-  const handleSubmitAddDocumentType = async () => {
+  const handleSubmitAddDocumentType = async (e) => {
+    e.preventDefault();
     if (!formValidationAddDocumentType()) {
       const variant = "error";
       props.enqueueSnackbar("All fields are required", { variant });
@@ -367,7 +371,8 @@ function ControlPanel(props) {
     await props.fetchUserById(id);
   };
 
-  const handleSaveEditUser = async () => {
+  const handleSaveEditUser = async (e) => {
+    e.preventDefault();
     await props.updateUserProfile(props.fetch_user);
     const variant = "info";
     props.enqueueSnackbar("Update Success", { variant });
@@ -388,7 +393,8 @@ function ControlPanel(props) {
     await props.fetchDivisionById(id);
   };
 
-  const handleSaveEditDivision = async () => {
+  const handleSaveEditDivision = async (e) => {
+    e.preventDefault();
     await props.updateDivision(props.fetch_division);
     const variant = "info";
     props.enqueueSnackbar("Update Success", { variant });
@@ -409,7 +415,8 @@ function ControlPanel(props) {
     await props.fetchSectionById(id);
   };
 
-  const handleSaveEditSection = async () => {
+  const handleSaveEditSection = async (e) => {
+    e.preventDefault();
     await props.updateSection(props.fetch_section);
     const variant = "info";
     props.enqueueSnackbar("Update Success", { variant });
@@ -430,7 +437,8 @@ function ControlPanel(props) {
     setEditDocumentType(true);
   };
 
-  const handleSaveEditDocumentType = async () => {
+  const handleSaveEditDocumentType = async (e) => {
+    e.preventDefault();
     await props.updateDocumentType(props.fetch_documentType);
     const variant = "info";
     props.enqueueSnackbar("Update Success", { variant });
