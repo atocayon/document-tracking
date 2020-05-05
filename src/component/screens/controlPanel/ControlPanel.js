@@ -20,6 +20,7 @@ import { connect } from "react-redux";
 import { userRegistration } from "../../../redux/actions/userRegistration";
 import { addNewDivision } from "../../../redux/actions/addNewDivision";
 import { addNewSection } from "../../../redux/actions/addNewSection";
+import { addNewDocumentType } from "../../../redux/actions/addNewDocumentType";
 import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import { fetchDivisionById } from "../../../redux/actions/fetchDivisionById";
 import { fetchAllUsers } from "../../../redux/actions/fetchAllUsers";
@@ -27,17 +28,22 @@ import { fetchAllSections } from "../../../redux/actions/fetchAllSections";
 import { fetchDivisions } from "../../../redux/actions/fetchDivisions";
 import { fetchSectionsList } from "../../../redux/actions/fetchSectionsList";
 import { fetchSectionById } from "../../../redux/actions/fetchSectionById";
+import { fetchDocumentTypes } from "../../../redux/actions/fetchDocumentTypes";
+import { fetchDocumentTypeById } from "../../../redux/actions/fetchDocumentTypeById";
 import { updateUserProfile } from "../../../redux/actions/updateUserProfile";
 import { updateDivision } from "../../../redux/actions/updateDivision";
 import { updateSection } from "../../../redux/actions/updateSection";
+import { updateDocumentType } from "../../../redux/actions/updateDocumentType";
 import { deleteUser } from "../../../redux/actions/deleteUser";
 import { deleteDivision } from "../../../redux/actions/deleteDivision";
 import { deleteSection } from "../../../redux/actions/deleteSection";
+import { deleteDocumentType } from "../../../redux/actions/deleteDocumentType";
 import { inputChange } from "../../../redux/actions/inputChange";
 import { logout } from "../../../redux/actions/logout";
 import Reactotron from "reactotron-react-js";
 import Divisions from "./Divisions";
 import Sections from "./Sections";
+import DocumentTypes from "./DocumentTypes";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -89,7 +95,9 @@ function ControlPanel(props) {
   const [openEditDivision, setOpenEditDivision] = useState(false);
   const [openAddNewSection, setOpenAddNewSection] = useState(false);
   const [openEditSection, setOpenEditSection] = useState(false);
-  const [value, setValue] = React.useState(0);
+  const [openAddNewDocumentType, setAddNewDocumentType] = useState(false);
+  const [openEditDocumentType, setEditDocumentType] = useState(false);
+  const [value, setValue] = React.useState(0); //Tab item
   const [error, setError] = useState({});
   const [userInfo, setUserInfo] = useState({
     section: "",
@@ -116,6 +124,10 @@ function ControlPanel(props) {
     secshort: ""
   });
 
+  const [docType, setDocType] = useState({
+    type: ""
+  });
+
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     setEndSession(!(obj && obj.token));
@@ -127,23 +139,14 @@ function ControlPanel(props) {
         await props.fetchAllSections();
         await props.fetchDivisions();
         await props.fetchSectionsList();
+        await props.fetchDocumentTypes();
       }
 
       fetch().catch(err => {
         throw err;
       });
-
-      if (props.user_logout !== null) {
-        if (props.user_logout === true) {
-          localStorage.clear();
-          window.location.reload();
-        } else {
-          const variant = "error";
-          props.enqueueSnackbar("Logout Failed", { variant });
-        }
-      }
     }
-  }, [props.user_logout]);
+  }, []);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -161,6 +164,10 @@ function ControlPanel(props) {
     setOpenAddNewSection(true);
   };
 
+  const handleClickOpenAddDocumentType = () => {
+    setAddNewDocumentType(true);
+  };
+
   const handleClose = () => {
     setOpenUserRegistration(false);
     setOpenEditUser(false);
@@ -168,6 +175,8 @@ function ControlPanel(props) {
     setOpenEditDivision(false);
     setOpenAddNewSection(false);
     setOpenEditSection(false);
+    setAddNewDocumentType(false);
+    setEditDocumentType(false);
   };
 
   const handleLogOutControlPanel = async () => {
@@ -175,6 +184,9 @@ function ControlPanel(props) {
     if (obj && obj.token) {
       const { token } = obj;
       await props.logout(token);
+      window.location.reload();
+    } else {
+      window.location.reload();
     }
   };
 
@@ -189,6 +201,10 @@ function ControlPanel(props) {
 
   const handleInputChangeAddNewSection = ({ target }) => {
     setSection({ ...section, [target.name]: target.value });
+  };
+
+  const handleInputChangeAddDocumentType = ({ target }) => {
+    setDocType({ ...docType, [target.name]: target.value });
   };
 
   const formValidation = () => {
@@ -232,6 +248,15 @@ function ControlPanel(props) {
         "Provide the section acronym / short name";
 
     setError(_error);
+    return Object.keys(_error).length === 0;
+  };
+
+  const formValidationAddDocumentType = () => {
+    const _error = {};
+    if (!docType.type) _error.docType = "Document type is required";
+
+    setError(_error);
+
     return Object.keys(_error).length === 0;
   };
 
@@ -292,7 +317,8 @@ function ControlPanel(props) {
     }
 
     await props.addNewDivision(division);
-
+    const variant = "info";
+    props.enqueueSnackbar("Added Successfully", { variant });
     setOpenAddNewDivision(false);
     setDivision({
       ...division,
@@ -310,7 +336,8 @@ function ControlPanel(props) {
     }
 
     await props.addNewSection(section);
-
+    const variant = "info";
+    props.enqueueSnackbar("Added Successfully", { variant });
     setOpenAddNewSection(false);
     setSection({
       ...section,
@@ -319,6 +346,21 @@ function ControlPanel(props) {
       secshort: ""
     });
   };
+
+  const handleSubmitAddDocumentType = async () => {
+    if (!formValidationAddDocumentType()) {
+      const variant = "error";
+      props.enqueueSnackbar("All fields are required", { variant });
+      return;
+    }
+
+    await props.addNewDocumentType(docType);
+    const variant = "info";
+    props.enqueueSnackbar("Added Successfully", { variant });
+    setAddNewDocumentType(false);
+    setDocType({ ...docType, type: "" });
+  };
+
   const handleEditUser = async val => {
     let id = await val;
     setOpenEditUser(true);
@@ -382,6 +424,27 @@ function ControlPanel(props) {
     props.enqueueSnackbar(section + " Deleted", { variant });
   };
 
+  const handleEditDocumentType = async val => {
+    let id = await val;
+    await props.fetchDocumentTypeById(id);
+    setEditDocumentType(true);
+  };
+
+  const handleSaveEditDocumentType = async () => {
+    await props.updateDocumentType(props.fetch_documentType);
+    const variant = "info";
+    props.enqueueSnackbar("Update Success", { variant });
+    setEditDocumentType(false);
+  };
+
+  const handleDeleteDocumentType = async val => {
+    let id = await val.id;
+    let type = await val.type;
+
+    await props.deleteDocumentType(id);
+    const variant = "warning";
+    props.enqueueSnackbar(type + " Deleted", { variant });
+  };
   return (
     <div className={"row"}>
       {endSession && <Redirect to={"/"} />}
@@ -405,11 +468,6 @@ function ControlPanel(props) {
                 {...a11yProps(1)}
               />
               <Tab label="Sections" icon={<BusinessIcon />} {...a11yProps(2)} />
-              <Tab
-                label="Document Status"
-                icon={<DescriptionIcon />}
-                {...a11yProps(3)}
-              />
               <Tab
                 label="Document Type"
                 icon={<DescriptionIcon />}
@@ -487,16 +545,30 @@ function ControlPanel(props) {
               error={error}
             />
           </TabPanel>
+
           <TabPanel value={value} index={3}>
-            Item Four
+            <DocumentTypes
+              documentType={props.fetch_documentType}
+              documentTypes={props.fetch_documentTypes}
+              openAddNewDocumentType={openAddNewDocumentType}
+              openEditDocumentType={openEditDocumentType}
+              handleClickOpenAddDocumentType={handleClickOpenAddDocumentType}
+              handleInputChangeAddDocumentType={
+                handleInputChangeAddDocumentType
+              }
+              handleEditDocumentType={handleEditDocumentType}
+              handleOnChangeEditDocumentType={props.inputChange}
+              handleSubmitAddDocumentType={handleSubmitAddDocumentType}
+              handleSaveEditDocumentType={handleSaveEditDocumentType}
+              handleClose={handleClose}
+              handleDeleteDocumentType={handleDeleteDocumentType}
+              error={error}
+            />
           </TabPanel>
           <TabPanel value={value} index={4}>
-            Item Five
-          </TabPanel>
-          <TabPanel value={value} index={5}>
             Item Six
           </TabPanel>
-          <TabPanel value={value} index={6}>
+          <TabPanel value={value} index={5}>
             Item Seven
           </TabPanel>
         </div>
@@ -515,6 +587,8 @@ function mapStateToProps(state) {
     fetch_section: state.fetchSectionById,
     fetch_division: state.fetchDivisionById,
     fetch_all_divisions: state.fetchDivisions,
+    fetch_documentTypes: state.fetchDocumentTypes,
+    fetch_documentType: state.fetchDocumentById,
     update_user: state.updateUserProfile,
     delete_user: state.deleteUser,
     user_logout: state.logout
@@ -525,6 +599,7 @@ const mapDispatchToProps = {
   userRegistration,
   addNewDivision,
   addNewSection,
+  addNewDocumentType,
   fetchUserById,
   fetchDivisionById,
   fetchAllUsers,
@@ -532,12 +607,16 @@ const mapDispatchToProps = {
   fetchSectionById,
   fetchDivisions,
   fetchSectionsList,
+  fetchDocumentTypes,
+  fetchDocumentTypeById,
   updateUserProfile,
   updateDivision,
   updateSection,
+  updateDocumentType,
   deleteUser,
   deleteDivision,
   deleteSection,
+  deleteDocumentType,
   inputChange,
   logout
 };

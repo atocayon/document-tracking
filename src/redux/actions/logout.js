@@ -6,6 +6,7 @@ export function logout(token){
         return  axios
             .post("http://localhost:4000/dts/logout/" + token)
             .then(res => {
+                localStorage.clear();
                 dispatch({type: actionTypes.LOG_OUT, logout: true});
             })
             .catch(err => {
