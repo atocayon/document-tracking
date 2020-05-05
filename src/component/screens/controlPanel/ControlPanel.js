@@ -19,17 +19,20 @@ import Users from "./Users";
 import { connect } from "react-redux";
 import { userRegistration } from "../../../redux/actions/userRegistration";
 import { addNewDivision } from "../../../redux/actions/addNewDivision";
-import {addNewSection} from "../../../redux/actions/addNewSection";
+import { addNewSection } from "../../../redux/actions/addNewSection";
 import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import { fetchDivisionById } from "../../../redux/actions/fetchDivisionById";
 import { fetchAllUsers } from "../../../redux/actions/fetchAllUsers";
 import { fetchAllSections } from "../../../redux/actions/fetchAllSections";
 import { fetchDivisions } from "../../../redux/actions/fetchDivisions";
 import { fetchSectionsList } from "../../../redux/actions/fetchSectionsList";
+import { fetchSectionById } from "../../../redux/actions/fetchSectionById";
 import { updateUserProfile } from "../../../redux/actions/updateUserProfile";
 import { updateDivision } from "../../../redux/actions/updateDivision";
+import { updateSection } from "../../../redux/actions/updateSection";
 import { deleteUser } from "../../../redux/actions/deleteUser";
 import { deleteDivision } from "../../../redux/actions/deleteDivision";
+import { deleteSection } from "../../../redux/actions/deleteSection";
 import { inputChange } from "../../../redux/actions/inputChange";
 import { logout } from "../../../redux/actions/logout";
 import Reactotron from "reactotron-react-js";
@@ -184,8 +187,8 @@ function ControlPanel(props) {
     setDivision({ ...division, [target.name]: target.value });
   };
 
-  const handleInputChangeAddNewSection = ({target}) => {
-    setSection({...section, [target.name]: target.value});
+  const handleInputChangeAddNewSection = ({ target }) => {
+    setSection({ ...section, [target.name]: target.value });
   };
 
   const formValidation = () => {
@@ -221,9 +224,12 @@ function ControlPanel(props) {
 
   const formValidationAddNewSection = () => {
     const _error = {};
-    if (!section.division) _error.addNewSection_division = "Division is required";
+    if (!section.division)
+      _error.addNewSection_division = "Division is required";
     if (!section.section) _error.addNewSection_section = "Section is required";
-    if (!section.secshort) _error.addNewSection_secshort = "Provide the section acronym / short name";
+    if (!section.secshort)
+      _error.addNewSection_secshort =
+        "Provide the section acronym / short name";
 
     setError(_error);
     return Object.keys(_error).length === 0;
@@ -297,7 +303,7 @@ function ControlPanel(props) {
   };
 
   const handleSubmitAddNewSection = async () => {
-    if (!formValidationAddNewSection()){
+    if (!formValidationAddNewSection()) {
       const variant = "error";
       props.enqueueSnackbar("All fields are required", { variant });
       return;
@@ -312,7 +318,6 @@ function ControlPanel(props) {
       section: "",
       secshort: ""
     });
-
   };
   const handleEditUser = async val => {
     let id = await val;
@@ -354,6 +359,27 @@ function ControlPanel(props) {
     await props.deleteDivision(id);
     const variant = "warning";
     props.enqueueSnackbar(depshort + " Deleted", { variant });
+  };
+
+  const handleEditSection = async val => {
+    let id = val;
+    setOpenEditSection(true);
+    await props.fetchSectionById(id);
+  };
+
+  const handleSaveEditSection = async () => {
+    await props.updateSection(props.fetch_section);
+    const variant = "info";
+    props.enqueueSnackbar("Update Success", { variant });
+    setOpenEditSection(false);
+  };
+
+  const handleDeleteSection = async val => {
+    let id = await val.id;
+    let section = await val.section;
+    await props.deleteSection(id);
+    const variant = "warning";
+    props.enqueueSnackbar(section + " Deleted", { variant });
   };
 
   return (
@@ -446,6 +472,7 @@ function ControlPanel(props) {
           <TabPanel value={value} index={2}>
             <Sections
               sections={props.fetch_sections_list}
+              section={props.fetch_section}
               divisions={props.fetch_all_divisions}
               openAddNewSection={openAddNewSection}
               openEditSection={openEditSection}
@@ -453,6 +480,10 @@ function ControlPanel(props) {
               handleClickOpenAddNewSection={handleClickOpenAddNewSection}
               handleInputChangeAddNewSection={handleInputChangeAddNewSection}
               handleSubmitAddNewSection={handleSubmitAddNewSection}
+              handleEditSection={handleEditSection}
+              handleOnChangeEditSection={props.inputChange}
+              handleSaveEditSection={handleSaveEditSection}
+              handleDeleteSection={handleDeleteSection}
               error={error}
             />
           </TabPanel>
@@ -481,6 +512,7 @@ function mapStateToProps(state) {
     fetch_all_user: state.fetchAllUsers,
     fetch_sections: state.fetchAllSections,
     fetch_sections_list: state.fetchSectionsList,
+    fetch_section: state.fetchSectionById,
     fetch_division: state.fetchDivisionById,
     fetch_all_divisions: state.fetchDivisions,
     update_user: state.updateUserProfile,
@@ -497,12 +529,15 @@ const mapDispatchToProps = {
   fetchDivisionById,
   fetchAllUsers,
   fetchAllSections,
+  fetchSectionById,
   fetchDivisions,
   fetchSectionsList,
   updateUserProfile,
   updateDivision,
+  updateSection,
   deleteUser,
   deleteDivision,
+  deleteSection,
   inputChange,
   logout
 };

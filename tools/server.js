@@ -397,13 +397,14 @@ router.route("/transferOffice").post(function(req, res) {
 router.route("/sections/:secid").post(function(req, res) {
   const secid = req.params.secid;
   const sql =
-    "SELECT sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM sections JOIN divisions ON sections.secid = divisions.depid WHERE sections.secid = ?";
+    "SELECT sections.secid AS secid, sections.divid AS divid, sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM sections JOIN divisions ON sections.divid = divisions.depid WHERE sections.secid = ?";
   connection.query(sql, [parseInt(secid)], function(err, rows, fields) {
     if (err) {
+      console.log(err);
       res.status(500).send(err);
     }
-
-    res.status(200).send(rows);
+    console.log(rows[0]);
+    res.status(200).send(rows[0]);
   });
 });
 
@@ -422,12 +423,48 @@ router.route("/sections").get(function(req, res) {
   });
 });
 
+//Add New Section
 router.route("/addNewSection").post(function(req, res) {
   const { division, section, secshort } = req.body;
   const sql =
     "INSERT INTO sections (divid, section, secshort, active) VALUES ?";
   const values = [[division, section, secshort, 1]];
   connection.query(sql, [values], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    console.log(result);
+    res.status(200).send("success");
+  });
+});
+
+//Update Section
+router.route("/updateSection").post(function(req, res) {
+  const { secid, divid, section, secshort } = req.body;
+  const sql =
+    "UPDATE sections SET divid = ?, section = ?, secshort = ?, active = ? WHERE secid = ?";
+  connection.query(
+    sql,
+    [parseInt(divid), section, secshort, 1, parseInt(secid)],
+    function(err, result) {
+      if (err) {
+        console.log(err);
+        res.status(500).send(err);
+      }
+
+      console.log(result);
+      res.status(200).send(result);
+    }
+  );
+});
+
+//DELETE SECTION
+router.route("/deleteSection/:id").post(function(req, res) {
+  let id = req.params.id;
+  const sql = "DELETE FROM sections WHERE secid = ?";
+  connection.query(sql, [parseInt(id)], function(err, result) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
