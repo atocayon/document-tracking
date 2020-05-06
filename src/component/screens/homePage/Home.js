@@ -6,52 +6,56 @@ import axios from "axios";
 import { Redirect } from "react-router-dom";
 import CircularProgressComponent from "../../common/circularProgress/CircularProgressComponent";
 import ControlPanel from "../controlPanel/ControlPanel";
+import { connect } from "react-redux";
+import { verifyToken } from "../../../redux/actions/verifyToken";
+import { fetchCurrentSystemUser } from "../../../redux/actions/fetchCurrentSystemUser";
+import { withSnackbar } from "notistack";
 
-function Home() {
-  const [token, setToken] = useState([]);
-  const [user, setUser] = useState({});
-  const [loading, setLoading] = useState(true);
+function Home(props) {
+  const [endSession, setEndSession] = useState(false);
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
 
     if (obj && obj.token) {
       const { token } = obj;
-      axios
-        .get("http://localhost:4000/dts/varifyToken/" + token)
-        .then(res => {
-          setToken([...token, res.data]);
 
-          axios
-            .get("http://localhost:4000/dts/user/" + token)
-            .then(_user => {
-              setUser(_user.data);
-              setLoading(false);
-            })
-            .catch(err => {
-              alert(err);
-            });
-        })
-        .catch(err => {
-          alert(err);
-        });
-    }else{
-      setToken([...token, {success: false}]);
+      async function callback() {
+        await props.verifyToken(token);
+        await props.fetchCurrentSystemUser(token);
+      }
+
+      callback().catch(err => {
+        console.log(err);
+      });
     }
+    setEndSession(!(obj && obj.token));
   }, []);
+
+
   return (
     <div>
-      {token.length > 0 && (
-        <>
-          {token[0].success === false && <Redirect to={"/login"} />}
-          {user.role === "3" && <ControlPanel user={user} />}
-          {user.role === "2" && <Dashboard user={user} />}
-          {user.role === "1" && <Dashboard user={user} />}
+      {endSession && <Redirect to={"/login"} />}
+      {Object.keys(props.token).length > 0 && (
+        <>{props.token.isDeleted === "1" && <Redirect to={"/login"} />}
+          {props.user.role === "3" && <ControlPanel user={props.user} />}
+          {props.user.role === "2" && <Dashboard user={props.user} />}
+          {props.user.role === "1" && <Dashboard user={props.user} />}
         </>
       )}
-
-      {loading && <CircularProgressComponent />}
     </div>
   );
 }
 
-export default Home;
+function mapStateToProps(state) {
+  return {
+    token: state.verifyToken,
+    user: state.fetchCurrentSystemUser
+  };
+}
+
+const mapDispatchToProps = {
+  verifyToken,
+  fetchCurrentSystemUser
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

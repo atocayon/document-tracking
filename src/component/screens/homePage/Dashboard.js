@@ -33,7 +33,6 @@ function Dashboard(props) {
             overflow: "auto"
           }}
         >
-          {/*<h1 style={{ color: "#2196F3" }}>Hello, {props.user.username} !</h1>*/}
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <div
@@ -76,46 +75,6 @@ function Dashboard(props) {
               </div>
             </Grid>
 
-            {/*<Grid item xs={4}>*/}
-            {/*  <CardComponent*/}
-            {/*    cardHeaderText={"T"}*/}
-            {/*    image={tracking}*/}
-            {/*    title={"Track Document"}*/}
-            {/*    cardContent={*/}
-            {/*      "Track a document by typing or scanning the tracking number assigned."*/}
-            {/*    }*/}
-            {/*  />*/}
-            {/*</Grid>*/}
-            {/*<Grid item xs={4}>*/}
-            {/*  <CardComponent*/}
-            {/*    cardHeaderText={"A"}*/}
-            {/*    image={addImage}*/}
-            {/*    title={"Add Document"}*/}
-            {/*    cardContent={*/}
-            {/*      "Add new document to be routed in any division or section you desire."*/}
-            {/*    }*/}
-            {/*  />*/}
-            {/*</Grid>*/}
-            {/*<Grid item xs={4}>*/}
-            {/*  <CardComponent*/}
-            {/*    cardHeaderText={"R"}*/}
-            {/*    image={receive}*/}
-            {/*    title={"Receive Document"}*/}
-            {/*    cardContent={*/}
-            {/*      "Receive document by typing or scanning the tracking number assigned."*/}
-            {/*    }*/}
-            {/*  />*/}
-            {/*</Grid>*/}
-            {/*<Grid item xs={4}>*/}
-            {/*  <CardComponent*/}
-            {/*    cardHeaderText={"R"}*/}
-            {/*    image={release}*/}
-            {/*    title={"Release Document"}*/}
-            {/*    cardContent={*/}
-            {/*      "Release document by typing or scanning the tracking number assigned."*/}
-            {/*    }*/}
-            {/*  />*/}
-            {/*</Grid>*/}
           </Grid>
         </Paper>
       </Grid>

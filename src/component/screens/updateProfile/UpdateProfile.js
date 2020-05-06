@@ -1,11 +1,10 @@
-import React, { Component } from "react";
+import React, {Component, useEffect, useState} from "react";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import owl from "../../../img/owl.png";
 import { Link, Redirect } from "react-router-dom";
 import EditIcon from "@material-ui/icons/Edit";
 import DoneIcon from "@material-ui/icons/Done";
-
 import PersonIcon from "@material-ui/icons/Person";
 import WorkIcon from "@material-ui/icons/Work";
 import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
@@ -18,17 +17,66 @@ import InputField from "../../common/textField/InputField";
 import { updateUserProfile } from "../../../redux/actions/updateUserProfile";
 import Reactotron from "reactotron-react-js";
 import axios from "axios";
-
 import { withSnackbar } from "notistack";
 import { getFromStorage } from "../../storage";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
-class UpdateProfile extends Component {
-  constructor(props) {
-    super(props);
+import { fetchUserById } from "../../../redux/actions/fetchUserById";
+import {inputChange} from "../../../redux/actions/inputChange";
 
-    this.state = {
-      endSession: false,
+function UpdateProfile (props) {
+  const [endSession, setEndSession] = useState(false);
+  const [open, setOpen] = useState(true);
+  const [edit, setEdit] = useState({
+    _employeeId: true,
+    _name: true,
+    _username: true,
+    _contact: true,
+    _email: true,
+    _division: true,
+    _section: true,
+    _position: true,
+    _address: true,
+    _bdate: true,
+    _gender: true,
+  });
+
+  useEffect(() => {
+    const id = props.match.params.id;
+    const obj = getFromStorage("documentTracking");
+
+    async function fetch() {
+      await props.fetchUserById(id);
+    }
+
+    fetch().catch(err => {
+      throw err;
+    });
+
+    setEndSession(!(obj && obj.token));
+
+    if (props.update !== ""){
+      if (props.update === "success"){
+        const variant = "info";
+        props.enqueueSnackbar("Update success", { variant });
+      }
+    }
+
+  }, [props.update]);
+
+  const handleClick = val => {
+    setEdit({...edit,
+      [val]: !edit[val]
+    });
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+
+
+    await props.updateUserProfile(props.user);
+
+    setEdit({...edit,
       _employeeId: true,
       _name: true,
       _username: true,
@@ -40,88 +88,27 @@ class UpdateProfile extends Component {
       _address: true,
       _bdate: true,
       _gender: true,
-      user: [],
-      open: true
-    };
-  }
-
-  componentDidMount() {
-    const id = this.props.match.params.id;
-    const obj = getFromStorage("documentTracking");
-    axios
-      .get("http://localhost:4000/dts/user/" + id)
-      .then(user => {
-        // Reactotron.log(user.data);
-        this.setState({ user: user.data });
-      })
-      .catch(err => {
-        alert(err);
-      });
-
-    this.setState({ endSession: !(obj && obj.token) });
-  }
-
-  handleChange = ({ target }) => {
-    this.setState((state, props) => {
-      // Reactotron.log(target.name);
-      state.user[target.name] = target.value;
-
-      return state;
     });
+    // this.props.updateUserProfile(this.state.user);
   };
 
-  handleClick = val => {
-    this.setState({
-      [val]: !this.state[val]
-    });
+  const handleClickSidebar = () => {
+    setOpen(!open);
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    this.setState({
-      _employeeId: false,
-      _name: false,
-      _username: false,
-      _contact: false,
-      _email: false,
-      _division: false,
-      _section: false,
-      _position: false,
-      _address: false,
-      _bdate: false,
-      _gender: false
-    });
-    this.props.updateUserProfile(this.state.user);
-  };
-
-  handleClickSidebar = () => {
-    this.setState({open : !this.state.open});
-  };
-
-  render() {
-    const { user } = this.state;
-    if (this.props.update.length > 0) {
-      Reactotron.log(this.props.update[0].data);
-      if (this.props.update[0].data === "update success") {
-        const variant = "success";
-        this.props.enqueueSnackbar("Update Success!", { variant });
-      } else {
-        this.props.enqueueSnackbar("There is an error updating...");
-      }
-    }
     return (
       <Grid container spacing={3}>
         <PrimarySearchAppBar />
         <Grid item xs={2}>
           <SideBarNavigation
-            open={this.state.open}
-            handleClick={this.handleClickSidebar}
+            open={open}
+            handleClick={handleClickSidebar}
           />
         </Grid>
         <Grid item xs={8}>
           <div style={{ marginTop: 70 }}>
-            {this.state.endSession && <Redirect to={"/"} />}
-            {Object.keys(user).length === 0 ? (
+            {endSession && <Redirect to={"/"} />}
+            {Object.keys(props.user).length === 0 && (
               <div className={"row"}>
                 <div className={"col-md-12"}>
                   <div style={{ textAlign: "center", marginTop: 70 }}>
@@ -129,23 +116,22 @@ class UpdateProfile extends Component {
                   </div>
                 </div>
               </div>
-            ) : (
+            )}
+            {Object.keys(props.user).length > 0 && (
               <Paper
                 elevation={3}
                 style={{
                   color: "#263238",
                   paddingBottom: 100,
                   height: "100vh",
-                  overflow: "auto",
+                  overflow: "auto"
                 }}
               >
                 <div className={"jumbotron"} style={{ padding: 50 }}>
                   <div className={"row"}>
                     <div className={"col-md-2"}>
                       <div className={"row"}>
-                        <div className={"col-md-6"}>
-
-                        </div>
+                        <div className={"col-md-6"}></div>
                         <div className={"col-md-6"}>
                           <div style={{ textAlign: "right" }}>
                             <img
@@ -191,20 +177,20 @@ class UpdateProfile extends Component {
                                   id={"employeeId"}
                                   name={"employeeId"}
                                   label={"Employee ID"}
-                                  defaultValue={user.employeeId}
-                                  disabled={this.state._employeeId}
-                                  onChange={this.handleChange}
+                                  value={props.user.employeeId || ''}
+                                  disabled={edit._employeeId}
+                                  onChange={props.inputChange}
                                 />
                               </td>
                               <td>
                                 <button
                                   className={"btn"}
-                                  onClick={this.handleClick.bind(
+                                  onClick={handleClick.bind(
                                     null,
                                     "_employeeId"
                                   )}
                                 >
-                                  {this.state._employeeId ? (
+                                  {edit._employeeId ? (
                                     <EditIcon />
                                   ) : (
                                     <DoneIcon />
@@ -218,17 +204,17 @@ class UpdateProfile extends Component {
                                   id={"name"}
                                   name={"name"}
                                   label={"Full Name"}
-                                  defaultValue={user.name}
-                                  disabled={this.state._name}
-                                  onChange={this.handleChange}
+                                  value={props.user.name || ''}
+                                  disabled={edit._name}
+                                  onChange={props.inputChange}
                                 />
                               </td>
                               <td>
                                 <button
                                   className={"btn"}
-                                  onClick={this.handleClick.bind(null, "_name")}
+                                  onClick={handleClick.bind(null, "_name")}
                                 >
-                                  {this.state._name ? (
+                                  {edit._name ? (
                                     <EditIcon />
                                   ) : (
                                     <DoneIcon />
@@ -242,20 +228,20 @@ class UpdateProfile extends Component {
                                   id={"username"}
                                   name={"username"}
                                   label={"Username"}
-                                  defaultValue={user.username}
-                                  disabled={this.state._username}
-                                  onChange={this.handleChange}
+                                  value={props.user.username || ''}
+                                  disabled={edit._username}
+                                  onChange={props.inputChange}
                                 />
                               </td>
                               <td>
                                 <button
                                   className={"btn"}
-                                  onClick={this.handleClick.bind(
+                                  onClick={handleClick.bind(
                                     null,
                                     "_username"
                                   )}
                                 >
-                                  {this.state._username ? (
+                                  {edit._username ? (
                                     <EditIcon />
                                   ) : (
                                     <DoneIcon />
@@ -280,20 +266,20 @@ class UpdateProfile extends Component {
                                   id={"position"}
                                   name={"position"}
                                   label={"Current Position"}
-                                  defaultValue={user.position}
-                                  disabled={this.state._position}
-                                  onChange={this.handleChange}
+                                  value={props.user.position || ''}
+                                  disabled={edit._position}
+                                  onChange={props.inputChange}
                                 />
                               </td>
                               <td>
                                 <button
                                   className={"btn"}
-                                  onClick={this.handleClick.bind(
+                                  onClick={handleClick.bind(
                                     null,
                                     "_position"
                                   )}
                                 >
-                                  {this.state._position ? (
+                                  {edit._position ? (
                                     <EditIcon />
                                   ) : (
                                     <DoneIcon />
@@ -319,20 +305,20 @@ class UpdateProfile extends Component {
                                   id={"contact"}
                                   name={"contact"}
                                   label={"Contact No."}
-                                  defaultValue={user.contact}
-                                  disabled={this.state._contact}
-                                  onChange={this.handleChange}
+                                  value={props.user.contact || ''}
+                                  disabled={edit._contact}
+                                  onChange={props.inputChange}
                                 />
                               </td>
                               <td>
                                 <button
                                   className={"btn"}
-                                  onClick={this.handleClick.bind(
+                                  onClick={handleClick.bind(
                                     null,
                                     "_contact"
                                   )}
                                 >
-                                  {this.state._contact ? (
+                                  {edit._contact ? (
                                     <EditIcon />
                                   ) : (
                                     <DoneIcon />
@@ -347,20 +333,20 @@ class UpdateProfile extends Component {
                                   id={"email"}
                                   name={"email"}
                                   label={"Email"}
-                                  defaultValue={user.email}
-                                  disabled={this.state._email}
-                                  onChange={this.handleChange}
+                                  value={props.user.email || ''}
+                                  disabled={edit._email}
+                                  onChange={props.inputChange}
                                 />
                               </td>
                               <td>
                                 <button
                                   className={"btn"}
-                                  onClick={this.handleClick.bind(
+                                  onClick={handleClick.bind(
                                     null,
                                     "_email"
                                   )}
                                 >
-                                  {this.state._email ? (
+                                  {edit._email ? (
                                     <EditIcon />
                                   ) : (
                                     <DoneIcon />
@@ -371,14 +357,20 @@ class UpdateProfile extends Component {
 
                             <tr>
                               <td>
-                                <div style={{ textAlign: "right", marginTop: 50 }}>
-                                  <Link className={"btn btn-outline-info btn-sm"} to={"/user/" + this.props.match.params.id}>
-                                    <ArrowBackIcon />&nbsp;&nbsp; Back to Profile
+                                <div
+                                  style={{ textAlign: "right", marginTop: 50 }}
+                                >
+                                  <Link
+                                    className={"btn btn-outline-info btn-sm"}
+                                    to={"/user/" + props.match.params.id}
+                                  >
+                                    <ArrowBackIcon />
+                                    &nbsp;&nbsp; Back to Profile
                                   </Link>
                                   &nbsp;&nbsp;&nbsp;
                                   <button
                                     className={"btn btn-info btn-sm"}
-                                    onClick={this.handleSubmit}
+                                    onClick={handleSubmit}
                                   >
                                     <SaveIcon />
                                     &nbsp;&nbsp; Save Changes
@@ -394,23 +386,25 @@ class UpdateProfile extends Component {
                   </Grid>
                 </Grid>
               </Paper>
-            )}
+              )}
           </div>
         </Grid>
         <Grid item xs={2}></Grid>
       </Grid>
     );
-  }
 }
 
 function mapStateToProps(state) {
   return {
+    user: state.fetchUserById,
     update: state.update
   };
 }
 
 const mapDispatchToProps = {
-  updateUserProfile
+  updateUserProfile,
+  fetchUserById,
+  inputChange
 };
 
 export default connect(

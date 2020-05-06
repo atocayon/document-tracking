@@ -72,13 +72,15 @@ function Login(props) {
     }
 
     await props.login(login);
+
   };
 
   return (
     <>
-      {redirect ? (
+      {redirect && (
         <Redirect to={"/"} />
-      ) : (
+      )}
+      {!redirect && (
         <div className={"container"}>
           <div className={"row"}>
             <div className={"col-md-2"}></div>

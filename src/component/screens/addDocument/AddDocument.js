@@ -27,8 +27,31 @@ import ExploreIcon from "@material-ui/icons/Explore";
 import Radio from "@material-ui/core/Radio";
 import Chip from "@material-ui/core/Chip";
 import Avatar from "@material-ui/core/Avatar";
-import BusinessIcon from '@material-ui/icons/Business';
-function AddDocument({ match, enqueueSnackbar }) {
+import BusinessIcon from "@material-ui/icons/Business";
+import { connect } from "react-redux";
+import { fetchDocumentById } from "../../../redux/actions/fetchDocumentById";
+import { fetchDocumentTypes } from "../../../redux/actions/fetchDocumentTypes";
+import { fetchDocumentActionRequired } from "../../../redux/actions/fetchDocumentActionRequired";
+import { fetchDocumentId } from "../../../redux/actions/fetchDocumentId";
+import { fetchUserById } from "../../../redux/actions/fetchUserById";
+import { fetchAllSections } from "../../../redux/actions/fetchAllSections";
+
+function AddDocument({
+  match,
+  enqueueSnackbar,
+  fetchDocumentById,
+  fetchDocumentTypes,
+  fetchDocumentActionRequired,
+  fetchDocumentId,
+  fetchUserById,
+  fetchAllSections,
+  user,
+  document,
+  documentId,
+  documentType,
+  action_req,
+  sections
+}) {
   const checkboxItem = [
     { id: 0, value: "For Approval" },
     { id: 1, value: "For Signature" },
@@ -45,20 +68,15 @@ function AddDocument({ match, enqueueSnackbar }) {
     _date: new Date()
   });
 
-  const [documentID, setDocumentID] = useState({});
-
-  const [user, setUser] = useState({});
-
   const [formData, setFormData] = useState({
     subject: "",
     documentType: "",
     action_req: [],
     note: "",
     externalDestination: "",
+    internalDestination: "",
     destination: []
   });
-
-  const [documentType, setDocumentType] = useState([]);
 
   const [error, setError] = useState({});
   const [finalize, setFinalize] = useState(false);
@@ -86,114 +104,24 @@ function AddDocument({ match, enqueueSnackbar }) {
 
     if (obj && obj.token) {
       const { token } = obj;
-      if (match.params.id) {
-        setDocumentID({ ...documentID, documentID: match.params.id });
-        axios
-          .get("http://localhost:4000/dts/fetchDocument/" + match.params.id)
-          .then(doc => {
-            axios
-              .get("http://localhost:4000/dts/documentType")
-              .then(docType => {
-                setDocumentType(docType.data);
 
-                axios
-                  .get(
-                    "http://localhost:4000/dts/fetchActionReq/" +
-                      match.params.id
-                  )
-                  .then(actionReq => {
-                    const checkedArr = [];
-                    const checkbox = {};
-                    for (let i = 0; i < actionReq.data.length; i++) {
-                      if (actionReq.data[i]) {
-                        checkedArr.push([
-                          match.params.id,
-                          actionReq.data[i].action_req
-                        ]);
-                        checkbox[actionReq.data[i].action_req] = true;
-                      }
-                    }
-                    //Duplicate and replace checkbox check
-                    setBoolCheckbox({ ...boolCheckbox, ...checkbox });
-                    setUser({ ...user, user_id: token });
-                    setFormData({
-                      ...formData,
-                      subject: doc.data.subject,
-                      documentType: doc.data.docType_id.toString(),
-                      action_req: checkedArr,
-                      note: doc.data.note
-                    });
-                  })
-                  .catch(err => {
-                    const variant = "error";
-                    enqueueSnackbar("Error Fetching Document Action Request", {
-                      variant
-                    });
-                  });
-              })
-              .catch(err => {
-                const variant = "error";
-                enqueueSnackbar("Error Fetching Document Type", { variant });
-              });
-          })
-          .catch(err => {
-            const variant = "error";
-            enqueueSnackbar("Error Fetching Documents", { variant });
-          });
-      } else {
-        axios
-          .get("http://localhost:4000/dts/documentId")
-          .then(docId => {
-            setDocumentID(docId.data);
+      async function fetch() {
+        if (match.params.id) {
+          await fetchDocumentById(match.params.id);
+          await fetchDocumentActionRequired(match.params.id);
+        }
 
-            axios
-              .get("http://localhost:4000/dts/user/" + token)
-              .then(user => {
-                setUser(user.data);
-
-                axios
-                  .get("http://localhost:4000/dts/documentType")
-                  .then(docType => {
-                    setDocumentType(docType.data);
-
-                    axios
-                      .get("http://localhost:4000/dts/sections")
-                      .then(_section => {
-                        const res_section = [];
-                        for (let i = 0; i < _section.data.length; i++) {
-                          res_section.push({
-                            id: _section.data[i].secshort,
-                            type:
-                              _section.data[i].section +
-                              "(" +
-                              _section.data[i].depshort +
-                              ")"
-                          });
-                        }
-                        setSection(res_section);
-                      })
-                      .catch(err => {
-                        const variant = "error";
-                        enqueueSnackbar("Error Fetching Section", { variant });
-                      });
-                  })
-                  .catch(err => {
-                    const variant = "error";
-                    enqueueSnackbar("Error Fetching Document Type", {
-                      variant
-                    });
-                  });
-              })
-              .catch(err => {
-                const variant = "error";
-                enqueueSnackbar("Error Fetching User", { variant });
-              });
-          })
-          .catch(err => {
-            const variant = "error";
-            enqueueSnackbar("Error Fetching Document ID", { variant });
-          });
+        if (!match.params.id) {
+          await fetchDocumentId();
+        }
+        await fetchUserById(token);
+        await fetchDocumentTypes();
+        await fetchAllSections();
       }
+
+      fetch().catch(err => {
+        throw err;
+      });
     }
 
     setEndSession(!(obj && obj.token));
@@ -226,7 +154,7 @@ function AddDocument({ match, enqueueSnackbar }) {
       const checkeds = document.getElementsByTagName("input");
       for (let i = 0; i < checkeds.length; i++) {
         if (checkeds[i].checked) {
-          checkedArr.push([documentID.documentID, checkeds[i].value]);
+          checkedArr.push([documentId.documentID, checkeds[i].value]);
         }
       }
 
@@ -241,13 +169,26 @@ function AddDocument({ match, enqueueSnackbar }) {
 
   const handleAddDestinationInternal = () => {
     const _destination = [];
-    const internal = document.getElementById("internalDestination").value;
+    const internal = formData.internalDestination;
 
-    _destination.push([documentID.documentID, user.user_id, "none", destination, internal, "2"]);
-    setFormData({
-      ...formData,
-      destination: [...formData.destination, ..._destination]
-    });
+    if (internal !== "") {
+      _destination.push([
+        documentId.documentID,
+        user.user_id,
+        "none",
+        destination,
+        internal,
+        "2"
+      ]);
+      setFormData({
+        ...formData,
+        destination: [...formData.destination, ..._destination]
+      });
+    } else {
+      const _error = {};
+      _error.internalDestination = "Provide document destination";
+      setError(_error);
+    }
   };
 
   const handleAddDestinationExternal = () => {
@@ -255,17 +196,23 @@ function AddDocument({ match, enqueueSnackbar }) {
     const external = formData.externalDestination;
     const _error = {};
     if (external === "") {
-      _error.externalDestination = "Type Something";
+      _error.externalDestination = "Provide document destination";
       setError(_error);
     } else {
-      _destination.push([documentID.documentID, user.user_id, "none", destination, external, "2"]);
+      _destination.push([
+        documentId.documentID,
+        user.user_id,
+        "none",
+        destination,
+        external,
+        "2"
+      ]);
       setFormData({
         ...formData,
         externalDestination: "",
         destination: [...formData.destination, ..._destination]
       });
     }
-
   };
 
   const handleChangeDestination = ({ target }) => {
@@ -342,10 +289,17 @@ function AddDocument({ match, enqueueSnackbar }) {
 
   const handleConfirm = () => {
     setOpenDialog(false);
-    formData.destination.splice(0,0, [documentID.documentID, user.user_id, "none", destination, "none", "5"]);
+    formData.destination.splice(0, 0, [
+      documentId.documentID,
+      user.user_id,
+      "none",
+      destination,
+      "none",
+      "5"
+    ]);
     axios
       .post("http://localhost:4000/dts/addNewDocument", {
-        documentID: documentID.documentID,
+        documentID: documentId.documentID,
         creator: user.user_id,
         subject: formData.subject,
         doc_type: formData.documentType,
@@ -356,7 +310,7 @@ function AddDocument({ match, enqueueSnackbar }) {
       .then(res => {
         Reactotron.log(res);
         if (res.status === 200) {
-          if (canvas("#printarea", documentID.documentID)) {
+          if (canvas("#printarea", documentId.documentID)) {
             setFinalize(false);
             setDestination("");
             setFormData({
@@ -404,7 +358,7 @@ function AddDocument({ match, enqueueSnackbar }) {
 
     axios
       .post("http://localhost:4000/dts/draft", {
-        documentID: documentID.documentID,
+        documentID: documentId.documentID,
         creator: user.user_id,
         subject: formData.subject,
         doc_type: formData.documentType,
@@ -438,10 +392,11 @@ function AddDocument({ match, enqueueSnackbar }) {
             "For File": false
           });
 
-          setDocumentID({
-            ...documentID,
-            documentID: documentID.documentID + 1
-          });
+          // setDocumentID({
+          //   ...documentID,
+          //   documentID: documentID.documentID + 1
+          // });
+          window.location.reload();
         }
       })
       .catch(err => {
@@ -545,7 +500,11 @@ function AddDocument({ match, enqueueSnackbar }) {
                   <div className={"col-md-8"}>
                     {finalize ? (
                       <FinalizeDocument
-                        trackingNumber={documentID}
+                        trackingNumber={
+                          match.param.id
+                            ? match.params.id
+                            : documentId && documentId.documentID
+                        }
                         data={formData}
                         documentType={documentType}
                         handleGoBack={handleGoBack}
@@ -567,8 +526,9 @@ function AddDocument({ match, enqueueSnackbar }) {
                           variant={"outlined"}
                           disabled={true}
                           value={
-                            Object.keys(documentID).length > 0 &&
-                            documentID.documentID
+                            match.params.id
+                              ? match.params.id
+                              : (documentId && documentId.documentID) || ""
                           }
                           type={"number"}
                         />
@@ -636,12 +596,11 @@ function AddDocument({ match, enqueueSnackbar }) {
                         {error.radDestination && (
                           <span style={{ color: "red" }}>
                             <small>{error.radDestination}</small>
-                             <br/>
+                            <br />
                           </span>
                         )}
-
                         {error.destination && (
-                            <span style={{ color: "red" }}>
+                          <span style={{ color: "red" }}>
                             <small>{error.destination}</small>
                           </span>
                         )}
@@ -671,9 +630,10 @@ function AddDocument({ match, enqueueSnackbar }) {
                               id={"internalDestination"}
                               name={"internalDestination"}
                               label={"Internal Office/Section"}
-                              options={section}
-                              // onChange={handleChange}
+                              options={sections}
+                              onChange={handleChange}
                               variant={"outlined"}
+                              error={error.internalDestination}
                             />
                             <br />
                             <button
@@ -710,19 +670,19 @@ function AddDocument({ match, enqueueSnackbar }) {
                         <br />
                         {formData.destination.length > 0 &&
                           formData.destination.map((des, index) => (
-                              <>
-                                <Chip
-                                    key={index}
-                                    avatar={
-                                      <Avatar>
-                                        <BusinessIcon />
-                                      </Avatar>
-                                    }
-                                    label={des[4]}
-                                    onDelete={handleRemoveDestination(index)}
-                                />&nbsp;&nbsp;
-                              </>
-
+                            <>
+                              <Chip
+                                key={index}
+                                avatar={
+                                  <Avatar>
+                                    <BusinessIcon />
+                                  </Avatar>
+                                }
+                                label={des[4]}
+                                onDelete={handleRemoveDestination(index)}
+                              />
+                              &nbsp;&nbsp;
+                            </>
                           ))}
                         <br />
                         <div
@@ -765,4 +725,27 @@ function AddDocument({ match, enqueueSnackbar }) {
   );
 }
 
-export default withSnackbar(AddDocument);
+function mapStateToProps(state) {
+  return {
+    user: state.fetchUserById,
+    document: state.fetchDocumentById,
+    documentId: state.fetchDocumentId,
+    documentType: state.fetchDocumentTypes,
+    action_req: state.fetchDocumentActionRequired,
+    sections: state.fetchInternalDestination
+  };
+}
+
+const mapDispatchToProps = {
+  fetchDocumentById,
+  fetchDocumentTypes,
+  fetchDocumentActionRequired,
+  fetchDocumentId,
+  fetchUserById,
+  fetchAllSections
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withSnackbar(AddDocument));

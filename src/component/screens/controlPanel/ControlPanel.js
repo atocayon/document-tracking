@@ -596,7 +596,7 @@ function mapStateToProps(state) {
     fetch_division: state.fetchDivisionById,
     fetch_all_divisions: state.fetchDivisions,
     fetch_documentTypes: state.fetchDocumentTypes,
-    fetch_documentType: state.fetchDocumentById,
+    fetch_documentType: state.fetchDocumentTypeById,
     update_user: state.updateUserProfile,
     delete_user: state.deleteUser,
     user_logout: state.logout

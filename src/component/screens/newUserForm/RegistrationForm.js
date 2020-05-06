@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Paper } from "@material-ui/core";
 import { Link, Redirect } from "react-router-dom";
 import CancelIcon from "@material-ui/icons/Cancel";
-import StepperComponent from "./StepperComponent";
 import Profile from "./Profile";
 import Contact from "./Contact";
 import Work from "./Work";
@@ -14,6 +13,9 @@ import Grid from "@material-ui/core/Grid";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 import SaveIcon from "@material-ui/icons/Save";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
+import { connect } from "react-redux";
+import { fetchCurrentSystemUser } from "../../../redux/actions/fetchCurrentSystemUser";
+import { userRegistration } from "../../../redux/actions/userRegistration";
 
 function RegistrationForm(props) {
   const [userInfo, setUserInfo] = useState({
@@ -36,17 +38,32 @@ function RegistrationForm(props) {
     const obj = getFromStorage("documentTracking");
     setEndSession(!(obj && obj.token));
     if (obj && obj.token) {
-      axios
-        .get("http://localhost:4000/dts/user/" + obj.token)
-        .then(_user => {
-          Reactotron.log(_user);
-          setUser(_user.data);
-        })
-        .catch(err => {
-          alert(err);
-        });
+      const { token } = obj;
+      async function fetch() {
+        await props.fetchCurrentSystemUser(token);
+      }
+
+      fetch().catch(err => {
+        throw err;
+      });
+
+      if (props.user_reg !== ""){
+        if (props.user_reg === "success"){
+          const variant = "info";
+          props.enqueueSnackbar(userInfo.name + " registration success...", { variant });
+          setRedirect(true);
+        }
+
+        if (props.user_reg === "failed"){
+          const _error = {};
+          _error.email = "Already taken";
+          setError(_error);
+          const variant = "error";
+          props.enqueueSnackbar(userInfo.name + " email is already taken...", { variant });
+        }
+      }
     }
-  }, []);
+  }, [props.user_reg]);
 
   function formValidation() {
     const _error = {};
@@ -66,9 +83,8 @@ function RegistrationForm(props) {
     return Object.keys(_error).length === 0;
   }
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault();
-    Reactotron.log(userInfo);
     if (!formValidation()) {
       const variant = "error";
       props.enqueueSnackbar("Please don't leave input fields empty...", {
@@ -77,37 +93,19 @@ function RegistrationForm(props) {
       return;
     }
     if (userInfo.password === userInfo.confirmPassword) {
-      axios
-        .post("http://localhost:4000/dts/addUser", {
-          role: userInfo.role,
-          employeeId: userInfo.employeeId,
-          name: userInfo.name,
-          username: userInfo.username,
-          password: userInfo.password,
-          email: userInfo.email,
-          contact: userInfo.contact,
-          section: user.secid,
-          position: userInfo.position
-        })
-        .then(res => {
-          if (res.status === 200) {
-            if (res.data.success) {
-              const variant = "success";
-              props.enqueueSnackbar("Registration Success...", { variant });
-              setRedirect(true);
-            } else {
-              const _error = {};
-              _error.email = "Email is already taken...";
-              setError(_error);
-              const variant = "warning";
-              props.enqueueSnackbar("Email is already taken...", { variant });
-            }
-          }
-        })
-        .catch(err => {
-          const variant = "error";
-          props.enqueueSnackbar("Server error...", { variant });
-        });
+      await props.userRegistration(
+          props.user.secid,
+          userInfo.role,
+          userInfo.employeeId,
+          userInfo.name,
+          userInfo.username,
+          userInfo.password,
+          userInfo.confirmPassword,
+          userInfo.email,
+          userInfo.contact,
+          userInfo.position
+      );
+
     } else {
       const _error = {};
       _error.password = "Password Don't match";
@@ -123,8 +121,6 @@ function RegistrationForm(props) {
       ...userInfo,
       [target.name]: target.value
     });
-
-    Reactotron.log(target.name);
   };
 
   const handleClick = () => {
@@ -170,7 +166,7 @@ function RegistrationForm(props) {
                   <div className={"col-md-8"}>
                     <h5>
                       Registration for{" "}
-                      <span style={{ color: "#2196F3" }}>{user.section}</span>{" "}
+                      <span style={{ color: "#2196F3" }}>{props.user.section}</span>{" "}
                       user account
                     </h5>
                   </div>
@@ -213,19 +209,25 @@ function RegistrationForm(props) {
               </div>
             </Grid>
           </Grid>
-
-          {/*<StepperComponent*/}
-          {/*  activeStep={activeStep}*/}
-          {/*  steps={steps}*/}
-          {/*  handleBack={handleBack}*/}
-          {/*  handleNext={handleNext}*/}
-          {/*  handleSubmit={handleSubmit}*/}
-          {/*  getStepContent={getStepContent}*/}
-          {/*/>*/}
         </Paper>
       </Grid>
       <Grid item xs={2}></Grid>
     </Grid>
   );
 }
-export default withSnackbar(RegistrationForm);
+
+function mapStateToProps(state) {
+  return {
+    user: state.fetchCurrentSystemUser,
+    user_reg: state.userRegistration
+  };
+}
+
+const mapDispatchToProps = {
+  fetchCurrentSystemUser,
+  userRegistration
+};
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withSnackbar(RegistrationForm));

@@ -30,7 +30,7 @@ export function updateUserProfile(data) {
         if (_res.status === 200) {
           dispatch({
             type: actionTypes.UPDATE_USER_PROFILE,
-            res: true
+            res: "success"
           });
           dispatch({
             type: actionTypes.UPDATE_USERS_LIST,

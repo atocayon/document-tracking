@@ -67,9 +67,9 @@ router.route("/addUser").post(function(req, res) {
       console.log(err);
       res.send(err);
     }
-
+    console.log(rows);
     if (rows.length > 0) {
-      res.status(200).send({ success: false });
+      res.status(200).send({ success: "failed" });
     } else {
       bcrypt.hash(password, saltRounds, function(err, hash) {
         if (err) {
@@ -100,7 +100,7 @@ router.route("/addUser").post(function(req, res) {
             res.status(500).send(err);
           }
 
-          res.status(200).send({ success: true });
+          res.status(200).send({ success: "success" });
         });
       });
     }
@@ -221,23 +221,19 @@ router.route("/logout/:id").post(function(req, res) {
 });
 
 //Verify User Token
-router.route("/varifyToken/:token").get(function(req, res) {
+router.route("/verifyToken/:token").get(function(req, res) {
   let token = req.params.token;
 
-  const sql = "SELECT * FROM users_session WHERE userId = ? AND isDeleted = ?";
-  connection.query(sql, [token, 0], function(err, rows, fields) {
+  const sql = "SELECT * FROM users_session WHERE userId = ?";
+  connection.query(sql, [token], function(err, rows, fields) {
     if (err) {
-      res.status(500).json({
-        success: false,
-        message: "Server error selecting user session"
-      });
+      console.log(err);
+      res.status(500).send(err);
     }
 
-    if (rows) {
-      res.status(200).json({ success: true, message: "Valid" });
-    } else {
-      res.status(404).json({ success: false, message: "Invalid" });
-    }
+      console.log(rows[0]);
+      res.status(200).send(rows[0]);
+
   });
 });
 
@@ -823,7 +819,7 @@ router.route("/fetchDocument/:doc_id").get(function(req, res) {
       res.status(500).send(err);
     }
 
-    console.log(rows);
+    console.log(rows[0]);
     res.status(200).send(rows[0]);
   });
 });
