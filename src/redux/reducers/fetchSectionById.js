@@ -4,7 +4,7 @@ const defaultState = {};
 
 export default function fetchSectionById(state = defaultState, action) {
   switch (action.type) {
-    case actionTypes.FETCH_USER_BY_ID:
+    case actionTypes.FETCH_SECTION_BY_ID:
       return { ...state, ...action.data };
 
     case actionTypes.INPUT_CHANGE:

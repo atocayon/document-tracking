@@ -29,7 +29,7 @@ function App(props) {
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     if (!obj || !obj.token) {
-      props.enqueueSnackbar("No session found...");
+      props.enqueueSnackbar("NMP | Document Tracking System");
     }
   }, []);
 

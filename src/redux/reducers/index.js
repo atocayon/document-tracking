@@ -10,10 +10,17 @@ import fetchDivisionById from "./fetchDivisionById";
 import fetchSectionsList from "./fetchSectionsList";
 import fetchSectionById from "./fetchSectionById";
 import fetchDocumentTypes from "./fetchDocumentTypes";
-import fetchDocumentById from "./fetchDocumentById";
+import fetchDocumentTypeById from "./fetchDocumentTypeById";
 import login from "./login";
+import verifyToken from "./verifyToken";
+import fetchCurrentSystemUser from "./fetchCurrentSystemUser";
+import userRegistration from "./userRegistration";
+import fetchDocumentById from "./fetchDocumentById";
+import fetchDocumentActionRequired from "./fetchDocumentActionRequired";
+import fetchDocumentId from "./fetchDocumentId";
+import fetchInternalDestination from "./fetchInternalDestination";
 const rootReducer = combineReducers({
-  updateUserProfile: update,
+  update: update,
   fetchUserById: fetchUserById,
   fetchAllUsers: fetchAllUsers,
   fetchAllSections: fetchAllSections,
@@ -22,10 +29,17 @@ const rootReducer = combineReducers({
   fetchSectionsList: fetchSectionsList,
   fetchSectionById: fetchSectionById,
   fetchDocumentTypes: fetchDocumentTypes,
-  fetchDocumentById: fetchDocumentById,
+  fetchDocumentTypeById: fetchDocumentTypeById,
+  fetchCurrentSystemUser: fetchCurrentSystemUser,
   deleteUser: deleteUser,
   logout: logout,
-  login: login
+  login: login,
+  verifyToken: verifyToken,
+  userRegistration: userRegistration,
+  fetchDocumentById: fetchDocumentById,
+  fetchDocumentActionRequired: fetchDocumentActionRequired,
+  fetchDocumentId: fetchDocumentId,
+  fetchInternalDestination: fetchInternalDestination
 });
 
 export default rootReducer;

@@ -40,7 +40,19 @@ export function userRegistration(
       })
       .then(_res => {
         if (_res.status === 200) {
-          dispatch({ type: actionTypes.ADD_USER, _data });
+          if (_res.data.success === "success") {
+            dispatch({ type: actionTypes.ADD_USER, _data });
+            dispatch({
+              type: actionTypes.USER_REGISTRATION,
+              message: "success"
+            });
+          }
+          if (_res.data.success === "failed") {
+            dispatch({
+              type: actionTypes.USER_REGISTRATION,
+              message: "failed"
+            });
+          }
         }
       })
       .catch(err => {
