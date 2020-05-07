@@ -35,6 +35,9 @@ import { fetchDocumentActionRequired } from "../../../redux/actions/fetchDocumen
 import { fetchDocumentId } from "../../../redux/actions/fetchDocumentId";
 import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import { fetchAllSections } from "../../../redux/actions/fetchAllSections";
+import { addDocumentInputChange } from "../../../redux/actions/addDocumentInputChange";
+import { clearDestination } from "../../../redux/actions/clearDestination";
+import { inputChange } from "../../../redux/actions/inputChange";
 
 function AddDocument({
   match,
@@ -50,7 +53,10 @@ function AddDocument({
   documentId,
   documentType,
   action_req,
-  sections
+  sections,
+  addDocumentInputChange,
+  addDocument,
+  clearDestination
 }) {
   const checkboxItem = [
     { id: 0, value: "For Approval" },
@@ -141,32 +147,6 @@ function AddDocument({
     });
   };
 
-  const handleChange = ({ target }) => {
-    const checkedArr = [];
-    let val;
-    if (target.type !== "checkbox") {
-      val = target.value;
-    } else {
-      setBoolCheckbox({
-        ...boolCheckbox,
-        [target.value]: !boolCheckbox[target.value]
-      });
-      const checkeds = document.getElementsByTagName("input");
-      for (let i = 0; i < checkeds.length; i++) {
-        if (checkeds[i].checked) {
-          checkedArr.push([documentId.documentID, checkeds[i].value]);
-        }
-      }
-
-      val = checkedArr;
-    }
-
-    setFormData({
-      ...formData,
-      [target.name]: val
-    });
-  };
-
   const handleAddDestinationInternal = () => {
     const _destination = [];
     const internal = formData.internalDestination;
@@ -215,9 +195,9 @@ function AddDocument({
     }
   };
 
-  const handleChangeDestination = ({ target }) => {
+  const handleChangeDestination = async ({ target }) => {
     setDestination(target.value);
-    setFormData({ ...formData, destination: [] });
+    await clearDestination();
   };
 
   const handleRemoveDestination = name => event => {
@@ -410,8 +390,13 @@ function AddDocument({
   const createCheckbox = label => {
     return (
       <CheckBox
-        checked={boolCheckbox[label.value]}
-        onChange={handleChange}
+        checked={addDocument[label.value]}
+        onChange={addDocumentInputChange.bind(null, {
+          documentID: match.params.id
+            ? match.params.id
+            : documentId && documentId.documentID,
+          value: label.value
+        })}
         key={label.id}
         label={label.value}
         value={label.value}
@@ -422,7 +407,6 @@ function AddDocument({
 
   const createCheckboxes = () => checkboxItem.map(createCheckbox);
 
-  // Reactotron.log(boolCheckbox);
   return (
     <>
       <Grid container spacing={3}>
@@ -539,10 +523,10 @@ function AddDocument({
                           label={"Subject"}
                           name={"subject"}
                           variant={"outlined"}
-                          onChange={handleChange}
+                          onChange={addDocumentInputChange}
                           error={error.subject}
                           type={"text"}
-                          value={formData.subject}
+                          value={addDocument.subject}
                         />
                         <small>
                           - You may remove any sensitive information (e.g
@@ -557,9 +541,9 @@ function AddDocument({
                           label={"Document Type"}
                           options={documentType}
                           error={error.documentType}
-                          onChange={handleChange}
+                          onChange={addDocumentInputChange}
                           variant={"outlined"}
-                          value={formData.documentType}
+                          value={addDocument.documentType}
                         />
                         <br />
                         <br />
@@ -583,9 +567,9 @@ function AddDocument({
                         <TextArea
                           placeholder={"Write Your Note Here"}
                           name={"note"}
-                          onChange={handleChange}
+                          onChange={addDocumentInputChange}
                           error={error.note}
-                          value={formData.note}
+                          value={addDocument.note}
                         />
                         <br />
                         <br />
@@ -631,7 +615,7 @@ function AddDocument({
                               name={"internalDestination"}
                               label={"Internal Office/Section"}
                               options={sections}
-                              onChange={handleChange}
+                              onChange={addDocumentInputChange}
                               variant={"outlined"}
                               error={error.internalDestination}
                             />
@@ -653,8 +637,8 @@ function AddDocument({
                               variant={"outlined"}
                               error={error.externalDestination}
                               type={"text"}
-                              onChange={handleChange}
-                              value={formData.externalDestination}
+                              onChange={addDocumentInputChange}
+                              value={addDocument.externalDestination}
                             />
                             <br />
                             <br />
@@ -732,7 +716,8 @@ function mapStateToProps(state) {
     documentId: state.fetchDocumentId,
     documentType: state.fetchDocumentTypes,
     action_req: state.fetchDocumentActionRequired,
-    sections: state.fetchInternalDestination
+    sections: state.fetchInternalDestination,
+    addDocument: state.addDocument
   };
 }
 
@@ -742,7 +727,9 @@ const mapDispatchToProps = {
   fetchDocumentActionRequired,
   fetchDocumentId,
   fetchUserById,
-  fetchAllSections
+  fetchAllSections,
+  addDocumentInputChange,
+  clearDestination
 };
 
 export default connect(
