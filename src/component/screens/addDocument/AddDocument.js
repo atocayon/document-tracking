@@ -37,7 +37,11 @@ import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import { fetchAllSections } from "../../../redux/actions/fetchAllSections";
 import { addDocumentInputChange } from "../../../redux/actions/addDocumentInputChange";
 import { clearDestination } from "../../../redux/actions/clearDestination";
-import { inputChange } from "../../../redux/actions/inputChange";
+import { documentActionRequired } from "../../../redux/actions/documentActionRequired";
+import { addDocumentDestination } from "../../../redux/actions/addDocumentDestination";
+import { clearExternalDestinationInput } from "../../../redux/actions/clearDestination";
+import { clearInternalDestinationInput } from "../../../redux/actions/clearDestination";
+import { removeDestination } from "../../../redux/actions/clearDestination";
 
 function AddDocument({
   match,
@@ -56,7 +60,12 @@ function AddDocument({
   sections,
   addDocumentInputChange,
   addDocument,
-  clearDestination
+  clearDestination,
+  handleDocumentActionRequired,
+  addDocumentDestination,
+  clearExternalDestinationInput,
+  clearInternalDestinationInput,
+  removeDestination
 }) {
   const checkboxItem = [
     { id: 0, value: "For Approval" },
@@ -147,23 +156,22 @@ function AddDocument({
     });
   };
 
-  const handleAddDestinationInternal = () => {
+  const handleAddDestinationInternal = async () => {
     const _destination = [];
-    const internal = formData.internalDestination;
+    const internal = addDocument.internalDestination;
 
     if (internal !== "") {
-      _destination.push([
+      _destination.push(
         documentId.documentID,
         user.user_id,
         "none",
         destination,
         internal,
         "2"
-      ]);
-      setFormData({
-        ...formData,
-        destination: [...formData.destination, ..._destination]
-      });
+      );
+
+      await addDocumentDestination(_destination);
+      await clearInternalDestinationInput();
     } else {
       const _error = {};
       _error.internalDestination = "Provide document destination";
@@ -171,45 +179,30 @@ function AddDocument({
     }
   };
 
-  const handleAddDestinationExternal = () => {
+  const handleAddDestinationExternal = async () => {
     const _destination = [];
-    const external = formData.externalDestination;
+    const external = addDocument.externalDestination;
     const _error = {};
     if (external === "") {
       _error.externalDestination = "Provide document destination";
       setError(_error);
     } else {
-      _destination.push([
+      _destination.push(
         documentId.documentID,
         user.user_id,
         "none",
         destination,
         external,
         "2"
-      ]);
-      setFormData({
-        ...formData,
-        externalDestination: "",
-        destination: [...formData.destination, ..._destination]
-      });
+      );
+      await addDocumentDestination(_destination);
+      await clearExternalDestinationInput();
     }
   };
 
   const handleChangeDestination = async ({ target }) => {
     setDestination(target.value);
     await clearDestination();
-  };
-
-  const handleRemoveDestination = name => event => {
-    const desArray = [...formData.destination];
-    Reactotron.log(desArray);
-
-    desArray.splice(name, 1);
-
-    setFormData({
-      ...formData,
-      destination: desArray
-    });
   };
 
   const formValidation = () => {
@@ -391,7 +384,7 @@ function AddDocument({
     return (
       <CheckBox
         checked={addDocument[label.value]}
-        onChange={addDocumentInputChange.bind(null, {
+        onChange={handleDocumentActionRequired.bind(null, {
           documentID: match.params.id
             ? match.params.id
             : documentId && documentId.documentID,
@@ -652,8 +645,8 @@ function AddDocument({
                         )}
                         <br />
                         <br />
-                        {formData.destination.length > 0 &&
-                          formData.destination.map((des, index) => (
+                        {addDocument.destination.length > 0 &&
+                          addDocument.destination.map((des, index) => (
                             <>
                               <Chip
                                 key={index}
@@ -663,7 +656,10 @@ function AddDocument({
                                   </Avatar>
                                 }
                                 label={des[4]}
-                                onDelete={handleRemoveDestination(index)}
+                                onDelete={event => {
+                                  event.stopPropagation();
+                                  removeDestination(index);
+                                }}
                               />
                               &nbsp;&nbsp;
                             </>
@@ -729,7 +725,12 @@ const mapDispatchToProps = {
   fetchUserById,
   fetchAllSections,
   addDocumentInputChange,
-  clearDestination
+  clearDestination,
+  handleDocumentActionRequired: documentActionRequired,
+  addDocumentDestination,
+  clearExternalDestinationInput,
+  clearInternalDestinationInput,
+  removeDestination
 };
 
 export default connect(
