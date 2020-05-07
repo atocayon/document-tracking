@@ -19,6 +19,7 @@ import fetchDocumentById from "./fetchDocumentById";
 import fetchDocumentActionRequired from "./fetchDocumentActionRequired";
 import fetchDocumentId from "./fetchDocumentId";
 import fetchInternalDestination from "./fetchInternalDestination";
+import addDocument from "./addDocument";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -39,7 +40,8 @@ const rootReducer = combineReducers({
   fetchDocumentById: fetchDocumentById,
   fetchDocumentActionRequired: fetchDocumentActionRequired,
   fetchDocumentId: fetchDocumentId,
-  fetchInternalDestination: fetchInternalDestination
+  fetchInternalDestination: fetchInternalDestination,
+  addDocument: addDocument
 });
 
 export default rootReducer;
