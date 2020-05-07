@@ -30,11 +30,19 @@ export default function addDocument(state = defaultState, action) {
         internalDestination: "",
         destination: []
       });
+
+    case actionTypes.CLEAR_INTERNAL_DESTINATION_INPUT:
+      return Object.assign({}, state, { internalDestination: "" });
+
+    case actionTypes.CLEAR_EXTERNAL_DESTINATION_INPUT:
+      return Object.assign({}, state, { externalDestination: "" });
+
     case actionTypes.ADD_DOCUMENT_ACTION_REQ:
       return Object.assign({}, state, {
         action_req: [...state.action_req, action.data],
         [action.data.value]: !state[action.data.value]
       });
+
     case actionTypes.REMOVE_DOCUMENT_ACTION_REQ:
       let arr = [...state.action_req];
 
@@ -50,6 +58,16 @@ export default function addDocument(state = defaultState, action) {
         action_req: arr,
         [action.data.value]: !state[action.data.value]
       });
+
+    case actionTypes.ADD_DOCUMENT_DESTINATION:
+      return Object.assign({}, state, {
+        destination: [...state.destination, action.data]
+      });
+
+    case actionTypes.REMOVE_DESTINATION:
+      let destination = [...state.destination];
+      destination.splice(action.index);
+      return Object.assign({}, state, { destination: destination });
     default:
       return state;
   }
