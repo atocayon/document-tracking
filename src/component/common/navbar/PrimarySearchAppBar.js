@@ -76,7 +76,7 @@ function PrimarySearchAppBar(props) {
         .then(res => {
           localStorage.clear();
           props.enqueueSnackbar("Session end...");
-          window.location.reload();
+          window.location.reload(true);
         })
         .catch(err => {
           props.enqueueSnackbar("Server Error... " + err);

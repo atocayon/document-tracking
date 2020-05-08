@@ -10,7 +10,10 @@ import Button from "@material-ui/core/Button";
 
 export default function ListOfUsers(props) {
   const filter = props.sectionUsers.filter(
-    user => user.user_id !== parseInt(props.token) && user.status !== "3"
+    user =>
+      user.user_id !== parseInt(props.token) &&
+      user.status !== "3" &&
+      user.role !== "3"
   );
 
   return (
@@ -73,14 +76,18 @@ export default function ListOfUsers(props) {
                       {user.role === "1" ? "Remove as admin" : "Make as admin"}
                     </Button>
                   )}
-                  <Button onClick={props.handleTransferOffice.bind(null, {
+                  <Button
+                    onClick={props.handleTransferOffice.bind(null, {
                       secid: user.secid,
                       section: user.section,
                       depshort: user.depshort,
                       department: user.department,
                       id: user.user_id,
                       name: user.name
-                  })}>Transfer Office</Button>
+                    })}
+                  >
+                    Transfer Office
+                  </Button>
                   {props.userRole === "1" && (
                     <Button
                       style={{ color: "#FF9800" }}

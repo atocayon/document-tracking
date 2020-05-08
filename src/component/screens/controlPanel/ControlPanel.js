@@ -186,7 +186,8 @@ function ControlPanel(props) {
       await props.logout(token);
       window.location.reload();
     } else {
-      window.location.reload();
+
+      window.location.reload(true);
     }
   };
 

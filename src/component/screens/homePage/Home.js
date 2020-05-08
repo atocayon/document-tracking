@@ -37,9 +37,9 @@ function Home(props) {
       {endSession && <Redirect to={"/login"} />}
       {Object.keys(props.token).length > 0 && (
         <>{props.token.isDeleted === "1" && <Redirect to={"/login"} />}
-          {props.user.role === "3" && <ControlPanel user={props.user} />}
-          {props.user.role === "2" && <Dashboard user={props.user} />}
-          {props.user.role === "1" && <Dashboard user={props.user} />}
+          {props.user.role === "super_admin" && <ControlPanel user={props.user} />}
+          {props.user.role === "member" && <Dashboard user={props.user} />}
+          {props.user.role === "admin" && <Dashboard user={props.user} />}
         </>
       )}
     </div>
