@@ -14,7 +14,7 @@ export default function CardComponent(props){
         }
 
         if (props.title === "Add Document"){
-            return "/addDocument";
+            return "/newDocumentCreation";
         }
 
         if (props.title === "Receive Document"){

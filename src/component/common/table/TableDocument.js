@@ -78,7 +78,7 @@ export default function CustomizedTables(props) {
                   <StyledTableCell>{row.subject}</StyledTableCell>
                   <StyledTableCell>{row.doc_type}</StyledTableCell>
                   <StyledTableCell>
-                    <Link to={"/addDocument/"+row.documentID} >View Document</Link>
+                    <Link to={"/newDocumentCreation/"+row.documentID} >View Document</Link>
                   </StyledTableCell>
                 </StyledTableRow>
               ))}

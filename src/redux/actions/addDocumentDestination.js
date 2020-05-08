@@ -8,3 +8,9 @@ export function addDocumentDestination(destination) {
     });
   };
 }
+
+export function logDocumentCreator(data) {
+  return function(dispatch) {
+    return dispatch({ type: actionTypes.ADD_DOCUMENT_CREATOR, data });
+  };
+}
