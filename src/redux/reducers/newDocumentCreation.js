@@ -18,7 +18,7 @@ const defaultState = {
   "For File": false
 };
 
-export default function addDocument(state = defaultState, action) {
+export default function newDocumentCreation(state = defaultState, action) {
   switch (action.type) {
     case actionTypes.ADD_DOCUMENT_INPUT_CHANGE:
       return Object.assign({}, state, {
@@ -39,7 +39,7 @@ export default function addDocument(state = defaultState, action) {
 
     case actionTypes.ADD_DOCUMENT_ACTION_REQ:
       return Object.assign({}, state, {
-        action_req: [...state.action_req, action.data],
+        action_req: [...state.action_req, action.data.data],
         [action.data.value]: !state[action.data.value]
       });
 
@@ -68,6 +68,30 @@ export default function addDocument(state = defaultState, action) {
       let destination = [...state.destination];
       destination.splice(action.index);
       return Object.assign({}, state, { destination: destination });
+
+    case actionTypes.ADD_DOCUMENT_CREATOR:
+      let creator = [...state.destination];
+      creator.splice(0, 0, action.data);
+      return Object.assign({}, state, { destination: creator });
+
+    case actionTypes.CLEAR_ADD_NEW_DOCUMENT_STATE:
+      return Object.assign({}, state, {
+        subject: "",
+        documentType: "",
+        action_req: [],
+        note: "",
+        externalDestination: "",
+        internalDestination: "",
+        destination: [],
+        "For Approval": false,
+        "For Signature": false,
+        "For Endorsement": false,
+        "For Recommendation": false,
+        "For Action": false,
+        "For Comment": false,
+        "For Information": false,
+        "For File": false
+      });
     default:
       return state;
   }

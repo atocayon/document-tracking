@@ -1,6 +1,6 @@
 import actionTypes from "./actionTypes";
 import Reactotron from "reactotron-react-js";
-export function clearDestination(){
+export function clearAddNewDocumentInput(){
     return function(dispatch){
         return dispatch({type: actionTypes.CLEAR_DESTINATION});
     }
@@ -22,5 +22,11 @@ export function removeDestination(index) {
 
     return function(dispatch){
         return dispatch({type: actionTypes.REMOVE_DESTINATION, index});
+    }
+}
+
+export function clearAddNewDocumentState(){
+    return function(dispatch){
+        return dispatch({type: actionTypes.CLEAR_ADD_NEW_DOCUMENT_STATE});
     }
 }

@@ -19,7 +19,10 @@ import fetchDocumentById from "./fetchDocumentById";
 import fetchDocumentActionRequired from "./fetchDocumentActionRequired";
 import fetchDocumentId from "./fetchDocumentId";
 import fetchInternalDestination from "./fetchInternalDestination";
-import addDocument from "./addDocument";
+import newDocumentCreation from "./newDocumentCreation";
+import addNewDocument from "./addNewDocument";
+import addNewDocumentDraft from "./addNewDocumentDraft";
+
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -41,7 +44,9 @@ const rootReducer = combineReducers({
   fetchDocumentActionRequired: fetchDocumentActionRequired,
   fetchDocumentId: fetchDocumentId,
   fetchInternalDestination: fetchInternalDestination,
-  addDocument: addDocument
+  newDocumentCreation: newDocumentCreation,
+  addNewDocument: addNewDocument,
+  addNewDocumentDraft: addNewDocumentDraft
 });
 
 export default rootReducer;

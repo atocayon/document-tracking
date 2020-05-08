@@ -95,7 +95,7 @@ function Draft(props) {
                   {drafts.length > 0
                     && drafts.map(doc => (
                         <Link
-                          to={"/addDocument/" + doc.documentID}
+                          to={"/newDocumentCreation/" + doc.documentID}
                           style={{ textDecoration: "none" }}
                         >
                           <ListItem>

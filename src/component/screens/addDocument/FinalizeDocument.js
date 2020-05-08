@@ -5,25 +5,23 @@ import FeedbackIcon from "@material-ui/icons/Feedback";
 import CommentIcon from "@material-ui/icons/Comment";
 import { FormGroup } from "@material-ui/core";
 import CheckBox from "../../common/checkbox/CheckBox";
-import Reactotron from "reactotron-react-js";
+
 import CancelIcon from "@material-ui/icons/Cancel";
 import SendIcon from "@material-ui/icons/Send";
 import InputField from "../../common/textField/InputField";
-import SelectField from "../../common/selectField/SelectField";
-import TextArea from "../../common/textArea/TextArea";
-import DraftsIcon from "@material-ui/icons/Drafts";
-import DoneIcon from "@material-ui/icons/Done";
+
 import Barcode from "react-barcode";
 import ExploreIcon from "@material-ui/icons/Explore";
-import Radio from "@material-ui/core/Radio";
+
 import Chip from "@material-ui/core/Chip";
 import Avatar from "@material-ui/core/Avatar";
 import BusinessIcon from "@material-ui/icons/Business";
+import Reactotron from "reactotron-react-js";
 function FinalizeDocument(props) {
   const docType = props.documentType.filter(
     doc => doc.id === parseInt(props.data.documentType)
   );
-
+  const destination = props.data.destination.filter((data,index) => index !== 0);
   return (
     <>
       <div>
@@ -47,13 +45,7 @@ function FinalizeDocument(props) {
           <small>&nbsp;&nbsp;DOCUMENT TRACKING NUMBER</small>
         </div>
         <div id={"printarea"} style={{ width: 200 }}>
-          <Barcode
-            value={
-              Object.keys(props.trackingNumber).length > 0 &&
-              props.trackingNumber.documentID
-            }
-            height={50}
-          />
+          <Barcode value={props.trackingNumber} height={50} />
         </div>
         <br />
         <br />
@@ -118,28 +110,28 @@ function FinalizeDocument(props) {
         </h5>
         <FormGroup>
           <CheckBox
-              checked={true}
-              key={props.documentDestination}
-              label={props.documentDestination}
-              value={props.documentDestination}
-              name={props.documentDestination}
+            checked={true}
+            key={props.documentDestination}
+            label={props.documentDestination}
+            value={props.documentDestination}
+            name={props.documentDestination}
           />
-
         </FormGroup>
 
-        <br/>
-        {props.data.destination.map(destination => (
-            <>
-              <Chip
-                  key={destination[4]}
-                  avatar={
-                    <Avatar>
-                      <BusinessIcon />
-                    </Avatar>
-                  }
-                  label={destination[4]}
-              />&nbsp;&nbsp;
-            </>
+        <br />
+        {destination.map(destination => (
+          <>
+            <Chip
+              key={destination[4]}
+              avatar={
+                <Avatar>
+                  <BusinessIcon />
+                </Avatar>
+              }
+              label={destination[4]}
+            />
+            &nbsp;&nbsp;
+          </>
         ))}
         <br />
         <br />

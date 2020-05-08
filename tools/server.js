@@ -843,7 +843,7 @@ router.route("/fetchActionReq/:doc_id").get(function(req, res) {
 router.route("/fetchUserDocuments/:userID").get(function(req, res) {
   const userID = req.params.userID;
   const sql =
-    "SELECT documents.documentID as documentID, documents.subject as subject, document_type.id as docType_id, document_type.type as type, documents.note FROM documents JOIN document_type ON documents.doc_type = document_type.id WHERE documents.creator = ? AND documents.status = ?";
+    "SELECT documents.documentID as documentID, documents.subject as subject, document_type.id as docType_id, document_type.type as type, documents.note FROM documents JOIN document_type ON documents.doc_type = document_type.id WHERE documents.creator = ? AND documents.status = ? ORDER BY documents.date_time_created DESC";
   connection.query(sql, [userID, "1"], function(err, rows, fields) {
     if (err) {
       console.log(err);

@@ -36,12 +36,16 @@ import { fetchDocumentId } from "../../../redux/actions/fetchDocumentId";
 import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import { fetchAllSections } from "../../../redux/actions/fetchAllSections";
 import { addDocumentInputChange } from "../../../redux/actions/addDocumentInputChange";
-import { clearDestination } from "../../../redux/actions/clearDestination";
+import { clearAddNewDocumentInput } from "../../../redux/actions/clearAddNewDocumentInput";
 import { documentActionRequired } from "../../../redux/actions/documentActionRequired";
 import { addDocumentDestination } from "../../../redux/actions/addDocumentDestination";
-import { clearExternalDestinationInput } from "../../../redux/actions/clearDestination";
-import { clearInternalDestinationInput } from "../../../redux/actions/clearDestination";
-import { removeDestination } from "../../../redux/actions/clearDestination";
+import { clearExternalDestinationInput } from "../../../redux/actions/clearAddNewDocumentInput";
+import { clearInternalDestinationInput } from "../../../redux/actions/clearAddNewDocumentInput";
+import { removeDestination } from "../../../redux/actions/clearAddNewDocumentInput";
+import { addNewDocument } from "../../../redux/actions/addNewDocument";
+import { logDocumentCreator } from "../../../redux/actions/addDocumentDestination";
+import { clearAddNewDocumentState } from "../../../redux/actions/clearAddNewDocumentInput";
+import { addNewDocumentDraft } from "../../../redux/actions/addNewDocumentDraft";
 
 function AddDocument({
   match,
@@ -65,7 +69,13 @@ function AddDocument({
   addDocumentDestination,
   clearExternalDestinationInput,
   clearInternalDestinationInput,
-  removeDestination
+  removeDestination,
+  addNewDocument,
+  logDocumentCreator,
+  submit_new_document,
+  clearAddNewDocumentState,
+  addNewDocumentDraft,
+  submit_new_document_draft
 }) {
   const checkboxItem = [
     { id: 0, value: "For Approval" },
@@ -83,30 +93,9 @@ function AddDocument({
     _date: new Date()
   });
 
-  const [formData, setFormData] = useState({
-    subject: "",
-    documentType: "",
-    action_req: [],
-    note: "",
-    externalDestination: "",
-    internalDestination: "",
-    destination: []
-  });
-
   const [error, setError] = useState({});
   const [finalize, setFinalize] = useState(false);
-  const [boolCheckbox, setBoolCheckbox] = useState({
-    "For Approval": false,
-    "For Signature": false,
-    "For Endorsement": false,
-    "For Recommendation": false,
-    "For Action": false,
-    "For Comment": false,
-    "For Information": false,
-    "For File": false
-  });
   const [destination, setDestination] = useState("");
-  const [section, setSection] = useState([]);
   const [open, setOpen] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const theme = useTheme();
@@ -140,10 +129,59 @@ function AddDocument({
     }
 
     setEndSession(!(obj && obj.token));
+
+    if (submit_new_document !== "") {
+      if (submit_new_document === "success") {
+        async function submitNewDocument() {
+          await canvas("#printarea", documentId.documentID);
+
+          await clearAddNewDocumentState();
+          setFinalize(false);
+          setDestination("");
+          const variant = "info";
+          enqueueSnackbar("Document release successfully...", {
+            variant
+          });
+        }
+
+        submitNewDocument().catch(err => {
+          throw err;
+        });
+      } else {
+        const variant = "error";
+        enqueueSnackbar("Document releasing failed...", {
+          variant
+        });
+      }
+    }
+
+    if (submit_new_document_draft !== "") {
+      if (submit_new_document_draft === "success") {
+        async function submitNewDraft() {
+          await clearAddNewDocumentState();
+          setFinalize(false);
+          setDestination("");
+          const variant = "info";
+          enqueueSnackbar("Document saved as draft success...", {
+            variant
+          });
+        }
+
+        submitNewDraft().catch(err => {
+          throw err;
+        });
+      } else {
+        const variant = "error";
+        enqueueSnackbar("Document saving as draft failed...", {
+          variant
+        });
+      }
+    }
+
     return () => {
       clearInterval(timeID);
     };
-  }, [match.params.id]);
+  }, [match.params.id, submit_new_document, submit_new_document_draft]);
 
   const handleClick = () => {
     setOpen(!open);
@@ -208,18 +246,18 @@ function AddDocument({
   const formValidation = () => {
     const _error = {};
 
-    if (!formData.subject) {
+    if (!addDocument.subject) {
       _error.subject = "Subject is required";
     }
 
-    if (!formData.note) {
+    if (!addDocument.note) {
       _error.note = "Note is required";
     }
-    if (!formData.documentType) {
+    if (!addDocument.documentType) {
       _error.documentType = "Document type is required";
     }
 
-    if (formData.destination.length === 0) {
+    if (addDocument.destination.length === 0) {
       _error.destination = "Destination is Required";
     }
 
@@ -227,7 +265,7 @@ function AddDocument({
       _error.radDestination = "Please specify destination";
     }
 
-    if (formData.action_req.length === 0) {
+    if (addDocument.action_req.length === 0) {
       _error.action_req = "Please select at least one action required";
     }
 
@@ -236,7 +274,7 @@ function AddDocument({
     return Object.keys(_error).length === 0;
   };
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault();
 
     if (!formValidation()) {
@@ -244,6 +282,14 @@ function AddDocument({
       enqueueSnackbar("Fill out all required fields...", { variant });
       return;
     }
+    await logDocumentCreator([
+      documentId.documentID,
+      user.user_id,
+      "none",
+      destination,
+      "none",
+      "5"
+    ]);
 
     setFinalize(true);
   };
@@ -260,124 +306,35 @@ function AddDocument({
     setOpenDialog(false);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setOpenDialog(false);
-    formData.destination.splice(0, 0, [
+
+    await addNewDocument(
       documentId.documentID,
       user.user_id,
-      "none",
-      destination,
-      "none",
-      "5"
-    ]);
-    axios
-      .post("http://localhost:4000/dts/addNewDocument", {
-        documentID: documentId.documentID,
-        creator: user.user_id,
-        subject: formData.subject,
-        doc_type: formData.documentType,
-        note: formData.note,
-        action_req: formData.action_req,
-        documentLogs: formData.destination
-      })
-      .then(res => {
-        Reactotron.log(res);
-        if (res.status === 200) {
-          if (canvas("#printarea", documentId.documentID)) {
-            setFinalize(false);
-            setDestination("");
-            setFormData({
-              ...formData,
-              subject: "",
-              documentType: "",
-              action_req: [],
-              note: "",
-              externalDestination: "",
-              destination: []
-            });
-            setBoolCheckbox({
-              ...boolCheckbox,
-              "For Approval": false,
-              "For Signature": false,
-              "For Endorsement": false,
-              "For Recommendation": false,
-              "For Action": false,
-              "For Comment": false,
-              "For Information": false,
-              "For File": false
-            });
-
-            const variant = "info";
-            enqueueSnackbar("Document release successfully...", {
-              variant
-            });
-          }
-        }
-      })
-      .catch(err => {
-        const variant = "error";
-        enqueueSnackbar("Server Error", { variant });
-      });
+      addDocument.subject,
+      addDocument.documentType,
+      addDocument.note,
+      addDocument.action_req,
+      addDocument.destination
+    );
   };
 
-  const handleSaveAsDraft = () => {
+  const handleSaveAsDraft = async () => {
     if (!formValidation) {
       const variant = "error";
       enqueueSnackbar("Fill out all required fields...", { variant });
       return;
     }
 
-    // formData.destination.splice(-1,0, [documentID.documentID, user.user_id, "none", destination, "none", "5"]);
-
-    axios
-      .post("http://localhost:4000/dts/draft", {
-        documentID: documentId.documentID,
-        creator: user.user_id,
-        subject: formData.subject,
-        doc_type: formData.documentType,
-        note: formData.note,
-        action_req: formData.action_req
-      })
-      .then(res => {
-        if (res.status === 200) {
-          const variant = "info";
-          enqueueSnackbar("Document saved as draft...", {
-            variant
-          });
-
-          setFormData({
-            ...formData,
-            subject: "",
-            documentType: "",
-            action_req: [],
-            note: ""
-          });
-
-          setBoolCheckbox({
-            ...boolCheckbox,
-            "For Approval": false,
-            "For Signature": false,
-            "For Endorsement": false,
-            "For Recommendation": false,
-            "For Action": false,
-            "For Comment": false,
-            "For Information": false,
-            "For File": false
-          });
-
-          // setDocumentID({
-          //   ...documentID,
-          //   documentID: documentID.documentID + 1
-          // });
-          window.location.reload();
-        }
-      })
-      .catch(err => {
-        const variant = "error";
-        enqueueSnackbar(err, {
-          variant
-        });
-      });
+    await addNewDocumentDraft(
+      documentId.documentID,
+      user.user_id,
+      addDocument.subject,
+      addDocument.documentType,
+      addDocument.note,
+      addDocument.action_req
+    );
   };
 
   const createCheckbox = label => {
@@ -388,7 +345,13 @@ function AddDocument({
           documentID: match.params.id
             ? match.params.id
             : documentId && documentId.documentID,
-          value: label.value
+          value: label.value,
+          data: [
+            match.params.id
+              ? match.params.id
+              : documentId && documentId.documentID,
+            label.value
+          ]
         })}
         key={label.id}
         label={label.value}
@@ -428,7 +391,9 @@ function AddDocument({
                 openDialog={openDialog}
                 title={""}
                 content={
-                  "You are about to release a document, print the barcode that will be downloaded after you confirm this message and attach it to the corresponding document."
+                  "You are about to release a document, print the barcode that " +
+                  "will be downloaded after you confirm " +
+                  "this message and attach it to the corresponding document."
                 }
                 handleClose={handleClose}
                 handleConfirm={handleConfirm}
@@ -478,11 +443,11 @@ function AddDocument({
                     {finalize ? (
                       <FinalizeDocument
                         trackingNumber={
-                          match.param.id
+                          match.params.id
                             ? match.params.id
                             : documentId && documentId.documentID
                         }
-                        data={formData}
+                        data={addDocument}
                         documentType={documentType}
                         handleGoBack={handleGoBack}
                         handleRelease={handleRelease}
@@ -536,7 +501,7 @@ function AddDocument({
                           error={error.documentType}
                           onChange={addDocumentInputChange}
                           variant={"outlined"}
-                          value={addDocument.documentType}
+                          value={parseInt(addDocument.documentType)}
                         />
                         <br />
                         <br />
@@ -713,7 +678,9 @@ function mapStateToProps(state) {
     documentType: state.fetchDocumentTypes,
     action_req: state.fetchDocumentActionRequired,
     sections: state.fetchInternalDestination,
-    addDocument: state.addDocument
+    addDocument: state.newDocumentCreation,
+    submit_new_document: state.addNewDocument,
+    submit_new_document_draft: state.addNewDocumentDraft
   };
 }
 
@@ -725,12 +692,16 @@ const mapDispatchToProps = {
   fetchUserById,
   fetchAllSections,
   addDocumentInputChange,
-  clearDestination,
+  clearDestination: clearAddNewDocumentInput,
   handleDocumentActionRequired: documentActionRequired,
   addDocumentDestination,
   clearExternalDestinationInput,
   clearInternalDestinationInput,
-  removeDestination
+  removeDestination,
+  addNewDocument,
+  logDocumentCreator,
+  clearAddNewDocumentState,
+  addNewDocumentDraft
 };
 
 export default connect(
