@@ -92,6 +92,20 @@ export default function newDocumentCreation(state = defaultState, action) {
         "For Information": false,
         "For File": false
       });
+
+    case actionTypes.FETCH_DOCUMENT_ACTION_REQUIRED:
+      return Object.assign({}, state, {
+        action_req: action.data.action_req,
+        ...action.data.checkbox
+      });
+
+    case actionTypes.FETCH_DOCUMENT_BY_ID:
+      let docType = action.data.docType_id.toString();
+      return Object.assign({}, state, {
+        subject: action.data.subject,
+        documentType: docType,
+        note: action.data.note
+      });
     default:
       return state;
   }
