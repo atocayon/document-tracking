@@ -122,7 +122,7 @@ router.route("/login/:email/:password").post(function(req, res) {
     }
 
     if (rows.length === 0) {
-      res.status(200).json({success:false, message: "Unrecognize email"});
+      res.status(200).json({ success: false, message: "Unrecognize email" });
     }
 
     if (rows.length > 0) {
@@ -134,12 +134,14 @@ router.route("/login/:email/:password").post(function(req, res) {
 
         if (!result) {
           console.log(result);
-          res.status(200).json({ success: false, message: "Incorrect Password" });
+          res
+            .status(200)
+            .json({ success: false, message: "Incorrect Password" });
         }
 
         console.log(result);
 
-        const id = rows[0].user_id.toString();
+        const id = rows[0].user_id;
         const role = rows[0].role;
         const name = rows[0].name;
         const check_session_query =
@@ -154,7 +156,7 @@ router.route("/login/:email/:password").post(function(req, res) {
             res.status(500).send(err);
           }
           console.log(rows);
-          if (!rows) {
+          if (rows.length === 0) {
             const sql1 =
               "INSERT INTO users_session (userId, isDeleted) VALUES ?";
             const values = [[id, 0]];
@@ -231,9 +233,8 @@ router.route("/verifyToken/:token").get(function(req, res) {
       res.status(500).send(err);
     }
 
-      console.log(rows[0]);
-      res.status(200).send(rows[0]);
-
+    console.log(rows[0]);
+    res.status(200).send(rows[0]);
   });
 });
 
@@ -273,7 +274,7 @@ router.route("/user/:id").get(function(req, res) {
   let id = req.params.id;
 
   const sql =
-    "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.password AS password, users.contact AS contact, users.email AS email, users.section AS secid, users.position AS position, users.role AS role, users.status AS status ,sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid WHERE users.user_id = ?";
+    "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.password AS password, users.contact AS contact, users.email AS email, users.section AS secid, users.position AS position, users_role.role AS role, users.status AS status ,sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid JOIN users_role ON users.role = users_role.role_id WHERE users.user_id = ?";
   connection.query(sql, [parseInt(id)], function(err, rows, fields) {
     if (err) {
       console.log(err);
@@ -600,11 +601,11 @@ router.route("/updateDocumentType").post(function(req, res) {
   });
 });
 
-router.route("/deleteDocumentType/:id").post(function(req, res){
+router.route("/deleteDocumentType/:id").post(function(req, res) {
   let id = req.params.id;
   const sql = "DELETE FROM document_type WHERE id = ?";
-  connection.query(sql, [parseInt(id)], function(err, result){
-    if (err){
+  connection.query(sql, [parseInt(id)], function(err, result) {
+    if (err) {
       console.log(err);
       res.status(500).send(err);
     }
@@ -893,6 +894,68 @@ router.route("/fetchDocumentDestination/:doc_id").get(function(req, res) {
 
     console.log(rows);
     res.status(200).send(rows);
+  });
+});
+
+//receive document
+router.route("/receiveDocument").post(function(req, res) {
+  const { documentTracking, user_id, user_section } = req.body;
+  const sql =
+    "SELECT * FROM documentLogs WHERE document_id = ? AND user_id = ? AND status = ?  ORDER BY date_time DESC ";
+  connection.query(sql, [documentTracking, user_id, "1"], function(
+    err,
+    rows,
+    fields
+  ) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    if (rows.length === 0) {
+      const sql1 =
+        "SELECT * FROM documentLogs WHERE document_id = ? AND status = ?";
+
+      connection.query(sql1, [documentTracking, "2"], function(
+        err,
+        rows,
+        fields
+      ) {
+        if (err) {
+          console.log(err);
+          res.status(500).send(err);
+        }
+
+        rows.map((data, index) => {
+          if (data.destination === "External") {
+            const sql2 = "SELECT * FROM documentLogs WHERE user_id = ?";
+            connection.query(sql2, [user_id], function(err, rows, fields) {
+              if (err) {
+                console.log(err);
+                res.status(500).send(err);
+              }
+
+              if (rows.length === 0) {
+                res
+                  .status(200)
+                  .send({
+                    success: "failed",
+                    message: "You're not authorized to received this document"
+                  });
+              }
+
+              // const insert =
+              //   "INSERT INTO documentLogs (document_id, user_id, )";
+            });
+          }
+        });
+      });
+    }
+
+    res.status(200).send({
+      success: "failed",
+      message: "You already receive this document"
+    });
   });
 });
 

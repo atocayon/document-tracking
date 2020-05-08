@@ -17,8 +17,6 @@ import DescriptionIcon from "@material-ui/icons/Description";
 import ListItemText from "@material-ui/core/ListItemText";
 import Divider from "@material-ui/core/Divider";
 
-
-
 function Draft(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
@@ -34,7 +32,7 @@ function Draft(props) {
         })
         .catch(err => {
           const variant = "error";
-          props.enqueueSnackbar("Server Error", {variant});
+          props.enqueueSnackbar("Server Error", { variant });
         });
     }
 
@@ -84,35 +82,36 @@ function Draft(props) {
             </div>
           </div>
           {drafts.length === 0 && (
-              <div style={{textAlign: "center", marginTop: 200}}>
-                <h6 style={{ color: "#9E9E9E" }}>You don't have any drafts yet</h6>
-              </div>
+            <div style={{ textAlign: "center", marginTop: 200 }}>
+              <h6 style={{ color: "#9E9E9E" }}>
+                You don't have any drafts yet
+              </h6>
+            </div>
           )}
           <div style={{ marginLeft: 50, marginRight: 10 }}>
             <div className={"row"}>
               <div className={"col-md-8"}>
                 <List>
-                  {drafts.length > 0
-                    && drafts.map(doc => (
-                        <Link
-                          to={"/addDocument/" + doc.documentID}
-                          style={{ textDecoration: "none" }}
-                        >
-                          <ListItem>
-                            <ListItemAvatar>
-                              <Avatar>
-                                <DescriptionIcon />
-                              </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                              primary={doc.subject}
-                              secondary={doc.doc_type}
-                            />
-                          </ListItem>
-                          {/*<Divider />*/}
-                        </Link>
-                      ))
-                    }
+                  {drafts.length > 0 &&
+                    drafts.map(doc => (
+                      <Link
+                        to={"/addDocument/" + doc.documentID}
+                        style={{ textDecoration: "none" }}
+                      >
+                        <ListItem>
+                          <ListItemAvatar>
+                            <Avatar>
+                              <DescriptionIcon />
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={doc.subject}
+                            secondary={doc.doc_type}
+                          />
+                        </ListItem>
+                        {/*<Divider />*/}
+                      </Link>
+                    ))}
                 </List>
               </div>
               <div className={"col-md-4"}></div>

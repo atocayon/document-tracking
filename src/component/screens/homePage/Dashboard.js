@@ -4,6 +4,9 @@ import Paper from "@material-ui/core/Paper";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 import InputField from "../../common/textField/InputField";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
+import { connect } from "react-redux";
+import { inputChange } from "../../../redux/actions/inputChange";
+import { withSnackbar } from "notistack";
 
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
@@ -51,15 +54,19 @@ function Dashboard(props) {
                   <div className={"col-md-6"}>
                     <InputField
                       id={"tackDocument"}
+                      name={"documentTrackingNumber"}
                       label={"Document Tracking Number"}
                       variant={"outlined"}
+                      onChange={props.inputChange}
+                      value={props.trackingNum.documentTrackingNumber}
                     />
-
                   </div>
                   <div className={"col-md-4"}>
                     <button className={"btn btn-lg btn-info"}>Track</button>
                     &nbsp;&nbsp;&nbsp;
-                    <button className={"btn btn-lg btn-outline-info"}>Receive</button>
+                    <button className={"btn btn-lg btn-outline-info"}>
+                      Receive
+                    </button>
                   </div>
                 </div>
               </div>
@@ -74,7 +81,6 @@ function Dashboard(props) {
                 </div>
               </div>
             </Grid>
-
           </Grid>
         </Paper>
       </Grid>
@@ -83,4 +89,17 @@ function Dashboard(props) {
   );
 }
 
-export default Dashboard;
+function mapStateToProps(state) {
+  return {
+    trackingNum: state.documentTrackingNumber
+  };
+}
+
+const mapDispatchToProps = {
+  inputChange
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withSnackbar(Dashboard));
