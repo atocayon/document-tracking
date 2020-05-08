@@ -110,6 +110,9 @@ function AddDocument({
       const { token } = obj;
 
       async function fetch() {
+        await fetchUserById(token);
+        await fetchDocumentTypes();
+        await fetchAllSections();
         if (match.params.id) {
           await fetchDocumentById(match.params.id);
           await fetchDocumentActionRequired(match.params.id);
@@ -118,9 +121,6 @@ function AddDocument({
         if (!match.params.id) {
           await fetchDocumentId();
         }
-        await fetchUserById(token);
-        await fetchDocumentTypes();
-        await fetchAllSections();
       }
 
       fetch().catch(err => {

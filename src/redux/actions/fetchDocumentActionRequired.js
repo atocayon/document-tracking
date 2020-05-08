@@ -17,7 +17,7 @@ export function fetchDocumentActionRequired(doc_id) {
 
         dispatch({
           type: actionTypes.FETCH_DOCUMENT_ACTION_REQUIRED,
-          data: { checkedArr, checkbox }
+          data: { action_req: checkedArr, checkbox }
         });
       })
       .catch(err => {
