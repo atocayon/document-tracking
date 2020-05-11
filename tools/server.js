@@ -900,8 +900,7 @@ router.route("/fetchDocumentDestination/:doc_id").get(function(req, res) {
 //receive document
 router.route("/receiveDocument").post(function(req, res) {
   const { documentTracking, user_id, user_section } = req.body;
-  const sql =
-    "SELECT * FROM documentLogs WHERE document_id = ? AND user_id = ? AND status = ?  ORDER BY date_time DESC ";
+  const sql = "SELECT * FROM documentLogs WHERE document_id = ?";
   connection.query(sql, [documentTracking, user_id, "1"], function(
     err,
     rows,
@@ -912,50 +911,82 @@ router.route("/receiveDocument").post(function(req, res) {
       res.status(500).send(err);
     }
 
-    if (rows.length === 0) {
-      const sql1 =
-        "SELECT * FROM documentLogs WHERE document_id = ? AND status = ?";
+    // console.log(rows);
 
-      connection.query(sql1, [documentTracking, "2"], function(
-        err,
-        rows,
-        fields
-      ) {
-        if (err) {
-          console.log(err);
-          res.status(500).send(err);
-        }
+    if (rows.length > 0) {
+      for (let i = 0; i < rows.length; i++) {
+        if (
+          rows[i].destinationType === "External" &&
+          rows[i].user_id === user_id &&
+          rows[i].status === "2"
+        ) {
+          const insertExternal =
+            "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status) VALUES ?";
+          const val = [
+            [documentTracking, user_id, "none", "External", "none", "1"]
+          ];
+          connection.query(insertExternal, [val], function(err, result) {
+            if (err) {
+              console.log(err);
+              res.status(500).send(err);
+            }
 
-        rows.map((data, index) => {
-          if (data.destination === "External") {
-            const sql2 = "SELECT * FROM documentLogs WHERE user_id = ?";
-            connection.query(sql2, [user_id], function(err, rows, fields) {
-              if (err) {
+            const fetchDocumentInfoExternal =
+              "SELECT documents.documentID AS documentId, users.name AS creator, sections.section AS creatorSection, users.position AS creatorPosition, documents.subject AS subject, document_type.type AS doc_type, documents.note AS note, documents.date_time_created AS data_time_created, documentLogs.remarks AS doc_remarks, documentLogs.destinationType AS destinationType, documentStatus.status AS status FROM documents JOIN users ON documents.creator = users.user_id JOIN document_type ON documents.doc_type = document_type.id JOIN documentLogs ON documents.documentID = documentLogs.document_id JOIN documentStatus ON documentLogs.status = documentStatus.statid JOIN sections ON users.section = sections.secid  WHERE documentLogs.user_id = ? AND documentLogs.destinationType = ? AND documentLogs.status = ?";
+            connection.query(fetchDocumentInfoExternal, [user_id, "External", "2"], function(err, rows, fields){
+              if (err){
                 console.log(err);
                 res.status(500).send(err);
               }
 
-              if (rows.length === 0) {
-                res
-                  .status(200)
-                  .send({
-                    success: "failed",
-                    message: "You're not authorized to received this document"
-                  });
-              }
-
-              // const insert =
-              //   "INSERT INTO documentLogs (document_id, user_id, )";
+              res.status(200).send(rows[0]);
             });
-          }
-        });
-      });
+
+          });
+
+          break;
+        }
+
+        if (
+          rows[i].destinationType === "Internal" &&
+          rows[i].destination === user_section &&
+          rows[i].status === "2"
+        ) {
+          const insertInternal =
+            "INSERT INTO documentLogs (document_id, user_id, remarks, destinationType, destination, status) VALUES ?";
+          const val1 = [
+            [documentTracking, user_id, "none", "Internal", "none", "1"]
+          ];
+          connection.query(insertInternal, [val1], function(err, result) {
+            if (err) {
+              console.log(err);
+              res.status(500).send(err);
+            }
+
+            const fetchDocumentInfoInternal =
+              "SELECT documents.documentID AS documentId, users.name AS creator, sections.section AS creatorSection, users.position AS creatorPosition, documents.subject AS subject, document_type.type AS doc_type, documents.note AS note, documents.date_time_created AS data_time_created, documentLogs.remarks AS doc_remarks, documentLogs.destinationType AS destinationType, documentStatus.status AS status FROM documents JOIN users ON documents.creator = users.user_id JOIN document_type ON documents.doc_type = document_type.id JOIN documentLogs ON documents.documentID = documentLogs.document_id JOIN documentStatus ON documentLogs.status = documentStatus.statid JOIN sections ON users.section = sections.secid WHERE documentLogs.destination = ? AND documentLogs.destinationType = ? AND documentLogs.status = ?";
+            connection.query(
+              fetchDocumentInfoInternal,
+              [user_section, "Internal", "2"],
+              function(err, rows, fields) {
+                if (err) {
+                  console.log(err);
+                  res.status(500).send(err);
+                }
+
+                res.status(200).send(rows[0]);
+              }
+            );
+          });
+
+          break;
+        }
+      }
     }
 
-    res.status(200).send({
-      success: "failed",
-      message: "You already receive this document"
-    });
+    if (rows.length === 0) {
+      res.status(200).send({ success: "failed", message: "failed" });
+    }
   });
 });
 

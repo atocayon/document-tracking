@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 04, 2020 at 04:45 PM
+-- Generation Time: May 11, 2020 at 08:28 AM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.1
 
@@ -56,6 +56,13 @@ CREATE TABLE `documentDrafts` (
   `documentID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `documentDrafts`
+--
+
+INSERT INTO `documentDrafts` (`draft_id`, `documentID`) VALUES
+(4, 1000000006);
+
 -- --------------------------------------------------------
 
 --
@@ -80,7 +87,20 @@ CREATE TABLE `documentLogs` (
 INSERT INTO `documentLogs` (`trans_id`, `document_id`, `user_id`, `remarks`, `destinationType`, `destination`, `status`, `date_time`) VALUES
 (1, '1000000000', '3', 'none', 'Internal', 'Registrar', '2', '2020-04-27 09:46:41'),
 (2, '1000000000', '3', 'none', 'Internal', 'none', '5', '2020-04-27 09:46:41'),
-(3, '1000000000', '3', 'none', 'Internal', 'GSAS', '2', '2020-04-27 09:46:41');
+(3, '1000000000', '3', 'none', 'Internal', 'GSAS', '2', '2020-04-27 09:46:41'),
+(4, '1000000001', '3', 'none', 'External', 'asdd', '2', '2020-05-08 02:43:17'),
+(5, '1000000002', '3', 'none', 'External', 'asdsd', '2', '2020-05-08 02:48:23'),
+(6, '1000000003', '3', 'none', 'External', 'none', '5', '2020-05-08 02:52:03'),
+(7, '1000000003', '3', 'none', 'External', 'asdd', '2', '2020-05-08 02:52:03'),
+(8, '1000000004', '3', 'none', 'Internal', 'none', '5', '2020-05-08 02:52:52'),
+(9, '1000000004', '3', 'none', 'Internal', 'Motor Pool', '2', '2020-05-08 02:52:52'),
+(10, '1000000005', '3', 'none', 'External', 'none', '5', '2020-05-08 02:54:30'),
+(11, '1000000005', '3', 'none', 'External', 'asdd', '2', '2020-05-08 02:54:30'),
+(12, '1000000005', '3', 'none', 'External', 'asdd', '2', '2020-05-08 02:54:30'),
+(13, '1000000007', '49', 'none', 'Internal', 'none', '5', '2020-05-08 05:47:46'),
+(14, '1000000007', '49', 'none', 'Internal', 'IMS', '2', '2020-05-08 05:47:46'),
+(15, '1000000007', '49', 'none', 'Internal', 'Planning', '2', '2020-05-08 05:47:46'),
+(29, '1000000007', '50', 'none', 'Internal', 'none', '1', '2020-05-11 06:16:36');
 
 -- --------------------------------------------------------
 
@@ -103,7 +123,14 @@ CREATE TABLE `documents` (
 --
 
 INSERT INTO `documents` (`documentID`, `creator`, `subject`, `doc_type`, `note`, `date_time_created`, `status`) VALUES
-(1000000000, '3', '402', '9', 'Impedit dicta quia ', '2020-04-27 09:46:41', '1');
+(1000000000, '3', '402', '9', 'Impedit dicta quia ', '2020-04-27 09:46:41', '1'),
+(1000000001, '3', '505', '14', 'Sapiente nisi sit ea', '2020-05-08 02:43:17', '1'),
+(1000000002, '3', '892', '16', 'Blanditiis fugiat ha', '2020-05-08 02:48:23', '1'),
+(1000000003, '3', '99', '6', 'Sint irure dolor off', '2020-05-08 02:52:03', '1'),
+(1000000004, '3', '412', '5', 'Enim qui sunt id hic', '2020-05-08 02:52:52', '1'),
+(1000000005, '3', '253', '14', 'Ab incididunt beatae', '2020-05-08 02:54:30', '1'),
+(1000000006, '3', '560', '7', 'Soluta inventore off', '2020-05-08 03:19:29', '0'),
+(1000000007, '49', '862', '7', 'Asperiores omnis qua', '2020-05-08 05:47:46', '1');
 
 -- --------------------------------------------------------
 
@@ -155,7 +182,34 @@ INSERT INTO `document_action_req` (`document_action_req_id`, `documentID`, `acti
 (3, '1000000000', 'For Action'),
 (4, '1000000000', 'For Comment'),
 (5, '1000000000', 'For Information'),
-(6, '1000000000', 'For File');
+(6, '1000000000', 'For File'),
+(7, '1000000001', 'For Approval'),
+(8, '1000000001', 'For Endorsement'),
+(9, '1000000001', 'For Action'),
+(10, '1000000001', 'For File'),
+(11, '1000000002', 'For Signature'),
+(12, '1000000002', 'For Endorsement'),
+(13, '1000000002', 'For Action'),
+(14, '1000000002', 'For File'),
+(15, '1000000003', 'For Approval'),
+(16, '1000000003', 'For Signature'),
+(17, '1000000003', 'For Endorsement'),
+(18, '1000000003', 'For Recommendation'),
+(19, '1000000003', 'For Action'),
+(20, '1000000003', 'For Comment'),
+(21, '1000000003', 'For File'),
+(22, '1000000004', 'For Approval'),
+(23, '1000000004', 'For Action'),
+(24, '1000000004', 'For Comment'),
+(25, '1000000004', 'For Information'),
+(26, '1000000004', 'For File'),
+(27, '1000000005', 'For Approval'),
+(28, '1000000005', 'For Comment'),
+(29, '1000000005', 'For File'),
+(30, '1000000006', 'For Signature'),
+(31, '1000000006', 'For Endorsement'),
+(32, '1000000006', 'For Action'),
+(33, '1000000007', 'For Action');
 
 -- --------------------------------------------------------
 
@@ -209,7 +263,7 @@ CREATE TABLE `sections` (
 --
 
 INSERT INTO `sections` (`secid`, `divid`, `section`, `secshort`, `active`) VALUES
-(1, 2, 'Information and Marketing Section', 'IMS', 1),
+(1, 2, 'Information Marketing Section', 'IMS', 1),
 (2, 2, 'Research Section', 'Research', 1),
 (3, 4, 'Office of the Executive Director', 'OED', 1),
 (4, 4, 'Deputy Executive Directors Office', 'DED', 1),
@@ -238,10 +292,7 @@ INSERT INTO `sections` (`secid`, `divid`, `section`, `secshort`, `active`) VALUE
 (27, 2, 'Office of the Head, MRDD', 'MRDD', 1),
 (28, 0, 'COA', 'COA', 1),
 (29, 3, 'Finance Section', 'Finance', 1),
-(30, 0, 'Various Sections', 'Various Sec', 1),
-(31, 1, '29', 'Cedric Acosta', 1),
-(33, 2, 'Naida Mann', 'Sybil Cohen', 1),
-(34, 3, 'Aaron Brock', 'Melanie King', 1);
+(30, 0, 'Various Sections', 'Various Sec', 1);
 
 -- --------------------------------------------------------
 
@@ -281,29 +332,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `employeeId`, `name`, `username`, `password`, `contact`, `email`, `section`, `position`, `role`, `status`) VALUES
-(3, '1246579', 'Aljon C. Tocayon', 'kixomadiso', '$2b$10$Ua01PGxt4Jh46MA91UtS4O68HxIx/EsylWXg/D2k1BDXRohWAnqce', '819', 'atocayon27@gmail.com', '1', 'Delectus velit mag', '3', '1'),
-(5, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$9z1b7mdDFs5b5D819wrWTe3UB.rWMNDu9jii2U9e4oEBA2RPaMX6y', '819', 'wefezez@mailinator.com', '12', 'Delectus velit mag', '3', '1'),
-(7, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$wIoEgbeN3YfeWRK75CxbqeBhKCbmtHmP2B0xNdTepH6i..TP0ystS', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '3'),
-(9, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$bDqhM9nKpL5t/.7Ijpx/WODLN38ngzNsMgN.ai1XWrQsWX1TmefA6', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '2', '1'),
-(12, '32', 'Ahmed Lambasddqwert', 'kixomadiso', '$2b$10$YhzEHCruGsyj1.y9XIJrhOXaxxi46JeJVNYhsLJkIQ9M.sBD5dssu', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
-(14, '32123344', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$WC/sstI4UMjOQ/4J4QGkJebdkRZu/f4JVJj7eVcyYRI3DCQUFk832', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '2', '1'),
-(16, '32', 'Ahmed Lambasddasdd', 'kixomadiso', '$2b$10$y3L7XiC0UxHyq/X6cB8UbuohgmuppyGSViXkEZkDpbBdzVBRGu4Zi', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
-(17, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$hfHkZheFBiIZKuw24CjCJuyUXKZSmpH1uBjb62T1ImzvV01ssDHx6', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
-(18, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$.Mk656fY0go05skBJJRHTunnCUg3bEpCSYLIYIxAePrI9XAPyUvOi', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
-(20, '12', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$e/CpdYhCzvboBbVV.7b8MOkJ1HQLwyv28X919WTmICGWK4YnElYAS', '819', 'wefezez@mailinator.com', '10', 'Delectus velit mag', '1', '1'),
-(21, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$471/iMXLwaCpq3UG0NxbA.1uShH2aX42COOtgD.ZvcLjTdwMB.Vty', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
-(22, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$H5TLJuMSXeubqCk3zeyLAunol07QqqQoLjyXJIdAv.7e.yPnoRrzm', '819', 'wefezez@mailinator.com', '6', 'Delectus velit mag', '1', '1'),
-(25, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$Ft11BD7iD6TtVerko5FYR.bKpBsEzXzYyFMN5O7IoRZaBQF1G.dBm', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '2', '1'),
-(31, '32', 'Ahmed Lambasddop', 'kixomadiso', '$2b$10$sPk1L/EWivjEvqkidf408O8O84mVoRXdp3x1ZYzVFpSkV/9mHl7h.', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
-(34, '32', 'Ahmedasdasd', 'kixomadisoasdasd', '$2b$10$Per9ar/I4FjxWo8Ery.WSeCMg37hEpLjEwkozLSSW9WS6YqwINyCK', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
-(36, '32', 'Ahmed sddd', 'kixomadiso', '$2b$10$ALNbinyMFUdY1Zg0lm5qU.CGkQno/lGAoWSQJh0NaVD.IRNZnwt.i', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
-(37, '7895456', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$sthMqzu1bCupzP3uB7MakO4vOsi8kBw5zDALdK7veGfIriA5BYio6', '819', 'wefezez@mailinator.com', '13', 'Delectus velit mag', '1', '1'),
-(38, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$Sp9v2NsySFbKYv5PLJ0D6eHfskZ0TGsBq.c6pcHKYasn6jxxy3ppe', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
-(39, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$VbFoNWKo.0jNifPpj.0Z8Ohjg8D720fYTM1ynXTegQENQYMGt/bxi', '819', 'wefezez@mailinator.com', '17', 'Delectus velit mag', '1', '1'),
-(41, '32', 'Ahmed Lambasdd', 'kixomadiso', '$2b$10$cpDUNhP0tXrfjbssE3iOMeoa.65N5oJWx5UUZY4nVHGx0Rs7s9P3O', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
-(42, '3212', 'Ahmed Lambasddzxcc', 'kixomadisozxcc', '$2b$10$1NFtuTfW/4WntYSjWYwS2.F9SLV9TryTtC2C/qymdqYeLkfduxLZ.', '819', 'wefezez@mailinator.com', '5', 'Delectus velit mag', '1', '1'),
-(44, '47', 'Judah Washington', 'qaqul', '$2b$10$Nb9V/sxTuOhBuJG17WkFLOgx8P7QmUMJQD6b7viuKdD9lYeQO96uW', '16', 'limut@mailinator.net', '22', 'Vel aliquip non dolo', '1', '1'),
-(45, '96', 'Camden Roberts', 'fatetyqi', '$2b$10$.hcvR3Op7bXRP6GdYaOkUuT3mW8zmkdt96VrI09FTK.Aofq3LjK7a', '328', 'sizadu@mailinator.net', '24', 'Minim do asperiores ', '1', '1');
+(3, '20190410', 'Aljon C. Tocayon', 'actWhiteHat27', '$2b$10$Ua01PGxt4Jh46MA91UtS4O68HxIx/EsylWXg/D2k1BDXRohWAnqce', '09051680244', 'atocayon27@gmail.com', '1', 'Computer Programmer', '3', '1'),
+(49, '123456789', 'sample', 'sample', '$2b$10$TfF0JvjQ3YIGcA1gV36lluYdncF7TAhZERrrtFfrtjG9Gbs8A9HVC', '789456132', 'sample@sample.com', '2', 'sample', '1', '1'),
+(50, '456789', 'user', 'user', '$2b$10$A81EDBjfGpq6WYLnA71HIu6qyK.3cpDbVAFbEKop9BdIniuaIBLcW', '789465132', 'user@user.com', '1', 'user', '2', '1');
 
 -- --------------------------------------------------------
 
@@ -335,7 +366,7 @@ CREATE TABLE `users_session` (
   `id` int(11) NOT NULL,
   `userId` varchar(11) NOT NULL,
   `timeStamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `isDeleted` tinyint(1) NOT NULL
+  `isDeleted` varchar(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -343,7 +374,9 @@ CREATE TABLE `users_session` (
 --
 
 INSERT INTO `users_session` (`id`, `userId`, `timeStamp`, `isDeleted`) VALUES
-(1, '3', '2020-05-03 03:09:11', 0);
+(1, '3', '2020-05-08 05:41:39', '1'),
+(2, '49', '2020-05-11 06:16:21', '1'),
+(3, '50', '2020-05-11 06:16:29', '0');
 
 -- --------------------------------------------------------
 
@@ -463,13 +496,13 @@ ALTER TABLE `divisions`
 -- AUTO_INCREMENT for table `documentDrafts`
 --
 ALTER TABLE `documentDrafts`
-  MODIFY `draft_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `draft_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `documentLogs`
 --
 ALTER TABLE `documentLogs`
-  MODIFY `trans_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `trans_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `documentStatus`
@@ -481,19 +514,19 @@ ALTER TABLE `documentStatus`
 -- AUTO_INCREMENT for table `document_action_req`
 --
 ALTER TABLE `document_action_req`
-  MODIFY `document_action_req_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `document_action_req_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `document_type`
 --
 ALTER TABLE `document_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `sections`
 --
 ALTER TABLE `sections`
-  MODIFY `secid` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `secid` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `system_logs`
@@ -505,7 +538,7 @@ ALTER TABLE `system_logs`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT for table `users_role`
@@ -517,7 +550,7 @@ ALTER TABLE `users_role`
 -- AUTO_INCREMENT for table `users_session`
 --
 ALTER TABLE `users_session`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `users_status`
