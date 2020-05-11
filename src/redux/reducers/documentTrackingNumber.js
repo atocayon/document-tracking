@@ -6,7 +6,7 @@ const defaultState = {
 
 export default function documentTrackingNumber(state = defaultState, action) {
   switch (action.type) {
-    case actionTypes.INPUT_CHANGE:
+    case actionTypes.ONCHANGE_DOCUMENT_TRACKING_NUMBER:
       return Object.assign({}, state, {
         [action.text.name]: action.text.value
       });

@@ -1,18 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 import InputField from "../../common/textField/InputField";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import { connect } from "react-redux";
-import { inputChange } from "../../../redux/actions/inputChange";
+import { documentTrackingNumber } from "../../../redux/actions/documentTrackingNumber";
 import { withSnackbar } from "notistack";
+import { receiveDocument } from "../../../redux/actions/receiveDocument";
 
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
+
   const handleClick = () => {
     setOpen(!open);
   };
+
+  const handleReceiveDocument = async () => {
+    await props.receiveDocument(
+      props.trackingNum.documentTrackingNumber,
+      props.user.user_id,
+      props.user.secshort
+    );
+  };
+
   return (
     <Grid container spacing={3}>
       <PrimarySearchAppBar />
@@ -57,14 +68,17 @@ function Dashboard(props) {
                       name={"documentTrackingNumber"}
                       label={"Document Tracking Number"}
                       variant={"outlined"}
-                      onChange={props.inputChange}
+                      onChange={props.documentTrackingNumber}
                       value={props.trackingNum.documentTrackingNumber}
                     />
                   </div>
                   <div className={"col-md-4"}>
                     <button className={"btn btn-lg btn-info"}>Track</button>
                     &nbsp;&nbsp;&nbsp;
-                    <button className={"btn btn-lg btn-outline-info"}>
+                    <button
+                      className={"btn btn-lg btn-outline-info"}
+                      onClick={handleReceiveDocument}
+                    >
                       Receive
                     </button>
                   </div>
@@ -96,7 +110,8 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  inputChange
+  documentTrackingNumber,
+  receiveDocument
 };
 
 export default connect(
