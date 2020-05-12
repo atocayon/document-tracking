@@ -18,6 +18,8 @@ import Receive from "./Receive";
 import {handleScan} from "../../../redux/actions/handleScan";
 import BarcodeReader from 'react-barcode-reader'
 import Reactotron from "reactotron-react-js";
+import {clearReceiveDocument} from "../../../redux/actions/receiveDocument";
+
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
 
@@ -131,7 +133,7 @@ function Dashboard(props) {
 
 
                   {props.documentInfo.documentId !== "" && (
-                    <Receive documentInfo={props.documentInfo} />
+                    <Receive documentInfo={props.documentInfo} clearReceiveDocument={props.clearReceiveDocument} />
                   )}
                 </div>
               </div>
@@ -154,7 +156,8 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   documentTrackingNumber,
   receiveDocument,
-  handleScan
+  handleScan,
+  clearReceiveDocument
 };
 
 export default connect(

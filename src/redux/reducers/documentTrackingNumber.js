@@ -13,6 +13,9 @@ export default function documentTrackingNumber(state = defaultState, action) {
 
     case actionTypes.HANDLE_SCAN:
       return Object.assign({}, state, { documentTrackingNumber: action.data });
+
+    case actionTypes.CLEAR_RECEIVE_DOCUMENT:
+      return Object.assign({}, state, {documentTrackingNumber: ""});
     default:
       return state;
   }

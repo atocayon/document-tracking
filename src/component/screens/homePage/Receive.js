@@ -12,6 +12,9 @@ export default function Receive(props) {
       <div className={"row"}>
         <div className={"col-md-2"}></div>
         <div className={"col-md-8"} style={{ overflow: "auto", paddingBottom: 100 }}>
+          <div style={{textAlign: "right"}}>
+              <button className={"btn btn-danger btn-sm"} title={"Close"} onClick={props.clearReceiveDocument}>&times;</button>
+          </div>
           <h5 style={{ color: "#2196F3" }}>
             <DescriptionIcon />
             &nbsp;Document Information
