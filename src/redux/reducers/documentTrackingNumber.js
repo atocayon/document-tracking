@@ -10,6 +10,9 @@ export default function documentTrackingNumber(state = defaultState, action) {
       return Object.assign({}, state, {
         [action.text.name]: action.text.value
       });
+
+    case actionTypes.HANDLE_SCAN:
+      return Object.assign({}, state, { documentTrackingNumber: action.data });
     default:
       return state;
   }

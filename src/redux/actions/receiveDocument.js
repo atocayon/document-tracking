@@ -15,15 +15,15 @@ export function receiveDocument(documentTracking, user_id, user_section) {
         if (res.data.success === "failed") {
           alert("Unknown document tracking number");
         } else {
-          const document = res.data;
+          dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: res.data });
           axios
             .get(
               "http://localhost:4000/dts/fetchActionReq/" + res.data.documentId
             )
             .then(action_req => {
               dispatch({
-                type: actionTypes.RECEIVE_DOCUMENT,
-                data: { document, action: action_req.data }
+                type: actionTypes.ACTION_REQ,
+                data: action_req.data
               });
             })
             .catch(err => {
@@ -31,7 +31,6 @@ export function receiveDocument(documentTracking, user_id, user_section) {
             });
         }
 
-        // dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: res.data });
       })
       .catch(err => {
         alert(err);

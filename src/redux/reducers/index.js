@@ -23,6 +23,7 @@ import newDocumentCreation from "./newDocumentCreation";
 import addNewDocument from "./addNewDocument";
 import addNewDocumentDraft from "./addNewDocumentDraft";
 import documentTrackingNumber from "./documentTrackingNumber";
+import receiveDocument from "./receiveDocument";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -47,7 +48,8 @@ const rootReducer = combineReducers({
   newDocumentCreation: newDocumentCreation,
   addNewDocument: addNewDocument,
   addNewDocumentDraft: addNewDocumentDraft,
-  documentTrackingNumber: documentTrackingNumber
+  documentTrackingNumber: documentTrackingNumber,
+  receiveDocument: receiveDocument
 });
 
 export default rootReducer;
