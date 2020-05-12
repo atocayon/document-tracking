@@ -932,7 +932,7 @@ router.route("/receiveDocument").post(function(req, res) {
             }
 
             const fetchDocumentInfoExternal =
-              "SELECT documents.documentID AS documentId, users.name AS creator, sections.section AS creatorSection, users.position AS creatorPosition, documents.subject AS subject, document_type.type AS doc_type, documents.note AS note, documents.date_time_created AS data_time_created, documentLogs.remarks AS doc_remarks, documentLogs.destinationType AS destinationType, documentStatus.status AS status FROM documents JOIN users ON documents.creator = users.user_id JOIN document_type ON documents.doc_type = document_type.id JOIN documentLogs ON documents.documentID = documentLogs.document_id JOIN documentStatus ON documentLogs.status = documentStatus.statid JOIN sections ON users.section = sections.secid  WHERE documentLogs.user_id = ? AND documentLogs.destinationType = ? AND documentLogs.status = ?";
+              "SELECT documents.documentID AS documentId, users.name AS creator, sections.section AS creatorSection, users.position AS creatorPosition, documents.subject AS subject, document_type.type AS doc_type, documents.note AS note, DATE_FORMAT(documents.date_time_created, '%M %d, %Y @ %h:%i %p') AS date_time_created, documentLogs.remarks AS doc_remarks, documentLogs.destinationType AS destinationType, documentStatus.status AS status FROM documents JOIN users ON documents.creator = users.user_id JOIN document_type ON documents.doc_type = document_type.id JOIN documentLogs ON documents.documentID = documentLogs.document_id JOIN documentStatus ON documentLogs.status = documentStatus.statid JOIN sections ON users.section = sections.secid  WHERE documentLogs.user_id = ? AND documentLogs.destinationType = ? AND documentLogs.status = ?";
             connection.query(fetchDocumentInfoExternal, [user_id, "External", "2"], function(err, rows, fields){
               if (err){
                 console.log(err);
@@ -964,10 +964,10 @@ router.route("/receiveDocument").post(function(req, res) {
             }
 
             const fetchDocumentInfoInternal =
-              "SELECT documents.documentID AS documentId, users.name AS creator, sections.section AS creatorSection, users.position AS creatorPosition, documents.subject AS subject, document_type.type AS doc_type, documents.note AS note, documents.date_time_created AS data_time_created, documentLogs.remarks AS doc_remarks, documentLogs.destinationType AS destinationType, documentStatus.status AS status FROM documents JOIN users ON documents.creator = users.user_id JOIN document_type ON documents.doc_type = document_type.id JOIN documentLogs ON documents.documentID = documentLogs.document_id JOIN documentStatus ON documentLogs.status = documentStatus.statid JOIN sections ON users.section = sections.secid WHERE documentLogs.destination = ? AND documentLogs.destinationType = ? AND documentLogs.status = ?";
+              "SELECT documents.documentID AS documentId, users.name AS creator, users.name AS sender, sections.section AS creatorSection, users.position AS creatorPosition, documents.subject AS subject, document_type.type AS doc_type, documents.note AS note, DATE_FORMAT(documents.date_time_created, '%M %d, %Y @ %h:%i %p') AS date_time_created, DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time_forwarded, documentLogs.remarks AS doc_remarks, documentLogs.destinationType AS destinationType, documentStatus.status AS status FROM documents JOIN documentLogs ON documents.documentID = documentLogs.document_id JOIN users ON documents.creator = users.user_id AND documentLogs.user_id = users.user_id JOIN document_type ON documents.doc_type = document_type.id  JOIN documentStatus ON documentLogs.status = documentStatus.statid JOIN sections ON users.section = sections.secid WHERE documentLogs.destination = ? AND documentLogs.destinationType = ? AND (documentLogs.status = ? OR documentLogs.status = ?)";
             connection.query(
               fetchDocumentInfoInternal,
-              [user_section, "Internal", "2"],
+              [user_section, "Internal", "2", "3"],
               function(err, rows, fields) {
                 if (err) {
                   console.log(err);

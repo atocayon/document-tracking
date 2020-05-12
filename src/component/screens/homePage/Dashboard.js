@@ -8,9 +8,30 @@ import { connect } from "react-redux";
 import { documentTrackingNumber } from "../../../redux/actions/documentTrackingNumber";
 import { withSnackbar } from "notistack";
 import { receiveDocument } from "../../../redux/actions/receiveDocument";
-
+import DescriptionIcon from "@material-ui/icons/Description";
+import Barcode from "react-barcode";
+import CheckBox from "../../common/checkbox/CheckBox";
+import { FormGroup } from "@material-ui/core";
+import CommentIcon from "@material-ui/icons/Comment";
+import FeedbackIcon from "@material-ui/icons/Feedback";
+import Receive from "./Receive";
+import {handleScan} from "../../../redux/actions/handleScan";
+import BarcodeReader from 'react-barcode-reader'
+import Reactotron from "reactotron-react-js";
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+    if (props.documentInfo.documentId !== "") {
+      const variant = "info";
+      props.enqueueSnackbar(
+        "NMP| Document with subject " + props.documentInfo.subject +" received successfully",
+        {
+          variant
+        }
+      );
+    }
+  }, [props.documentInfo.documentId]);
 
   const handleClick = () => {
     setOpen(!open);
@@ -22,6 +43,13 @@ function Dashboard(props) {
       props.user.user_id,
       props.user.secshort
     );
+  };
+
+  const handleError = (err) => {
+    Reactotron.log(err);
+  };
+  const scan = (data) => {
+    Reactotron.log(data);
   };
 
   return (
@@ -87,11 +115,24 @@ function Dashboard(props) {
 
               <div className={"row"}>
                 <div className={"col-md-12"}>
-                  <div style={{ textAlign: "center", marginTop: "30vh" }}>
-                    <h6 style={{ color: "#9E9E9E" }}>
-                      Document track / information will show here
-                    </h6>
-                  </div>
+
+                  <BarcodeReader
+                      onError={handleError}
+                      onScan={scan}
+                  />
+
+                  {props.documentInfo.documentId === "" && (
+                    <div style={{ textAlign: "center", marginTop: "30vh" }}>
+                      <h6 style={{ color: "#9E9E9E" }}>
+                        Document track / information will show here
+                      </h6>
+                    </div>
+                  )}
+
+
+                  {props.documentInfo.documentId !== "" && (
+                    <Receive documentInfo={props.documentInfo} />
+                  )}
                 </div>
               </div>
             </Grid>
@@ -105,13 +146,15 @@ function Dashboard(props) {
 
 function mapStateToProps(state) {
   return {
-    trackingNum: state.documentTrackingNumber
+    trackingNum: state.documentTrackingNumber,
+    documentInfo: state.receiveDocument
   };
 }
 
 const mapDispatchToProps = {
   documentTrackingNumber,
-  receiveDocument
+  receiveDocument,
+  handleScan
 };
 
 export default connect(
