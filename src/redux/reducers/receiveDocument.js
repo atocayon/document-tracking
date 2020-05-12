@@ -30,6 +30,20 @@ export default function receiveDocument(state = defaultState, action) {
 
     case actionTypes.ACTION_REQ:
       return Object.assign({}, state, { action_req: action.data });
+
+    case actionTypes.CLEAR_RECEIVE_DOCUMENT:
+      return Object.assign({}, state, {
+        documentId: "",
+        creator: "",
+        sender: "",
+        subject: "",
+        doc_type: "",
+        destination_type: "",
+        note: "",
+        date_time_created: "",
+        date_time_forwarded: "",
+        action_req: []
+      });
     default:
       return state;
   }

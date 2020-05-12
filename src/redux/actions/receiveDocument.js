@@ -37,3 +37,9 @@ export function receiveDocument(documentTracking, user_id, user_section) {
       });
   };
 }
+
+export function clearReceiveDocument(){
+  return function(dispatch){
+    return dispatch({type: actionTypes.CLEAR_RECEIVE_DOCUMENT});
+  }
+}
