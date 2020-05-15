@@ -24,6 +24,10 @@ import addNewDocument from "./addNewDocument";
 import addNewDocumentDraft from "./addNewDocumentDraft";
 import documentTrackingNumber from "./documentTrackingNumber";
 import receiveDocument from "./receiveDocument";
+import notification from "./notification";
+import forwardDocument from "./forwardDocument";
+import afterDocumentReceive from "./afterDocumentReceive";
+import trackDocument from "./trackDocument";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -49,7 +53,11 @@ const rootReducer = combineReducers({
   addNewDocument: addNewDocument,
   addNewDocumentDraft: addNewDocumentDraft,
   documentTrackingNumber: documentTrackingNumber,
-  receiveDocument: receiveDocument
+  receiveDocument: receiveDocument,
+  notification:notification,
+  forwardDocument: forwardDocument,
+  afterDocumentReceive: afterDocumentReceive,
+  trackDocument:trackDocument
 });
 
 export default rootReducer;

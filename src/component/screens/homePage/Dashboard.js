@@ -8,35 +8,62 @@ import { connect } from "react-redux";
 import { documentTrackingNumber } from "../../../redux/actions/documentTrackingNumber";
 import { withSnackbar } from "notistack";
 import { receiveDocument } from "../../../redux/actions/receiveDocument";
-import DescriptionIcon from "@material-ui/icons/Description";
-import Barcode from "react-barcode";
-import CheckBox from "../../common/checkbox/CheckBox";
-import { FormGroup } from "@material-ui/core";
-import CommentIcon from "@material-ui/icons/Comment";
-import FeedbackIcon from "@material-ui/icons/Feedback";
 import Receive from "./Receive";
-import {handleScan} from "../../../redux/actions/handleScan";
-import BarcodeReader from 'react-barcode-reader'
+import { handleScan } from "../../../redux/actions/handleScan";
+import BarcodeReader from "react-barcode-reader";
 import Reactotron from "reactotron-react-js";
-import {clearReceiveDocument} from "../../../redux/actions/receiveDocument";
+import { clearReceiveDocument } from "../../../redux/actions/receiveDocument";
+import Forward from "./Forward";
+import { afterDocumentReceive } from "../../../redux/actions/afterDocumentReceive";
+import { onChangeForwardDocument } from "../../../redux/actions/onChangForwardDocument";
+import { notification } from "../../../redux/actions/notification";
+import { changeDocumentDestination } from "../../../redux/actions/onChangForwardDocument";
 
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
-
+  const [forwardDialog, setForwardDialog] = useState(false);
+  const [selectedValue, setSelectedValue] = useState("");
   useEffect(() => {
     if (props.documentInfo.documentId !== "") {
       const variant = "info";
       props.enqueueSnackbar(
-        "NMP| Document with subject " + props.documentInfo.subject +" received successfully",
+        "NMP| Document with subject " +
+          props.documentInfo.subject +
+          " received successfully.",
         {
           variant
         }
       );
     }
-  }, [props.documentInfo.documentId]);
+
+    if (props.action_after !== "") {
+      if (props.action_after === "forward") {
+        const variant = "info";
+        props.enqueueSnackbar("Document successfully forwarded...", {
+          variant
+        });
+      }
+
+      if (props.action_after === "pending") {
+        const variant = "warning";
+        props.enqueueSnackbar(
+          "Document successfully set as pending in your office...",
+          {
+            variant
+          }
+        );
+      }
+    }
+  }, [props.documentInfo.documentId, props.action_after]);
 
   const handleClick = () => {
     setOpen(!open);
+  };
+
+  const handleChange = event => {
+
+    setSelectedValue(event.target.value);
+    props.changeDocumentDestination();
   };
 
   const handleReceiveDocument = async () => {
@@ -47,11 +74,42 @@ function Dashboard(props) {
     );
   };
 
-  const handleError = (err) => {
+  const handleError = err => {
     Reactotron.log(err);
   };
-  const scan = (data) => {
+  const scan = data => {
     Reactotron.log(data);
+  };
+
+  const handleSetForwardDialog = e => {
+    e.preventDefault();
+    setForwardDialog(!forwardDialog);
+  };
+
+  const handleForwardDocument = async e => {
+    e.preventDefault();
+    await props.afterDocumentReceive(
+      props.trackingNum.documentTrackingNumber,
+      props.user.user_id,
+      props.forwardDocument.remarks,
+      selectedValue,
+      props.forwardDocument.destination,
+      "2"
+    );
+    setForwardDialog(!forwardDialog);
+  };
+
+  const handlePendingDocument = async e => {
+    e.preventDefault();
+    await props.afterDocumentReceive(
+      props.trackingNum.documentTrackingNumber,
+      props.user.user_id,
+      "none",
+      "none",
+      props.user.secshort,
+      "3"
+    );
+    setForwardDialog(!forwardDialog);
   };
 
   return (
@@ -117,11 +175,7 @@ function Dashboard(props) {
 
               <div className={"row"}>
                 <div className={"col-md-12"}>
-
-                  <BarcodeReader
-                      onError={handleError}
-                      onScan={scan}
-                  />
+                  <BarcodeReader onError={handleError} onScan={scan} />
 
                   {props.documentInfo.documentId === "" && (
                     <div style={{ textAlign: "center", marginTop: "30vh" }}>
@@ -131,9 +185,26 @@ function Dashboard(props) {
                     </div>
                   )}
 
-
                   {props.documentInfo.documentId !== "" && (
-                    <Receive documentInfo={props.documentInfo} clearReceiveDocument={props.clearReceiveDocument} />
+                    <>
+                      <Receive
+                        documentInfo={props.documentInfo}
+                        clearReceiveDocument={props.clearReceiveDocument}
+                        handleSetForwardDialog={handleSetForwardDialog}
+                        handlePendingDocument={handlePendingDocument}
+                      />
+
+                      <Forward
+                        open={forwardDialog}
+                        handleClose={handleSetForwardDialog}
+                        sections={props.sections}
+                        handleChange={handleChange}
+                        selectedValue={selectedValue}
+                        forwardDocument={props.forwardDocument}
+                        onChangeForwardDocument={props.onChangeForwardDocument}
+                        handleForwardDocument={handleForwardDocument}
+                      />
+                    </>
                   )}
                 </div>
               </div>
@@ -149,7 +220,9 @@ function Dashboard(props) {
 function mapStateToProps(state) {
   return {
     trackingNum: state.documentTrackingNumber,
-    documentInfo: state.receiveDocument
+    documentInfo: state.receiveDocument,
+    forwardDocument: state.forwardDocument,
+    action_after: state.afterDocumentReceive
   };
 }
 
@@ -157,7 +230,10 @@ const mapDispatchToProps = {
   documentTrackingNumber,
   receiveDocument,
   handleScan,
-  clearReceiveDocument
+  clearReceiveDocument,
+  afterDocumentReceive,
+  onChangeForwardDocument,
+  changeDocumentDestination
 };
 
 export default connect(

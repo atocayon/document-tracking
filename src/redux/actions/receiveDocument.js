@@ -16,6 +16,7 @@ export function receiveDocument(documentTracking, user_id, user_section) {
           alert("Unknown document tracking number");
         } else {
           dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: res.data });
+          dispatch({type: actionTypes.CLEAR_NOTIFICATION, data: res.data.documentId});
           axios
             .get(
               "http://localhost:4000/dts/fetchActionReq/" + res.data.documentId

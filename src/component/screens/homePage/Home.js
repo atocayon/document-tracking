@@ -10,6 +10,7 @@ import { connect } from "react-redux";
 import { verifyToken } from "../../../redux/actions/verifyToken";
 import { fetchCurrentSystemUser } from "../../../redux/actions/fetchCurrentSystemUser";
 import { withSnackbar } from "notistack";
+import {fetchSectionsList} from "../../../redux/actions/fetchSectionsList";
 
 function Home(props) {
   const [endSession, setEndSession] = useState(false);
@@ -22,6 +23,7 @@ function Home(props) {
       async function callback() {
         await props.verifyToken(token);
         await props.fetchCurrentSystemUser(token);
+        await props.fetchSectionsList();
       }
 
       callback().catch(err => {
@@ -38,8 +40,8 @@ function Home(props) {
       {Object.keys(props.token).length > 0 && (
         <>{props.token.isDeleted === "1" && <Redirect to={"/login"} />}
           {props.user.role === "super_admin" && <ControlPanel user={props.user} />}
-          {props.user.role === "member" && <Dashboard user={props.user} />}
-          {props.user.role === "admin" && <Dashboard user={props.user} />}
+          {props.user.role === "member" && <Dashboard user={props.user} sections={props.sections} />}
+          {props.user.role === "admin" && <Dashboard user={props.user} sections={props.sections} />}
         </>
       )}
     </div>
@@ -49,13 +51,15 @@ function Home(props) {
 function mapStateToProps(state) {
   return {
     token: state.verifyToken,
-    user: state.fetchCurrentSystemUser
+    user: state.fetchCurrentSystemUser,
+    sections: state.fetchSectionsList
   };
 }
 
 const mapDispatchToProps = {
   verifyToken,
-  fetchCurrentSystemUser
+  fetchCurrentSystemUser,
+  fetchSectionsList
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -11,16 +11,18 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import Drawer from "@material-ui/core/Drawer";
 import logo from "../../../img/logo.png";
-
+import { connect } from "react-redux";
+import { logout } from "../../../redux/actions/logout";
+import { notification } from "../../../redux/actions/notification";
 //Include
 import LeftDrawer from "./LeftDrawer";
 import RightDrawer from "./RightDrawer";
 import MobileMenu from "./RenderMobileMenu";
 import ProfileMenu from "./ProfileMenu";
 import { getFromStorage } from "../../storage";
-import axios from "axios";
 import { withSnackbar } from "notistack";
-import SettingsIcon from '@material-ui/icons/Settings';
+import SettingsIcon from "@material-ui/icons/Settings";
+import Reactotron from "reactotron-react-js";
 function PrimarySearchAppBar(props) {
   const classes = useStyles(); // css styles
 
@@ -34,6 +36,7 @@ function PrimarySearchAppBar(props) {
     bottom: false,
     right: false
   }); //Used for Drawer
+
 
   const toggleDrawer = (side, open) => event => {
     if (
@@ -67,20 +70,12 @@ function PrimarySearchAppBar(props) {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const handleLogOut = () => {
+  const handleLogOut = async () => {
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
-      axios
-        .post("http://localhost:4000/dts/logout/" + token)
-        .then(res => {
-          localStorage.clear();
-          props.enqueueSnackbar("Session end...");
-          window.location.reload(true);
-        })
-        .catch(err => {
-          props.enqueueSnackbar("Server Error... " + err);
-        });
+      await props.logout(token);
+      window.location.reload(true);
     }
   };
 
@@ -124,6 +119,7 @@ function PrimarySearchAppBar(props) {
 
   const rightSideList = side => (
     <RightDrawer
+      // notification={props.notifications}
       nameRightDrawer={classes.list}
       rightDrawerRole={"presentation"}
       onClickRightDrawer={toggleDrawer(side, false)}
@@ -139,7 +135,6 @@ function PrimarySearchAppBar(props) {
           style={{
             backgroundColor: "#fafafa",
             color: "#263238"
-
           }}
         >
           <Toolbar>
@@ -149,7 +144,6 @@ function PrimarySearchAppBar(props) {
               color="inherit"
               aria-label="open drawer"
               onClick={toggleDrawer("left", true)}
-
             >
               <MenuIcon />
             </IconButton>
@@ -160,15 +154,26 @@ function PrimarySearchAppBar(props) {
 
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
-              {/*<IconButton*/}
-              {/*  aria-label="show 17 new notifications"*/}
-              {/*  color="inherit"*/}
-              {/*  onClick={toggleDrawer("right", true)}*/}
-              {/*>*/}
-              {/*  <Badge badgeContent={17} color="secondary">*/}
-              {/*    <NotificationsIcon />*/}
-              {/*  </Badge>*/}
-              {/*</IconButton>*/}
+              <IconButton
+                aria-label="notifications"
+                color="inherit"
+                onClick={toggleDrawer("right", true)}
+              >
+                {/*{props.notifications.length > 0 && (*/}
+                {/*    <Badge*/}
+                {/*        badgeContent={props.notifications.length}*/}
+                {/*        color="secondary"*/}
+                {/*    >*/}
+                {/*      <NotificationsIcon />*/}
+                {/*    </Badge>*/}
+                {/*)}*/}
+
+                {/*{props.notifications.length === 0 && (*/}
+                {/*    <NotificationsIcon />*/}
+                {/*)}*/}
+
+
+              </IconButton>
               <IconButton
                 edge="end"
                 aria-label="account of current user"
@@ -262,4 +267,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default withSnackbar(PrimarySearchAppBar);
+function mapStateToProps(state) {
+  return {
+    _logout: state.logout,
+
+  };
+}
+
+const mapDispatchToProps = {
+  logout,
+
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withSnackbar(PrimarySearchAppBar));
