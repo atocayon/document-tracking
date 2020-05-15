@@ -11,46 +11,57 @@ export default function Receive(props) {
     <>
       <div className={"row"}>
         <div className={"col-md-2"}></div>
-        <div className={"col-md-8"} style={{ overflow: "auto", paddingBottom: 100 }}>
-          <div style={{textAlign: "right"}}>
-              <button className={"btn btn-danger btn-sm"} title={"Close"} onClick={props.clearReceiveDocument}>&times;</button>
+        <div
+          className={"col-md-8"}
+          style={{ overflow: "auto", paddingBottom: 100 }}
+        >
+          <div style={{ textAlign: "right" }}>
+            <button
+              className={"btn btn-danger btn-sm"}
+              title={"Close"}
+              onClick={props.clearReceiveDocument}
+            >
+              &times;
+            </button>
           </div>
-          <h5 style={{ color: "#2196F3" }}>
-            <DescriptionIcon />
-            &nbsp;Document Information
-          </h5>
-          <br/>
-          <InputField
+
+          <br />
+          <div className={"col-md-4"}>
+            <InputField
               label={"Document Creator"}
               name={"subject"}
-
               disabled={true}
               type={"text"}
               value={props.documentInfo.creator}
-          />
-          <small>on {props.documentInfo.date_time_created}</small>
-          <br/>
-          <br/>
-          <InputField
+            />
+            <small>on {props.documentInfo.date_time_created}</small>
+            <br />
+            <br />
+            <InputField
               label={"Document Sender"}
               name={"subject"}
               disabled={true}
               type={"text"}
               value={props.documentInfo.sender}
-          />
-          <small>on {props.documentInfo.date_time_forwarded} </small>
-
-          <br/>
+            />
+            <small>on {props.documentInfo.date_time_forwarded} </small>
+          </div>
+          <br />
+          <br />
+          <h5 style={{ color: "#2196F3" }}>
+            <DescriptionIcon />
+            &nbsp;Document Information
+          </h5>
           <br />
           <InputField
-              label={"Destination Type"}
-              name={"subject"}
-              variant={"outlined"}
-              disabled={true}
-              type={"text"}
-              value={props.documentInfo.destination_type}
+            label={"Destination Type"}
+            name={"subject"}
+            variant={"outlined"}
+            disabled={true}
+            type={"text"}
+            value={props.documentInfo.destination_type}
           />
-          <br/>
+          <br />
           <br />
           <InputField
             label={"Subject"}
@@ -101,13 +112,20 @@ export default function Receive(props) {
           <br />
           <div>{props.documentInfo.note}</div>
           <div style={{ marginTop: 50, textAlign: "right" }}>
-            <button className={"btn"}>Pending</button>
+            <button
+              className={"btn btn-outline-info"}
+              onClick={props.handlePendingDocument}
+            >
+              Pending
+            </button>
             &nbsp;&nbsp;&nbsp;
-            <button className={"btn btn-outline-info"}>Return</button>
+            <button
+              className={"btn btn-info"}
+              onClick={props.handleSetForwardDialog}
+            >
+              Forward
+            </button>
             &nbsp;&nbsp;&nbsp;
-            <button className={"btn btn-info"}>Forward</button>
-            &nbsp;&nbsp;&nbsp;
-
           </div>
         </div>
         <div className={"col-md-2"}></div>

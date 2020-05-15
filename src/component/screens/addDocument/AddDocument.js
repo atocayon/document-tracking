@@ -46,6 +46,7 @@ import { addNewDocument } from "../../../redux/actions/addNewDocument";
 import { logDocumentCreator } from "../../../redux/actions/addDocumentDestination";
 import { clearAddNewDocumentState } from "../../../redux/actions/clearAddNewDocumentInput";
 import { addNewDocumentDraft } from "../../../redux/actions/addNewDocumentDraft";
+import {notification} from "../../../redux/actions/notification";
 
 function AddDocument({
   match,
@@ -75,7 +76,8 @@ function AddDocument({
   submit_new_document,
   clearAddNewDocumentState,
   addNewDocumentDraft,
-  submit_new_document_draft
+  submit_new_document_draft,
+                       notification
 }) {
   const checkboxItem = [
     { id: 0, value: "For Approval" },
@@ -680,7 +682,8 @@ function mapStateToProps(state) {
     sections: state.fetchInternalDestination,
     addDocument: state.newDocumentCreation,
     submit_new_document: state.addNewDocument,
-    submit_new_document_draft: state.addNewDocumentDraft
+    submit_new_document_draft: state.addNewDocumentDraft,
+    _notification: state.notification
   };
 }
 
@@ -701,7 +704,8 @@ const mapDispatchToProps = {
   addNewDocument,
   logDocumentCreator,
   clearAddNewDocumentState,
-  addNewDocumentDraft
+  addNewDocumentDraft,
+  notification
 };
 
 export default connect(

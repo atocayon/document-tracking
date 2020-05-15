@@ -184,7 +184,7 @@ function ControlPanel(props) {
     if (obj && obj.token) {
       const { token } = obj;
       await props.logout(token);
-      window.location.reload();
+      window.location.reload(true);
     } else {
 
       window.location.reload(true);
