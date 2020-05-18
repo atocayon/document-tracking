@@ -25,10 +25,10 @@ const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
-  database: "documentTracking"
+  database: "documentTracking",
 });
 
-connection.connect(function(err) {
+connection.connect(function (err) {
   if (err) {
     console.log(err);
     alert(err);
@@ -44,7 +44,7 @@ connection.connect(function(err) {
 //===========================================================================================
 
 // Add User
-router.route("/addUser").post(function(req, res) {
+router.route("/addUser").post(function (req, res) {
   const { body } = req;
   let {
     role,
@@ -55,14 +55,14 @@ router.route("/addUser").post(function(req, res) {
     contact,
     email,
     section,
-    position
+    position,
   } = body;
 
   email = email.toLowerCase();
   email = email.trim();
 
   const sql = "SELECT * FROM users WHERE email = ? ";
-  connection.query(sql, [email], function(err, rows, fields) {
+  connection.query(sql, [email], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.send(err);
@@ -71,7 +71,7 @@ router.route("/addUser").post(function(req, res) {
     if (rows.length > 0) {
       res.status(200).send({ success: "failed" });
     } else {
-      bcrypt.hash(password, saltRounds, function(err, hash) {
+      bcrypt.hash(password, saltRounds, function (err, hash) {
         if (err) {
           console.log(err);
           res.status(500).send(err);
@@ -91,10 +91,10 @@ router.route("/addUser").post(function(req, res) {
             section,
             position,
             role,
-            "1"
-          ]
+            "1",
+          ],
         ];
-        connection.query(sql1, [values], function(err, result) {
+        connection.query(sql1, [values], function (err, result) {
           if (err) {
             console.log(err);
             res.status(500).send(err);
@@ -108,14 +108,14 @@ router.route("/addUser").post(function(req, res) {
 });
 
 // Users Login
-router.route("/login/:email/:password").post(function(req, res) {
+router.route("/login/:email/:password").post(function (req, res) {
   let email = req.params.email;
   let password = req.params.password;
 
   const sql =
     "SELECT users.user_id AS user_id, users.name AS name, users.password AS password, users_role.role AS role FROM users JOIN users_role ON users.role = users_role.role_id WHERE email = ?";
 
-  connection.query(sql, [email], function(err, rows, fields) {
+  connection.query(sql, [email], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -126,7 +126,7 @@ router.route("/login/:email/:password").post(function(req, res) {
     }
 
     if (rows.length > 0) {
-      bcrypt.compare(password, rows[0].password, function(err, result) {
+      bcrypt.compare(password, rows[0].password, function (err, result) {
         if (err) {
           console.log(err);
           res.status(500).send(err);
@@ -146,7 +146,7 @@ router.route("/login/:email/:password").post(function(req, res) {
         const name = rows[0].name;
         const check_session_query =
           "SELECT * FROM users_session WHERE userId = ?";
-        connection.query(check_session_query, [id], function(
+        connection.query(check_session_query, [id], function (
           err,
           rows,
           fields
@@ -160,7 +160,7 @@ router.route("/login/:email/:password").post(function(req, res) {
             const sql1 =
               "INSERT INTO users_session (userId, isDeleted) VALUES ?";
             const values = [[id, 0]];
-            connection.query(sql1, [values], function(err, result) {
+            connection.query(sql1, [values], function (err, result) {
               if (err) {
                 console.log(err);
                 res.status(500).send(err);
@@ -172,7 +172,7 @@ router.route("/login/:email/:password").post(function(req, res) {
                 message: "New User",
                 role: role,
                 token: id,
-                name: name
+                name: name,
               });
             });
           }
@@ -180,12 +180,12 @@ router.route("/login/:email/:password").post(function(req, res) {
           if (rows) {
             const update_session =
               "UPDATE users_session SET isDeleted = ? WHERE userId = ?";
-            connection.query(update_session, [0, id], function(err, result) {
+            connection.query(update_session, [0, id], function (err, result) {
               if (err) {
                 console.log(err);
                 res.status(500).json({
                   success: false,
-                  message: "Server error in updating session"
+                  message: "Server error in updating session",
                 });
               }
               console.log(result);
@@ -195,7 +195,7 @@ router.route("/login/:email/:password").post(function(req, res) {
                   role: role,
                   message: "Record Found, Login Success!",
                   token: id,
-                  name: name
+                  name: name,
                 });
               }
             });
@@ -207,11 +207,11 @@ router.route("/login/:email/:password").post(function(req, res) {
 });
 
 //Users Logout
-router.route("/logout/:id").post(function(req, res) {
+router.route("/logout/:id").post(function (req, res) {
   let id = req.params.id;
 
   const sql = "UPDATE users_session SET isDeleted = ? WHERE userId = ?";
-  connection.query(sql, [1, id], function(err, result) {
+  connection.query(sql, [1, id], function (err, result) {
     if (err) {
       res.status(500).send("Server Error...");
     }
@@ -223,11 +223,11 @@ router.route("/logout/:id").post(function(req, res) {
 });
 
 //Verify User Token
-router.route("/verifyToken/:token").get(function(req, res) {
+router.route("/verifyToken/:token").get(function (req, res) {
   let token = req.params.token;
 
   const sql = "SELECT * FROM users_session WHERE userId = ?";
-  connection.query(sql, [token], function(err, rows, fields) {
+  connection.query(sql, [token], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -239,10 +239,10 @@ router.route("/verifyToken/:token").get(function(req, res) {
 });
 
 //Fetch all users
-router.route("/getUsers").get(function(req, res) {
+router.route("/getUsers").get(function (req, res) {
   const sql =
     "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.contact AS contact, users.email AS email, users.section AS secid, sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort,users.position AS position, users.role AS role_id, users_role.role AS role, users_status.status AS accnt_status FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid JOIN users_role ON users.role = users_role.role_id JOIN users_status ON users.status = users_status.status_id ORDER BY users.name ASC";
-  connection.query(sql, function(err, rows, fields) {
+  connection.query(sql, function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -253,12 +253,12 @@ router.route("/getUsers").get(function(req, res) {
 });
 
 // //Fetch All users by section
-router.route("/sectionUser/:section").get(function(req, res) {
+router.route("/sectionUser/:section").get(function (req, res) {
   let section = req.params.section;
 
   const sql =
     "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.password AS password, users.contact AS contact, users.email AS email, users.section AS secid, users.position AS position, users.role AS role, users.status AS status ,sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid WHERE users.section = ? ORDER BY name ASC";
-  connection.query(sql, [section], function(err, rows, fields) {
+  connection.query(sql, [section], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -270,12 +270,12 @@ router.route("/sectionUser/:section").get(function(req, res) {
 });
 
 //Fetch Users Data By ID
-router.route("/user/:id").get(function(req, res) {
+router.route("/user/:id").get(function (req, res) {
   let id = req.params.id;
 
   const sql =
     "SELECT users.user_id AS user_id, users.employeeId AS employeeId, users.name AS name, users.username AS username, users.password AS password, users.contact AS contact, users.email AS email, users.section AS secid, users.position AS position, users_role.role AS role, users.status AS status ,sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM users JOIN sections ON users.section = sections.secid JOIN divisions ON sections.divid = divisions.depid JOIN users_role ON users.role = users_role.role_id WHERE users.user_id = ?";
-  connection.query(sql, [parseInt(id)], function(err, rows, fields) {
+  connection.query(sql, [parseInt(id)], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -287,7 +287,7 @@ router.route("/user/:id").get(function(req, res) {
 });
 
 //Update Users Info
-router.route("/updateUser/:id").post(function(req, res) {
+router.route("/updateUser/:id").post(function (req, res) {
   let id = req.params.id;
   const {
     employeeId,
@@ -297,11 +297,11 @@ router.route("/updateUser/:id").post(function(req, res) {
     email,
     section,
     position,
-    role
+    role,
   } = req.body;
 
   const sql = "SELECT * FROM users WHERE user_id = ?";
-  connection.query(sql, [id], function(err, rows, fields) {
+  connection.query(sql, [id], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -321,9 +321,9 @@ router.route("/updateUser/:id").post(function(req, res) {
           section,
           position,
           role,
-          id
+          id,
         ],
-        function(err, result) {
+        function (err, result) {
           if (err) {
             console.log(err);
             res.status(500).send(err);
@@ -337,10 +337,10 @@ router.route("/updateUser/:id").post(function(req, res) {
 });
 
 //Update User Role
-router.route("/updateRole").post(function(req, res) {
+router.route("/updateRole").post(function (req, res) {
   const { role, id } = req.body;
   const sql = "UPDATE users SET role = ? WHERE user_id = ?";
-  connection.query(sql, [role, parseInt(id)], function(err, result) {
+  connection.query(sql, [role, parseInt(id)], function (err, result) {
     if (err) {
       res.status(500).send("Server Error...");
     }
@@ -350,11 +350,11 @@ router.route("/updateRole").post(function(req, res) {
 });
 
 //Update user Status
-router.route("/updateStatus").post(function(req, res) {
+router.route("/updateStatus").post(function (req, res) {
   const { status, id } = req.body;
 
   const sql = "UPDATE users SET status = ? WHERE user_id = ?";
-  connection.query(sql, [status, parseInt(id)], function(err, result) {
+  connection.query(sql, [status, parseInt(id)], function (err, result) {
     if (err) {
       res.status(500).send("Server Error");
     }
@@ -364,10 +364,10 @@ router.route("/updateStatus").post(function(req, res) {
 });
 
 //Delete User
-router.route("/deleteUser").post(function(req, res) {
+router.route("/deleteUser").post(function (req, res) {
   const { id } = req.body;
   const sql = "DELETE FROM users WHERE user_id = ?";
-  connection.query(sql, [id], function(err, result) {
+  connection.query(sql, [id], function (err, result) {
     if (err) {
       console.log(err);
       res.status(500).send("Server error");
@@ -378,11 +378,11 @@ router.route("/deleteUser").post(function(req, res) {
 });
 
 //Handle Transfer Office
-router.route("/transferOffice").post(function(req, res) {
+router.route("/transferOffice").post(function (req, res) {
   const { id, section } = req.body;
 
   const sql = "UPDATE users SET section = ? WHERE user_id = ?";
-  connection.query(sql, [section, parseInt(id)], function(err, result) {
+  connection.query(sql, [section, parseInt(id)], function (err, result) {
     if (err) {
       // console.log(err);
       res.status(500).send(err);
@@ -394,11 +394,11 @@ router.route("/transferOffice").post(function(req, res) {
 });
 
 //Fetch section by section id
-router.route("/sections/:secid").post(function(req, res) {
+router.route("/sections/:secid").post(function (req, res) {
   const secid = req.params.secid;
   const sql =
     "SELECT sections.secid AS secid, sections.divid AS divid, sections.section AS section, sections.secshort AS secshort, divisions.department AS department, divisions.depshort AS depshort  FROM sections JOIN divisions ON sections.divid = divisions.depid WHERE sections.secid = ?";
-  connection.query(sql, [parseInt(secid)], function(err, rows, fields) {
+  connection.query(sql, [parseInt(secid)], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -409,10 +409,10 @@ router.route("/sections/:secid").post(function(req, res) {
 });
 
 //Fetch Section
-router.route("/sections").get(function(req, res) {
+router.route("/sections").get(function (req, res) {
   const sql =
     "SELECT sections.divid AS divid, sections.secid AS secid, sections.section AS section, sections.secshort AS secshort, sections.active AS active, divisions.department AS department, divisions.depshort AS depshort  FROM sections JOIN divisions ON sections.divid = divisions.depid ORDER BY sections.secid ASC";
-  connection.query(sql, function(err, rows, fields) {
+  connection.query(sql, function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -424,12 +424,12 @@ router.route("/sections").get(function(req, res) {
 });
 
 //Add New Section
-router.route("/addNewSection").post(function(req, res) {
+router.route("/addNewSection").post(function (req, res) {
   const { division, section, secshort } = req.body;
   const sql =
     "INSERT INTO sections (divid, section, secshort, active) VALUES ?";
   const values = [[division, section, secshort, 1]];
-  connection.query(sql, [values], function(err, result) {
+  connection.query(sql, [values], function (err, result) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -441,14 +441,14 @@ router.route("/addNewSection").post(function(req, res) {
 });
 
 //Update Section
-router.route("/updateSection").post(function(req, res) {
+router.route("/updateSection").post(function (req, res) {
   const { secid, divid, section, secshort } = req.body;
   const sql =
     "UPDATE sections SET divid = ?, section = ?, secshort = ?, active = ? WHERE secid = ?";
   connection.query(
     sql,
     [parseInt(divid), section, secshort, 1, parseInt(secid)],
-    function(err, result) {
+    function (err, result) {
       if (err) {
         console.log(err);
         res.status(500).send(err);
@@ -461,10 +461,10 @@ router.route("/updateSection").post(function(req, res) {
 });
 
 //DELETE SECTION
-router.route("/deleteSection/:id").post(function(req, res) {
+router.route("/deleteSection/:id").post(function (req, res) {
   let id = req.params.id;
   const sql = "DELETE FROM sections WHERE secid = ?";
-  connection.query(sql, [parseInt(id)], function(err, result) {
+  connection.query(sql, [parseInt(id)], function (err, result) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -476,9 +476,9 @@ router.route("/deleteSection/:id").post(function(req, res) {
 });
 
 //Fetch Divisions
-router.route("/fetchDivisions").get(function(req, res) {
+router.route("/fetchDivisions").get(function (req, res) {
   const sql = "SELECT * FROM divisions";
-  connection.query(sql, function(err, rows, fields) {
+  connection.query(sql, function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -490,10 +490,10 @@ router.route("/fetchDivisions").get(function(req, res) {
 });
 
 //Fetch Division By ID
-router.route("/fetchDivisionById/:id").get(function(req, res) {
+router.route("/fetchDivisionById/:id").get(function (req, res) {
   let id = req.params.id;
   const sql = "SELECT * FROM divisions WHERE depid= ?";
-  connection.query(sql, [parseInt(id)], function(err, rows, fields) {
+  connection.query(sql, [parseInt(id)], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -504,12 +504,12 @@ router.route("/fetchDivisionById/:id").get(function(req, res) {
 });
 
 //Add Division
-router.route("/addDivision").post(function(req, res) {
+router.route("/addDivision").post(function (req, res) {
   const { department, depshort, payrollshort } = req.body;
   const sql =
     "INSERT INTO divisions (department, depshort, payrollshort) VALUES ?";
   const values = [[department, depshort, payrollshort]];
-  connection.query(sql, [values], function(err, result) {
+  connection.query(sql, [values], function (err, result) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -520,7 +520,7 @@ router.route("/addDivision").post(function(req, res) {
 });
 
 //Update Division
-router.route("/updateDivision/:id").post(function(req, res) {
+router.route("/updateDivision/:id").post(function (req, res) {
   let id = req.params.id;
   const { department, depshort, payrollshort } = req.body;
   const sql =
@@ -528,7 +528,7 @@ router.route("/updateDivision/:id").post(function(req, res) {
   connection.query(
     sql,
     [department, depshort, payrollshort, parseInt(id)],
-    function(err, result) {
+    function (err, result) {
       if (err) {
         console.log(err);
         res.status(500).send(err);
@@ -541,11 +541,11 @@ router.route("/updateDivision/:id").post(function(req, res) {
 });
 
 //Delete Division
-router.route("/deleteDivision/:id").post(function(req, res) {
+router.route("/deleteDivision/:id").post(function (req, res) {
   let id = req.params.id;
 
   const sql = "DELETE FROM divisions WHERE depid = ?";
-  connection.query(sql, [parseInt(id)], function(err, result) {
+  connection.query(sql, [parseInt(id)], function (err, result) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -556,10 +556,10 @@ router.route("/deleteDivision/:id").post(function(req, res) {
 });
 
 //Fetch Document Type By ID
-router.route("/fetchDocumentType/:id").get(function(req, res) {
+router.route("/fetchDocumentType/:id").get(function (req, res) {
   let id = req.params.id;
   const sql = "SELECT * FROM document_type WHERE id = ?";
-  connection.query(sql, [parseInt(id)], function(err, rows, fields) {
+  connection.query(sql, [parseInt(id)], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -571,11 +571,11 @@ router.route("/fetchDocumentType/:id").get(function(req, res) {
 });
 
 //Add Document Type
-router.route("/addDocumentType").post(function(req, res) {
+router.route("/addDocumentType").post(function (req, res) {
   const { type } = req.body;
   const sql = "INSERT INTO document_type (type) VALUES ?";
   const values = [[type]];
-  connection.query(sql, [values], function(err, result) {
+  connection.query(sql, [values], function (err, result) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -587,10 +587,10 @@ router.route("/addDocumentType").post(function(req, res) {
 });
 
 //Update Document Type
-router.route("/updateDocumentType").post(function(req, res) {
+router.route("/updateDocumentType").post(function (req, res) {
   const { id, type } = req.body;
   const sql = "UPDATE document_type SET type = ? WHERE id = ?";
-  connection.query(sql, [type, parseInt(id)], function(err, result) {
+  connection.query(sql, [type, parseInt(id)], function (err, result) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -601,10 +601,10 @@ router.route("/updateDocumentType").post(function(req, res) {
   });
 });
 
-router.route("/deleteDocumentType/:id").post(function(req, res) {
+router.route("/deleteDocumentType/:id").post(function (req, res) {
   let id = req.params.id;
   const sql = "DELETE FROM document_type WHERE id = ?";
-  connection.query(sql, [parseInt(id)], function(err, result) {
+  connection.query(sql, [parseInt(id)], function (err, result) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -626,10 +626,10 @@ router.route("/deleteDocumentType/:id").post(function(req, res) {
 //===========================================================================================
 
 //Assign Document Tracking ID
-router.route("/documentId").get(function(req, res) {
+router.route("/documentId").get(function (req, res) {
   const sql = "SELECT * FROM documents";
 
-  connection.query(sql, function(err, rows, fields) {
+  connection.query(sql, function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -638,7 +638,7 @@ router.route("/documentId").get(function(req, res) {
     if (rows.length > 0) {
       const sql1 =
         "SELECT documentID+1 as documentID FROM documents ORDER BY documentID DESC LIMIT 1";
-      connection.query(sql1, function(err, rows, fields) {
+      connection.query(sql1, function (err, rows, fields) {
         if (err) {
           console.log(err);
           res.status(500).send(err);
@@ -655,9 +655,9 @@ router.route("/documentId").get(function(req, res) {
 });
 
 // Fetch Document Type
-router.route("/documentType").get(function(req, res) {
+router.route("/documentType").get(function (req, res) {
   const sql = "SELECT * FROM document_type";
-  connection.query(sql, function(err, rows, fields) {
+  connection.query(sql, function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -669,7 +669,7 @@ router.route("/documentType").get(function(req, res) {
 });
 
 //Insert New Document
-router.route("/addNewDocument").post(function(req, res) {
+router.route("/addNewDocument").post(function (req, res) {
   const {
     documentID,
     creator,
@@ -677,11 +677,11 @@ router.route("/addNewDocument").post(function(req, res) {
     doc_type,
     note,
     action_req,
-    documentLogs
+    documentLogs,
   } = req.body;
 
   const check = "SELECT * FROM documents WHERE documentID = ?";
-  connection.query(check, [documentID], function(err, rows, fields) {
+  connection.query(check, [documentID], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -693,14 +693,14 @@ router.route("/addNewDocument").post(function(req, res) {
       connection.query(
         update,
         [creator, subject, doc_type, note, "1", documentID],
-        function(err, result) {
+        function (err, result) {
           if (err) {
             console.log(err);
             res.status(500).send(err);
           }
 
           const draft = "DELETE FROM documentDrafts WHERE documentID = ?";
-          connection.query(draft, [documentID], function(err, result) {
+          connection.query(draft, [documentID], function (err, result) {
             if (err) {
               console.log(err);
               res.status(500).send(err);
@@ -709,7 +709,7 @@ router.route("/addNewDocument").post(function(req, res) {
             const sql =
               "INSERT INTO documentLogs (document_id, user_id, remarks, destinationType, destination, status) VALUES ?";
 
-            connection.query(sql, [documentLogs], function(err, result) {
+            connection.query(sql, [documentLogs], function (err, result) {
               if (err) {
                 console.log(err);
                 res.status(500).send(err);
@@ -725,7 +725,7 @@ router.route("/addNewDocument").post(function(req, res) {
       const sql1 =
         "INSERT INTO documents (documentID, creator, subject, doc_type, note, status) VALUES ?";
       const values = [[documentID, creator, subject, doc_type, note, "1"]];
-      connection.query(sql1, [values], function(err, result) {
+      connection.query(sql1, [values], function (err, result) {
         if (err) {
           console.log(err);
           res.status(500).send(err);
@@ -734,7 +734,7 @@ router.route("/addNewDocument").post(function(req, res) {
         const sql2 =
           "INSERT INTO document_action_req (documentID, action_req) VALUES ?";
 
-        connection.query(sql2, [action_req], function(err, result) {
+        connection.query(sql2, [action_req], function (err, result) {
           if (err) {
             console.log(err);
             res.status(500).send(err);
@@ -743,7 +743,7 @@ router.route("/addNewDocument").post(function(req, res) {
           const sql3 =
             "INSERT INTO documentLogs (document_id, user_id, remarks, destinationType, destination, status) VALUES ?";
 
-          connection.query(sql3, [documentLogs], function(err, result) {
+          connection.query(sql3, [documentLogs], function (err, result) {
             if (err) {
               console.log(err);
               res.status(500).send(err);
@@ -759,12 +759,12 @@ router.route("/addNewDocument").post(function(req, res) {
 });
 
 //Insert Draft
-router.route("/draft").post(function(req, res) {
+router.route("/draft").post(function (req, res) {
   const { documentID, creator, subject, doc_type, note, action_req } = req.body;
   const sql =
     "INSERT INTO documents (documentID, creator, subject, doc_type, note, status) VALUES ?";
   const values = [[documentID, creator, subject, doc_type, note, "0"]];
-  connection.query(sql, [values], function(err, result) {
+  connection.query(sql, [values], function (err, result) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -772,7 +772,7 @@ router.route("/draft").post(function(req, res) {
 
     const sql_action_req =
       "INSERT INTO document_action_req (documentID, action_req) VALUES ?";
-    connection.query(sql_action_req, [action_req], function(err, result) {
+    connection.query(sql_action_req, [action_req], function (err, result) {
       if (err) {
         console.log(err);
         res.status(500).send(err);
@@ -780,7 +780,7 @@ router.route("/draft").post(function(req, res) {
 
       const draft = "INSERT INTO documentDrafts (documentID) VALUES ?";
       const draftVal = [[documentID]];
-      connection.query(draft, [draftVal], function(err, result) {
+      connection.query(draft, [draftVal], function (err, result) {
         if (err) {
           console.log(err);
           res.status(500).send(err);
@@ -794,12 +794,12 @@ router.route("/draft").post(function(req, res) {
 });
 
 //Get draft by user
-router.route("/getDrafts/:user").get(function(req, res) {
+router.route("/getDrafts/:user").get(function (req, res) {
   const userID = req.params.user;
   const sql =
     "SELECT documentDrafts.documentID as documentID, documents.subject as subject, document_type.type as doc_type FROM documentDrafts JOIN documents ON documentDrafts.documentID = documents.documentID JOIN document_type ON documents.doc_type = document_type.id WHERE documents.creator = ? AND documents.status = ? ORDER BY documents.date_time_created DESC";
 
-  connection.query(sql, [userID, "0"], function(err, rows, fields) {
+  connection.query(sql, [userID, "0"], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -810,11 +810,11 @@ router.route("/getDrafts/:user").get(function(req, res) {
 });
 
 //Fetch Document By ID
-router.route("/fetchDocument/:doc_id").get(function(req, res) {
+router.route("/fetchDocument/:doc_id").get(function (req, res) {
   const doc = req.params.doc_id;
   const sql =
     "SELECT documents.subject as subject, document_type.id as docType_id, document_type.type as type, documents.note FROM documents JOIN document_type ON documents.doc_type = document_type.id WHERE documents.documentID = ?";
-  connection.query(sql, [doc], function(err, rows, fields) {
+  connection.query(sql, [doc], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -826,10 +826,10 @@ router.route("/fetchDocument/:doc_id").get(function(req, res) {
 });
 
 //Fetch  Action Required of Document
-router.route("/fetchActionReq/:doc_id").get(function(req, res) {
+router.route("/fetchActionReq/:doc_id").get(function (req, res) {
   const doc = req.params.doc_id;
   const sql = "SELECT * FROM document_action_req WHERE documentID = ?";
-  connection.query(sql, [doc], function(err, rows, fields) {
+  connection.query(sql, [doc], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -841,11 +841,11 @@ router.route("/fetchActionReq/:doc_id").get(function(req, res) {
 });
 
 //Fetch Documents of User
-router.route("/fetchUserDocuments/:userID").get(function(req, res) {
+router.route("/fetchUserDocuments/:userID").get(function (req, res) {
   const userID = req.params.userID;
   const sql =
     "SELECT documents.documentID as documentID, documents.subject as subject, document_type.id as docType_id, document_type.type as type, documents.note FROM documents JOIN document_type ON documents.doc_type = document_type.id WHERE documents.creator = ? AND documents.status = ? ORDER BY documents.date_time_created DESC";
-  connection.query(sql, [userID, "1"], function(err, rows, fields) {
+  connection.query(sql, [userID, "1"], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -857,10 +857,10 @@ router.route("/fetchUserDocuments/:userID").get(function(req, res) {
 });
 
 //Fetch Documents of Section
-router.route("/fetchSectionDocuments/:userID").get(function(req, res) {
+router.route("/fetchSectionDocuments/:userID").get(function (req, res) {
   const userID = req.params.userID;
   const fetchUser = "SELECT * FROM users WHERE user_id = ?";
-  connection.query(fetchUser, [parseInt(userID)], function(err, rows, fields) {
+  connection.query(fetchUser, [parseInt(userID)], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -869,7 +869,7 @@ router.route("/fetchSectionDocuments/:userID").get(function(req, res) {
     console.log(rows[0].section);
     const sql =
       "SELECT documents.documentID as documentID, documents.subject as subject, documents.doc_type as docType_id, documents.note as note, document_type.type as docType,  documents.creator as creatorID, users.name as creator FROM documents JOIN document_type ON documents.doc_type = document_type.id JOIN users ON documents.creator = users.user_id WHERE users.section = ? AND documents.status = ? ORDER BY documents.date_time_created DESC";
-    connection.query(sql, [rows[0].section, "1"], function(err, rows, fields) {
+    connection.query(sql, [rows[0].section, "1"], function (err, rows, fields) {
       if (err) {
         console.log(err);
         res.status(500).send(err);
@@ -882,11 +882,11 @@ router.route("/fetchSectionDocuments/:userID").get(function(req, res) {
 });
 
 //Fetch Document Destination
-router.route("/fetchDocumentDestination/:doc_id").get(function(req, res) {
+router.route("/fetchDocumentDestination/:doc_id").get(function (req, res) {
   const documentID = req.params.doc_id;
   const sql =
     "SELECT DISTINCT documentLogs.destination as destination, documentLogs.user_id as creator,documentStatus.status as documentStatus FROM documentLogs JOIN documentStatus ON documentLogs.status = documentStatus.statid WHERE document_id = ? AND destination != ?";
-  connection.query(sql, [documentID, "none"], function(err, rows, fields) {
+  connection.query(sql, [documentID, "none"], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -898,10 +898,10 @@ router.route("/fetchDocumentDestination/:doc_id").get(function(req, res) {
 });
 
 //receive document
-router.route("/receiveDocument").post(function(req, res) {
+router.route("/receiveDocument").post(function (req, res) {
   const { documentTracking, user_id, user_section } = req.body;
   const sql = "SELECT * FROM documentLogs WHERE document_id = ?";
-  connection.query(sql, [documentTracking, user_id, "1"], function(
+  connection.query(sql, [documentTracking, user_id, "1"], function (
     err,
     rows,
     fields
@@ -923,9 +923,9 @@ router.route("/receiveDocument").post(function(req, res) {
           const insertExternal =
             "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status) VALUES ?";
           const val = [
-            [documentTracking, user_id, "none", "External", "none", "1"]
+            [documentTracking, user_id, "none", "External", "none", "1"],
           ];
-          connection.query(insertExternal, [val], function(err, result) {
+          connection.query(insertExternal, [val], function (err, result) {
             if (err) {
               console.log(err);
               res.status(500).send(err);
@@ -936,7 +936,7 @@ router.route("/receiveDocument").post(function(req, res) {
             connection.query(
               fetchDocumentInfoExternal,
               [user_id, "External", "2"],
-              function(err, rows, fields) {
+              function (err, rows, fields) {
                 if (err) {
                   console.log(err);
                   res.status(500).send(err);
@@ -958,9 +958,9 @@ router.route("/receiveDocument").post(function(req, res) {
           const insertInternal =
             "INSERT INTO documentLogs (document_id, user_id, remarks, destinationType, destination, status, notification) VALUES ?";
           const val1 = [
-            [documentTracking, user_id, "none", "Internal", "none", "1", "0"]
+            [documentTracking, user_id, "none", "Internal", "none", "1", "0"],
           ];
-          connection.query(insertInternal, [val1], function(err, result) {
+          connection.query(insertInternal, [val1], function (err, result) {
             if (err) {
               console.log(err);
               res.status(500).send(err);
@@ -971,7 +971,7 @@ router.route("/receiveDocument").post(function(req, res) {
             connection.query(
               fetchDocumentInfoInternal,
               [user_section, "Internal", "2"],
-              function(err, internalDoc, fields) {
+              function (err, internalDoc, fields) {
                 if (err) {
                   console.log(err);
                   res.status(500).send(err);
@@ -981,7 +981,7 @@ router.route("/receiveDocument").post(function(req, res) {
                 connection.query(
                   updateNotification,
                   [user_section, "Internal", "2"],
-                  function(err, result) {
+                  function (err, result) {
                     if (err) {
                       console.log(err);
                       res.status(500).send(err);
@@ -1005,11 +1005,11 @@ router.route("/receiveDocument").post(function(req, res) {
 });
 
 //notification
-router.route("/notification/:user_section").get(function(req, res) {
+router.route("/notification/:user_section").get(function (req, res) {
   const section = req.params.user_section;
   const sql =
     "SELECT documents.subject AS subject, users.name AS creator, document_type.type AS doc_type, documentLogs.document_id AS documentId FROM documents JOIN users ON documents.creator = users.user_id JOIN document_type ON documents.doc_type = document_type.id JOIN documentLogs ON documents.documentID = documentLogs.document_id WHERE documentLogs.destination = ? AND notification = ?";
-  connection.query(sql, [section, "0"], function(err, rows, fields) {
+  connection.query(sql, [section, "0"], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -1020,23 +1020,23 @@ router.route("/notification/:user_section").get(function(req, res) {
 });
 
 //Forward Document
-router.route("/afterDocumentReceive").post(function(req, res) {
+router.route("/afterDocumentReceive").post(function (req, res) {
   const {
     documentId,
     user_id,
     remarks,
     destinationType,
     destination,
-    status
+    status,
   } = req.body;
 
   const sql =
     "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification) VALUES ?";
   const values = [
-    [documentId, user_id, remarks, destinationType, destination, status, "0"]
+    [documentId, user_id, remarks, destinationType, destination, status, "0"],
   ];
 
-  connection.query(sql, [values], function(err, result) {
+  connection.query(sql, [values], function (err, result) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -1047,12 +1047,12 @@ router.route("/afterDocumentReceive").post(function(req, res) {
 });
 
 //Document track
-router.route("/track/:doc_id").get(function(req, res) {
+router.route("/track/:doc_id").get(function (req, res) {
   const doc_id = req.params.doc_id;
 
   const sql =
-    "SELECT users.name AS name, documentLogs.remarks AS remarks, documentLogs.destinationType AS destinationType, documentLogs.destination AS destination, documentStatus.status AS status, DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time FROM documentLogs JOIN users ON documentLogs.user_id = users.user_id JOIN documentStatus ON documentLogs.status = documentStatus.statid WHERE documentLogs.document_id = ?";
-  connection.query(sql, [doc_id], function(err, rows, fields) {
+    "SELECT users.name AS name, documentLogs.remarks AS remarks, documentLogs.destinationType AS destinationType, documentLogs.destination AS destination, documentStatus.status AS status, DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time FROM documentLogs JOIN users ON documentLogs.user_id = users.user_id JOIN documentStatus ON documentLogs.status = documentStatus.statid WHERE documentLogs.document_id = ? ORDER BY documentLogs.date_time DESC";
+  connection.query(sql, [doc_id], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);

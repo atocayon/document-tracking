@@ -16,8 +16,10 @@ import { clearReceiveDocument } from "../../../redux/actions/receiveDocument";
 import Forward from "./Forward";
 import { afterDocumentReceive } from "../../../redux/actions/afterDocumentReceive";
 import { onChangeForwardDocument } from "../../../redux/actions/onChangForwardDocument";
-import { notification } from "../../../redux/actions/notification";
+// import { notification } from "../../../redux/actions/notification";
 import { changeDocumentDestination } from "../../../redux/actions/onChangForwardDocument";
+import { trackDocument } from "../../../redux/actions/trackDocument";
+import DocumentTrack from "./DocumentTrack";
 
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
@@ -31,7 +33,7 @@ function Dashboard(props) {
           props.documentInfo.subject +
           " received successfully.",
         {
-          variant
+          variant,
         }
       );
     }
@@ -40,7 +42,7 @@ function Dashboard(props) {
       if (props.action_after === "forward") {
         const variant = "info";
         props.enqueueSnackbar("Document successfully forwarded...", {
-          variant
+          variant,
         });
       }
 
@@ -49,7 +51,7 @@ function Dashboard(props) {
         props.enqueueSnackbar(
           "Document successfully set as pending in your office...",
           {
-            variant
+            variant,
           }
         );
       }
@@ -60,8 +62,7 @@ function Dashboard(props) {
     setOpen(!open);
   };
 
-  const handleChange = event => {
-
+  const handleChange = (event) => {
     setSelectedValue(event.target.value);
     props.changeDocumentDestination();
   };
@@ -74,19 +75,19 @@ function Dashboard(props) {
     );
   };
 
-  const handleError = err => {
+  const handleError = (err) => {
     Reactotron.log(err);
   };
-  const scan = data => {
+  const scan = (data) => {
     Reactotron.log(data);
   };
 
-  const handleSetForwardDialog = e => {
+  const handleSetForwardDialog = (e) => {
     e.preventDefault();
     setForwardDialog(!forwardDialog);
   };
 
-  const handleForwardDocument = async e => {
+  const handleForwardDocument = async (e) => {
     e.preventDefault();
     await props.afterDocumentReceive(
       props.trackingNum.documentTrackingNumber,
@@ -99,7 +100,7 @@ function Dashboard(props) {
     setForwardDialog(!forwardDialog);
   };
 
-  const handlePendingDocument = async e => {
+  const handlePendingDocument = async (e) => {
     e.preventDefault();
     await props.afterDocumentReceive(
       props.trackingNum.documentTrackingNumber,
@@ -110,6 +111,13 @@ function Dashboard(props) {
       "3"
     );
     setForwardDialog(!forwardDialog);
+  };
+
+  const handleTrackDocument = async () => {
+    await props.trackDocument(props.trackingNum.documentTrackingNumber);
+  };
+  const handleSearch = () => {
+    Reactotron.log("Clear");
   };
 
   return (
@@ -132,7 +140,7 @@ function Dashboard(props) {
             paddingBottom: "3vh",
             marginTop: 70,
             height: "100vh",
-            overflow: "auto"
+            overflow: "auto",
           }}
         >
           <Grid container spacing={3}>
@@ -158,10 +166,17 @@ function Dashboard(props) {
                       variant={"outlined"}
                       onChange={props.documentTrackingNumber}
                       value={props.trackingNum.documentTrackingNumber}
+                      type={"search"}
+                      onsearch={handleSearch}
                     />
                   </div>
                   <div className={"col-md-4"}>
-                    <button className={"btn btn-lg btn-info"}>Track</button>
+                    <button
+                      className={"btn btn-lg btn-info"}
+                      onClick={handleTrackDocument}
+                    >
+                      Track
+                    </button>
                     &nbsp;&nbsp;&nbsp;
                     <button
                       className={"btn btn-lg btn-outline-info"}
@@ -177,13 +192,14 @@ function Dashboard(props) {
                 <div className={"col-md-12"}>
                   <BarcodeReader onError={handleError} onScan={scan} />
 
-                  {props.documentInfo.documentId === "" && (
+                  {props.documentInfo.documentId === "" &&
+                  props.track.length === 0 ? (
                     <div style={{ textAlign: "center", marginTop: "30vh" }}>
                       <h6 style={{ color: "#9E9E9E" }}>
                         Document track / information will show here
                       </h6>
                     </div>
-                  )}
+                  ) : null}
 
                   {props.documentInfo.documentId !== "" && (
                     <>
@@ -206,6 +222,10 @@ function Dashboard(props) {
                       />
                     </>
                   )}
+
+                  {props.track.length > 0 && (
+                    <DocumentTrack track={props.track} />
+                  )}
                 </div>
               </div>
             </Grid>
@@ -222,7 +242,8 @@ function mapStateToProps(state) {
     trackingNum: state.documentTrackingNumber,
     documentInfo: state.receiveDocument,
     forwardDocument: state.forwardDocument,
-    action_after: state.afterDocumentReceive
+    action_after: state.afterDocumentReceive,
+    track: state.trackDocument,
   };
 }
 
@@ -233,7 +254,8 @@ const mapDispatchToProps = {
   clearReceiveDocument,
   afterDocumentReceive,
   onChangeForwardDocument,
-  changeDocumentDestination
+  changeDocumentDestination,
+  trackDocument,
 };
 
 export default connect(
