@@ -1,11 +1,12 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
+const localIpUrl = require("local-ip-url");
 
 export function fetchDocumentActionRequired(doc_id) {
-  return function(dispatch) {
+  return function (dispatch) {
     return axios
-      .get("http://localhost:4000/dts/fetchActionReq/" + doc_id)
-      .then(res => {
+      .get("http://" + localIpUrl + ":4000/dts/fetchActionReq/" + doc_id)
+      .then((res) => {
         const checkedArr = [];
         const checkbox = {};
         for (let i = 0; i < res.data.length; i++) {
@@ -17,11 +18,11 @@ export function fetchDocumentActionRequired(doc_id) {
 
         dispatch({
           type: actionTypes.FETCH_DOCUMENT_ACTION_REQUIRED,
-          data: { action_req: checkedArr, checkbox }
+          data: { action_req: checkedArr, checkbox },
         });
       })
-      .catch(err => {
-          throw err;
+      .catch((err) => {
+        throw err;
       });
   };
 }

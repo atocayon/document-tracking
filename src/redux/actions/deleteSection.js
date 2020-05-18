@@ -1,14 +1,15 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
+const localIpUrl = require("local-ip-url");
 
 export function deleteSection(id) {
-  return function(dispatch) {
+  return function (dispatch) {
     return axios
-      .post("http://localhost:4000/dts/deleteSection/" + id)
-      .then(res => {
+      .post("http://" + localIpUrl + ":4000/dts/deleteSection/" + id)
+      .then((res) => {
         dispatch({ type: actionTypes.DELETE_SECTION, data: id });
       })
-      .catch(err => {
+      .catch((err) => {
         alert(err);
       });
   };

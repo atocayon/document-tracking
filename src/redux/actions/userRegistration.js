@@ -1,5 +1,6 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
+const localIpUrl = require("local-ip-url");
 
 export function userRegistration(
   section,
@@ -22,11 +23,11 @@ export function userRegistration(
     email,
     contact,
     position,
-    accnt_status: "1"
+    accnt_status: "1",
   };
-  return function(dispatch) {
+  return function (dispatch) {
     return axios
-      .post("http://localhost:4000/dts/addUser", {
+      .post("http://" + localIpUrl + ":4000/dts/addUser", {
         section,
         role: user_role,
         employeeId,
@@ -36,26 +37,26 @@ export function userRegistration(
         confirmPassword,
         email,
         contact,
-        position
+        position,
       })
-      .then(_res => {
+      .then((_res) => {
         if (_res.status === 200) {
           if (_res.data.success === "success") {
             dispatch({ type: actionTypes.ADD_USER, _data });
             dispatch({
               type: actionTypes.USER_REGISTRATION,
-              message: "success"
+              message: "success",
             });
           }
           if (_res.data.success === "failed") {
             dispatch({
               type: actionTypes.USER_REGISTRATION,
-              message: "failed"
+              message: "failed",
             });
           }
         }
       })
-      .catch(err => {
+      .catch((err) => {
         alert("Server Error");
       });
   };
