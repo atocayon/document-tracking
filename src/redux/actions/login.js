@@ -13,7 +13,7 @@ export function login(data) {
     return axios
       .post(
         "http://" +
-          localIpUrl +
+          localIpUrl("public", "ipv4") +
           ":4000/dts/login/" +
           data.email +
           "/" +

@@ -13,15 +13,18 @@ export function addNewDocument(
 ) {
   return function (dispatch) {
     return axios
-      .post("http://" + localIpUrl + ":4000/dts/addNewDocument", {
-        documentID: documentID,
-        creator: user_id,
-        subject: subject,
-        doc_type: documentType,
-        note: note,
-        action_req: action_req,
-        documentLogs: destination,
-      })
+      .post(
+        "http://" + localIpUrl("public", "ipv4") + ":4000/dts/addNewDocument",
+        {
+          documentID: documentID,
+          creator: user_id,
+          subject: subject,
+          doc_type: documentType,
+          note: note,
+          action_req: action_req,
+          documentLogs: destination,
+        }
+      )
       .then((res) => {
         dispatch({ type: actionTypes.ADD_DOCUMENT, data: "success" });
       })
