@@ -18,6 +18,7 @@
     "cors": "^2.8.5",
     "express": "latest",
     "html2canvas": "^1.0.0-rc.5",
+    "local-ip-url": "^1.0.3",
     "material-ui-popup-state": "^1.5.4",
     "mongodb": "^3.5.5",
     "mongoose": "^5.9.6",

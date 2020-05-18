@@ -1,6 +1,8 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
+const localIpUrl = require("local-ip-url");
+
 export function addNewDivision(data) {
     Reactotron.log(data);
   const _data = {
@@ -10,7 +12,7 @@ export function addNewDivision(data) {
   };
   return function(dispatch) {
     return axios
-      .post("http://localhost:4000/dts/addDivision", {
+      .post("http://"+localIpUrl+"/dts/addDivision", {
         department: data.department,
         depshort: data.depshort,
         payrollshort: data.payroll
