@@ -25,7 +25,7 @@ export function receiveDocument(documentTracking, user_id, user_section) {
           axios
             .get(
               "http://" +
-                localIpUrl("public", "ipv4") +
+                localIpUrl() +
                 ":4000/dts/fetchActionReq/" +
                 res.data.documentId
             )

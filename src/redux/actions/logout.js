@@ -6,7 +6,7 @@ export function logout(token) {
   return function (dispatch) {
     return axios
       .post(
-        "http://" + localIpUrl("public", "ipv4") + ":4000/dts/logout/" + token
+        "http://" + localIpUrl() + ":4000/dts/logout/" + token
       )
       .then((res) => {
         localStorage.clear();

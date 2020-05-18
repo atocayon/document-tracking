@@ -5,10 +5,7 @@ const localIpUrl = require("local-ip-url");
 export function updateSection(data) {
   return function (dispatch) {
     return axios
-      .post(
-        "http://" + localIpUrl("public", "ipv4") + ":4000/dts/updateSection",
-        { ...data }
-      )
+      .post("http://" + localIpUrl() + ":4000/dts/updateSection", { ...data })
       .then((res) => {
         dispatch({ type: actionTypes.UPDATE_SECTION, data });
       })

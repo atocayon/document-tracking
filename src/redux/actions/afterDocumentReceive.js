@@ -12,19 +12,14 @@ export function afterDocumentReceive(
 ) {
   return function (dispatch) {
     return axios
-      .post(
-        "http://" +
-          localIpUrl("public", "ipv4") +
-          ":4000/dts/afterDocumentReceive",
-        {
-          documentId,
-          user_id,
-          remarks,
-          destinationType,
-          destination,
-          status,
-        }
-      )
+      .post("http://" + localIpUrl() + ":4000/dts/afterDocumentReceive", {
+        documentId,
+        user_id,
+        remarks,
+        destinationType,
+        destination,
+        status,
+      })
       .then((res) => {
         if (res.status === 200) {
           if (status === "2") {

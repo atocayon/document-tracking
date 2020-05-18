@@ -15,7 +15,7 @@ export function updateDivision(data) {
     return axios
       .post(
         "http://" +
-          localIpUrl("public", "ipv4") +
+          localIpUrl() +
           ":4000/dts/updateDivision/" +
           parseInt(data.depid),
         {

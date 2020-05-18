@@ -5,9 +5,7 @@ const localIpUrl = require("local-ip-url");
 export function fetchDivisions() {
   return function (dispatch) {
     return axios
-      .get(
-        "http://" + localIpUrl("public", "ipv4") + ":4000/dts/fetchDivisions"
-      )
+      .get("http://" + localIpUrl() + ":4000/dts/fetchDivisions")
       .then((res) => {
         dispatch({ type: actionTypes.FETCH_DIVISIONS, data: res.data });
       })

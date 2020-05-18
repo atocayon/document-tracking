@@ -27,7 +27,7 @@ export function userRegistration(
   };
   return function (dispatch) {
     return axios
-      .post("http://" + localIpUrl("public", "ipv4") + ":4000/dts/addUser", {
+      .post("http://" + localIpUrl() + ":4000/dts/addUser", {
         section,
         role: user_role,
         employeeId,

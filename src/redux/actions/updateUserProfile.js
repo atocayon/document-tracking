@@ -19,7 +19,7 @@ export function updateUserProfile(data) {
     return axios
       .post(
         "http://" +
-          localIpUrl("public", "ipv4") +
+          localIpUrl() +
           ":4000/dts/updateUser/" +
           parseInt(data.user_id),
         {
