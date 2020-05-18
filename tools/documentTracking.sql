@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 11, 2020 at 08:28 AM
+-- Generation Time: May 18, 2020 at 07:56 AM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.1
 
@@ -77,6 +77,7 @@ CREATE TABLE `documentLogs` (
   `destinationType` varchar(120) NOT NULL,
   `destination` varchar(120) NOT NULL,
   `status` varchar(11) NOT NULL,
+  `notification` varchar(11) NOT NULL,
   `date_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -84,23 +85,24 @@ CREATE TABLE `documentLogs` (
 -- Dumping data for table `documentLogs`
 --
 
-INSERT INTO `documentLogs` (`trans_id`, `document_id`, `user_id`, `remarks`, `destinationType`, `destination`, `status`, `date_time`) VALUES
-(1, '1000000000', '3', 'none', 'Internal', 'Registrar', '2', '2020-04-27 09:46:41'),
-(2, '1000000000', '3', 'none', 'Internal', 'none', '5', '2020-04-27 09:46:41'),
-(3, '1000000000', '3', 'none', 'Internal', 'GSAS', '2', '2020-04-27 09:46:41'),
-(4, '1000000001', '3', 'none', 'External', 'asdd', '2', '2020-05-08 02:43:17'),
-(5, '1000000002', '3', 'none', 'External', 'asdsd', '2', '2020-05-08 02:48:23'),
-(6, '1000000003', '3', 'none', 'External', 'none', '5', '2020-05-08 02:52:03'),
-(7, '1000000003', '3', 'none', 'External', 'asdd', '2', '2020-05-08 02:52:03'),
-(8, '1000000004', '3', 'none', 'Internal', 'none', '5', '2020-05-08 02:52:52'),
-(9, '1000000004', '3', 'none', 'Internal', 'Motor Pool', '2', '2020-05-08 02:52:52'),
-(10, '1000000005', '3', 'none', 'External', 'none', '5', '2020-05-08 02:54:30'),
-(11, '1000000005', '3', 'none', 'External', 'asdd', '2', '2020-05-08 02:54:30'),
-(12, '1000000005', '3', 'none', 'External', 'asdd', '2', '2020-05-08 02:54:30'),
-(13, '1000000007', '49', 'none', 'Internal', 'none', '5', '2020-05-08 05:47:46'),
-(14, '1000000007', '49', 'none', 'Internal', 'IMS', '2', '2020-05-08 05:47:46'),
-(15, '1000000007', '49', 'none', 'Internal', 'Planning', '2', '2020-05-08 05:47:46'),
-(29, '1000000007', '50', 'none', 'Internal', 'none', '1', '2020-05-11 06:16:36');
+INSERT INTO `documentLogs` (`trans_id`, `document_id`, `user_id`, `remarks`, `destinationType`, `destination`, `status`, `notification`, `date_time`) VALUES
+(1, '1000000000', '3', 'none', 'Internal', 'Registrar', '2', '0', '2020-05-14 05:58:26'),
+(2, '1000000000', '3', 'none', 'Internal', 'none', '5', '0', '2020-05-14 05:58:28'),
+(3, '1000000000', '3', 'none', 'Internal', 'GSAS', '2', '0', '2020-05-14 05:58:29'),
+(4, '1000000001', '3', 'none', 'External', 'asdd', '2', '0', '2020-05-14 05:58:31'),
+(5, '1000000002', '3', 'none', 'External', 'asdsd', '2', '0', '2020-05-14 05:58:33'),
+(6, '1000000003', '3', 'none', 'External', 'none', '5', '0', '2020-05-14 05:58:34'),
+(7, '1000000003', '3', 'none', 'External', 'asdd', '2', '0', '2020-05-14 05:58:36'),
+(8, '1000000004', '3', 'none', 'Internal', 'none', '5', '0', '2020-05-14 05:58:38'),
+(9, '1000000004', '3', 'none', 'Internal', 'Motor Pool', '2', '0', '2020-05-14 05:58:39'),
+(10, '1000000005', '3', 'none', 'External', 'none', '5', '0', '2020-05-14 05:58:41'),
+(11, '1000000005', '3', 'none', 'External', 'asdd', '2', '0', '2020-05-14 05:58:42'),
+(12, '1000000005', '3', 'none', 'External', 'asdd', '2', '0', '2020-05-14 05:58:43'),
+(13, '1000000007', '49', 'none', 'Internal', 'none', '5', '0', '2020-05-14 05:58:45'),
+(14, '1000000007', '49', 'none', 'Internal', 'IMS', '2', '1', '2020-05-15 06:42:37'),
+(94, '1000000007', '50', 'none', 'Internal', 'none', '1', '0', '2020-05-14 05:58:47'),
+(95, '1000000008', '50', 'none', 'Internal', 'none', '5', '0', '2020-05-14 05:58:50'),
+(96, '1000000008', '50', 'none', 'Internal', 'Research', '2', '1', '2020-05-15 06:41:57');
 
 -- --------------------------------------------------------
 
@@ -130,7 +132,8 @@ INSERT INTO `documents` (`documentID`, `creator`, `subject`, `doc_type`, `note`,
 (1000000004, '3', '412', '5', 'Enim qui sunt id hic', '2020-05-08 02:52:52', '1'),
 (1000000005, '3', '253', '14', 'Ab incididunt beatae', '2020-05-08 02:54:30', '1'),
 (1000000006, '3', '560', '7', 'Soluta inventore off', '2020-05-08 03:19:29', '0'),
-(1000000007, '49', '862', '7', 'Asperiores omnis qua', '2020-05-08 05:47:46', '1');
+(1000000007, '49', '862', '7', 'Asperiores omnis qua', '2020-05-08 05:47:46', '1'),
+(1000000008, '50', '977', '1', 'Sint asperiores inci', '2020-05-14 05:33:20', '1');
 
 -- --------------------------------------------------------
 
@@ -150,7 +153,7 @@ CREATE TABLE `documentStatus` (
 INSERT INTO `documentStatus` (`statid`, `status`) VALUES
 (1, 'receive'),
 (2, 'forwarded'),
-(3, 'return'),
+(3, 'pending'),
 (4, 'completed'),
 (5, 'created'),
 (6, 'external'),
@@ -209,7 +212,10 @@ INSERT INTO `document_action_req` (`document_action_req_id`, `documentID`, `acti
 (30, '1000000006', 'For Signature'),
 (31, '1000000006', 'For Endorsement'),
 (32, '1000000006', 'For Action'),
-(33, '1000000007', 'For Action');
+(33, '1000000007', 'For Action'),
+(34, '1000000008', 'For Endorsement'),
+(35, '1000000008', 'For Information'),
+(36, '1000000008', 'For File');
 
 -- --------------------------------------------------------
 
@@ -374,9 +380,9 @@ CREATE TABLE `users_session` (
 --
 
 INSERT INTO `users_session` (`id`, `userId`, `timeStamp`, `isDeleted`) VALUES
-(1, '3', '2020-05-08 05:41:39', '1'),
-(2, '49', '2020-05-11 06:16:21', '1'),
-(3, '50', '2020-05-11 06:16:29', '0');
+(1, '3', '2020-05-18 05:32:00', '1'),
+(2, '49', '2020-05-18 05:28:23', '1'),
+(3, '50', '2020-05-18 00:55:47', '1');
 
 -- --------------------------------------------------------
 
@@ -502,7 +508,7 @@ ALTER TABLE `documentDrafts`
 -- AUTO_INCREMENT for table `documentLogs`
 --
 ALTER TABLE `documentLogs`
-  MODIFY `trans_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `trans_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=146;
 
 --
 -- AUTO_INCREMENT for table `documentStatus`
@@ -514,7 +520,7 @@ ALTER TABLE `documentStatus`
 -- AUTO_INCREMENT for table `document_action_req`
 --
 ALTER TABLE `document_action_req`
-  MODIFY `document_action_req_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `document_action_req_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `document_type`
