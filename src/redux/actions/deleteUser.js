@@ -5,7 +5,7 @@ const localIpUrl = require("local-ip-url");
 export function deleteUser(id) {
   return function (dispatch) {
     axios
-      .post("http://" + localIpUrl("public", "ipv4") + ":4000/dts/deleteUser", {
+      .post("http://" + localIpUrl() + ":4000/dts/deleteUser", {
         id: id,
       })
       .then((_res) => {

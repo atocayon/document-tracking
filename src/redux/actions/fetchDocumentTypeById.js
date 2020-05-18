@@ -5,12 +5,7 @@ const localIpUrl = require("local-ip-url");
 export function fetchDocumentTypeById(id) {
   return function (dispatch) {
     return axios
-      .get(
-        "http://" +
-          localIpUrl("public", "ipv4") +
-          ":4000/dts/fetchDocumentType/" +
-          id
-      )
+      .get("http://" + localIpUrl() + ":4000/dts/fetchDocumentType/" + id)
       .then((document) => {
         dispatch({
           type: actionTypes.FETCH_DOCUMENT_TYPE_BY_ID,

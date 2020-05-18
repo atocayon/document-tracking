@@ -7,7 +7,7 @@ export function deleteDocumentType(id) {
     return axios
       .post(
         "http://" +
-          localIpUrl("public", "ipv4") +
+          localIpUrl() +
           ":4000/dts/deleteDocumentType/" +
           id
       )

@@ -5,7 +5,7 @@ const localIpUrl = require("local-ip-url");
 export function fetchAllUsers() {
   return function (dispatch) {
     return axios
-      .get("http://" + localIpUrl("public", "ipv4") + ":4000/dts/getUsers")
+      .get("http://" + localIpUrl() + ":4000/dts/getUsers")
       .then((_users) => {
         dispatch({
           type: actionTypes.FETCH_ALL_USER,

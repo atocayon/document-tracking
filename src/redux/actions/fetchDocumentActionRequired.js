@@ -5,12 +5,7 @@ const localIpUrl = require("local-ip-url");
 export function fetchDocumentActionRequired(doc_id) {
   return function (dispatch) {
     return axios
-      .get(
-        "http://" +
-          localIpUrl("public", "ipv4") +
-          ":4000/dts/fetchActionReq/" +
-          doc_id
-      )
+      .get("http://" + localIpUrl() + ":4000/dts/fetchActionReq/" + doc_id)
       .then((res) => {
         const checkedArr = [];
         const checkbox = {};
