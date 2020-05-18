@@ -5,7 +5,12 @@ const localIpUrl = require("local-ip-url");
 export function trackDocument(trackingNumber) {
   return function (dispatch) {
     return axios
-      .get("http://" + localIpUrl + ":4000/dts/track/" + trackingNumber)
+      .get(
+        "http://" +
+          localIpUrl("public", "ipv4") +
+          ":4000/dts/track/" +
+          trackingNumber
+      )
       .then((res) => {
         dispatch({ type: actionTypes.TRACK_DOCUMENT, data: res.data });
       })
