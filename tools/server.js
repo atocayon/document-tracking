@@ -23,6 +23,7 @@ app.use(bodyParser.json());
 
 const connection = mysql.createConnection({
   host: "localhost",
+  port: "3306",
   user: "root",
   password: "",
   database: "documentTracking",
@@ -1067,7 +1068,7 @@ router.route("/track/:doc_id").get(function (req, res) {
 //===========================================================================================
 //===========================================================================================
 app.use("/dts", router);
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log("========================================================");
   console.log("SERVER IS RUNNING ON PORT: " + PORT);
   console.log("========================================================");

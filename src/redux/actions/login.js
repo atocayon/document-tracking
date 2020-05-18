@@ -13,22 +13,14 @@ export function login(data) {
   return function (dispatch) {
     return axios
       .post(
-        "http://" +
-          localIpUrl() +
-          ":4000/dts/login/" +
-          data.email +
-          "/" +
-          data.password
+        "http://localhost:4000/dts/login/" + data.email + "/" + data.password
       )
       .then((res) => {
         setInStorage("documentTracking", { token: res.data.token });
         dispatch({ type: actionTypes.USER_LOGIN, data: res.data });
       })
       .catch((err) => {
-        dispatch({
-          type: actionTypes.USER_LOGIN,
-          data: { success: false },
-        });
+        throw err;
       });
   };
 }
