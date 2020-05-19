@@ -8,6 +8,7 @@ export function trackDocument(trackingNumber) {
       .get("http://10.10.10.16:4000/dts/track/" + trackingNumber)
       .then((res) => {
         dispatch({ type: actionTypes.TRACK_DOCUMENT, data: res.data });
+        dispatch({type: actionTypes.CLEAR_RECEIVE_DOCUMENT});
       })
       .catch((err) => {
         throw err;

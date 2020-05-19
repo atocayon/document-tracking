@@ -25,12 +25,12 @@ function Draft(props) {
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       axios
-        .get("http://localhost:4000/dts/getDrafts/" + obj.token)
-        .then(res => {
+        .get("http://10.10.10.16:4000/dts/getDrafts/" + obj.token)
+        .then((res) => {
           // Reactotron.log(res);
           setDrafts(res.data);
         })
-        .catch(err => {
+        .catch((err) => {
           const variant = "error";
           props.enqueueSnackbar("Server Error", { variant });
         });
@@ -61,7 +61,7 @@ function Draft(props) {
             marginTop: 70,
             paddingTop: 0,
             height: "100vh",
-            overflow: "auto"
+            overflow: "auto",
           }}
         >
           {endSession && <Redirect to={"/"} />}
@@ -93,7 +93,7 @@ function Draft(props) {
               <div className={"col-md-8"}>
                 <List>
                   {drafts.length > 0 &&
-                    drafts.map(doc => (
+                    drafts.map((doc) => (
                       <Link
                         to={"/addDocument/" + doc.documentID}
                         style={{ textDecoration: "none" }}

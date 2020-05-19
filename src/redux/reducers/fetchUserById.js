@@ -18,13 +18,14 @@ export default function fetchUserById(state = defaultState, action) {
         section: action.data.section,
         position: action.data.position,
         role: action.data.role,
+        role_id: action.data.role_id.toString(),
         department: action.data.department,
         depshort: action.data.depshort,
       };
 
     case actionTypes.INPUT_CHANGE:
       return Object.assign({}, state, {
-        [action.text.name]: action.text.value
+        [action.text.name]: action.text.value,
       });
 
     default:

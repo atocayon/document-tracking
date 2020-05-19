@@ -39,7 +39,7 @@
     "redux-thunk": "^2.3.0"
   },
   "scripts": {
-    "start": "run-p start:dev start:api",
+    "start": "run-p start:dev",
     "start:dev": "react-scripts start",
     "start:api": "nodemon tools/server",
     "build": "react-scripts build",

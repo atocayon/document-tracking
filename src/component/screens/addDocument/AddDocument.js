@@ -46,7 +46,7 @@ import { addNewDocument } from "../../../redux/actions/addNewDocument";
 import { logDocumentCreator } from "../../../redux/actions/addDocumentDestination";
 import { clearAddNewDocumentState } from "../../../redux/actions/clearAddNewDocumentInput";
 import { addNewDocumentDraft } from "../../../redux/actions/addNewDocumentDraft";
-import {notification} from "../../../redux/actions/notification";
+import { notification } from "../../../redux/actions/notification";
 
 function AddDocument({
   match,
@@ -77,7 +77,7 @@ function AddDocument({
   clearAddNewDocumentState,
   addNewDocumentDraft,
   submit_new_document_draft,
-                       notification
+  notification,
 }) {
   const checkboxItem = [
     { id: 0, value: "For Approval" },
@@ -87,12 +87,12 @@ function AddDocument({
     { id: 4, value: "For Action" },
     { id: 5, value: "For Comment" },
     { id: 6, value: "For Information" },
-    { id: 7, value: "For File" }
+    { id: 7, value: "For File" },
   ];
 
   const [endSession, setEndSession] = useState(false);
   const [date, setDate] = useState({
-    _date: new Date()
+    _date: new Date(),
   });
 
   const [error, setError] = useState({});
@@ -125,7 +125,7 @@ function AddDocument({
         }
       }
 
-      fetch().catch(err => {
+      fetch().catch((err) => {
         throw err;
       });
     }
@@ -142,17 +142,17 @@ function AddDocument({
           setDestination("");
           const variant = "info";
           enqueueSnackbar("Document release successfully...", {
-            variant
+            variant,
           });
         }
 
-        submitNewDocument().catch(err => {
+        submitNewDocument().catch((err) => {
           throw err;
         });
       } else {
         const variant = "error";
         enqueueSnackbar("Document releasing failed...", {
-          variant
+          variant,
         });
       }
     }
@@ -165,17 +165,17 @@ function AddDocument({
           setDestination("");
           const variant = "info";
           enqueueSnackbar("Document saved as draft success...", {
-            variant
+            variant,
           });
         }
 
-        submitNewDraft().catch(err => {
+        submitNewDraft().catch((err) => {
           throw err;
         });
       } else {
         const variant = "error";
         enqueueSnackbar("Document saving as draft failed...", {
-          variant
+          variant,
         });
       }
     }
@@ -192,7 +192,7 @@ function AddDocument({
   const tick = () => {
     setDate({
       ...date,
-      _date: new Date()
+      _date: new Date(),
     });
   };
 
@@ -207,7 +207,8 @@ function AddDocument({
         "none",
         destination,
         internal,
-        "2"
+        "2",
+        "0"
       );
 
       await addDocumentDestination(_destination);
@@ -233,7 +234,8 @@ function AddDocument({
         "none",
         destination,
         external,
-        "2"
+        "2",
+        "0"
       );
       await addDocumentDestination(_destination);
       await clearExternalDestinationInput();
@@ -276,7 +278,7 @@ function AddDocument({
     return Object.keys(_error).length === 0;
   };
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!formValidation()) {
@@ -290,7 +292,8 @@ function AddDocument({
       "none",
       destination,
       "none",
-      "5"
+      "5",
+      "0",
     ]);
 
     setFinalize(true);
@@ -339,7 +342,7 @@ function AddDocument({
     );
   };
 
-  const createCheckbox = label => {
+  const createCheckbox = (label) => {
     return (
       <CheckBox
         checked={addDocument[label.value]}
@@ -352,8 +355,8 @@ function AddDocument({
             match.params.id
               ? match.params.id
               : documentId && documentId.documentID,
-            label.value
-          ]
+            label.value,
+          ],
         })}
         key={label.id}
         label={label.value}
@@ -384,7 +387,7 @@ function AddDocument({
               marginTop: 70,
               paddingTop: 0,
               height: "100vh",
-              overflow: "auto"
+              overflow: "auto",
             }}
           >
             {openDialog && (
@@ -623,7 +626,7 @@ function AddDocument({
                                   </Avatar>
                                 }
                                 label={des[4]}
-                                onDelete={event => {
+                                onDelete={(event) => {
                                   event.stopPropagation();
                                   removeDestination(index);
                                 }}
@@ -636,7 +639,7 @@ function AddDocument({
                           style={{
                             textAlign: "right",
                             marginBottom: 100,
-                            marginTop: 50
+                            marginTop: 50,
                           }}
                         >
                           <button
@@ -683,7 +686,7 @@ function mapStateToProps(state) {
     addDocument: state.newDocumentCreation,
     submit_new_document: state.addNewDocument,
     submit_new_document_draft: state.addNewDocumentDraft,
-    _notification: state.notification
+    _notification: state.notification,
   };
 }
 
@@ -705,7 +708,7 @@ const mapDispatchToProps = {
   logDocumentCreator,
   clearAddNewDocumentState,
   addNewDocumentDraft,
-  notification
+  notification,
 };
 
 export default connect(

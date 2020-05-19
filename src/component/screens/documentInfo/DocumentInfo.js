@@ -33,38 +33,39 @@ function DocumentInfo(props) {
       const { token } = obj;
       axios
         .get(
-          "http://localhost:4000/dts/fetchDocument/" + props.match.params.doc_id
+          "http://10.10.10.16:4000/dts/fetchDocument/" +
+            props.match.params.doc_id
         )
-        .then(res => {
+        .then((res) => {
           setDocument(res.data);
 
           axios
             .get(
-              "http://localhost:4000/dts/fetchActionReq/" +
+              "http://10.10.10.16:4000/dts/fetchActionReq/" +
                 props.match.params.doc_id
             )
-            .then(res => {
+            .then((res) => {
               setActionRequired(res.data);
 
               axios
                 .get(
-                  "http://localhost:4000/dts/fetchDocumentDestination/" +
+                  "http://10.10.10.16:4000/dts/fetchDocumentDestination/" +
                     props.match.params.doc_id
                 )
-                .then(_destination => {
+                .then((_destination) => {
                   setDestination(_destination.data);
                 })
-                .catch(err => {
+                .catch((err) => {
                   const variant = "error";
                   props.enqueueSnackbar("Server Error", { variant });
                 });
             })
-            .catch(err => {
+            .catch((err) => {
               const variant = "error";
               props.enqueueSnackbar("Server Error", { variant });
             });
         })
-        .catch(err => {
+        .catch((err) => {
           const variant = "error";
           props.enqueueSnackbar("Server Error", { variant });
         });
@@ -80,7 +81,7 @@ function DocumentInfo(props) {
     if (canvas("#barcode", props.match.params.doc_id)) {
       const variant = "info";
       props.enqueueSnackbar("Barcode successfully downloaded...", {
-        variant
+        variant,
       });
     }
   };
@@ -102,7 +103,7 @@ function DocumentInfo(props) {
             paddingTop: 0,
             height: "100vh",
             overflow: "auto",
-            paddingBottom: 150
+            paddingBottom: 150,
           }}
         >
           {endSession && <Redirect to={"/"} />}
@@ -175,7 +176,7 @@ function DocumentInfo(props) {
               </h5>
               <br />
               <FormGroup>
-                {actionRequired.map(action => (
+                {actionRequired.map((action) => (
                   <CheckBox
                     checked={true}
                     key={action.document_action_req_id}
@@ -204,7 +205,7 @@ function DocumentInfo(props) {
                     &nbsp;Destination
                   </h5>
                   <br />
-                  {destination.map(res => (
+                  {destination.map((res) => (
                     <>
                       <Chip
                         key={res.destination}

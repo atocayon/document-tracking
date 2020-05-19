@@ -20,7 +20,13 @@ import { onChangeForwardDocument } from "../../../redux/actions/onChangForwardDo
 import { changeDocumentDestination } from "../../../redux/actions/onChangForwardDocument";
 import { trackDocument } from "../../../redux/actions/trackDocument";
 import DocumentTrack from "./DocumentTrack";
-
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Input from "@material-ui/core/Input";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
+import IconButton from "@material-ui/core/IconButton";
+import { resetTrackOrReceive } from "../../../redux/actions/resetTrackOrReceive";
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
   const [forwardDialog, setForwardDialog] = useState(false);
@@ -116,9 +122,7 @@ function Dashboard(props) {
   const handleTrackDocument = async () => {
     await props.trackDocument(props.trackingNum.documentTrackingNumber);
   };
-  const handleSearch = () => {
-    Reactotron.log("Clear");
-  };
+
 
   return (
     <Grid container spacing={3}>
@@ -159,16 +163,35 @@ function Dashboard(props) {
                     </div>
                   </div>
                   <div className={"col-md-6"}>
-                    <InputField
-                      id={"tackDocument"}
-                      name={"documentTrackingNumber"}
-                      label={"Document Tracking Number"}
-                      variant={"outlined"}
-                      onChange={props.documentTrackingNumber}
-                      value={props.trackingNum.documentTrackingNumber}
-                      type={"search"}
-                      onsearch={handleSearch}
-                    />
+                    <FormControl fullWidth variant="outlined">
+                      <InputLabel htmlFor="outlined-adornment-amount">
+                        Document Tracking Number
+                      </InputLabel>
+                      <Input
+                        id={"tackDocument"}
+                        name={"documentTrackingNumber"}
+                        label={"Document Tracking Number"}
+                        variant={"outlined"}
+                        onChange={props.documentTrackingNumber}
+                        value={props.trackingNum.documentTrackingNumber}
+                        type={"search"}
+                        endAdornment={
+                          props.documentInfo.documentId !== "" ||
+                          props.track.length > 0 ? (
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={props.resetTrackOrReceive}
+                                onMouseDown={props.resetTrackOrReceive}
+                                edge="end"
+                              >
+                                <HighlightOffRoundedIcon />
+                              </IconButton>
+                            </InputAdornment>
+                          ) : null
+                        }
+                      />
+                    </FormControl>
                   </div>
                   <div className={"col-md-4"}>
                     <button
@@ -256,6 +279,7 @@ const mapDispatchToProps = {
   onChangeForwardDocument,
   changeDocumentDestination,
   trackDocument,
+  resetTrackOrReceive,
 };
 
 export default connect(
