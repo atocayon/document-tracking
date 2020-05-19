@@ -27,6 +27,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
 import IconButton from "@material-ui/core/IconButton";
 import { resetTrackOrReceive } from "../../../redux/actions/resetTrackOrReceive";
+
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
   const [forwardDialog, setForwardDialog] = useState(false);
@@ -126,6 +127,7 @@ function Dashboard(props) {
 
   return (
     <Grid container spacing={3}>
+      <BarcodeReader onError={handleError} onScan={props.handleScan} />
       <PrimarySearchAppBar />
 
       <Grid item xs={2}>
