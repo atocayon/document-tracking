@@ -12,7 +12,7 @@ export function addNewDivision(data) {
   };
   return function (dispatch) {
     return axios
-      .post("http://" + localIpUrl() + ":4000/dts/addDivision", {
+      .post("http://10.10.10.16:4000/dts/addDivision", {
         department: data.department,
         depshort: data.depshort,
         payrollshort: data.payroll,

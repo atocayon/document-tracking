@@ -6,7 +6,7 @@ const localIpUrl = require("local-ip-url");
 export function fetchUserById(id) {
   return function (dispatch) {
     return axios
-      .get("http://" + localIpUrl() + ":4000/dts/user/" + parseInt(id))
+      .get("http://10.10.10.16:4000/dts/user/" + parseInt(id))
       .then((_user) => {
         dispatch({
           type: actionTypes.FETCH_USER_BY_ID,

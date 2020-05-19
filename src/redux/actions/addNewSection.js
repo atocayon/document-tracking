@@ -13,7 +13,7 @@ export function addNewSection(data) {
   Reactotron.log(_data);
   return function (dispatch) {
     return axios
-      .post("http://" + localIpUrl() + ":4000/dts/addNewSection", {
+      .post("http://10.10.10.16:4000/dts/addNewSection", {
         division: data.division,
         section: data.section,
         secshort: data.secshort,

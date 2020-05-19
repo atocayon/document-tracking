@@ -7,7 +7,7 @@ export function verifyToken(token) {
   Reactotron.log(token);
   return function (dispatch) {
     return axios
-      .get("http://localhost:4000/dts/verifyToken/" + token)
+      .get("http://10.10.10.16:4000/dts/verifyToken/" + token)
       .then((_token) => {
         dispatch({ type: actionTypes.VERIFY_TOKEN, data: _token.data });
       })

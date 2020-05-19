@@ -5,7 +5,7 @@ const localIpUrl = require("local-ip-url");
 export function fetchDocumentTypes() {
   return function (dispatch) {
     return axios
-      .get("http://" + localIpUrl() + ":4000/dts/documentType")
+      .get("http://10.10.10.16:4000/dts/documentType")
       .then((document) => {
         dispatch({
           type: actionTypes.FETCH_DOCUMENT_TYPES,

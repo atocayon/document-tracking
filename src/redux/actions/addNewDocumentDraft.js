@@ -12,7 +12,7 @@ export function addNewDocumentDraft(
 ) {
   return function (dispatch) {
     return axios
-      .post("http://" + localIpUrl() + ":4000/dts/draft", {
+      .post("http://10.10.10.16:4000/dts/draft", {
         documentID: documentID,
         creator: user_id,
         subject: subject,

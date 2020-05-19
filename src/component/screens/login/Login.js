@@ -13,7 +13,7 @@ import { login } from "../../../redux/actions/login";
 function Login(props) {
   const [login, setLogin] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
   const [error, setError] = useState({});
@@ -28,7 +28,7 @@ function Login(props) {
       if (props._login.success === true) {
         const variant = "info";
         props.enqueueSnackbar("Welcome " + props._login.name, {
-          variant
+          variant,
         });
         setRedirect(true);
       } else {
@@ -46,7 +46,7 @@ function Login(props) {
   const onChange = ({ target }) => {
     setLogin({
       ...login,
-      [target.name]: target.value
+      [target.name]: target.value,
     });
   };
 
@@ -60,26 +60,23 @@ function Login(props) {
     return Object.keys(_error).length === 0;
   };
 
-  const onSubmit = async event => {
+  const onSubmit = async (event) => {
     event.preventDefault();
 
     if (!formValidation()) {
       const variant = "error";
       props.enqueueSnackbar("Email and Password is required...", {
-        variant
+        variant,
       });
       return;
     }
 
     await props.login(login);
-
   };
 
   return (
     <>
-      {redirect && (
-        <Redirect to={"/"} />
-      )}
+      {redirect && <Redirect to={"/"} />}
       {!redirect && (
         <div className={"container"}>
           <div className={"row"}>
@@ -106,46 +103,45 @@ function Login(props) {
                       style={{
                         marginLeft: 50,
                         marginRight: 50,
-                        marginBottom: 50
+                        marginBottom: 50,
                       }}
                     >
-                      <h5>
-                        <span style={{ fontWeight: "bold" }}>Login</span>
+                      <form onSubmit={onSubmit}>
+                        <h5>
+                          <span style={{ fontWeight: "bold" }}>Login</span>
+                          <br />
+                          <small>
+                            to continue using the{" "}
+                            <span style={{ color: "#2196F3" }}>DTS</span>{" "}
+                          </small>
+                        </h5>
                         <br />
-                        <small>
-                          to continue using the{" "}
-                          <span style={{ color: "#2196F3" }}>DTS</span>{" "}
-                        </small>
-                      </h5>
-                      <br />
-                      <InputField
-                        id={"email"}
-                        label={"Email"}
-                        name={"email"}
-                        onChange={onChange}
-                        error={error.email}
-                        type={"email"}
-                      />
-                      <br />
-                      <br />
-                      <InputField
-                        id={"password"}
-                        label={"Password"}
-                        name={"password"}
-                        onChange={onChange}
-                        error={error.password}
-                        type={"password"}
-                      />
-                      <br />
-                      <br />
-                      <div style={{ textAlign: "right", marginTop: 50 }}>
-                        <button
-                          className={"btn btn-primary"}
-                          onClick={onSubmit}
-                        >
-                          Login
-                        </button>
-                      </div>
+                        <InputField
+                          id={"email"}
+                          label={"Email"}
+                          name={"email"}
+                          onChange={onChange}
+                          error={error.email}
+                          type={"email"}
+                        />
+                        <br />
+                        <br />
+                        <InputField
+                          id={"password"}
+                          label={"Password"}
+                          name={"password"}
+                          onChange={onChange}
+                          error={error.password}
+                          type={"password"}
+                        />
+                        <br />
+                        <br />
+                        <div style={{ textAlign: "right", marginTop: 50 }}>
+                          <button className={"btn btn-primary"} type={"submit"}>
+                            Login
+                          </button>
+                        </div>
+                      </form>
                     </div>
                   </div>
                 </div>
@@ -161,12 +157,12 @@ function Login(props) {
 
 function mapStateToProps(state) {
   return {
-    _login: state.login
+    _login: state.login,
   };
 }
 
 const mapDispatchToProps = {
-  login
+  login,
 };
 
 export default connect(

@@ -12,7 +12,7 @@ export function afterDocumentReceive(
 ) {
   return function (dispatch) {
     return axios
-      .post("http://" + localIpUrl() + ":4000/dts/afterDocumentReceive", {
+      .post("http://10.10.10.16:4000/dts/afterDocumentReceive", {
         documentId,
         user_id,
         remarks,

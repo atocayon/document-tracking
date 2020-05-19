@@ -5,7 +5,7 @@ const localIpUrl = require("local-ip-url");
 export function addNewDocumentType(data) {
   return function (dispatch) {
     return axios
-      .post("http://" + localIpUrl() + ":4000/dts/addDocumentType", { ...data })
+      .post("http://10.10.10.16:4000/dts/addDocumentType", { ...data })
       .then((res) => {
         dispatch({ type: actionTypes.ADD_DOCUMENT_TYPE, data });
       })

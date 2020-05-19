@@ -13,7 +13,7 @@ export function addNewDocument(
 ) {
   return function (dispatch) {
     return axios
-      .post("http://" + localIpUrl() + ":4000/dts/addNewDocument", {
+      .post("http://10.10.10.16:4000/dts/addNewDocument", {
         documentID: documentID,
         creator: user_id,
         subject: subject,
