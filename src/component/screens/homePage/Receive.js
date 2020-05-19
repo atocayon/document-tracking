@@ -15,16 +15,6 @@ export default function Receive(props) {
           className={"col-md-8"}
           style={{ overflow: "auto", paddingBottom: 100 }}
         >
-          <div style={{ textAlign: "right" }}>
-            <button
-              className={"btn btn-danger btn-sm"}
-              title={"Close"}
-              onClick={props.clearReceiveDocument}
-            >
-              &times;
-            </button>
-          </div>
-
           <br />
           <div className={"col-md-4"}>
             <InputField

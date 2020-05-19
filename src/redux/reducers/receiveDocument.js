@@ -10,7 +10,7 @@ const defaultState = {
   note: "",
   date_time_created: "",
   date_time_forwarded: "",
-  action_req: []
+  action_req: [],
 };
 
 export default function receiveDocument(state = defaultState, action) {
@@ -25,7 +25,7 @@ export default function receiveDocument(state = defaultState, action) {
         destination_type: action.data.destinationType,
         note: action.data.note,
         date_time_created: action.data.date_time_created,
-        date_time_forwarded: action.data.date_time_forwarded
+        date_time_forwarded: action.data.date_time_forwarded,
       });
 
     case actionTypes.ACTION_REQ:
@@ -42,7 +42,7 @@ export default function receiveDocument(state = defaultState, action) {
         note: "",
         date_time_created: "",
         date_time_forwarded: "",
-        action_req: []
+        action_req: [],
       });
     default:
       return state;

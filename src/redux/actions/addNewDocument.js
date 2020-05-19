@@ -20,7 +20,7 @@ export function addNewDocument(
         doc_type: documentType,
         note: note,
         action_req: action_req,
-        documentLogs: destination,
+        documentLogs: destination
       })
       .then((res) => {
         dispatch({ type: actionTypes.ADD_DOCUMENT, data: "success" });

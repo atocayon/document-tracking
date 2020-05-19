@@ -20,7 +20,10 @@ export function login(data) {
         dispatch({ type: actionTypes.USER_LOGIN, data: res.data });
       })
       .catch((err) => {
-        throw err;
+        dispatch({
+          type: actionTypes.USER_LOGIN,
+          data: { success: false },
+        });
       });
   };
 }

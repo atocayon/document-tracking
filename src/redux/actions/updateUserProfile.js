@@ -13,7 +13,7 @@ export function updateUserProfile(data) {
     email: data.email,
     secid: data.secid,
     position: data.position,
-    role: data.role,
+    role: data.role_id.toString(),
   };
   return function (dispatch) {
     return axios
@@ -27,7 +27,7 @@ export function updateUserProfile(data) {
           email: data.email,
           section: data.secid,
           position: data.position,
-          role: data.role,
+          role: data.role_id,
         }
       )
       .then((_res) => {

@@ -28,7 +28,7 @@ function UserManagement(props) {
     status: "",
     name: "",
     id: null,
-    content: ""
+    content: "",
   });
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -40,12 +40,12 @@ function UserManagement(props) {
     depshort: "",
     department: "",
     id: null,
-    name: ""
+    name: "",
   });
 
   const [error, setError] = useState({});
   const [transfer, setTransfer] = useState({
-    section: ""
+    section: "",
   });
   const [open, setOpen] = useState(true);
 
@@ -57,33 +57,37 @@ function UserManagement(props) {
       setToken(token);
 
       axios
-        .get("http://localhost:4000/dts/user/" + token)
-        .then(_user => {
+        .get("http://10.10.10.16:4000/dts/user/" + token)
+        .then((_user) => {
           // Reactotron.log(_user);
           let section = _user.data.secid;
           setUserRole(_user.data.role);
 
           axios
-            .get("http://localhost:4000/dts/sectionUser/" + section.toString())
-            .then(users => {
+            .get(
+              "http://10.10.10.16:4000/dts/sectionUser/" + section.toString()
+            )
+            .then((users) => {
               setSectionUsers(users.data);
 
               axios
-                .get("http://localhost:4000/dts/sections")
-                .then(res => {
+                .get("http://10.10.10.16:4000/dts/sections")
+                .then((res) => {
                   setSections(res.data);
                 })
-                .catch(err => {
+                .catch((err) => {
                   const variant = "error";
-                  props.enqueueSnackbar("Error on fetching sections", { variant });
+                  props.enqueueSnackbar("Error on fetching sections", {
+                    variant,
+                  });
                 });
             })
-            .catch(err => {
+            .catch((err) => {
               const variant = "error";
               props.enqueueSnackbar("Error on fetching users", { variant });
             });
         })
-        .catch(err => {
+        .catch((err) => {
           const variant = "error";
           props.enqueueSnackbar("Error on fetching users", { variant });
         });
@@ -92,24 +96,24 @@ function UserManagement(props) {
     setEndSession(!(obj && obj.token));
   }, []);
 
-  const handleAccountRole = val => {
+  const handleAccountRole = (val) => {
     axios
-      .post("http://localhost:4000/dts/updateRole", {
+      .post("http://10.10.10.16:4000/dts/updateRole", {
         role: val.status,
-        id: val.id
+        id: val.id,
       })
-      .then(res => {
+      .then((res) => {
         const variant = "info";
         props.enqueueSnackbar(val.name + " role updated...", { variant });
         window.location.reload();
       })
-      .catch(err => {
+      .catch((err) => {
         const variant = "error";
         props.enqueueSnackbar(err, { variant });
       });
   };
 
-  const handleTransferOffice = val => {
+  const handleTransferOffice = (val) => {
     setTransderOfficeDialog({
       ...transferOfficeDialog,
       open: true,
@@ -118,15 +122,14 @@ function UserManagement(props) {
       depshort: val.depshort,
       department: val.department,
       id: val.id,
-      name: val.name
+      name: val.name,
     });
   };
 
   const handleSelectOnChangeTransferOffice = ({ target }) => {
-
     setTransfer({
       ...transfer,
-      [target.name]: target.value
+      [target.name]: target.value,
     });
   };
 
@@ -140,7 +143,7 @@ function UserManagement(props) {
     return Object.keys(_error).length === 0;
   };
 
-  const handleConfirmTransferOffice = event => {
+  const handleConfirmTransferOffice = (event) => {
     event.preventDefault();
 
     if (!validateTransferOffice()) {
@@ -151,26 +154,26 @@ function UserManagement(props) {
 
     setTransderOfficeDialog({
       ...transferOfficeDialog,
-      open: false
+      open: false,
     });
 
     axios
-      .post("http://localhost:4000/dts/transferOffice", {
+      .post("http://10.10.10.16:4000/dts/transferOffice", {
         id: transferOfficeDialog.id,
-        section: transfer.section
+        section: transfer.section,
       })
-      .then(res => {
+      .then((res) => {
         const variant = "success";
         props.enqueueSnackbar("Office Transfer Success...", { variant });
         window.location.reload();
       })
-      .catch(err => {
+      .catch((err) => {
         const variant = "error";
         props.enqueueSnackbar(err, { variant });
       });
   };
 
-  const handleAccountStatus = val => {
+  const handleAccountStatus = (val) => {
     let m = val.status === "2" ? "Deactivate" : "Activate";
     setOpenDialog({
       ...openDialog,
@@ -181,28 +184,28 @@ function UserManagement(props) {
       content:
         "When you deactivate someone's account he/she will not be able to use this system. " +
         "If you unintentionally deactivated someone or you want them to have access again on this system, " +
-        "you can activate them anytime."
+        "you can activate them anytime.",
     });
   };
 
   const handleClose = () => {
     setOpenDialog({
       ...openDialog,
-      open: false
+      open: false,
     });
 
     setTransderOfficeDialog({
       ...openDialog,
-      open: false
+      open: false,
     });
 
     setTransfer({
       ...transfer,
-      section: ""
+      section: "",
     });
   };
 
-  const handleAccountDeletion = val => {
+  const handleAccountDeletion = (val) => {
     setOpenDialog({
       ...openDialog,
       open: true,
@@ -210,22 +213,22 @@ function UserManagement(props) {
       name: "Delete " + val.name + " ?",
       id: val.id,
       content:
-        "If this action is unintended, you can still retrieve this account in Deleted Accounts section in left drawer."
+        "If this action is unintended, you can still retrieve this account in Deleted Accounts section in left drawer.",
     });
   };
 
   const handleConfirm = () => {
     axios
-      .post("http://localhost:4000/dts/updateStatus", {
+      .post("http://10.10.10.16:4000/dts/updateStatus", {
         status: openDialog.status,
-        id: openDialog.id
+        id: openDialog.id,
       })
-      .then(res => {
+      .then((res) => {
         const variant = "warning";
         props.enqueueSnackbar(openDialog.name + " " + res, { variant });
         window.location.reload();
       })
-      .catch(err => {
+      .catch((err) => {
         const variant = "error";
         props.enqueueSnackbar(err, { variant });
       });
@@ -240,45 +243,45 @@ function UserManagement(props) {
       <PrimarySearchAppBar />
       <Grid item xs={2}>
         <SideBarNavigation
-            open={open}
-            setOpen={setOpen}
-            handleClick={handleClick}
+          open={open}
+          setOpen={setOpen}
+          handleClick={handleClick}
         />
       </Grid>
       <Grid item xs={8}>
         {openDialog && (
-            <DialogComponent
-                fullscreen={fullScreen}
-                openDialog={openDialog.open}
-                title={openDialog.name}
-                content={openDialog.content}
-                handleClose={handleClose}
-                handleConfirm={handleConfirm}
-            />
+          <DialogComponent
+            fullscreen={fullScreen}
+            openDialog={openDialog.open}
+            title={openDialog.name}
+            content={openDialog.content}
+            handleClose={handleClose}
+            handleConfirm={handleConfirm}
+          />
         )}
         {transferOfficeDialog && (
-            <TransferOfficeDialog
-                fullscreen={fullScreen}
-                transferOfficeDialog={transferOfficeDialog}
-                sections={sections}
-                transfer={transfer}
-                handleClose={handleClose}
-                handleConfirmTransferOffice={handleConfirmTransferOffice}
-                handleSelectOnChangeTransferOffice={
-                  handleSelectOnChangeTransferOffice
-                }
-                error={error}
-            />
+          <TransferOfficeDialog
+            fullscreen={fullScreen}
+            transferOfficeDialog={transferOfficeDialog}
+            sections={sections}
+            transfer={transfer}
+            handleClose={handleClose}
+            handleConfirmTransferOffice={handleConfirmTransferOffice}
+            handleSelectOnChangeTransferOffice={
+              handleSelectOnChangeTransferOffice
+            }
+            error={error}
+          />
         )}
         {endSesion && <Redirect to={"/"} />}
         <Paper
-            elevation={3}
-            style={{
-              marginBottom: 0,
-              bottom: 0,
-              height: "100vh",
-              marginTop: 70
-            }}
+          elevation={3}
+          style={{
+            marginBottom: 0,
+            bottom: 0,
+            height: "100vh",
+            marginTop: 70,
+          }}
         >
           <div className={"jumbotron"} style={{ padding: 50 }}>
             <div className={"row"}>
@@ -294,9 +297,7 @@ function UserManagement(props) {
                   </div>
                 </div>
               </div>
-              <div className={"col-md-10"}>
-                {/*<h5>User Management</h5>*/}
-              </div>
+              <div className={"col-md-10"}>{/*<h5>User Management</h5>*/}</div>
             </div>
           </div>
 
@@ -306,7 +307,10 @@ function UserManagement(props) {
               <div style={{ marginBottom: 20 }}>
                 <div className={"row"}>
                   <div className={"col-md-6"}>
-                    <Link to={"/registration"} className={"btn btn-sm btn-info"}>
+                    <Link
+                      to={"/registration"}
+                      className={"btn btn-sm btn-info"}
+                    >
                       <AddIcon />
                     </Link>
                   </div>
@@ -317,9 +321,9 @@ function UserManagement(props) {
                       </Grid>
                       <Grid item>
                         <InputField
-                            id={"search"}
-                            name={"search"}
-                            label={"Search"}
+                          id={"search"}
+                          name={"search"}
+                          label={"Search"}
                         />
                       </Grid>
                     </Grid>
@@ -328,15 +332,15 @@ function UserManagement(props) {
               </div>
 
               {sectionUsers.length > 0 && (
-                  <ListOfUsers
-                      sectionUsers={sectionUsers}
-                      token={token}
-                      userRole={userRole}
-                      handleAccountRole={handleAccountRole}
-                      handleAccountDeletion={handleAccountDeletion}
-                      handleAccountStatus={handleAccountStatus}
-                      handleTransferOffice={handleTransferOffice}
-                  />
+                <ListOfUsers
+                  sectionUsers={sectionUsers}
+                  token={token}
+                  userRole={userRole}
+                  handleAccountRole={handleAccountRole}
+                  handleAccountDeletion={handleAccountDeletion}
+                  handleAccountStatus={handleAccountStatus}
+                  handleTransferOffice={handleTransferOffice}
+                />
               )}
             </div>
             <div className={"col-md-1"}></div>
@@ -344,7 +348,6 @@ function UserManagement(props) {
         </Paper>
       </Grid>
       <Grid item xs={2}></Grid>
-
     </Grid>
   );
 }

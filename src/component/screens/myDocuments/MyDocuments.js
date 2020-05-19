@@ -23,7 +23,7 @@ function MyDocuments(props) {
     if (obj && obj.token) {
       const { token } = obj;
       axios
-        .get("http://localhost:4000/dts/fetchUserDocuments/" + token)
+        .get("http://10.10.10.16:4000/dts/fetchUserDocuments/" + token)
         .then(res => {
           Reactotron.log(res);
           setDocuments(res.data);
