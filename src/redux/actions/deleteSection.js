@@ -5,7 +5,7 @@ const localIpUrl = require("local-ip-url");
 export function deleteSection(id) {
   return function (dispatch) {
     return axios
-      .post("http://" + localIpUrl() + ":4000/dts/deleteSection/" + id)
+      .post("http://10.10.10.16:4000/dts/deleteSection/" + id)
       .then((res) => {
         dispatch({ type: actionTypes.DELETE_SECTION, data: id });
       })

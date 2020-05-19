@@ -14,10 +14,7 @@ export function updateDivision(data) {
   return function (dispatch) {
     return axios
       .post(
-        "http://" +
-          localIpUrl() +
-          ":4000/dts/updateDivision/" +
-          parseInt(data.depid),
+        "http://10.10.10.16:4000/dts/updateDivision/" + parseInt(data.depid),
         {
           department: data.department,
           depshort: data.depshort,

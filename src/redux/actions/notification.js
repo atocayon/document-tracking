@@ -5,7 +5,7 @@ const localIpUrl = require("local-ip-url");
 export function notification(section) {
   return function (dispatch) {
     return axios
-      .get("http://" + localIpUrl() + ":4000/dts/notification/" + section)
+      .get("http://10.10.10.16:4000/dts/notification/" + section)
       .then((res) => {
         dispatch({ type: actionTypes.NOTIFICATION, data: res.data });
       })

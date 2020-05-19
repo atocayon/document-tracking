@@ -24,9 +24,7 @@ export function receiveDocument(documentTracking, user_id, user_section) {
           });
           axios
             .get(
-              "http://" +
-                localIpUrl() +
-                ":4000/dts/fetchActionReq/" +
+              "http://10.10.10.16:4000/dts/fetchActionReq/" +
                 res.data.documentId
             )
             .then((action_req) => {

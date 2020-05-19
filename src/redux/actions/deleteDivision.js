@@ -5,7 +5,7 @@ const localIpUrl = require("local-ip-url");
 export function deleteDivision(id) {
   return function (dispatch) {
     return axios
-      .post("http://" + localIpUrl() + ":4000/dts/deleteDivision/" + id)
+      .post("http://10.10.10.16:4000/dts/deleteDivision/" + id)
       .then((res) => {
         if (res.status === 200) {
           dispatch({

@@ -18,10 +18,7 @@ export function updateUserProfile(data) {
   return function (dispatch) {
     return axios
       .post(
-        "http://" +
-          localIpUrl() +
-          ":4000/dts/updateUser/" +
-          parseInt(data.user_id),
+        "http://10.10.10.16:4000/dts/updateUser/" + parseInt(data.user_id),
         {
           employeeId: data.employeeId,
           name: data.name,

@@ -5,7 +5,7 @@ const localIpUrl = require("local-ip-url");
 export function fetchAllSections() {
   return function (dispatch) {
     return axios
-      .get("http://" + localIpUrl() + ":4000/dts/sections")
+      .get("http://10.10.10.16:4000/dts/sections")
       .then((_sections) => {
         const section = [];
         const internalDestination = [];

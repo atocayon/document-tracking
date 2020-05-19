@@ -6,7 +6,7 @@ const localIpUrl = require("local-ip-url");
 export function fetchCurrentSystemUser(token) {
   return function (dispatch) {
     return axios
-      .get("http://" + localIpUrl() + ":4000/dts/user/" + token)
+      .get("http://10.10.10.16:4000/dts/user/" + token)
       .then((_user) => {
         Reactotron.log(_user);
         dispatch({

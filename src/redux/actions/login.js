@@ -13,7 +13,7 @@ export function login(data) {
   return function (dispatch) {
     return axios
       .post(
-        "http://localhost:4000/dts/login/" + data.email + "/" + data.password
+        "http://10.10.10.16:4000/dts/login/" + data.email + "/" + data.password
       )
       .then((res) => {
         setInStorage("documentTracking", { token: res.data.token });
