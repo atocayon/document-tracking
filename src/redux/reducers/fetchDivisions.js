@@ -4,7 +4,7 @@ const defaultState = [];
 export default function fetchDivisions(state = defaultState, action) {
   switch (action.type) {
     case actionTypes.FETCH_DIVISIONS:
-      return [...state, ...action.data];
+      return [...action.data];
     case actionTypes.ADD_DIVISION:
       return [...state, { ...action._data }];
     case actionTypes.UPDATE_DIVISION:

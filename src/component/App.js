@@ -24,7 +24,7 @@ import { getFromStorage } from "./storage";
 import { withSnackbar } from "notistack";
 import Drafts from "./screens/drafts/Drafts";
 import DocumentInfo from "./screens/documentInfo/DocumentInfo";
-
+import PendingDocumentInfo from "./screens/pendingForRelease/PendingDocumentInfo";
 function App(props) {
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
@@ -56,7 +56,7 @@ function App(props) {
           <Route path={"/registration"} component={RegistrationForm} />
           <Route path={"/drafts"} component={Drafts} />
           <Route path={"/doc/:doc_id"} component={DocumentInfo} />
-
+          <Route path={"/pending_doc/:doc_id"} component={PendingDocumentInfo} />
 
           <Route component={NotFoundPage} />
         </Switch>

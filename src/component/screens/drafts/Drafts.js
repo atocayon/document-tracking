@@ -93,8 +93,9 @@ function Draft(props) {
               <div className={"col-md-8"}>
                 <List>
                   {drafts.length > 0 &&
-                    drafts.map((doc) => (
+                    drafts.map((doc, index) => (
                       <Link
+                        key={index}
                         to={"/addDocument/" + doc.documentID}
                         style={{ textDecoration: "none" }}
                       >

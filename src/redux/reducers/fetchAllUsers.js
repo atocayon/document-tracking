@@ -5,7 +5,7 @@ const defaultState = [];
 export default function fetchAllUsers(state = defaultState, action) {
   switch (action.type) {
     case actionTypes.FETCH_ALL_USER:
-      return [...state, ...action.data];
+      return [...action.data];
     case actionTypes.POP_USER:
       return state.filter((data) => data.user_id !== action.data);
     case actionTypes.ADD_USER:
