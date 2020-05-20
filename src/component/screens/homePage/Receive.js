@@ -14,7 +14,7 @@ export default function Receive(props) {
         <div
           className={"col-md-8"}
           style={{ overflow: "auto", paddingBottom: 100 }}
-        >
+          >
           <br />
           <div className={"col-md-4"}>
             <InputField

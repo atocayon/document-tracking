@@ -8,12 +8,12 @@ import { connect } from "react-redux";
 import { documentTrackingNumber } from "../../../redux/actions/documentTrackingNumber";
 import { withSnackbar } from "notistack";
 import { receiveDocument } from "../../../redux/actions/receiveDocument";
-import Receive from "./Receive";
+
 import { handleScan } from "../../../redux/actions/handleScan";
 import BarcodeReader from "react-barcode-reader";
 import Reactotron from "reactotron-react-js";
 import { clearReceiveDocument } from "../../../redux/actions/receiveDocument";
-import Forward from "./Forward";
+
 import { afterDocumentReceive } from "../../../redux/actions/afterDocumentReceive";
 import { onChangeForwardDocument } from "../../../redux/actions/onChangForwardDocument";
 // import { notification } from "../../../redux/actions/notification";
@@ -33,37 +33,20 @@ function Dashboard(props) {
   const [forwardDialog, setForwardDialog] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
   useEffect(() => {
-    if (props.documentInfo.documentId !== "") {
-      const variant = "info";
-      props.enqueueSnackbar(
-        "NMP| Document with subject " +
-          props.documentInfo.subject +
-          " received successfully.",
-        {
-          variant,
-        }
-      );
-    }
-
-    if (props.action_after !== "") {
-      if (props.action_after === "forward") {
+    if (props.receive !== "") {
+      if (props.receive === "success") {
         const variant = "info";
-        props.enqueueSnackbar("Document successfully forwarded...", {
+        props.enqueueSnackbar("NMP| Document received successfully...", {
+          variant,
+        });
+      } else {
+        const variant = "error";
+        props.enqueueSnackbar("Server error...", {
           variant,
         });
       }
-
-      if (props.action_after === "pending") {
-        const variant = "warning";
-        props.enqueueSnackbar(
-          "Document successfully set as pending in your office...",
-          {
-            variant,
-          }
-        );
-      }
     }
-  }, [props.documentInfo.documentId, props.action_after]);
+  }, [props.receive]);
 
   const handleClick = () => {
     setOpen(!open);
@@ -124,10 +107,18 @@ function Dashboard(props) {
     await props.trackDocument(props.trackingNum.documentTrackingNumber);
   };
 
+  const handleScanning = async (data) => {
+    await props.handleScan(
+      data,
+      props.trackingNum.documentTrackingNumber,
+      props.user.user_id,
+      props.user.secshort
+    );
+  };
 
   return (
     <Grid container spacing={3}>
-      <BarcodeReader onError={handleError} onScan={props.handleScan} />
+      <BarcodeReader onError={handleError} onScan={handleScanning} />
       <PrimarySearchAppBar />
 
       <Grid item xs={2}>
@@ -164,7 +155,7 @@ function Dashboard(props) {
                       </div>
                     </div>
                   </div>
-                  <div className={"col-md-6"}>
+                  <div className={"col-md-8"}>
                     <FormControl fullWidth variant="outlined">
                       <InputLabel htmlFor="outlined-adornment-amount">
                         Document Tracking Number
@@ -178,8 +169,7 @@ function Dashboard(props) {
                         value={props.trackingNum.documentTrackingNumber}
                         type={"search"}
                         endAdornment={
-                          props.documentInfo.documentId !== "" ||
-                          props.track.length > 0 ? (
+                          props.receive !== "" || props.track.length > 0 ? (
                             <InputAdornment position="end">
                               <IconButton
                                 aria-label="toggle password visibility"
@@ -190,12 +180,12 @@ function Dashboard(props) {
                                 <HighlightOffRoundedIcon />
                               </IconButton>
                             </InputAdornment>
-                          ) : null
+                          ) : ("")
                         }
                       />
                     </FormControl>
                   </div>
-                  <div className={"col-md-4"}>
+                  {/* <div className={"col-md-4"}>
                     <button
                       className={"btn btn-lg btn-info"}
                       onClick={handleTrackDocument}
@@ -209,7 +199,7 @@ function Dashboard(props) {
                     >
                       Receive
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
@@ -217,36 +207,14 @@ function Dashboard(props) {
                 <div className={"col-md-12"}>
                   <BarcodeReader onError={handleError} onScan={scan} />
 
-                  {props.documentInfo.documentId === "" &&
-                  props.track.length === 0 ? (
+                  {props.receive === "" && props.track.length === 0 ? (
                     <div style={{ textAlign: "center", marginTop: "30vh" }}>
                       <h6 style={{ color: "#9E9E9E" }}>
-                        Document track / information will show here
+                        Scan the barcode to receive document and the document
+                        track will show here
                       </h6>
                     </div>
                   ) : null}
-
-                  {props.documentInfo.documentId !== "" && (
-                    <>
-                      <Receive
-                        documentInfo={props.documentInfo}
-                        clearReceiveDocument={props.clearReceiveDocument}
-                        handleSetForwardDialog={handleSetForwardDialog}
-                        handlePendingDocument={handlePendingDocument}
-                      />
-
-                      <Forward
-                        open={forwardDialog}
-                        handleClose={handleSetForwardDialog}
-                        sections={props.sections}
-                        handleChange={handleChange}
-                        selectedValue={selectedValue}
-                        forwardDocument={props.forwardDocument}
-                        onChangeForwardDocument={props.onChangeForwardDocument}
-                        handleForwardDocument={handleForwardDocument}
-                      />
-                    </>
-                  )}
 
                   {props.track.length > 0 && (
                     <DocumentTrack track={props.track} />
@@ -265,9 +233,7 @@ function Dashboard(props) {
 function mapStateToProps(state) {
   return {
     trackingNum: state.documentTrackingNumber,
-    documentInfo: state.receiveDocument,
-    forwardDocument: state.forwardDocument,
-    action_after: state.afterDocumentReceive,
+    receive: state.receiveDocument,
     track: state.trackDocument,
   };
 }
@@ -276,10 +242,6 @@ const mapDispatchToProps = {
   documentTrackingNumber,
   receiveDocument,
   handleScan,
-  clearReceiveDocument,
-  afterDocumentReceive,
-  onChangeForwardDocument,
-  changeDocumentDestination,
   trackDocument,
   resetTrackOrReceive,
 };

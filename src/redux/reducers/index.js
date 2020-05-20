@@ -28,6 +28,8 @@ import notification from "./notification";
 import forwardDocument from "./forwardDocument";
 import afterDocumentReceive from "./afterDocumentReceive";
 import trackDocument from "./trackDocument";
+import fetchPendingDocuments from "./fetchPendingDocuments";
+import fetchPendingDocumentInfo from "./fetchPendingDocumentInfo";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -57,7 +59,9 @@ const rootReducer = combineReducers({
   notification:notification,
   forwardDocument: forwardDocument,
   afterDocumentReceive: afterDocumentReceive,
-  trackDocument:trackDocument
+  trackDocument:trackDocument,
+  fetchPendingDocuments: fetchPendingDocuments,
+  fetchPendingDocumentInfo:fetchPendingDocumentInfo
 });
 
 export default rootReducer;

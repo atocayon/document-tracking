@@ -4,7 +4,7 @@ const defaultState = [];
 export default function fetchSectionsList(state = defaultState, action) {
   switch (action.type) {
     case actionTypes.FETCH_SECTIONS_LIST:
-      return [...state, ...action.data];
+      return [...action.data];
     case actionTypes.ADD_SECTION:
       return [...state, { ...action._data }];
     case actionTypes.UPDATE_SECTION:
@@ -13,7 +13,7 @@ export default function fetchSectionsList(state = defaultState, action) {
           return Object.assign({}, _section, {
             divid: action.data.divid,
             section: action.data.section,
-            secshort: action.data.secshort
+            secshort: action.data.secshort,
           });
         }
 
@@ -21,7 +21,7 @@ export default function fetchSectionsList(state = defaultState, action) {
       });
 
     case actionTypes.DELETE_SECTION:
-      return state.filter(data => data.secid !== action.data);
+      return state.filter((data) => data.secid !== action.data);
     default:
       return state;
   }

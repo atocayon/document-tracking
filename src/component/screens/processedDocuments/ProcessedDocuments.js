@@ -1,7 +1,7 @@
 import React from "react";
-
+import Grid from "@material-ui/core/Grid"
 export default function ProcessedDocuments(){
     return(
-        <h1>Received And Released Documents</h1>
+        <Grid></Grid>
     );
 }

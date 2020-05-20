@@ -11,7 +11,7 @@ function DocumentTrack(props) {
   return (
     <div className={"row"}>
       <div className={"col-md-2"}></div>
-      <div className={"col-md-8"}>
+      <div className={"col-md-8"} style={{ paddingBottom: 100 }}>
         <Stepper orientation="vertical">
           {props.track.map((doc) => (
             <Step active={true}>
@@ -23,7 +23,7 @@ function DocumentTrack(props) {
               </StepLabel>
               <StepContent last={false}>
                 <Typography>
-                  {doc.status} by {doc.name}&nbsp;
+                  {doc.status === "pending" ? doc.status + " on " + doc.name : doc.status + " by " + doc.name}&nbsp;
                   {doc.status === "forwarded" &&
                     "to " + doc.destination + " (" + doc.destinationType + ")"}
                   <br />

@@ -5,7 +5,7 @@ const defaultState = [];
 export default function notification(state = defaultState, action) {
   switch (action.type) {
     case actionTypes.NOTIFICATION:
-      return [...state, ...action.data ];
+      return [...action.data ];
     case actionTypes.CLEAR_NOTIFICATION:
       return state.filter(data => data.documentId === action.data);
     default:
