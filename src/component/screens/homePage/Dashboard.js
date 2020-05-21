@@ -26,6 +26,7 @@ import { resetTrackOrReceive } from "../../../redux/actions/resetTrackOrReceive"
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
   const [selectedValue, setSelectedValue] = useState("");
+  const [trackOrSearchOnly, setTrackOrSearchOnly] = useState(false);
   useEffect(() => {
     if (props.receive !== "") {
       if (props.receive === "success") {
@@ -71,12 +72,23 @@ function Dashboard(props) {
   };
 
   const handleScanning = async (data) => {
-    await props.handleScan(
-      data,
-      props.trackingNum.documentTrackingNumber,
-      props.user.user_id,
-      props.user.secshort
-    );
+    if (!trackOrSearchOnly){
+      await props.handleScanAndReceive(
+          data,
+          props.trackingNum.documentTrackingNumber,
+          props.user.user_id,
+          props.user.secshort
+      );
+    }
+
+    if (trackOrSearchOnly){
+
+    }
+
+  };
+
+  const handleTrackOrSearchOnly = async () => {
+    setTrackOrSearchOnly(!trackOrSearchOnly);
   };
 
   return (
@@ -121,12 +133,12 @@ function Dashboard(props) {
                   <div className={"col-md-8"}>
                     <FormControl fullWidth variant="outlined">
                       <InputLabel htmlFor="outlined-adornment-amount">
-                        Document Tracking Number
+                        {trackOrSearchOnly ? "Search / Tracking":"Document Tracking Number"}
                       </InputLabel>
                       <Input
                         id={"tackDocument"}
                         name={"documentTrackingNumber"}
-                        label={"Document Tracking Number"}
+                        label={trackOrSearchOnly ? "Search / Tracking":"Tracking Number"}
                         variant={"outlined"}
                         onChange={props.documentTrackingNumber}
                         value={props.trackingNum.documentTrackingNumber}
@@ -150,21 +162,18 @@ function Dashboard(props) {
                       />
                     </FormControl>
                   </div>
-                  {/* <div className={"col-md-4"}>
-                    <button
-                      className={"btn btn-lg btn-info"}
-                      onClick={handleTrackDocument}
-                    >
-                      Track
-                    </button>
-                    &nbsp;&nbsp;&nbsp;
-                    <button
-                      className={"btn btn-lg btn-outline-info"}
-                      onClick={handleReceiveDocument}
-                    >
-                      Receive
-                    </button>
-                  </div> */}
+                  <div className={"col-md-2"}>
+                    {trackOrSearchOnly && (
+                        <button
+                            className={"btn btn-lg btn-info"}
+                            // onClick={handleTrackDocument}
+                        >
+                          Search
+                        </button>
+                    )}
+
+
+                  </div>
                 </div>
               </div>
 
@@ -172,8 +181,8 @@ function Dashboard(props) {
                 <div className={"col-md-12"}>
                   <BarcodeReader onError={handleError} onScan={scan} />
 
-                  {props.receive === "" && props.track.length === 0 ? (
-                    <div style={{ textAlign: "center", marginTop: "30vh" }}>
+                  {!trackOrSearchOnly && props.receive === "" && props.track.length === 0 ? (
+                    <div style={{ textAlign: "center", marginTop: "25vh" }}>
                       <h6 style={{ color: "#9E9E9E" }}>
                         Scan the barcode to receive document and the document
                         track will show here
@@ -182,11 +191,28 @@ function Dashboard(props) {
                       <button
                         className={"btn btn-sm"}
                         style={{ color: "#2196F3" }}
+                        onClick={handleTrackOrSearchOnly}
                       >
                         Click here to track or search only the document
                       </button>
                     </div>
                   ) : null}
+
+                  {trackOrSearchOnly && (
+                      <div style={{ textAlign: "center", marginTop: "25vh" }}>
+                        <h6 style={{ color: "#9E9E9E" }}>
+                          Scan the barcode to track documents or type something and press the search button to search
+                        </h6>
+                        <br />
+                        <button
+                            className={"btn btn-sm"}
+                            style={{ color: "#2196F3" }}
+                            onClick={handleTrackOrSearchOnly}
+                        >
+                          Click here to track and receive a document
+                        </button>
+                      </div>
+                  )}
 
                   {props.track.length > 0 && (
                     <DocumentTrack track={props.track} />
@@ -213,7 +239,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   documentTrackingNumber,
   receiveDocument,
-  handleScan,
+  handleScanAndReceive: handleScan,
   trackDocument,
   resetTrackOrReceive,
 };
