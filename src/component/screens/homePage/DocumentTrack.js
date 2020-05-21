@@ -27,10 +27,14 @@ function DocumentTrack(props) {
                   {doc.status === "completed" &&
                     "Document is now " + doc.status + " by " + doc.name}
                   {doc.status === "created" && doc.status + " by " + doc.name}
-                    {doc.status === "receive" && doc.status + " by " + doc.name}
-                  &nbsp;
+                  {doc.status === "receive" && doc.status + " by " + doc.name}
                   {doc.status === "forwarded" &&
-                    "to " + doc.destination + " (" + doc.destinationType + ")"}
+                    doc.status +
+                      " to " +
+                      doc.destination +
+                      " (" +
+                      doc.destinationType +
+                      ")"}
                   <br />
                   {doc.remarks !== "none" && doc.remarks}
                   <br />

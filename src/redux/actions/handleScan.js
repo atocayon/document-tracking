@@ -31,3 +31,19 @@ export function handleScan(data, documentTrackingNumber, user_id, secshort) {
       });
   };
 }
+
+export function trackOnly(data){
+    return function(dispatch){
+        return axios
+            .get("http://10.10.10.16:4000/dts/track/" + data)
+            .then((res) => {
+                dispatch({
+                    type: actionTypes.TRACK_DOCUMENT,
+                    data: res.data,
+                });
+            })
+            .catch((err) => {
+                throw err;
+            });
+    }
+}
