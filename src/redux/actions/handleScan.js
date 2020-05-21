@@ -33,7 +33,8 @@ export function handleScan(data, documentTrackingNumber, user_id, secshort) {
 }
 
 export function trackOnly(data){
-    return function(dispatch){
+    return async function(dispatch){
+        await dispatch({ type: actionTypes.HANDLE_SCAN, data });
         return axios
             .get("http://10.10.10.16:4000/dts/track/" + data)
             .then((res) => {
