@@ -47,6 +47,7 @@ import { logDocumentCreator } from "../../../redux/actions/addDocumentDestinatio
 import { clearAddNewDocumentState } from "../../../redux/actions/clearAddNewDocumentInput";
 import { addNewDocumentDraft } from "../../../redux/actions/addNewDocumentDraft";
 import { notification } from "../../../redux/actions/notification";
+import { removeFirstIndexOnEditAddDocument } from "../../../redux/actions/addDocumentDestination";
 
 function AddDocument({
   match,
@@ -78,6 +79,7 @@ function AddDocument({
   addNewDocumentDraft,
   submit_new_document_draft,
   notification,
+  removeFirstIndexOnEditAddDocument,
 }) {
   const checkboxItem = [
     { id: 0, value: "For Approval" },
@@ -299,12 +301,20 @@ function AddDocument({
     setFinalize(true);
   };
 
-  const handleGoBack = () => {
+  const handleGoBack = async () => {
+    // Reactotron.log(addDocument.destination);
+    await removeFirstIndexOnEditAddDocument();
     setFinalize(false);
   };
 
   const handleRelease = () => {
-    setOpenDialog(true);
+    const content = document.querySelector("#printarea");
+    const pri = document.querySelector("#ifmcontentstoprint").contentWindow;
+    pri.document.open();
+    pri.document.write(content.innerHTML);
+    pri.document.close();
+    pri.focus();
+    pri.print();
   };
 
   const handleClose = () => {
@@ -617,22 +627,19 @@ function AddDocument({
                         <br />
                         {addDocument.destination.length > 0 &&
                           addDocument.destination.map((des, index) => (
-                            <>
-                              <Chip
-                                key={index}
-                                avatar={
-                                  <Avatar>
-                                    <BusinessIcon />
-                                  </Avatar>
-                                }
-                                label={des[4]}
-                                onDelete={(event) => {
-                                  event.stopPropagation();
-                                  removeDestination(index);
-                                }}
-                              />
-                              &nbsp;&nbsp;
-                            </>
+                            <Chip
+                              key={index}
+                              avatar={
+                                <Avatar>
+                                  <BusinessIcon />
+                                </Avatar>
+                              }
+                              label={des[4]}
+                              onDelete={(event) => {
+                                event.stopPropagation();
+                                removeDestination(index);
+                              }}
+                            />
                           ))}
                         <br />
                         <div
@@ -709,6 +716,7 @@ const mapDispatchToProps = {
   clearAddNewDocumentState,
   addNewDocumentDraft,
   notification,
+  removeFirstIndexOnEditAddDocument,
 };
 
 export default connect(

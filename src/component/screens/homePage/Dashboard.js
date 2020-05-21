@@ -183,7 +183,7 @@ function Dashboard(props) {
                         className={"btn btn-sm"}
                         style={{ color: "#2196F3" }}
                       >
-                        Track or search only the document
+                        Click here to track or search only the document
                       </button>
                     </div>
                   ) : null}
