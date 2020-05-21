@@ -920,7 +920,7 @@ router.route("/fetchDocument/:doc_id").get(function (req, res) {
   sql += "SELECT documents.subject as subject, ";
   sql += "users.name AS creator, ";
   sql += "users.position AS creatorPosition, ";
-  sql += "sections.section AS creatorSection, ";
+  sql += "sections.secshort AS creatorSection, ";
   sql += "document_type.id as docType_id, ";
   sql += "document_type.type as type, ";
   sql += "documents.note ";
@@ -962,13 +962,15 @@ router.route("/fetchActionReq/:doc_id").get(function (req, res) {
 router.route("/lastForwarder/:doc_id").get(function (req, res) {
   let sql = "";
   sql += "SELECT users.name AS sender, ";
-  sql += "sections.section AS senderSection, ";
+  sql += "sections.secshort AS senderSection, ";
   sql += "users.position AS senderPosition, ";
   sql += "documentLogs.remarks AS remarks, ";
   sql += "documentLogs.destinationType AS destinationType ";
   sql += "FROM documentLogs ";
   sql += "JOIN users ";
-  sql += "ON documentLogs.user_id = users.user_id";
+  sql += "ON documentLogs.user_id = users.user_id ";
+  sql += "JOIN sections ";
+  sql += "ON users.section = sections.secid ";
   sql += "WHERE documentLogs.document_id = ? ";
   sql += "AND documentLogs.status = ? ";
   sql += "ORDER BY documentLogs.date_time DESC LIMIT 1";
@@ -978,8 +980,8 @@ router.route("/lastForwarder/:doc_id").get(function (req, res) {
       console.log(err);
       res.status(500).send(err);
     }
-
-    res.status(rows[0]);
+    console.log(rows[0]);
+    res.status(200).send(rows[0]);
   });
 });
 
@@ -1214,7 +1216,7 @@ router.route("/notification/:user_section").get(function (req, res) {
   });
 });
 
-//Forward Document
+//Action After Receive or under pending documents
 router.route("/afterDocumentReceive").post(function (req, res) {
   const {
     documentId,
@@ -1237,7 +1239,22 @@ router.route("/afterDocumentReceive").post(function (req, res) {
       res.status(500).send(err);
     }
 
-    res.status(200).send(result);
+    let update = "";
+    update += "UPDATE documentLogs SET ";
+    update += "notification   = ? ";
+    update += "WHERE document_id = ? ";
+    update += "AND user_id = ? ";
+    update += "AND status = ? ";
+    connection.query(update, ["1", documentId, user_id, "3"], function (
+      err,
+      result
+    ) {
+      if (err) {
+        console.log(err);
+        res.status(500).send(err);
+      }
+      res.status(200).send(result);
+    });
   });
 });
 

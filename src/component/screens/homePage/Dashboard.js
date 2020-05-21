@@ -12,12 +12,7 @@ import { receiveDocument } from "../../../redux/actions/receiveDocument";
 import { handleScan } from "../../../redux/actions/handleScan";
 import BarcodeReader from "react-barcode-reader";
 import Reactotron from "reactotron-react-js";
-import { clearReceiveDocument } from "../../../redux/actions/receiveDocument";
 
-import { afterDocumentReceive } from "../../../redux/actions/afterDocumentReceive";
-import { onChangeForwardDocument } from "../../../redux/actions/onChangForwardDocument";
-// import { notification } from "../../../redux/actions/notification";
-import { changeDocumentDestination } from "../../../redux/actions/onChangForwardDocument";
 import { trackDocument } from "../../../redux/actions/trackDocument";
 import DocumentTrack from "./DocumentTrack";
 import FormControl from "@material-ui/core/FormControl";
@@ -30,7 +25,6 @@ import { resetTrackOrReceive } from "../../../redux/actions/resetTrackOrReceive"
 
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
-  const [forwardDialog, setForwardDialog] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
   useEffect(() => {
     if (props.receive !== "") {
@@ -70,37 +64,6 @@ function Dashboard(props) {
   };
   const scan = (data) => {
     Reactotron.log(data);
-  };
-
-  const handleSetForwardDialog = (e) => {
-    e.preventDefault();
-    setForwardDialog(!forwardDialog);
-  };
-
-  const handleForwardDocument = async (e) => {
-    e.preventDefault();
-    await props.afterDocumentReceive(
-      props.trackingNum.documentTrackingNumber,
-      props.user.user_id,
-      props.forwardDocument.remarks,
-      selectedValue,
-      props.forwardDocument.destination,
-      "2"
-    );
-    setForwardDialog(!forwardDialog);
-  };
-
-  const handlePendingDocument = async (e) => {
-    e.preventDefault();
-    await props.afterDocumentReceive(
-      props.trackingNum.documentTrackingNumber,
-      props.user.user_id,
-      "none",
-      "none",
-      props.user.secshort,
-      "3"
-    );
-    setForwardDialog(!forwardDialog);
   };
 
   const handleTrackDocument = async () => {
@@ -180,7 +143,9 @@ function Dashboard(props) {
                                 <HighlightOffRoundedIcon />
                               </IconButton>
                             </InputAdornment>
-                          ) : ("")
+                          ) : (
+                            ""
+                          )
                         }
                       />
                     </FormControl>
@@ -213,6 +178,13 @@ function Dashboard(props) {
                         Scan the barcode to receive document and the document
                         track will show here
                       </h6>
+                      <br />
+                      <button
+                        className={"btn btn-sm"}
+                        style={{ color: "#2196F3" }}
+                      >
+                        Track or search only the document
+                      </button>
                     </div>
                   ) : null}
 

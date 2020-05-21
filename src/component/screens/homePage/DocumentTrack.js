@@ -23,7 +23,12 @@ function DocumentTrack(props) {
               </StepLabel>
               <StepContent last={false}>
                 <Typography>
-                  {doc.status === "pending" ? doc.status + " on " + doc.name : doc.status + " by " + doc.name}&nbsp;
+                  {doc.status === "pending" && doc.status + " on " + doc.name}
+                  {doc.status === "completed" &&
+                    "Document is now " + doc.status + " by " + doc.name}
+                  {doc.status === "created" && doc.status + " by " + doc.name}
+                    {doc.status === "receive" && doc.status + " by " + doc.name}
+                  &nbsp;
                   {doc.status === "forwarded" &&
                     "to " + doc.destination + " (" + doc.destinationType + ")"}
                   <br />

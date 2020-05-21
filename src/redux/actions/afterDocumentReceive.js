@@ -22,21 +22,21 @@ export function afterDocumentReceive(
       })
       .then((res) => {
         if (res.status === 200) {
-          if (status === "2") {
-            dispatch({ type: actionTypes.CLEAR_RECEIVE_DOCUMENT });
-            dispatch({
-              type: actionTypes.AFTER_DOCUMENT_RECEIVED,
-              data: "forward",
-            });
+          // dispatch({ type: actionTypes.CLEAR_RECEIVE_DOCUMENT });
+          if (status === "2"){
+              dispatch({
+                  type: actionTypes.AFTER_DOCUMENT_RECEIVED,
+                  data: "forwarded",
+              });
           }
 
-          if (status === "3") {
-            dispatch({ type: actionTypes.CLEAR_RECEIVE_DOCUMENT });
-            dispatch({
-              type: actionTypes.AFTER_DOCUMENT_RECEIVED,
-              data: "pending",
-            });
+          if (status === "4"){
+              dispatch({
+                  type: actionTypes.AFTER_DOCUMENT_RECEIVED,
+                  data: "completed",
+              });
           }
+
         }
       })
       .catch((err) => {
@@ -44,3 +44,4 @@ export function afterDocumentReceive(
       });
   };
 }
+
