@@ -23,18 +23,72 @@ function DocumentTrack(props) {
               </StepLabel>
               <StepContent last={false}>
                 <Typography>
-                  {doc.status === "pending" && doc.status + " on " + doc.name}
-                  {doc.status === "completed" &&
-                    "Document is now " + doc.status + " by " + doc.name}
-                  {doc.status === "created" && doc.status + " by " + doc.name}
-                  {doc.status === "receive" && doc.status + " by " + doc.name}
-                  {doc.status === "forwarded" &&
-                    doc.status +
-                      " to " +
-                      doc.destination +
-                      " (" +
-                      doc.destinationType +
-                      ")"}
+                  {/*  If Pending*/}
+                  {doc.status === "pending" && (
+                    <>
+                      Pending
+                      &nbsp;on&nbsp;
+                      <span style={{ color: "#2196F3" }}>
+                        {doc.secshort}
+                        &nbsp;by&nbsp;
+                        {doc.name},{doc.position}
+                      </span>
+                    </>
+                  )}
+
+                  {/*    If Completed*/}
+                  {doc.status === "completed" && (
+                    <>
+                      Document is now tag as&nbsp;
+                      {doc.status}&nbsp;in&nbsp;
+                      <span style={{ color: "#2196F3" }}>
+                        {doc.secshort}
+                        &nbsp;by&nbsp;
+                        {doc.name}
+                        ,&nbsp;
+                        {doc.position}
+                      </span>
+                    </>
+                  )}
+
+                  {/*    If Created*/}
+                  {doc.status === "created" && (
+                    <>
+                      Created
+                      &nbsp;by&nbsp;
+                      <span style={{ color: "#2196F3" }}>
+                        {doc.name}
+                        ,&nbsp;
+                        {doc.position}
+                        &nbsp;(&nbsp;
+                        {doc.secshort})
+                      </span>
+                    </>
+                  )}
+
+                  {/*    If Received*/}
+                  {doc.status === "receive" && (
+                    <>
+                      Received
+                      &nbsp;by&nbsp;
+                      <span style={{ color: "#2196F3" }}>
+                        {doc.name},&nbsp;
+                        {doc.position}&nbsp;({doc.secshort})
+                      </span>
+                    </>
+                  )}
+
+                  {/*    If Forwarded*/}
+                  {doc.status === "forwarded" && (
+                    <>
+                      Forwarded&nbsp;by&nbsp;
+                      <span style={{ color: "#2196F3" }}>
+                        {doc.name},&nbsp;
+                        {doc.position}&nbsp; ({doc.secshort})&nbsp; to&nbsp;
+                        {doc.destination}
+                      </span>
+                    </>
+                  )}
                   <br />
                   {doc.remarks !== "none" && doc.remarks}
                   <br />

@@ -1263,7 +1263,9 @@ router.route("/track/:doc_id").get(function (req, res) {
   const doc_id = req.params.doc_id;
 
   let sql = "";
-  sql += "SELECT users.name AS name, ";
+  sql += "SELECT users.name AS name,  ";
+  sql += "users.position AS position, ";
+  sql += "sections.secshort AS secshort, "
   sql += "documentLogs.remarks AS remarks, ";
   sql += "documentLogs.destinationType AS destinationType, ";
   sql += "documentLogs.destination AS destination, ";
@@ -1275,6 +1277,8 @@ router.route("/track/:doc_id").get(function (req, res) {
   sql += "ON documentLogs.user_id = users.user_id ";
   sql += "JOIN documentStatus ";
   sql += "ON documentLogs.status = documentStatus.statid ";
+  sql += "JOIN sections ";
+  sql += "ON users.section = sections.secid ";
   sql += "WHERE documentLogs.document_id = ? ";
   sql += "ORDER BY documentLogs.date_time DESC, ";
   sql += "documentStatus.status ASC ";
