@@ -82,6 +82,7 @@ function PendingForRelease(props) {
                     {props.pending.length > 0 &&
                     props.pending.map((document, index) => (
                         <Link
+                            key={index}
                             to={"/pending_doc/" + document.documentId}
                             style={{ textDecoration: "none" }}
                         >

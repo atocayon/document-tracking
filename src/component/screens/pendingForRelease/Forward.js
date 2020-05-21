@@ -60,7 +60,7 @@ export default function Forward(props) {
                 name={"destination"}
                 label={"Internal Destination"}
                 options={options}
-                onChange={props.onChangeForwardDocument}
+                onChange={props.onChangeDestination}
               />
             </>
           )}
@@ -72,8 +72,8 @@ export default function Forward(props) {
                 name={"destination"}
                 label={"External Office"}
                 type={"text"}
-                onChange={props.onChangeForwardDocument}
-                value={props.forwardDocument.destination}
+                onChange={props.onChangeDestination}
+                value={props.value.destination}
               />
             </>
           )}
@@ -86,8 +86,8 @@ export default function Forward(props) {
                 name={"remarks"}
                 label={"Remarks"}
                 type={"text"}
-                value={props.forwardDocument.remarks}
-                onChange={props.onChangeForwardDocument}
+                value={props.value.remarks}
+                onChange={props.onChangeDestination}
               />
             </>
           )}
@@ -96,7 +96,7 @@ export default function Forward(props) {
           <Button onClick={props.handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={props.handleForwardDocument} color="primary">
+          <Button onClick={props.handleForward} color="primary">
             Forward
           </Button>
         </DialogActions>
