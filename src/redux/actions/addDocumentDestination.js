@@ -14,3 +14,9 @@ export function logDocumentCreator(data) {
     return dispatch({ type: actionTypes.ADD_DOCUMENT_CREATOR, data });
   };
 }
+
+export function removeFirstIndexOnEditAddDocument(){
+  return function(dispatch){
+    return dispatch({type: actionTypes.REMOVE_FIRST_INDEX_DESTINATION});
+  }
+}

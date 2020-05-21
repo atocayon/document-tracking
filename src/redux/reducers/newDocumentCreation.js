@@ -106,6 +106,11 @@ export default function newDocumentCreation(state = defaultState, action) {
         documentType: docType,
         note: action.data.note
       });
+
+    case actionTypes.REMOVE_FIRST_INDEX_DESTINATION:
+      return Object.assign({}, state, {
+        destination: state.destination.filter((data, index) => index !== 0)
+      });
     default:
       return state;
   }
