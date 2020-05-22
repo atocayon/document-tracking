@@ -311,17 +311,7 @@ function AddDocument({
     setFinalize(false);
   };
 
-  const handleRelease = () => {
-    setOpenDialog(true);
-  };
-
-  const handleClose = () => {
-    setOpenDialog(false);
-  };
-
-  const handleConfirm = async () => {
-    setOpenDialog(false);
-
+  const handleRelease = async () => {
     await addNewDocument(
       documentId.documentID,
       user.user_id,
@@ -375,11 +365,7 @@ function AddDocument({
   };
 
   const createCheckboxes = () => checkboxItem.map(createCheckbox);
-  let dialogContent =
-    "You're about to release a document, make sure that all information is " +
-    "true and correct, attach the printed barcode to your physical document.\n\n" +
-    "Note: If you are experiencing or encountering a problem, contact or visit " +
-    "the Information Marketing Office (IMS) for help.";
+
   return (
     <>
       <Grid container spacing={3}>
@@ -402,15 +388,6 @@ function AddDocument({
               overflow: "auto",
             }}
           >
-            {openDialog && (
-              <DialogComponent
-                fullscreen={fullScreen}
-                openDialog={openDialog}
-                content={nl2br(dialogContent)}
-                handleClose={handleClose}
-                handleConfirm={handleConfirm}
-              />
-            )}
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <div className={"jumbotron"} style={{ padding: 50 }}>
