@@ -30,3 +30,9 @@ export function addNewDocument(
       });
   };
 }
+
+export function clearAddDocumentMessage(){
+    return function(dispatch){
+        return dispatch({type: actionTypes.CLEAR_ADD_DOCUMENT_MESSAGE});
+    }
+}
