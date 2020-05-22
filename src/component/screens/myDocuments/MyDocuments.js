@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {Component, useEffect, useState} from "react";
 import Grid from "@material-ui/core/Grid";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
@@ -14,6 +14,7 @@ import List from "@material-ui/core/List";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
 import { withSnackbar } from "notistack";
+
 function MyDocuments(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);

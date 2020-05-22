@@ -48,6 +48,7 @@ import { clearAddNewDocumentState } from "../../../redux/actions/clearAddNewDocu
 import { addNewDocumentDraft } from "../../../redux/actions/addNewDocumentDraft";
 import { notification } from "../../../redux/actions/notification";
 import { removeFirstIndexOnEditAddDocument } from "../../../redux/actions/addDocumentDestination";
+import nl2br from "react-newline-to-break";
 
 function AddDocument({
   match,
@@ -107,6 +108,12 @@ function AddDocument({
 
   useEffect(() => {
     const timeID = setInterval(() => tick(), 1000);
+    let interval;
+    if (!match.params.id) {
+      interval = setInterval(() => {
+        fetchDocumentId();
+      }, 1000);
+    }
 
     const obj = getFromStorage("documentTracking");
 
@@ -121,10 +128,6 @@ function AddDocument({
           await fetchDocumentById(match.params.id);
           await fetchDocumentActionRequired(match.params.id);
         }
-
-        if (!match.params.id) {
-          await fetchDocumentId();
-        }
       }
 
       fetch().catch((err) => {
@@ -137,7 +140,7 @@ function AddDocument({
     if (submit_new_document !== "") {
       if (submit_new_document === "success") {
         async function submitNewDocument() {
-          await canvas("#printarea", documentId.documentID);
+          // await canvas("#printarea", documentId.documentID);
 
           await clearAddNewDocumentState();
           setFinalize(false);
@@ -184,6 +187,7 @@ function AddDocument({
 
     return () => {
       clearInterval(timeID);
+      clearInterval(interval);
     };
   }, [match.params.id, submit_new_document, submit_new_document_draft]);
 
@@ -308,13 +312,7 @@ function AddDocument({
   };
 
   const handleRelease = () => {
-    const content = document.querySelector("#printarea");
-    const pri = document.querySelector("#ifmcontentstoprint").contentWindow;
-    pri.document.open();
-    pri.document.write(content.innerHTML);
-    pri.document.close();
-    pri.focus();
-    pri.print();
+    setOpenDialog(true);
   };
 
   const handleClose = () => {
@@ -377,7 +375,11 @@ function AddDocument({
   };
 
   const createCheckboxes = () => checkboxItem.map(createCheckbox);
-
+  let dialogContent =
+    "You're about to release a document, make sure that all information is " +
+    "true and correct, attach the printed barcode to your physical document.\n\n" +
+    "Note: If you are experiencing or encountering a problem, contact or visit " +
+    "the Information Marketing Office (IMS) for help.";
   return (
     <>
       <Grid container spacing={3}>
@@ -404,12 +406,7 @@ function AddDocument({
               <DialogComponent
                 fullscreen={fullScreen}
                 openDialog={openDialog}
-                title={""}
-                content={
-                  "You are about to release a document, print the barcode that " +
-                  "will be downloaded after you confirm " +
-                  "this message and attach it to the corresponding document."
-                }
+                content={nl2br(dialogContent)}
                 handleClose={handleClose}
                 handleConfirm={handleConfirm}
               />

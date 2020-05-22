@@ -19,15 +19,9 @@ import BusinessIcon from "@material-ui/icons/Business";
 import EditIcon from "@material-ui/icons/Edit";
 import Reactotron from "reactotron-react-js";
 import ReactToPrint from "react-to-print";
+import PrintIcon from "@material-ui/icons/Print";
+import BarcodeComponent from "../../common/barcode/BarcodeComponent";
 
-class BarcodeComponent extends Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    return <Barcode value={this.props.trackingNumber} height={50} />;
-  }
-}
 
 class FinalizeDocument extends Component {
   constructor(props) {
@@ -67,6 +61,7 @@ class FinalizeDocument extends Component {
             ref={(el) => (this.componentRef = el)}
             trackingNumber={this.props.trackingNumber.toString()}
           />
+
           <br />
           <br />
           <InputField
@@ -163,22 +158,25 @@ class FinalizeDocument extends Component {
             </button>
             &nbsp;&nbsp;&nbsp;
             <ReactToPrint
-              trigger={() => {
-                // NOTE: could just as easily return <SomeComponent />. Do NOT pass an `onClick` prop
-                // to the root node of the returned component as it will be overwritten.
-                return (
-                  <a
-                    href={"#"}
-                    className={"btn btn-info"}
-                    // onClick={this.props.handleRelease}
-                  >
-                    <SendIcon />
-                    &nbsp;&nbsp;Release
-                  </a>
-                );
-              }}
-              content={() => this.componentRef}
+                onAfterPrint={this.props.handleRelease}
+                trigger={() => {
+                  // NOTE: could just as easily return <SomeComponent />. Do NOT pass an `onClick` prop
+                  // to the root node of the returned component as it will be overwritten.
+                  return (
+                      <a
+                          href={"#"}
+                          className={"btn btn-info"}
+                          title={"Print this barcode"}
+                      >
+                        <SendIcon />
+                        &nbsp;&nbsp;Release
+                      </a>
+                  );
+                }}
+                content={() => this.componentRef}
             />
+
+            &nbsp;&nbsp;&nbsp;
           </div>
         </div>
       </>

@@ -153,6 +153,7 @@ function Dashboard(props) {
                           props.receive !== "" || props.track.length > 0 ? (
                             <InputAdornment position="end">
                               <IconButton
+                                  title={"clear"}
                                 aria-label="toggle password visibility"
                                 onClick={props.resetTrackOrReceive}
                                 onMouseDown={props.resetTrackOrReceive}
