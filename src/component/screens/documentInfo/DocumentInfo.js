@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { withSnackbar } from "notistack";
 import Grid from "@material-ui/core/Grid";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
@@ -21,12 +21,16 @@ import ExploreIcon from "@material-ui/icons/Explore";
 import Chip from "@material-ui/core/Chip";
 import Avatar from "@material-ui/core/Avatar";
 import BusinessIcon from "@material-ui/icons/Business";
+import BarcodeComponent from "../../common/barcode/BarcodeComponent";
+import ReactToPrint from "react-to-print";
+import PrintIcon from "@material-ui/icons/Print";
 function DocumentInfo(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
   const [document, setDocument] = useState({});
   const [actionRequired, setActionRequired] = useState([]);
   const [destination, setDestination] = useState([]);
+  const componentRef = useRef();
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
@@ -138,8 +142,24 @@ function DocumentInfo(props) {
               <div style={{ textAlign: "left" }}>
                 <small>&nbsp;&nbsp;DOCUMENT TRACKING NUMBER</small>
               </div>
-              <div id={"barcode"} style={{ width: 200 }}>
-                <Barcode value={props.match.params.doc_id} height={50} />
+              <div id={"barcode"}>
+                <BarcodeComponent
+                  ref={componentRef}
+                  trackingNumber={props.match.params.doc_id}
+                />
+                <ReactToPrint
+                  trigger={() => (
+                    <a
+                      href={"#"}
+                      className={"btn"}
+                      title={"Print this barcode"}
+                    >
+                      {" "}
+                      <PrintIcon />
+                    </a>
+                  )}
+                  content={() => componentRef.current}
+                />
               </div>
 
               <br />
@@ -222,13 +242,6 @@ function DocumentInfo(props) {
                 </>
               )}
               <br />
-              <br />
-              <div style={{ textAlign: "right", marginTop: 50 }}>
-                <button className={"btn btn-info"} onClick={handleDownload}>
-                  <GetAppIcon />
-                  &nbsp;Get Barcode
-                </button>
-              </div>
             </div>
             <div className={"col-md-2"}></div>
           </div>
