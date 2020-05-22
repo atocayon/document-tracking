@@ -97,10 +97,10 @@ class FinalizeDocument extends Component {
 
           <br />
           <FormGroup>
-            {this.props.data.action_req.map((action) => (
+            {this.props.data.action_req.map((action, index) => (
               <CheckBox
                 checked={true}
-                key={action[1]}
+                key={index}
                 label={action[1]}
                 value={action[1]}
                 name={"action_req"}

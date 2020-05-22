@@ -202,7 +202,7 @@ function AddDocument({
 
     if (internal !== "") {
       _destination.push(
-        documentId.documentID,
+        match.params.id ? match.params.id : documentId && documentId.documentID,
         user.user_id,
         "none",
         destination,
@@ -229,7 +229,7 @@ function AddDocument({
       setError(_error);
     } else {
       _destination.push(
-        documentId.documentID,
+        match.params.id ? match.params.id : documentId && documentId.documentID,
         user.user_id,
         "none",
         destination,
@@ -287,7 +287,7 @@ function AddDocument({
       return;
     }
     await logDocumentCreator([
-      documentId.documentID,
+      match.params.id ? match.params.id : documentId && documentId.documentID,
       user.user_id,
       "none",
       destination,
@@ -307,7 +307,7 @@ function AddDocument({
 
   const handleRelease = async () => {
     await addNewDocument(
-      documentId.documentID,
+      match.params.id ? match.params.id : documentId && documentId.documentID,
       user.user_id,
       addDocument.subject,
       addDocument.documentType,
