@@ -28,3 +28,10 @@ export function addNewDocumentDraft(
       });
   };
 }
+
+
+export function clearDraftsMessage(){
+    return function(dispatch){
+        return dispatch({type: actionTypes.CLEAR_SAVE_DRAFT_MESSAGE});
+    }
+}

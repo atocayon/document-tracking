@@ -49,6 +49,8 @@ import { addNewDocumentDraft } from "../../../redux/actions/addNewDocumentDraft"
 import { notification } from "../../../redux/actions/notification";
 import { removeFirstIndexOnEditAddDocument } from "../../../redux/actions/addDocumentDestination";
 import nl2br from "react-newline-to-break";
+import { clearAddDocumentMessage } from "../../../redux/actions/addNewDocument";
+import { clearDraftsMessage } from "../../../redux/actions/addNewDocumentDraft";
 
 function AddDocument({
   match,
@@ -81,6 +83,8 @@ function AddDocument({
   submit_new_document_draft,
   notification,
   removeFirstIndexOnEditAddDocument,
+  clearAddDocumentMessage,
+  clearDraftsMessage,
 }) {
   const checkboxItem = [
     { id: 0, value: "For Approval" },
@@ -139,49 +143,39 @@ function AddDocument({
 
     if (submit_new_document !== "") {
       if (submit_new_document === "success") {
-        async function submitNewDocument() {
-          // await canvas("#printarea", documentId.documentID);
-
-          await clearAddNewDocumentState();
-          setFinalize(false);
-          setDestination("");
-          const variant = "info";
-          enqueueSnackbar("Document release successfully...", {
-            variant,
-          });
-        }
-
-        submitNewDocument().catch((err) => {
-          throw err;
+        setFinalize(false);
+        setDestination("");
+        const variant = "info";
+        enqueueSnackbar("Document release successfully...", {
+          variant,
         });
-      } else {
+        clearAddDocumentMessage();
+      }
+      if (submit_new_document === "failed") {
         const variant = "error";
         enqueueSnackbar("Document releasing failed...", {
           variant,
         });
+        clearAddDocumentMessage();
       }
     }
 
     if (submit_new_document_draft !== "") {
       if (submit_new_document_draft === "success") {
-        async function submitNewDraft() {
-          await clearAddNewDocumentState();
-          setFinalize(false);
-          setDestination("");
-          const variant = "info";
-          enqueueSnackbar("Document saved as draft success...", {
-            variant,
-          });
-        }
-
-        submitNewDraft().catch((err) => {
-          throw err;
+        setFinalize(false);
+        setDestination("");
+        const variant = "info";
+        enqueueSnackbar("Document saved as draft success...", {
+          variant,
         });
-      } else {
+        clearDraftsMessage();
+      }
+      if (submit_new_document_draft === "failed") {
         const variant = "error";
         enqueueSnackbar("Document saving as draft failed...", {
           variant,
         });
+        clearDraftsMessage();
       }
     }
 
@@ -691,6 +685,8 @@ const mapDispatchToProps = {
   addNewDocumentDraft,
   notification,
   removeFirstIndexOnEditAddDocument,
+  clearAddDocumentMessage,
+  clearDraftsMessage,
 };
 
 export default connect(
