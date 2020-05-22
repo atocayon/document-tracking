@@ -131,7 +131,7 @@ function Dashboard(props) {
                     </div>
                   </div>
                   <div className={"col-md-8"}>
-                    <FormControl fullWidth variant="outlined">
+                    <FormControl fullWidth >
                       <InputLabel htmlFor="outlined-adornment-amount">
                         {trackOrSearchOnly
                           ? "Search / Tracking"

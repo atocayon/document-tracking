@@ -9,12 +9,21 @@ import Paper from "@material-ui/core/Paper";
 import Reactotron from "reactotron-react-js";
 import { connect } from "react-redux";
 import { login } from "../../../redux/actions/login";
-
+import InputLabel from "@material-ui/core/InputLabel";
+import Input from "@material-ui/core/Input";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import IconButton from "@material-ui/core/IconButton";
+import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
+import FormControl from "@material-ui/core/FormControl";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 function Login(props) {
   const [login, setLogin] = useState({
     email: "",
     password: "",
   });
+
+  const [visiblePass, setVisiblePass] = useState(false);
 
   const [error, setError] = useState({});
   const [redirect, setRedirect] = useState(false);
@@ -126,14 +135,46 @@ function Login(props) {
                         />
                         <br />
                         <br />
-                        <InputField
-                          id={"password"}
-                          label={"Password"}
-                          name={"password"}
-                          onChange={onChange}
-                          error={error.password}
-                          type={"password"}
-                        />
+                        <FormControl fullWidth >
+                          <InputLabel>Password</InputLabel>
+                          <Input
+                            id={"password"}
+                            name={"password"}
+                            onChange={onChange}
+                            type={visiblePass ? "text" : "password"}
+                            style={
+                              error.password && {
+                                borderBottom: "1px solid red",
+                                color: "red",
+                              }
+                            }
+                            endAdornment={
+                              <InputAdornment position="end">
+                                <IconButton
+                                  title={"clear"}
+                                  aria-label="toggle password visibility"
+                                  onClick={() => {
+                                    setVisiblePass(!visiblePass);
+                                  }}
+                                  onMouseDown={() => {
+                                    setVisiblePass(!visiblePass);
+                                  }}
+                                  edge="end"
+                                >
+                                  {visiblePass ? (
+                                    <VisibilityOffIcon />
+                                  ) : (
+                                    <VisibilityIcon />
+                                  )}
+                                </IconButton>
+                              </InputAdornment>
+                            }
+                          />
+                          <small style={{ color: "red" }}>
+                            {error.password}
+                          </small>
+                        </FormControl>
+
                         <br />
                         <br />
                         <div style={{ textAlign: "right", marginTop: 50 }}>
