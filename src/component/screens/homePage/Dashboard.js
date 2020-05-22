@@ -23,7 +23,11 @@ import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
 import IconButton from "@material-ui/core/IconButton";
 import { resetTrackOrReceive } from "../../../redux/actions/resetTrackOrReceive";
 import { trackOnly } from "../../../redux/actions/handleScan";
-
+import UIFx from "uifx";
+import onClick from "../../sounds/pull-out.mp3";
+import onScan from "../../sounds/bubbling-up.mp3";
+const _onClick = new UIFx(onClick);
+const _onScan = new UIFx(onScan);
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
   const [selectedValue, setSelectedValue] = useState("");
@@ -74,21 +78,26 @@ function Dashboard(props) {
 
   const handleScanning = async (data) => {
     if (!trackOrSearchOnly) {
+
       await props.handleScanAndReceive(
         data,
         props.trackingNum.documentTrackingNumber,
         props.user.user_id,
         props.user.secshort
       );
+      _onScan.play();
     }
 
     if (trackOrSearchOnly) {
+
       await props.trackOnly(data);
+      _onScan.play();
     }
   };
 
   const handleTrackOrSearchOnly = async () => {
     setTrackOrSearchOnly(!trackOrSearchOnly);
+    _onClick.play();
   };
 
   return (

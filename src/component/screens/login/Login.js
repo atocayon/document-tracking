@@ -17,7 +17,17 @@ import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
 import FormControl from "@material-ui/core/FormControl";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import useSound from 'use-sound';
+import sound from "../../sounds/done-for-you.mp3";
+import error from "../../sounds/glitch-in-the-matrix.mp3";
+import visible from "../../sounds/hollow.mp3";
+import loginSuccess from "../../sounds/quite-impressed.mp3";
+import UIfx from 'uifx';
+const _error = new UIfx( error);
+const _visible = new UIfx(visible);
+const _loginSuccess = new UIfx(loginSuccess);
 function Login(props) {
+
   const [login, setLogin] = useState({
     email: "",
     password: "",
@@ -40,6 +50,7 @@ function Login(props) {
           variant,
         });
         setRedirect(true);
+        _loginSuccess.play();
       } else {
         const _error = {};
         _error.email = "Incorrect Email";
@@ -48,6 +59,7 @@ function Login(props) {
 
         const variant = "error";
         props.enqueueSnackbar("Unregistered user", { variant });
+        _error.play();
       }
     }
   }, [props._login]);
@@ -77,7 +89,8 @@ function Login(props) {
       props.enqueueSnackbar("Email and Password is required...", {
         variant,
       });
-      return;
+
+      return _error.play();
     }
 
     await props.login(login);
@@ -85,6 +98,7 @@ function Login(props) {
 
   return (
     <>
+      {/*<audio src={sound} autoPlay />*/}
       {redirect && <Redirect to={"/"} />}
       {!redirect && (
         <div className={"container"}>
@@ -155,9 +169,11 @@ function Login(props) {
                                   aria-label="toggle password visibility"
                                   onClick={() => {
                                     setVisiblePass(!visiblePass);
+                                    _visible.play();
                                   }}
                                   onMouseDown={() => {
                                     setVisiblePass(!visiblePass);
+                                    _visible.play();
                                   }}
                                   edge="end"
                                 >
