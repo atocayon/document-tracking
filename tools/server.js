@@ -787,24 +787,25 @@ router.route("/addNewDocument").post(function (req, res) {
   } = req.body;
 
   const check = "SELECT * FROM documents WHERE documentID = ?";
-  connection.query(check, [documentID], function (err, rows, fields) {
+  connection.query(check, [parseInt(documentID)], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
     }
 
-    if (rows.length > 0) {
+    if (rows) {
+
       const update =
         "UPDATE documents SET creator = ?, subject= ?, doc_type = ?, note = ?, status = ? WHERE documentID = ?";
       connection.query(
         update,
-        [creator, subject, doc_type, note, "1", documentID],
+        [creator, subject, doc_type, note, "1", parseInt(documentID)],
         function (err, result) {
           if (err) {
             console.log(err);
             res.status(500).send(err);
           }
-
+          console.log("Updated");
           let sql = "";
           sql += "INSERT INTO documentLogs ";
           sql += "(document_id, ";
@@ -827,7 +828,9 @@ router.route("/addNewDocument").post(function (req, res) {
           });
         }
       );
-    } else {
+    }
+    if (!rows) {
+
       const sql1 =
         "INSERT INTO documents (documentID, creator, subject, doc_type, note, status) VALUES ?";
       const values = [[documentID, creator, subject, doc_type, note, "1"]];
@@ -1265,7 +1268,7 @@ router.route("/track/:doc_id").get(function (req, res) {
   let sql = "";
   sql += "SELECT users.name AS name,  ";
   sql += "users.position AS position, ";
-  sql += "sections.secshort AS secshort, "
+  sql += "sections.secshort AS secshort, ";
   sql += "documentLogs.remarks AS remarks, ";
   sql += "documentLogs.destinationType AS destinationType, ";
   sql += "documentLogs.destination AS destination, ";
