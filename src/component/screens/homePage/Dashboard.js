@@ -28,11 +28,13 @@ import onClick from "../../sounds/pull-out.mp3";
 import onScan from "../../sounds/bubbling-up.mp3";
 const _onClick = new UIFx(onClick);
 const _onScan = new UIFx(onScan);
+
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
   const [selectedValue, setSelectedValue] = useState("");
   const [trackOrSearchOnly, setTrackOrSearchOnly] = useState(false);
   useEffect(() => {
+
     if (props.receive !== "") {
       if (props.receive === "success") {
         const variant = "info";

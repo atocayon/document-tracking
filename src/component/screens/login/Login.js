@@ -19,13 +19,16 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import useSound from 'use-sound';
 import sound from "../../sounds/done-for-you.mp3";
-import error from "../../sounds/glitch-in-the-matrix.mp3";
-import visible from "../../sounds/hollow.mp3";
-import loginSuccess from "../../sounds/quite-impressed.mp3";
 import UIfx from 'uifx';
+import error from "../../sounds/glitch-in-the-matrix.mp3";
+import loginSuccess from "../../sounds/quite-impressed.mp3";
+import onLoad from "../../sounds/gets-in-the-way.mp3";
+import onClick from "../../sounds/pull-out.mp3";
 const _error = new UIfx( error);
-const _visible = new UIfx(visible);
+const _visible = new UIfx(onClick);
 const _loginSuccess = new UIfx(loginSuccess);
+const _onLoad = new UIfx(onLoad);
+
 function Login(props) {
 
   const [login, setLogin] = useState({
@@ -39,6 +42,7 @@ function Login(props) {
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
+    _onLoad.play();
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       setRedirect(true);
