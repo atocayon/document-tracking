@@ -44,6 +44,7 @@ import Reactotron from "reactotron-react-js";
 import Divisions from "./Divisions";
 import Sections from "./Sections";
 import DocumentTypes from "./DocumentTypes";
+import DocumentLogs from "./DocumentLogs";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -575,7 +576,7 @@ function ControlPanel(props) {
             />
           </TabPanel>
           <TabPanel value={value} index={4}>
-            Item Six
+            <DocumentLogs />
           </TabPanel>
           <TabPanel value={value} index={5}>
             Item Seven

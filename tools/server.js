@@ -1,15 +1,17 @@
 const express = require("express");
-const app = express();
-const path = require("path");
 
+const PORT = process.env.PORT || 4000;
+
+const app = express();
+
+const path = require("path");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mysql = require("mysql");
 const router = express.Router();
-const PORT = 4000;
+
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
-
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -24,18 +26,17 @@ app.use(bodyParser.json());
 // });
 
 const connection = mysql.createConnection({
-  host: "localhost",
-  port: "3306",
   user: "root",
   password: "",
   database: "documentTracking",
+  host: "localhost",
+  port: "3306",
 });
 
 connection.connect(function (err) {
   if (err) {
     console.log(err);
   }
-
   console.log("MySQL database connection established successfully!!!");
 });
 
@@ -793,8 +794,7 @@ router.route("/addNewDocument").post(function (req, res) {
       res.status(500).send(err);
     }
 
-    if (rows) {
-
+    if (rows.length > 0) {
       const update =
         "UPDATE documents SET creator = ?, subject= ?, doc_type = ?, note = ?, status = ? WHERE documentID = ?";
       connection.query(
@@ -829,11 +829,12 @@ router.route("/addNewDocument").post(function (req, res) {
         }
       );
     }
-    if (!rows) {
-
+    if (rows.length === 0) {
       const sql1 =
         "INSERT INTO documents (documentID, creator, subject, doc_type, note, status) VALUES ?";
-      const values = [[documentID, creator, subject, doc_type, note, "1"]];
+      const values = [
+        [parseInt(documentID), creator, subject, doc_type, note, "1"],
+      ];
       connection.query(sql1, [values], function (err, result) {
         if (err) {
           console.log(err);
@@ -1294,12 +1295,40 @@ router.route("/track/:doc_id").get(function (req, res) {
     res.status(200).send(rows);
   });
 });
+
+//Search Document
+router.route("/searchBySubject/:subj").get(function(req, res){
+  let subj = req.params.subj;
+  let sql = "";
+  sql += "SELECT documents.documentId AS documentId, documents.subject AS subject, ";
+  sql += "users.name AS creator, ";
+  sql += "users.position AS creatorPosition, ";
+  sql += "sections.section AS creatorSection ";
+  sql += "FROM documents ";
+  sql += "JOIN users ";
+  sql += "ON documents.creator = users.user_id ";
+  sql += "JOIN sections ";
+  sql += "ON users.section = sections.secid ";
+  sql += "WHERE subject LIKE ? ORDER BY documents.date_time_created DESC";
+
+  connection.query(sql, ['%'+subj+'%'], function(err, rows, fields){
+    if (err){
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    console.log(rows);
+    res.status(200).send(rows);
+  });
+
+});
+
 // ==========================================================================================
 // ==========================================================================================
 // End Document Data Control
 //===========================================================================================
 //===========================================================================================
-app.use(express.static(path.join(__dirname, "build")));
+app.use(express.static(path.join(__dirname)));
 app.use("/dts", router);
 app.listen(PORT, () => {
   console.log("========================================================");
