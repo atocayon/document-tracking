@@ -54,7 +54,6 @@ function Login(props) {
           variant,
         });
         setRedirect(true);
-        _loginSuccess.play();
       } else {
         const _error = {};
         _error.email = "Incorrect Email";

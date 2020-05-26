@@ -30,6 +30,7 @@ import afterDocumentReceive from "./afterDocumentReceive";
 import trackDocument from "./trackDocument";
 import fetchPendingDocuments from "./fetchPendingDocuments";
 import fetchPendingDocumentInfo from "./fetchPendingDocumentInfo";
+import searchBySubj from "./searchBySubj";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -61,7 +62,8 @@ const rootReducer = combineReducers({
   afterDocumentReceive: afterDocumentReceive,
   trackDocument:trackDocument,
   fetchPendingDocuments: fetchPendingDocuments,
-  fetchPendingDocumentInfo:fetchPendingDocumentInfo
+  fetchPendingDocumentInfo:fetchPendingDocumentInfo,
+  searchBySubj: searchBySubj
 });
 
 export default rootReducer;

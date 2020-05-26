@@ -52,6 +52,7 @@ import nl2br from "react-newline-to-break";
 import { clearAddDocumentMessage } from "../../../redux/actions/addNewDocument";
 import { clearDraftsMessage } from "../../../redux/actions/addNewDocumentDraft";
 
+
 function AddDocument({
   match,
   enqueueSnackbar,
@@ -110,6 +111,7 @@ function AddDocument({
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
+
   useEffect(() => {
     const timeID = setInterval(() => tick(), 1000);
     let interval;
@@ -132,6 +134,7 @@ function AddDocument({
           await fetchDocumentById(match.params.id);
           await fetchDocumentActionRequired(match.params.id);
         }
+
       }
 
       fetch().catch((err) => {

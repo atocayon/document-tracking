@@ -23,9 +23,16 @@ import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
 import IconButton from "@material-ui/core/IconButton";
 import { resetTrackOrReceive } from "../../../redux/actions/resetTrackOrReceive";
 import { trackOnly } from "../../../redux/actions/handleScan";
+import { searchBySubj } from "../../../redux/actions/searchBySubj";
 import UIFx from "uifx";
 import onClick from "../../sounds/pull-out.mp3";
 import onScan from "../../sounds/bubbling-up.mp3";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import Avatar from "@material-ui/core/Avatar";
+import ListItemText from "@material-ui/core/ListItemText";
+import DescriptionIcon from '@material-ui/icons/Description';
 const _onClick = new UIFx(onClick);
 const _onScan = new UIFx(onScan);
 
@@ -34,7 +41,6 @@ function Dashboard(props) {
   const [selectedValue, setSelectedValue] = useState("");
   const [trackOrSearchOnly, setTrackOrSearchOnly] = useState(false);
   useEffect(() => {
-
     if (props.receive !== "") {
       if (props.receive === "success") {
         const variant = "info";
@@ -80,7 +86,6 @@ function Dashboard(props) {
 
   const handleScanning = async (data) => {
     if (!trackOrSearchOnly) {
-
       await props.handleScanAndReceive(
         data,
         props.trackingNum.documentTrackingNumber,
@@ -91,7 +96,6 @@ function Dashboard(props) {
     }
 
     if (trackOrSearchOnly) {
-
       await props.trackOnly(data);
       _onScan.play();
     }
@@ -100,6 +104,11 @@ function Dashboard(props) {
   const handleTrackOrSearchOnly = async () => {
     setTrackOrSearchOnly(!trackOrSearchOnly);
     _onClick.play();
+  };
+
+  const handleSearch = async () => {
+    // Reactotron.log(props.trackingNum.documentTrackingNumber);
+    await props.searchBySubj(props.trackingNum.documentTrackingNumber);
   };
 
   return (
@@ -142,7 +151,7 @@ function Dashboard(props) {
                     </div>
                   </div>
                   <div className={"col-md-8"}>
-                    <FormControl fullWidth >
+                    <FormControl fullWidth>
                       <InputLabel htmlFor="outlined-adornment-amount">
                         {trackOrSearchOnly
                           ? "Search / Tracking"
@@ -164,7 +173,7 @@ function Dashboard(props) {
                           props.receive !== "" || props.track.length > 0 ? (
                             <InputAdornment position="end">
                               <IconButton
-                                  title={"clear"}
+                                title={"clear"}
                                 aria-label="toggle password visibility"
                                 onClick={props.resetTrackOrReceive}
                                 onMouseDown={props.resetTrackOrReceive}
@@ -184,7 +193,7 @@ function Dashboard(props) {
                     {trackOrSearchOnly && (
                       <button
                         className={"btn btn-lg btn-info"}
-                        // onClick={handleTrackDocument}
+                        onClick={handleSearch}
                       >
                         Search
                       </button>
@@ -199,7 +208,8 @@ function Dashboard(props) {
 
                   {!trackOrSearchOnly &&
                   props.receive === "" &&
-                  props.track.length === 0 ? (
+                  props.track.length === 0 &&
+                  props.search.length === 0 ? (
                     <div style={{ textAlign: "center", marginTop: "25vh" }}>
                       <h6 style={{ color: "#9E9E9E" }}>
                         Scan the barcode to receive document and the document
@@ -218,7 +228,8 @@ function Dashboard(props) {
 
                   {trackOrSearchOnly &&
                   props.receive === "" &&
-                  props.track.length === 0 ? (
+                  props.track.length === 0 &&
+                  props.search.length === 0 ? (
                     <div style={{ textAlign: "center", marginTop: "25vh" }}>
                       <h6 style={{ color: "#9E9E9E" }}>
                         Scan the barcode to track documents or type something
@@ -233,6 +244,38 @@ function Dashboard(props) {
                         Click here to track and receive a document
                       </button>
                     </div>
+                  ) : null}
+
+                  {trackOrSearchOnly &&
+                  props.receive === "" &&
+                  props.track.length === 0 &&
+                  props.search.length > 0 ? (
+                    <>
+                      <div className={"row"}>
+                        <div className={"col-md-2"}></div>
+                        <div
+                          className={"col-md-8"}
+                          style={{ paddingBottom: 200 }}
+                        >
+                          <List></List>
+                          {props.search.map((data, index) => (
+                            <ListItem key={index}>
+                              <ListItemAvatar>
+                                <Avatar>
+                                  <DescriptionIcon />
+                                </Avatar>
+                              </ListItemAvatar>
+                              <ListItemText
+                                primary={data.subject}
+                                secondary={data.creator}
+                              />
+                            </ListItem>
+                          ))}
+                        </div>
+
+                        <div className={"col-md-2"}></div>
+                      </div>
+                    </>
                   ) : null}
 
                   {props.track.length > 0 && (
@@ -254,6 +297,7 @@ function mapStateToProps(state) {
     trackingNum: state.documentTrackingNumber,
     receive: state.receiveDocument,
     track: state.trackDocument,
+    search: state.searchBySubj,
   };
 }
 
@@ -264,6 +308,7 @@ const mapDispatchToProps = {
   trackDocument,
   resetTrackOrReceive,
   trackOnly,
+  searchBySubj,
 };
 
 export default connect(

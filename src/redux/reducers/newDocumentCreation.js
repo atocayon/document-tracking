@@ -111,6 +111,25 @@ export default function newDocumentCreation(state = defaultState, action) {
       return Object.assign({}, state, {
         destination: state.destination.filter((data, index) => index !== 0)
       });
+
+    case actionTypes.CLEAR_ADD_DOCUMENT_MESSAGE:
+      return Object.assign({}, state, {
+        subject: "",
+        documentType: "",
+        action_req: [],
+        note: "",
+        externalDestination: "",
+        internalDestination: "",
+        destination: [],
+        "For Approval": false,
+        "For Signature": false,
+        "For Endorsement": false,
+        "For Recommendation": false,
+        "For Action": false,
+        "For Comment": false,
+        "For Information": false,
+        "For File": false
+      });
     default:
       return state;
   }
