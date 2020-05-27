@@ -9,30 +9,27 @@ export function addNewDocument(
   documentType,
   note,
   action_req,
-  destination
+  destination,
+  socket
 ) {
-  return function (dispatch) {
-    return axios
-      .post("http://10.10.10.16:4000/dts/addNewDocument", {
-        documentID: documentID,
-        creator: user_id,
-        subject: subject,
-        doc_type: documentType,
-        note: note,
-        action_req: action_req,
-        documentLogs: destination
-      })
-      .then((res) => {
-        dispatch({ type: actionTypes.ADD_DOCUMENT, data: "success" });
-      })
-      .catch((err) => {
-        dispatch({ type: actionTypes.ADD_DOCUMENT, data: "failed" });
-      });
+  return async function (dispatch) {
+    await socket.emit(
+      "addDocument",
+      documentID,
+      user_id,
+      subject,
+      documentType,
+      note,
+      action_req,
+      destination
+    );
+
+    return dispatch({ type: actionTypes.ADD_DOCUMENT, data: "success" });
   };
 }
 
-export function clearAddDocumentMessage(){
-    return function(dispatch){
-        return dispatch({type: actionTypes.CLEAR_ADD_DOCUMENT_MESSAGE});
-    }
+export function clearAddDocumentMessage() {
+  return function (dispatch) {
+    return dispatch({ type: actionTypes.CLEAR_ADD_DOCUMENT_MESSAGE });
+  };
 }

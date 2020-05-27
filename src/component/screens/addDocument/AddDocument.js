@@ -51,7 +51,9 @@ import { removeFirstIndexOnEditAddDocument } from "../../../redux/actions/addDoc
 import nl2br from "react-newline-to-break";
 import { clearAddDocumentMessage } from "../../../redux/actions/addNewDocument";
 import { clearDraftsMessage } from "../../../redux/actions/addNewDocumentDraft";
-
+import io from "socket.io-client";
+import endPoint from "../../endPoint";
+let socket;
 
 function AddDocument({
   match,
@@ -111,14 +113,12 @@ function AddDocument({
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-
   useEffect(() => {
+    socket = io(endPoint.ADDRESS);
     const timeID = setInterval(() => tick(), 1000);
     let interval;
     if (!match.params.id) {
-      interval = setInterval(() => {
-        fetchDocumentId();
-      }, 1000);
+      fetchDocumentId();
     }
 
     const obj = getFromStorage("documentTracking");
@@ -134,7 +134,6 @@ function AddDocument({
           await fetchDocumentById(match.params.id);
           await fetchDocumentActionRequired(match.params.id);
         }
-
       }
 
       fetch().catch((err) => {
@@ -316,7 +315,8 @@ function AddDocument({
       addDocument.documentType,
       addDocument.note,
       addDocument.action_req,
-      addDocument.destination
+      addDocument.destination,
+      socket
     );
   };
 
