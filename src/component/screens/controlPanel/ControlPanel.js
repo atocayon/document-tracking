@@ -45,6 +45,9 @@ import Divisions from "./Divisions";
 import Sections from "./Sections";
 import DocumentTypes from "./DocumentTypes";
 import DocumentLogs from "./DocumentLogs";
+import io from "socket.io-client";
+import endPoint from "../../endPoint";
+let socket;
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -68,22 +71,22 @@ function TabPanel(props) {
 TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired
+  value: PropTypes.any.isRequired,
 };
 
 function a11yProps(index) {
   return {
     id: `vertical-tab-${index}`,
-    "aria-controls": `vertical-tabpanel-${index}`
+    "aria-controls": `vertical-tabpanel-${index}`,
   };
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
     width: "100%",
-    backgroundColor: theme.palette.background.paper
-  }
+    backgroundColor: theme.palette.background.paper,
+  },
 }));
 
 function ControlPanel(props) {
@@ -110,40 +113,42 @@ function ControlPanel(props) {
     confirmPassword: "",
     email: "",
     contact: "",
-    position: ""
+    position: "",
   });
 
   const [division, setDivision] = useState({
     department: "",
     depshort: "",
-    payroll: ""
+    payroll: "",
   });
 
   const [section, setSection] = useState({
     division: "",
     section: "",
-    secshort: ""
+    secshort: "",
   });
 
   const [docType, setDocType] = useState({
-    type: ""
+    type: "",
   });
 
   useEffect(() => {
+    socket = io(endPoint.ADDRESS);
+
     const obj = getFromStorage("documentTracking");
     setEndSession(!(obj && obj.token));
     if (obj && obj.token) {
       setToken(obj.token);
 
       async function fetch() {
-        await props.fetchAllUsers();
+        await props.fetchAllUsers(socket);
         await props.fetchAllSections();
         await props.fetchDivisions();
         await props.fetchSectionsList();
         await props.fetchDocumentTypes();
       }
 
-      fetch().catch(err => {
+      fetch().catch((err) => {
         throw err;
       });
     }
@@ -187,7 +192,6 @@ function ControlPanel(props) {
       await props.logout(token);
       window.location.reload(true);
     } else {
-
       window.location.reload(true);
     }
   };
@@ -281,7 +285,8 @@ function ControlPanel(props) {
         userInfo.confirmPassword,
         userInfo.email,
         userInfo.contact,
-        userInfo.position
+        userInfo.position,
+        socket
       );
 
       const variant = "info";
@@ -298,7 +303,7 @@ function ControlPanel(props) {
         confirmPassword: "",
         email: "",
         contact: "",
-        position: ""
+        position: "",
       });
     } else {
       const _error = {};
@@ -307,7 +312,7 @@ function ControlPanel(props) {
       setError(_error);
       const variant = "error";
       props.enqueueSnackbar("Password and Confirm password don't match", {
-        variant
+        variant,
       });
     }
   };
@@ -328,7 +333,7 @@ function ControlPanel(props) {
       ...division,
       department: "",
       depshort: "",
-      payroll: ""
+      payroll: "",
     });
   };
 
@@ -348,7 +353,7 @@ function ControlPanel(props) {
       ...section,
       division: "",
       section: "",
-      secshort: ""
+      secshort: "",
     });
   };
 
@@ -367,7 +372,7 @@ function ControlPanel(props) {
     setDocType({ ...docType, type: "" });
   };
 
-  const handleEditUser = async val => {
+  const handleEditUser = async (val) => {
     let id = await val;
     setOpenEditUser(true);
     await props.fetchUserById(id);
@@ -381,7 +386,7 @@ function ControlPanel(props) {
     setOpenEditUser(false);
   };
 
-  const handleDeleteUser = async val => {
+  const handleDeleteUser = async (val) => {
     let id = val.id;
     let name = val.name;
     await props.deleteUser(id);
@@ -389,7 +394,7 @@ function ControlPanel(props) {
     props.enqueueSnackbar(name + " Deleted", { variant });
   };
 
-  const handleEditDivision = async val => {
+  const handleEditDivision = async (val) => {
     let id = val.depid;
     setOpenEditDivision(true);
     await props.fetchDivisionById(id);
@@ -403,7 +408,7 @@ function ControlPanel(props) {
     setOpenEditDivision(false);
   };
 
-  const handleDeleteDivision = async val => {
+  const handleDeleteDivision = async (val) => {
     let id = val.depid;
     let depshort = val.depshort;
     await props.deleteDivision(id);
@@ -411,7 +416,7 @@ function ControlPanel(props) {
     props.enqueueSnackbar(depshort + " Deleted", { variant });
   };
 
-  const handleEditSection = async val => {
+  const handleEditSection = async (val) => {
     let id = val;
     setOpenEditSection(true);
     await props.fetchSectionById(id);
@@ -425,7 +430,7 @@ function ControlPanel(props) {
     setOpenEditSection(false);
   };
 
-  const handleDeleteSection = async val => {
+  const handleDeleteSection = async (val) => {
     let id = await val.id;
     let section = await val.section;
     await props.deleteSection(id);
@@ -433,7 +438,7 @@ function ControlPanel(props) {
     props.enqueueSnackbar(section + " Deleted", { variant });
   };
 
-  const handleEditDocumentType = async val => {
+  const handleEditDocumentType = async (val) => {
     let id = await val;
     await props.fetchDocumentTypeById(id);
     setEditDocumentType(true);
@@ -447,7 +452,7 @@ function ControlPanel(props) {
     setEditDocumentType(false);
   };
 
-  const handleDeleteDocumentType = async val => {
+  const handleDeleteDocumentType = async (val) => {
     let id = await val.id;
     let type = await val.type;
 
@@ -601,7 +606,7 @@ function mapStateToProps(state) {
     fetch_documentType: state.fetchDocumentTypeById,
     update_user: state.updateUserProfile,
     delete_user: state.deleteUser,
-    user_logout: state.logout
+    user_logout: state.logout,
   };
 }
 
@@ -628,7 +633,7 @@ const mapDispatchToProps = {
   deleteSection,
   deleteDocumentType,
   inputChange,
-  logout
+  logout,
 };
 
 export default connect(

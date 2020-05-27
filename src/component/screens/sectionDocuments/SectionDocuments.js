@@ -85,7 +85,7 @@ function SectionDocuments(props) {
 
           <div style={{ marginLeft: 50, marginRight: 10 }}>
             <div className={"row"}>
-              <div className={"col-md-8"}>
+              <div className={"col-md-8"} style={{paddingBottom: 200, overflow: "auto"}}>
                 <List>
                   {documents.length > 0 &&
                     documents.map((document) => {

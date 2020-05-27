@@ -78,7 +78,7 @@ function PendingForRelease(props) {
                 </div>
             )}
             <div className={"row"}>
-                <div className={"col-md-8"} style={{ marginLeft: 50, marginRight: 10 }}>
+                <div className={"col-md-8"} style={{ marginLeft: 50, marginRight: 10, paddingBottom: 200, overflow: "auto" }}>
                     {props.pending.length > 0 &&
                     props.pending.map((document, index) => (
                         <Link

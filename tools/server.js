@@ -1,8 +1,11 @@
+const http = require("http");
 const express = require("express");
-
+const socketio = require("socket.io");
 const PORT = process.env.PORT || 4000;
 
 const app = express();
+const server = http.createServer(app);
+const io = socketio(server);
 
 const path = require("path");
 const bodyParser = require("body-parser");
@@ -15,6 +18,15 @@ const saltRounds = 10;
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+app.use(express.static(path.join(__dirname)));
+app.use("/dts", router);
+
+server.listen(PORT, () => {
+  console.log("========================================================");
+  console.log("SERVER IS RUNNING ON PORT: " + PORT);
+  console.log("========================================================");
+});
 
 // mongoose.connect("mongodb://127.0.0.1:27017/dts", { useNewUrlParser: true });
 // const connection = mongoose.connection;
@@ -46,10 +58,69 @@ connection.connect(function (err) {
 //===========================================================================================
 //===========================================================================================
 
-// Add User
-router.route("/addUser").post(function (req, res) {
-  const { body } = req;
-  let {
+io.on("connection", (socket) => {
+  //Add User
+  socket.on("addUser", (
+      role,
+      employeeId,
+      name,
+      username,
+      password,
+      contact,
+      email,
+      section,
+      position,
+  ) => {
+    addUser(
+        role,
+        employeeId,
+        name,
+        username,
+        password,
+        contact,
+        email,
+        section,
+        position,
+    );
+  });
+
+  //Fetch All Users
+  socket.on("getAllUsers", Users);
+
+  //Fetch document Logs
+  socket.on("getDocumentLogs", getDocLogs);
+
+  socket.on(
+    "addDocument",
+    (
+      documentID,
+      creator,
+      subject,
+      doc_type,
+      note,
+      action_req,
+      documentLogs
+    ) => {
+      insertDocument(
+        documentID,
+        creator,
+        subject,
+        doc_type,
+        note,
+        action_req,
+        documentLogs
+      );
+    }
+  );
+
+  socket.on("disconnect", () => {
+    console.log("Disconnected");
+  });
+});
+
+
+//Add User
+const addUser = (
     role,
     employeeId,
     name,
@@ -58,9 +129,8 @@ router.route("/addUser").post(function (req, res) {
     contact,
     email,
     section,
-    position,
-  } = body;
-
+    position
+) => {
   email = email.toLowerCase();
   email = email.trim();
 
@@ -68,21 +138,22 @@ router.route("/addUser").post(function (req, res) {
   connection.query(sql, [email], function (err, rows, fields) {
     if (err) {
       console.log(err);
-      res.send(err);
     }
     console.log(rows);
     if (rows.length > 0) {
-      res.status(200).send({ success: "failed" });
+      // res.status(200).send({ success: "failed" });
+      console.log("failed");
     } else {
+
       bcrypt.hash(password, saltRounds, function (err, hash) {
         if (err) {
           console.log(err);
-          res.status(500).send(err);
+          // res.status(500).send(err);
         }
         let sql1 = "";
         sql1 += "INSERT INTO users ";
         sql1 +=
-          "(employeeId, name, username, password, contact, email, section, position, role, status) ";
+            "(employeeId, name, username, password, contact, email, section, position, role, status) ";
         sql1 += "VALUES ?";
 
         const values = [
@@ -102,15 +173,173 @@ router.route("/addUser").post(function (req, res) {
         connection.query(sql1, [values], function (err, result) {
           if (err) {
             console.log(err);
-            res.status(500).send(err);
+            // res.status(500).send(err);
           }
-
-          res.status(200).send({ success: "success" });
+          console.log(result);
+          // res.status(200).send({ success: "success" });
+          Users();
         });
       });
     }
   });
-});
+};
+
+//Fetch All Users Query
+const Users = () => {
+  let sql = "";
+  sql += "SELECT users.user_id AS user_id, ";
+  sql += "users.employeeId AS employeeId, ";
+  sql += "users.name AS name, ";
+  sql += "users.username AS username, ";
+  sql += "users.contact AS contact, ";
+  sql += "users.email AS email, ";
+  sql += "users.section AS secid, ";
+  sql += "sections.section AS section, ";
+  sql += "sections.secshort AS secshort, ";
+  sql += "divisions.department AS department, ";
+  sql += "divisions.depshort AS depshort, ";
+  sql += "users.position AS position, ";
+  sql += "users.role AS role_id, ";
+  sql += "users_role.role AS role, ";
+  sql += "users_status.status AS accnt_status ";
+  sql += "FROM users ";
+  sql += "JOIN sections ";
+  sql += "ON users.section = sections.secid ";
+  sql += "JOIN divisions ";
+  sql += "ON sections.divid = divisions.depid ";
+  sql += "JOIN users_role ";
+  sql += "ON users.role = users_role.role_id ";
+  sql += "JOIN users_status ";
+  sql += "ON users.status = users_status.status_id ";
+  sql += "ORDER BY users.user_id ASC ";
+  connection.query(sql, function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+    }
+    // console.log(rows);
+    io.emit("users", rows);
+  });
+};
+
+//Fetch Document Logs Query
+const getDocLogs = (socket) => {
+  let sql = "";
+  sql += "SELECT documentLogs.document_id AS trans_id, ";
+  sql += "users.name AS name, ";
+  sql += "documentLogs.remarks AS remarks, ";
+  sql += "documentLogs.destinationType AS destinationType, ";
+  sql += "documentLogs.destination AS destination, ";
+  sql += "documentStatus.status AS status, ";
+  sql += "DATE_FORMAT(documentLogs.date_time,'%M %d, %Y @ %h:%i:%s %p ') AS date_time ";
+  sql += "FROM documentLogs ";
+  sql += "JOIN users ";
+  sql += "ON documentLogs.user_id = users.user_id ";
+  sql += "JOIN documentStatus ";
+  sql += "ON documentLogs.status = documentStatus.statid ";
+  sql += "ORDER BY documentLogs.date_time DESC, ";
+  sql += "documentStatus.status DESC ";
+  connection.query(sql, (err, rows, fields) => {
+    if (err) {
+      console.log(err);
+    }
+
+    io.emit("docLogs", rows);
+  });
+};
+
+const insertDocument = (
+  documentID,
+  creator,
+  subject,
+  doc_type,
+  note,
+  action_req,
+  documentLogs
+) => {
+  const check = "SELECT * FROM documents WHERE documentID = ?";
+  connection.query(check, [parseInt(documentID)], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+    }
+
+    if (rows.length > 0) {
+      const update =
+        "UPDATE documents SET creator = ?, subject= ?, doc_type = ?, note = ?, status = ? WHERE documentID = ?";
+      connection.query(
+        update,
+        [creator, subject, doc_type, note, "1", parseInt(documentID)],
+        function (err, result) {
+          if (err) {
+            console.log(err);
+          }
+          console.log("Updated");
+          let sql = "";
+          sql += "INSERT INTO documentLogs ";
+          sql += "(document_id, ";
+          sql += "user_id, ";
+          sql += "remarks, ";
+          sql += "destinationType, ";
+          sql += "destination, ";
+          sql += "status, ";
+          sql += "notification) ";
+          sql += "VALUES ? ";
+
+          connection.query(sql, [documentLogs], function (err, result) {
+            if (err) {
+              console.log(err);
+            }
+
+            console.log(result);
+            getDocLogs();
+          });
+        }
+      );
+    }
+    if (rows.length === 0) {
+      const sql1 =
+        "INSERT INTO documents (documentID, creator, subject, doc_type, note, status) VALUES ?";
+      const values = [
+        [parseInt(documentID), creator, subject, doc_type, note, "1"],
+      ];
+      connection.query(sql1, [values], function (err, result) {
+        if (err) {
+          console.log(err);
+        }
+
+        const sql2 =
+          "INSERT INTO document_action_req (documentID, action_req) VALUES ?";
+
+        connection.query(sql2, [action_req], function (err, result) {
+          if (err) {
+            console.log(err);
+          }
+
+          const sql3 =
+            "INSERT INTO documentLogs (document_id, user_id, remarks, destinationType, destination, status, notification) VALUES ?";
+
+          connection.query(sql3, [documentLogs], function (err, result) {
+            if (err) {
+              console.log(err);
+            }
+
+            console.log(result);
+            getDocLogs();
+          });
+        });
+      });
+    }
+  });
+};
+
+// // Add User
+// router.route("/addUser").post(function (req, res) {
+//   const { body } = req;
+//   let {
+//
+//   } = body;
+//
+//
+// });
 
 // Users Login
 router.route("/login/:email/:password").post(function (req, res) {
@@ -250,43 +479,6 @@ router.route("/verifyToken/:token").get(function (req, res) {
   });
 });
 
-//Fetch all users
-router.route("/getUsers").get(function (req, res) {
-  let sql = "";
-  sql += "SELECT users.user_id AS user_id, ";
-  sql += "users.employeeId AS employeeId, ";
-  sql += "users.name AS name, ";
-  sql += "users.username AS username, ";
-  sql += "users.contact AS contact, ";
-  sql += "users.email AS email, ";
-  sql += "users.section AS secid, ";
-  sql += "sections.section AS section, ";
-  sql += "sections.secshort AS secshort, ";
-  sql += "divisions.department AS department, ";
-  sql += "divisions.depshort AS depshort, ";
-  sql += "users.position AS position, ";
-  sql += "users.role AS role_id, ";
-  sql += "users_role.role AS role, ";
-  sql += "users_status.status AS accnt_status ";
-  sql += "FROM users ";
-  sql += "JOIN sections ";
-  sql += "ON users.section = sections.secid ";
-  sql += "JOIN divisions ";
-  sql += "ON sections.divid = divisions.depid ";
-  sql += "JOIN users_role ";
-  sql += "ON users.role = users_role.role_id ";
-  sql += "JOIN users_status ";
-  sql += "ON users.status = users_status.status_id ";
-  sql += "ORDER BY users.name ASC ";
-  connection.query(sql, function (err, rows, fields) {
-    if (err) {
-      console.log(err);
-      res.status(500).send(err);
-    }
-    console.log(rows);
-    res.status(200).send(rows);
-  });
-});
 
 //Fetch All users by section
 router.route("/sectionUser/:section").get(function (req, res) {
@@ -776,97 +968,19 @@ router.route("/documentType").get(function (req, res) {
 });
 
 //Insert New Document
-router.route("/addNewDocument").post(function (req, res) {
-  const {
-    documentID,
-    creator,
-    subject,
-    doc_type,
-    note,
-    action_req,
-    documentLogs,
-  } = req.body;
-
-  const check = "SELECT * FROM documents WHERE documentID = ?";
-  connection.query(check, [parseInt(documentID)], function (err, rows, fields) {
-    if (err) {
-      console.log(err);
-      res.status(500).send(err);
-    }
-
-    if (rows.length > 0) {
-      const update =
-        "UPDATE documents SET creator = ?, subject= ?, doc_type = ?, note = ?, status = ? WHERE documentID = ?";
-      connection.query(
-        update,
-        [creator, subject, doc_type, note, "1", parseInt(documentID)],
-        function (err, result) {
-          if (err) {
-            console.log(err);
-            res.status(500).send(err);
-          }
-          console.log("Updated");
-          let sql = "";
-          sql += "INSERT INTO documentLogs ";
-          sql += "(document_id, ";
-          sql += "user_id, ";
-          sql += "remarks, ";
-          sql += "destinationType, ";
-          sql += "destination, ";
-          sql += "status, ";
-          sql += "notification) ";
-          sql += "VALUES ? ";
-
-          connection.query(sql, [documentLogs], function (err, result) {
-            if (err) {
-              console.log(err);
-              res.status(500).send(err);
-            }
-
-            console.log(result);
-            res.status(200).send(result);
-          });
-        }
-      );
-    }
-    if (rows.length === 0) {
-      const sql1 =
-        "INSERT INTO documents (documentID, creator, subject, doc_type, note, status) VALUES ?";
-      const values = [
-        [parseInt(documentID), creator, subject, doc_type, note, "1"],
-      ];
-      connection.query(sql1, [values], function (err, result) {
-        if (err) {
-          console.log(err);
-          res.status(500).send(err);
-        }
-
-        const sql2 =
-          "INSERT INTO document_action_req (documentID, action_req) VALUES ?";
-
-        connection.query(sql2, [action_req], function (err, result) {
-          if (err) {
-            console.log(err);
-            res.status(500).send(err);
-          }
-
-          const sql3 =
-            "INSERT INTO documentLogs (document_id, user_id, remarks, destinationType, destination, status, notification) VALUES ?";
-
-          connection.query(sql3, [documentLogs], function (err, result) {
-            if (err) {
-              console.log(err);
-              res.status(500).send(err);
-            }
-
-            console.log(result);
-            res.status(200).send(result);
-          });
-        });
-      });
-    }
-  });
-});
+// router.route("/addNewDocument").post(function (req, res) {
+//   const {
+//     documentID,
+//     creator,
+//     subject,
+//     doc_type,
+//     note,
+//     action_req,
+//     documentLogs,
+//   } = req.body;
+//
+//
+// });
 
 //Insert Draft
 router.route("/draft").post(function (req, res) {
@@ -1297,10 +1411,11 @@ router.route("/track/:doc_id").get(function (req, res) {
 });
 
 //Search Document
-router.route("/searchBySubject/:subj").get(function(req, res){
+router.route("/searchBySubject/:subj").get(function (req, res) {
   let subj = req.params.subj;
   let sql = "";
-  sql += "SELECT documents.documentId AS documentId, documents.subject AS subject, ";
+  sql +=
+    "SELECT documents.documentId AS documentId, documents.subject AS subject, ";
   sql += "users.name AS creator, ";
   sql += "users.position AS creatorPosition, ";
   sql += "sections.section AS creatorSection ";
@@ -1311,8 +1426,8 @@ router.route("/searchBySubject/:subj").get(function(req, res){
   sql += "ON users.section = sections.secid ";
   sql += "WHERE subject LIKE ? ORDER BY documents.date_time_created DESC";
 
-  connection.query(sql, ['%'+subj+'%'], function(err, rows, fields){
-    if (err){
+  connection.query(sql, ["%" + subj + "%"], function (err, rows, fields) {
+    if (err) {
       console.log(err);
       res.status(500).send(err);
     }
@@ -1320,7 +1435,6 @@ router.route("/searchBySubject/:subj").get(function(req, res){
     console.log(rows);
     res.status(200).send(rows);
   });
-
 });
 
 // ==========================================================================================
@@ -1328,10 +1442,3 @@ router.route("/searchBySubject/:subj").get(function(req, res){
 // End Document Data Control
 //===========================================================================================
 //===========================================================================================
-app.use(express.static(path.join(__dirname)));
-app.use("/dts", router);
-app.listen(PORT, () => {
-  console.log("========================================================");
-  console.log("SERVER IS RUNNING ON PORT: " + PORT);
-  console.log("========================================================");
-});
