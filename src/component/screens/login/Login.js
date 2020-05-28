@@ -17,20 +17,22 @@ import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
 import FormControl from "@material-ui/core/FormControl";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
-import useSound from 'use-sound';
+import useSound from "use-sound";
 import sound from "../../sounds/done-for-you.mp3";
-import UIfx from 'uifx';
+import UIfx from "uifx";
+import io from "socket.io-client";
+import endPoint from "../../endPoint";
 import error from "../../sounds/glitch-in-the-matrix.mp3";
 import loginSuccess from "../../sounds/quite-impressed.mp3";
 import onLoad from "../../sounds/gets-in-the-way.mp3";
 import onClick from "../../sounds/pull-out.mp3";
-const _error = new UIfx( error);
+const errorSound = new UIfx(error);
 const _visible = new UIfx(onClick);
 const _loginSuccess = new UIfx(loginSuccess);
 const _onLoad = new UIfx(onLoad);
 
+let socket;
 function Login(props) {
-
   const [login, setLogin] = useState({
     email: "",
     password: "",
@@ -42,7 +44,7 @@ function Login(props) {
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
-    _onLoad.play();
+    socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       setRedirect(true);
@@ -50,19 +52,35 @@ function Login(props) {
     if (Object.keys(props._login).length > 0) {
       if (props._login.success === true) {
         const variant = "info";
-        props.enqueueSnackbar("Welcome " + props._login.name, {
+        props.enqueueSnackbar("Welcome " + props._login.message, {
           variant,
         });
         setRedirect(true);
+        _loginSuccess.play();
       } else {
-        const _error = {};
-        _error.email = "Incorrect Email";
-        _error.password = "Incorrect Password";
-        setError(_error);
+        if (props._login.message === "server error") {
+          const variant = "error";
+          props.enqueueSnackbar(props._login.message, { variant });
+          errorSound.play();
+        }
 
-        const variant = "error";
-        props.enqueueSnackbar("Unregistered user", { variant });
-        _error.play();
+        if (props._login.message === "unrecognize email") {
+          const _error = {};
+          _error.email = "Unregistered Email";
+          setError(_error);
+          const variant = "error";
+          props.enqueueSnackbar("Unregistered Email", { variant });
+          errorSound.play();
+        }
+
+        if (props._login.message === "incorrect password") {
+          const _error = {};
+          _error.password = "Incorrect Password";
+          setError(_error);
+          const variant = "error";
+          props.enqueueSnackbar("Incorrect Password", { variant });
+          errorSound.play();
+        }
       }
     }
   }, [props._login]);
@@ -93,10 +111,10 @@ function Login(props) {
         variant,
       });
 
-      return _error.play();
+      return errorSound.play();
     }
 
-    await props.login(login);
+    await props.login(login, socket);
   };
 
   return (
@@ -152,7 +170,7 @@ function Login(props) {
                         />
                         <br />
                         <br />
-                        <FormControl fullWidth >
+                        <FormControl fullWidth>
                           <InputLabel>Password</InputLabel>
                           <Input
                             id={"password"}

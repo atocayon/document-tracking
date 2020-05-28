@@ -189,10 +189,10 @@ function ControlPanel(props) {
     const obj = await getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
-      await props.logout(token);
-      window.location.reload(true);
+      await props.logout(token, socket);
+      return window.location.reload(true);
     } else {
-      window.location.reload(true);
+      return window.location.reload(true);
     }
   };
 

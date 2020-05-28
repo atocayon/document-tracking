@@ -13,6 +13,8 @@ import Drawer from "@material-ui/core/Drawer";
 import logo from "../../../img/logo.png";
 import { connect } from "react-redux";
 import { logout } from "../../../redux/actions/logout";
+import io from "socket.io-client";
+import endPoint from "../../endPoint";
 import { notification } from "../../../redux/actions/notification";
 //Include
 import LeftDrawer from "./LeftDrawer";
@@ -23,6 +25,7 @@ import { getFromStorage } from "../../storage";
 import { withSnackbar } from "notistack";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Reactotron from "reactotron-react-js";
+let socket;
 function PrimarySearchAppBar(props) {
   const classes = useStyles(); // css styles
 
@@ -71,10 +74,11 @@ function PrimarySearchAppBar(props) {
   };
 
   const handleLogOut = async () => {
+    socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
-      await props.logout(token);
+      await props.logout(token, socket);
       window.location.reload(true);
     }
   };

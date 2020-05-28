@@ -19,7 +19,6 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(express.static(path.join(__dirname)));
 app.use("/dts", router);
 
 server.listen(PORT, () => {
@@ -59,8 +58,23 @@ connection.connect(function (err) {
 //===========================================================================================
 
 io.on("connection", (socket) => {
+  //Login
+  socket.on("login", (email, password, callback) => {
+    login(email, password, callback);
+  });
+
+  //Logout
+  socket.on("logout", (id, callback) => {
+    logout(id, callback);
+  });
+
+  //active users list
+  socket.on("active_users", fetchUserActiveList);
+
   //Add User
-  socket.on("addUser", (
+  socket.on(
+    "addUser",
+    (
       role,
       employeeId,
       name,
@@ -69,9 +83,9 @@ io.on("connection", (socket) => {
       contact,
       email,
       section,
-      position,
-  ) => {
-    addUser(
+      position
+    ) => {
+      addUser(
         role,
         employeeId,
         name,
@@ -80,9 +94,10 @@ io.on("connection", (socket) => {
         contact,
         email,
         section,
-        position,
-    );
-  });
+        position
+      );
+    }
+  );
 
   //Fetch All Users
   socket.on("getAllUsers", Users);
@@ -90,6 +105,13 @@ io.on("connection", (socket) => {
   //Fetch document Logs
   socket.on("getDocumentLogs", getDocLogs);
 
+  //Assign Document tracking number
+  socket.on("assignTrackingNum", assignTrackingNum);
+
+  //Track
+  socket.on("trackDocument", trackDocument);
+
+  //Insert Document
   socket.on(
     "addDocument",
     (
@@ -99,7 +121,8 @@ io.on("connection", (socket) => {
       doc_type,
       note,
       action_req,
-      documentLogs
+      documentLogs,
+      callback
     ) => {
       insertDocument(
         documentID,
@@ -108,7 +131,8 @@ io.on("connection", (socket) => {
         doc_type,
         note,
         action_req,
-        documentLogs
+        documentLogs,
+        callback
       );
     }
   );
@@ -118,18 +142,22 @@ io.on("connection", (socket) => {
   });
 });
 
+//------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------
 
 //Add User
 const addUser = (
-    role,
-    employeeId,
-    name,
-    username,
-    password,
-    contact,
-    email,
-    section,
-    position
+  role,
+  employeeId,
+  name,
+  username,
+  password,
+  contact,
+  email,
+  section,
+  position
 ) => {
   email = email.toLowerCase();
   email = email.trim();
@@ -144,7 +172,6 @@ const addUser = (
       // res.status(200).send({ success: "failed" });
       console.log("failed");
     } else {
-
       bcrypt.hash(password, saltRounds, function (err, hash) {
         if (err) {
           console.log(err);
@@ -153,7 +180,7 @@ const addUser = (
         let sql1 = "";
         sql1 += "INSERT INTO users ";
         sql1 +=
-            "(employeeId, name, username, password, contact, email, section, position, role, status) ";
+          "(employeeId, name, username, password, contact, email, section, position, role, status) ";
         sql1 += "VALUES ?";
 
         const values = [
@@ -215,8 +242,8 @@ const Users = () => {
   connection.query(sql, function (err, rows, fields) {
     if (err) {
       console.log(err);
+      throw err;
     }
-    // console.log(rows);
     io.emit("users", rows);
   });
 };
@@ -230,14 +257,20 @@ const getDocLogs = (socket) => {
   sql += "documentLogs.destinationType AS destinationType, ";
   sql += "documentLogs.destination AS destination, ";
   sql += "documentStatus.status AS status, ";
-  sql += "DATE_FORMAT(documentLogs.date_time,'%M %d, %Y @ %h:%i:%s %p ') AS date_time ";
-  sql += "FROM documentLogs ";
+  sql +=
+    "DATE_FORMAT(documentLogs.date_time,'%M %d, %Y @ %h:%i:%s %p ') AS date_time ";
+  sql += "FROM documents ";
+  sql +=
+    "JOIN (SELECT MAX(trans_id) as trans, document_id, remarks, destinationType, destination, date_time, user_id,status ";
+  sql +=
+    "FROM documentLogs GROUP BY document_id) AS documentLogs on documents.documentID = documentLogs.document_id ";
   sql += "JOIN users ";
   sql += "ON documentLogs.user_id = users.user_id ";
   sql += "JOIN documentStatus ";
   sql += "ON documentLogs.status = documentStatus.statid ";
   sql += "ORDER BY documentLogs.date_time DESC, ";
   sql += "documentStatus.status DESC ";
+
   connection.query(sql, (err, rows, fields) => {
     if (err) {
       console.log(err);
@@ -247,6 +280,39 @@ const getDocLogs = (socket) => {
   });
 };
 
+const expandDogLogs = (doc_id, date_time) => {
+
+}
+
+//Assign Document Tracking ID
+const assignTrackingNum = () => {
+  const sql = "SELECT * FROM documents";
+  connection.query(sql, function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      throw err;
+    }
+
+    if (rows.length > 0) {
+      const sql1 =
+        "SELECT documentID+1 as documentID FROM documents ORDER BY documentID DESC LIMIT 1";
+      connection.query(sql1, function (err, rows, fields) {
+        if (err) {
+          console.log(err);
+          throw err;
+        }
+
+        io.emit("documentId", rows[0]);
+      });
+    } else {
+      console.log(rows);
+      const defaultValue = 1000000000;
+      io.emit("documentId", { documentID: defaultValue });
+    }
+  });
+};
+
+//Inserting new document
 const insertDocument = (
   documentID,
   creator,
@@ -254,12 +320,14 @@ const insertDocument = (
   doc_type,
   note,
   action_req,
-  documentLogs
+  documentLogs,
+  callback
 ) => {
   const check = "SELECT * FROM documents WHERE documentID = ?";
   connection.query(check, [parseInt(documentID)], function (err, rows, fields) {
     if (err) {
       console.log(err);
+      return callback("server error");
     }
 
     if (rows.length > 0) {
@@ -271,8 +339,9 @@ const insertDocument = (
         function (err, result) {
           if (err) {
             console.log(err);
+            return callback("server error");
           }
-          console.log("Updated");
+
           let sql = "";
           sql += "INSERT INTO documentLogs ";
           sql += "(document_id, ";
@@ -287,10 +356,11 @@ const insertDocument = (
           connection.query(sql, [documentLogs], function (err, result) {
             if (err) {
               console.log(err);
+              return callback("server error");
             }
 
-            console.log(result);
             getDocLogs();
+            assignTrackingNum();
           });
         }
       );
@@ -322,8 +392,8 @@ const insertDocument = (
               console.log(err);
             }
 
-            console.log(result);
             getDocLogs();
+            assignTrackingNum();
           });
         });
       });
@@ -331,20 +401,10 @@ const insertDocument = (
   });
 };
 
-// // Add User
-// router.route("/addUser").post(function (req, res) {
-//   const { body } = req;
-//   let {
-//
-//   } = body;
-//
-//
-// });
+//Track Document
+const trackDocument = () => {};
 
-// Users Login
-router.route("/login/:email/:password").post(function (req, res) {
-  let email = req.params.email;
-  let password = req.params.password;
+const login = (email, password, callback) => {
   let sql = "";
   sql += "SELECT ";
   sql += "users.user_id AS user_id, ";
@@ -359,25 +419,23 @@ router.route("/login/:email/:password").post(function (req, res) {
   connection.query(sql, [email], function (err, rows, fields) {
     if (err) {
       console.log(err);
-      res.status(500).send(err);
+      return callback("server error");
     }
 
     if (rows.length === 0) {
-      res.status(200).json({ success: false, message: "Unrecognize email" });
+      return callback("unrecognize email");
     }
 
     if (rows.length > 0) {
       bcrypt.compare(password, rows[0].password, function (err, result) {
         if (err) {
           console.log(err);
-          res.status(500).send(err);
+          return callback("server error");
         }
 
         if (!result) {
           console.log(result);
-          res
-            .status(200)
-            .json({ success: false, message: "Incorrect Password" });
+          return callback("incorrect password");
         }
 
         console.log(result);
@@ -385,6 +443,7 @@ router.route("/login/:email/:password").post(function (req, res) {
         const id = rows[0].user_id;
         const role = rows[0].role;
         const name = rows[0].name;
+        const data = { id, name };
         const check_session_query =
           "SELECT * FROM users_session WHERE userId = ?";
         connection.query(check_session_query, [id], function (
@@ -394,7 +453,7 @@ router.route("/login/:email/:password").post(function (req, res) {
         ) {
           if (err) {
             console.log(err);
-            res.status(500).send(err);
+            return callback("server error");
           }
           console.log(rows);
           if (rows.length === 0) {
@@ -404,17 +463,10 @@ router.route("/login/:email/:password").post(function (req, res) {
             connection.query(sql1, [values], function (err, result) {
               if (err) {
                 console.log(err);
-                res.status(500).send(err);
+                return callback("server error");
               }
-
-              console.log(result);
-              res.status(200).json({
-                success: true,
-                message: "New User",
-                role: role,
-                token: id,
-                name: name,
-              });
+              fetchUserActiveList();
+              return callback(data);
             });
           }
 
@@ -424,20 +476,12 @@ router.route("/login/:email/:password").post(function (req, res) {
             connection.query(update_session, [0, id], function (err, result) {
               if (err) {
                 console.log(err);
-                res.status(500).json({
-                  success: false,
-                  message: "Server error in updating session",
-                });
+                return callback("server error");
               }
               console.log(result);
               if (result) {
-                res.status(200).json({
-                  success: true,
-                  role: role,
-                  message: "Record Found, Login Success!",
-                  token: id,
-                  name: name,
-                });
+                fetchUserActiveList();
+                return callback(data);
               }
             });
           }
@@ -445,23 +489,40 @@ router.route("/login/:email/:password").post(function (req, res) {
       });
     }
   });
-});
+};
 
-//Users Logout
-router.route("/logout/:id").post(function (req, res) {
-  let id = req.params.id;
-
+const logout = (id, callback) => {
   const sql = "UPDATE users_session SET isDeleted = ? WHERE userId = ?";
-  connection.query(sql, [1, id], function (err, result) {
+  connection.query(sql, ["1", id], function (err, result) {
     if (err) {
-      res.status(500).send("Server Error...");
+      console.log(err);
+      return callback("server error");
     }
 
     if (result) {
-      res.status(200).send("Logout Success...");
+      console.log(result);
+      fetchUserActiveList();
     }
   });
-});
+};
+
+const fetchUserActiveList = () => {
+  let sql = "";
+  sql += "SELECT users.name AS name, ";
+  sql += "users.position AS position, ";
+  sql += "users_session.timeStamp AS timeStamp, ";
+  sql += "FROM users_session ";
+  sql += "JOIN users ";
+  sql += "ON users_session.userId = users.user_id ";
+
+  connection.query(sql, function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+    }
+
+    io.emit("activeUsers", rows);
+  });
+};
 
 //Verify User Token
 router.route("/verifyToken/:token").get(function (req, res) {
@@ -478,7 +539,6 @@ router.route("/verifyToken/:token").get(function (req, res) {
     res.status(200).send(rows[0]);
   });
 });
-
 
 //Fetch All users by section
 router.route("/sectionUser/:section").get(function (req, res) {
@@ -924,35 +984,6 @@ router.route("/deleteDocumentType/:id").post(function (req, res) {
 //===========================================================================================
 //===========================================================================================
 
-//Assign Document Tracking ID
-router.route("/documentId").get(function (req, res) {
-  const sql = "SELECT * FROM documents";
-
-  connection.query(sql, function (err, rows, fields) {
-    if (err) {
-      console.log(err);
-      res.status(500).send(err);
-    }
-
-    if (rows.length > 0) {
-      const sql1 =
-        "SELECT documentID+1 as documentID FROM documents ORDER BY documentID DESC LIMIT 1";
-      connection.query(sql1, function (err, rows, fields) {
-        if (err) {
-          console.log(err);
-          res.status(500).send(err);
-        }
-        console.log(rows);
-        res.status(200).send(rows[0]);
-      });
-    } else {
-      console.log(rows);
-      const defaultValue = 1000000000;
-      res.status(200).send({ documentID: defaultValue });
-    }
-  });
-});
-
 // Fetch Document Type
 router.route("/documentType").get(function (req, res) {
   const sql = "SELECT * FROM document_type";
@@ -1191,77 +1222,82 @@ router.route("/fetchDocumentDestination/:doc_id").get(function (req, res) {
   });
 });
 
+const receiveDocument = (documentTracking, user_id, user_section, callback) => {
+  const sql =
+    "SELECT * FROM documentLogs WHERE document_id = ? ORDER BY trans_id DESC LIMIT 1";
+};
+
 //receive document
 router.route("/receiveDocument").post(function (req, res) {
   const { documentTracking, user_id, user_section } = req.body;
-  const sql = "SELECT * FROM documentLogs WHERE document_id = ?";
+  const sql =
+    "SELECT * FROM documentLogs WHERE document_id = ? ORDER BY trans_id DESC LIMIT 1";
   connection.query(sql, [documentTracking], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
     }
 
-    console.log(rows);
-
     if (rows.length > 0) {
-      for (let i = 0; i < rows.length; i++) {
-        if (
-          rows[i].destinationType === "External" &&
-          rows[i].user_id === user_id &&
-          rows[i].status === "2"
-        ) {
-          const insertExternal =
-            "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification) VALUES ?";
-          const val = [
-            [documentTracking, user_id, "none", "External", "none", "1", "0"],
-          ];
-          connection.query(insertExternal, [val], function (err, result) {
-            if (err) {
-              console.log(err);
-              res.status(500).send(err);
-            }
-
-            res.status(200).send(result);
-          });
-
-          break;
-        }
-
-        if (
-          rows[i].destinationType === "Internal" &&
-          rows[i].destination === user_section &&
-          rows[i].status === "2"
-        ) {
-          let insertInternal = "";
-          insertInternal += "INSERT INTO documentLogs ";
-          insertInternal += "(document_id, ";
-          insertInternal += "user_id, ";
-          insertInternal += "remarks, ";
-          insertInternal += "destinationType, ";
-          insertInternal += "destination, ";
-          insertInternal += "status, ";
-          insertInternal += "notification) ";
-          insertInternal += "VALUES ? ";
-          const val1 = [
-            [documentTracking, user_id, "none", "Internal", "none", "1", "0"],
-            [documentTracking, user_id, "none", "Internal", "none", "3", "0"],
-          ];
-          connection.query(insertInternal, [val1], function (err, result) {
-            if (err) {
-              console.log(err);
-              res.status(500).send(err);
-            }
-
-            res.status(200).send(result);
-          });
-
-          break;
-        }
+      console.log(rows);
+      if (
+        rows[0].destinationType === "External" &&
+        rows[0].user_id === user_id &&
+        rows[0].status === "2"
+      ) {
+        const insertExternal =
+          "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification) VALUES ?";
+        const val = [
+          [documentTracking, user_id, "none", "External", "none", "1", "0"],
+        ];
+        connection.query(insertExternal, [val], function (err, result) {
+          if (err) {
+            console.log(err);
+            res.status(500).send(err);
+          }
+          console.log(result);
+          res.status(200).send({ result: "success" });
+        });
       }
-    }
 
-    if (rows.length === 0) {
-      res.status(200).send({ success: "failed", message: "failed" });
+      if (
+        rows[0].destinationType === "Internal" &&
+        rows[0].destination === user_section &&
+        rows[0].status === "2"
+      ) {
+        let insertInternal = "";
+        insertInternal += "INSERT INTO documentLogs ";
+        insertInternal += "(document_id, ";
+        insertInternal += "user_id, ";
+        insertInternal += "remarks, ";
+        insertInternal += "destinationType, ";
+        insertInternal += "destination, ";
+        insertInternal += "status, ";
+        insertInternal += "notification) ";
+        insertInternal += "VALUES ? ";
+        const val1 = [
+          [documentTracking, user_id, "none", "Internal", "none", "1", "0"],
+          [documentTracking, user_id, "none", "Internal", "none", "3", "0"],
+        ];
+        connection.query(insertInternal, [val1], function (err, result) {
+          if (err) {
+            console.log(err);
+            res.status(500).send(err);
+          }
+          console.log(result);
+          res.status(200).send({ result: "success" });
+        });
+      }
+
+      if (
+        rows[0].destination !== user_section ||
+        rows[0].status !== "2" ||
+        rows[0].user_id !== user_id ||
+        rows[0].status !== "2"
+      ) {
+        console.log("failed");
+        res.status(200).send({ result: "failed" });
+      }
     }
   });
 });
