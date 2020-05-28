@@ -21,7 +21,12 @@ export function addNewDocument(
       documentType,
       note,
       action_req,
-      destination
+      destination,
+      (message) => {
+        if (message) {
+          return dispatch({ type: actionTypes.ADD_DOCUMENT, data: "failed" });
+        }
+      }
     );
 
     return dispatch({ type: actionTypes.ADD_DOCUMENT, data: "success" });

@@ -116,10 +116,8 @@ function AddDocument({
   useEffect(() => {
     socket = io(endPoint.ADDRESS);
     const timeID = setInterval(() => tick(), 1000);
-    let interval;
-    if (!match.params.id) {
-      fetchDocumentId();
-    }
+
+
 
     const obj = getFromStorage("documentTracking");
 
@@ -133,6 +131,10 @@ function AddDocument({
         if (match.params.id) {
           await fetchDocumentById(match.params.id);
           await fetchDocumentActionRequired(match.params.id);
+        }
+
+        if (!match.params.id) {
+          await fetchDocumentId(socket);
         }
       }
 
@@ -183,7 +185,6 @@ function AddDocument({
 
     return () => {
       clearInterval(timeID);
-      clearInterval(interval);
     };
   }, [match.params.id, submit_new_document, submit_new_document_draft]);
 

@@ -33,23 +33,29 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
 import ListItemText from "@material-ui/core/ListItemText";
 import DescriptionIcon from '@material-ui/icons/Description';
+import io from "socket.io-client";
+import endPoint from "../../endPoint";
+import reactotron from "../../../ReactotronConfig";
 const _onClick = new UIFx(onClick);
 const _onScan = new UIFx(onScan);
-
+let socket;
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
   const [selectedValue, setSelectedValue] = useState("");
   const [trackOrSearchOnly, setTrackOrSearchOnly] = useState(false);
   useEffect(() => {
+    socket = io(endPoint.ADDRESS);
     if (props.receive !== "") {
       if (props.receive === "success") {
         const variant = "info";
         props.enqueueSnackbar("NMP| Document received successfully...", {
           variant,
         });
-      } else {
-        const variant = "error";
-        props.enqueueSnackbar("Server error...", {
+      }
+
+      if(props.receive === "failed") {
+        const variant = "warning";
+        props.enqueueSnackbar("Document receive unauthorized", {
           variant,
         });
       }
@@ -74,10 +80,7 @@ function Dashboard(props) {
   };
 
   const handleError = (err) => {
-    Reactotron.log(err);
-  };
-  const scan = (data) => {
-    Reactotron.log(data);
+    throw err;
   };
 
   const handleTrackDocument = async () => {
@@ -86,9 +89,9 @@ function Dashboard(props) {
 
   const handleScanning = async (data) => {
     if (!trackOrSearchOnly) {
+      Reactotron.log("Track and Receive");
       await props.handleScanAndReceive(
         data,
-        props.trackingNum.documentTrackingNumber,
         props.user.user_id,
         props.user.secshort
       );
@@ -204,7 +207,6 @@ function Dashboard(props) {
 
               <div className={"row"}>
                 <div className={"col-md-12"}>
-                  <BarcodeReader onError={handleError} onScan={scan} />
 
                   {!trackOrSearchOnly &&
                   props.receive === "" &&
@@ -278,9 +280,9 @@ function Dashboard(props) {
                     </>
                   ) : null}
 
-                  {props.track.length > 0 && (
+                  {props.track.length > 0 && props.search.length === 0 ? (
                     <DocumentTrack track={props.track} />
-                  )}
+                  ): null}
                 </div>
               </div>
             </Grid>
