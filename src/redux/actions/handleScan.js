@@ -2,56 +2,38 @@ import actionTypes from "./actionTypes";
 import Reactotron from "reactotron-react-js";
 import axios from "axios";
 
-export function handleScan(data, user_id, secshort) {
-  return function (dispatch) {
+export function handleScan(data, user_id, secshort, socket) {
+  return async function (dispatch) {
     dispatch({ type: actionTypes.HANDLE_SCAN, data });
-    return axios
-      .post("http://10.10.10.16:4000/dts/receiveDocument", {
-        documentTracking: data,
-        user_id: user_id,
-        user_section: secshort,
-      })
-      .then((data) => {
-        Reactotron.log(data);
-        if (data.data.result === "success") {
-          dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "success" });
-          axios
-            .get("http://10.10.10.16:4000/dts/track/" + data)
-            .then((res) => {
-              dispatch({
-                type: actionTypes.TRACK_DOCUMENT,
-                data: res.data,
-              });
-            })
-            .catch((err) => {
-              throw err;
-            });
-        }
+    await socket.emit("receiveDocument", data, user_id, secshort, (message) => {
+      if (message === "server error") {
+        dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "failed" });
+      }
 
-        if (data.data.result === "failed") {
-          dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "failed" });
-        }
-      })
-      .catch((err) => {
-        throw err;
-        // dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "failed" });
-      });
+      if (message === "success") {
+        dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "success" });
+        socket.emit("tracking", data);
+        socket.on("track", (_data) => {
+          dispatch({
+            type: actionTypes.TRACK_DOCUMENT,
+            data: _data,
+          });
+        });
+      }
+    });
   };
 }
 
-export function trackOnly(data) {
+export function trackOnly(data, socket) {
   return async function (dispatch) {
     await dispatch({ type: actionTypes.HANDLE_SCAN, data });
-    return axios
-      .get("http://10.10.10.16:4000/dts/track/" + data)
-      .then((res) => {
-        dispatch({
-          type: actionTypes.TRACK_DOCUMENT,
-          data: res.data,
-        });
-      })
-      .catch((err) => {
-        throw err;
+    await socket.emit("tracking", data);
+    await socket.on("track", (_data) => {
+      Reactotron.log(_data);
+      dispatch({
+        type: actionTypes.TRACK_DOCUMENT,
+        data: _data,
       });
+    });
   };
 }

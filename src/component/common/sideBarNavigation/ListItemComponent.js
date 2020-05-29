@@ -8,15 +8,17 @@ import FolderSharedIcon from "@material-ui/icons/FolderShared";
 import ArchiveIcon from "@material-ui/icons/Archive";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import HomeIcon from "@material-ui/icons/Home";
-import DraftsIcon from '@material-ui/icons/Drafts';
-import AddBoxIcon from '@material-ui/icons/AddBox';
+import DraftsIcon from "@material-ui/icons/Drafts";
+import AddBoxIcon from "@material-ui/icons/AddBox";
 import { NavLink } from "react-router-dom";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import PrintIcon from "@material-ui/icons/Print";
-import InfoIcon from '@material-ui/icons/Info';
+import InfoIcon from "@material-ui/icons/Info";
+import Badge from "@material-ui/core/Badge";
+import Typography from "@material-ui/core/Typography";
+
 export default function ListItemComponent(props) {
   function icon() {
-
     if (props.primary === "Drafts") {
       return <DraftsIcon />;
     }
@@ -45,15 +47,15 @@ export default function ListItemComponent(props) {
       return <HomeIcon />;
     }
 
-    if (props.primary === "User Management"){
+    if (props.primary === "User Management") {
       return <SupervisorAccountIcon />;
     }
 
-    if (props.primary === 'Generate Reports'){
+    if (props.primary === "Generate Reports") {
       return <PrintIcon />;
     }
 
-    if (props.primary === "About"){
+    if (props.primary === "About") {
       return <InfoIcon />;
     }
   }
@@ -86,15 +88,15 @@ export default function ListItemComponent(props) {
       return "/";
     }
 
-    if (props.primary === "User Management"){
+    if (props.primary === "User Management") {
       return "/users";
     }
 
-    if (props.primary === 'Generate Reports'){
+    if (props.primary === "Generate Reports") {
       return "/reports";
     }
 
-    if (props.primary === "About"){
+    if (props.primary === "About") {
       return "/about";
     }
   }
@@ -102,7 +104,7 @@ export default function ListItemComponent(props) {
   const activeStyle = {
     color: "#2196F3",
     fontWeight: "bold",
-    textDecoration: "underline"
+    textDecoration: "underline",
   };
   return (
     <NavLink
@@ -113,7 +115,22 @@ export default function ListItemComponent(props) {
     >
       <ListItem button className={props.className}>
         <ListItemIcon>{icon()}</ListItemIcon>
-        <ListItemText primary={props.primary} />
+        <ListItemText
+          primary={
+            props.primary === "Pending" ? (
+              <>
+                {props.pending > 0 && (
+                  <Badge color="secondary" variant="dot">
+                    <Typography>{props.primary}</Typography>
+                  </Badge>
+                )}
+                {props.pending === 0 && props.primary}
+              </>
+            ) : (
+              props.primary
+            )
+          }
+        />
       </ListItem>
     </NavLink>
   );
