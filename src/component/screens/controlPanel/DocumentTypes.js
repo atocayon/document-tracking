@@ -4,8 +4,26 @@ import EditIcon from "@material-ui/icons/Edit";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import AddNewDocumentType from "./AddNewDocumentType";
 import EditDocumentType from "./EditDocumentType";
+import Paper from "@material-ui/core/Paper";
+import Table from "@material-ui/core/Table";
+import TableHead from "@material-ui/core/TableHead";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableRow from "@material-ui/core/TableRow";
+import TableCell from "@material-ui/core/TableCell";
+import TableBody from "@material-ui/core/TableBody";
+import TablePagination from "@material-ui/core/TablePagination";
 
 function DocumentTypes(props) {
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
   return (
     <div style={{ paddingBottom: 200, height: "100vh", overflow: "auto" }}>
       <AddNewDocumentType
@@ -35,40 +53,52 @@ function DocumentTypes(props) {
         </button>
       </div>
 
-      <table className={"table table-striped table-bordered"}>
-        <thead>
-          <tr style={{ background: "#2196F3", color: "#fff" }}>
-            <th>#</th>
-            <th>Document Type</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {props.documentTypes.map((document, index) => (
-            <tr key={index}>
-              <td>{++index}</td>
-              <td>{document.type}</td>
-              <td>
-                <button
-                  className={"btn btn-sm "}
-                  onClick={props.handleEditDocumentType.bind(null, document.id)}
-                >
-                  <EditIcon />
-                </button>
-                <button
-                  className={"btn btn-sm "}
-                  onClick={props.handleDeleteDocumentType.bind(null, {
-                    id: document.id,
-                    type: document.type
-                  })}
-                >
-                  <DeleteOutlineIcon />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <TableContainer component={Paper}>
+            <Table>
+                <TableHead>
+                    <TableRow style={{ background: "#2196F3"}}>
+                        <TableCell style={{color: "#fff" }}>#</TableCell>
+                        <TableCell style={{color: "#fff" }}>Document Type</TableCell>
+                        <TableCell></TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {props.documentTypes.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((document, index) => (
+                        <TableRow key={index}>
+                            <TableCell>{++index}</TableCell>
+                            <TableCell>{document.type}</TableCell>
+                            <TableCell>
+                                <button
+                                    className={"btn btn-sm "}
+                                    onClick={props.handleEditDocumentType.bind(null, document.id)}
+                                >
+                                    <EditIcon />
+                                </button>
+                                <button
+                                    className={"btn btn-sm "}
+                                    onClick={props.handleDeleteDocumentType.bind(null, {
+                                        id: document.id,
+                                        type: document.type
+                                    })}
+                                >
+                                    <DeleteOutlineIcon />
+                                </button>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+            <TablePagination
+                rowsPerPageOptions={[5, 10, 20, 30, 50, 70, 80, 100]}
+                component="div"
+                count={props.documentTypes.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onChangePage={handleChangePage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+        </TableContainer>
+
     </div>
   );
 }

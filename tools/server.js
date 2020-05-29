@@ -137,6 +137,11 @@ io.on("connection", (socket) => {
     }
   );
 
+  //Expand/dropdown in doc logs
+  socket.on("expandDocLogs", (doc_id, status) => {
+    expandDogLogs(doc_id, status,socket);
+  });
+
   socket.on("disconnect", () => {
     console.log("Disconnected");
   });
@@ -280,9 +285,35 @@ const getDocLogs = (socket) => {
   });
 };
 
-const expandDogLogs = (doc_id, date_time) => {
-
-}
+const expandDogLogs = (doc_id, status, socket) => {
+  let sql = "";
+  sql += "SELECT documentLogs.document_id AS trans_id, ";
+  sql += "users.name AS name, ";
+  sql += "documentLogs.remarks AS remarks,  ";
+  sql += "documentLogs.destinationType AS destinationType, ";
+  sql += "documentLogs.destination AS destination, ";
+  sql += "documentStatus.status AS status, ";
+  sql +=
+    "DATE_FORMAT(documentLogs.date_time,'%M %d, %Y @ %h:%i:%s %p ') AS date_time ";
+  sql += "FROM documentLogs ";
+  sql += "JOIN documents ";
+  sql += "ON documentLogs.document_id = documents.documentID ";
+  sql += "JOIN users ";
+  sql += "ON documentLogs.user_id = users.user_id ";
+  sql += "JOIN documentStatus ";
+  sql += "ON documentLogs.status = documentStatus.statid ";
+  sql += "WHERE documentLogs.document_id = ? AND documentStatus.status != ?";
+  sql += "ORDER BY documentLogs.date_time DESC, ";
+  sql += "documentStatus.status DESC ";
+  connection.query(sql, [doc_id, status], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      throw err;
+    }
+    console.log(rows);
+    socket.emit("expandedDoc", rows);
+  });
+};
 
 //Assign Document Tracking ID
 const assignTrackingNum = () => {
