@@ -51,8 +51,8 @@ function Sections(props) {
         >
           Add New Section
         </button>
-        <br/>
-        <br/>
+        <br />
+        <br />
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
