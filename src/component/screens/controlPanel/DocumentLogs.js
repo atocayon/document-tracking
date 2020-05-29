@@ -20,6 +20,7 @@ import Box from "@material-ui/core/Box";
 import Reactotron from "reactotron-react-js";
 import { connect } from "react-redux";
 import { expandDocLogs } from "../../../redux/actions/expandDocLogs";
+import { clearExpandLogs } from "../../../redux/actions/expandDocLogs";
 
 let socket;
 
@@ -57,13 +58,18 @@ const useRowStyles = makeStyles({
 
 function Row(props) {
   const { row } = props;
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState({});
   const classes = useRowStyles();
 
   const handleExpandMore = async (val) => {
-    await setOpen(!open);
-
-    await props.expandDocLogs(val, props.socket);
+    if (props.expand_info.length === 0 ) {
+      await props.expandDocLogs(val, props.socket);
+      setOpen({ ...open, [val.doc_id]: true });
+    }
+    if (Object.keys(open).length > 0) {
+      setOpen({});
+      await props.clearExpandLogs();
+    }
   };
 
   return (
@@ -75,24 +81,46 @@ function Row(props) {
             size="small"
             onClick={handleExpandMore.bind(null, {
               doc_id: row.trans_id,
-              date_time: row.date_time,
+              status: row.status,
             })}
           >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            {open[row.trans_id] ? (
+              <KeyboardArrowUpIcon />
+            ) : (
+              <KeyboardArrowDownIcon />
+            )}
           </IconButton>
         </TableCell>
         <TableCell>{row.trans_id}</TableCell>
         <TableCell>{row.name}</TableCell>
         <TableCell>{row.remarks}</TableCell>
         <TableCell>{row.destinationType}</TableCell>
-        <TableCell>{row.destination}</TableCell>
         <TableCell>{row.status}</TableCell>
+        <TableCell>{row.destination}</TableCell>
+
         <TableCell>{row.date_time}</TableCell>
       </TableRow>
       <StyledTableRow>
         <TableCell colSpan={8}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box>asd</Box>
+          <Collapse in={open[row.trans_id]} timeout="auto" unmountOnExit>
+            <Box margin={1}>
+              <Table>
+                <TableBody>
+                  {props.expand_info.map((data, index) => (
+                    <TableRow key={index}>
+                      <TableCell></TableCell>
+                      <TableCell>{data.trans_id}</TableCell>
+                      <TableCell>{data.name}</TableCell>
+                      <TableCell>{data.remarks}</TableCell>
+                      <TableCell>{data.destinationType}</TableCell>
+                      <TableCell>{data.status}</TableCell>
+                      <TableCell>{data.destination}</TableCell>
+                      <TableCell>{data.date_time}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
           </Collapse>
         </TableCell>
       </StyledTableRow>
@@ -156,9 +184,12 @@ function DocumentLogs(props) {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => (
                 <Row
+                  index={index}
                   row={row}
                   socket={socket}
                   expandDocLogs={props.expandDocLogs}
+                  expand_info={props.expand_info}
+                  clearExpandLogs={props.clearExpandLogs}
                 />
               ))}
           </TableBody>
@@ -179,12 +210,13 @@ function DocumentLogs(props) {
 
 function mapStateToProps(state) {
   return {
-    expand_info: state.expand,
+    expand_info: state.expandDocLogs,
   };
 }
 
 const mapDispatchToProps = {
   expandDocLogs,
+  clearExpandLogs,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentLogs);

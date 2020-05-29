@@ -5,12 +5,30 @@ import EditIcon from "@material-ui/icons/Edit";
 import AddNewUser from "./AddNewUser";
 import Reactotron from "reactotron-react-js";
 import EditUser from "./EditUser";
-
+import Paper from "@material-ui/core/Paper";
+import TableContainer from "@material-ui/core/TableContainer";
+import Table from "@material-ui/core/Table";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TableCell from "@material-ui/core/TableCell";
+import TablePagination from "@material-ui/core/TablePagination";
+import TableBody from "@material-ui/core/TableBody";
 
 function Users(props) {
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const users = props.systemUsers.filter(
-    res => res.user_id !== parseInt(props.token)
+    (res) => res.user_id !== parseInt(props.token)
   );
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   return (
     <div style={{ paddingBottom: 200, height: "100vh", overflow: "auto" }}>
@@ -40,76 +58,85 @@ function Users(props) {
           Add New User
         </button>
       </div>
-
-      <table className={"table table-striped table-bordered"}>
-        <thead>
-          <tr style={{ background: "#2196F3", color: "#fff" }}>
-            <th>#</th>
-            <th>Employee ID</th>
-            <th>Name</th>
-            <th>Section</th>
-            <th>Position</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user, index) => {
-            const sec = props.sections.filter(
-              sec => sec.id === parseInt(user.secid)
-            );
-
-            return (
-              <tr key={index}>
-                <td>{++index}</td>
-                <td>{user.employeeId}</td>
-                <td>{user.name}</td>
-                <td>
-                  {sec.map(_sec => (
-                    <>{_sec.type}</>
-                  ))}
-                </td>
-                <td>{user.position}</td>
-                <td>
-                  {user.role_id === "1"
-                    ? "Admin"
-                    : user.role_id === "2"
-                    ? "Member"
-                    : "Super Admin"}
-                </td>
-                <td>
-                  {user.accnt_status === "deleted" ? (
-                    <span style={{ color: "red" }}>Deleted</span>
-                  ) : user.accnt_status === "deactivated" ? (
-                    <span style={{ color: "orange" }}>Deactivated</span>
-                  ) : (
-                    <span style={{ color: "green" }}>Active</span>
-                  )}
-                </td>
-                <td>
-                  <div>
-                    <button
-                      className={"btn btn-sm "}
-                      onClick={props.handleEditUser.bind(null, user.user_id)}
-                    >
-                      <EditIcon />
-                    </button>
-                    <button className={"btn btn-sm "}>
-                      <DeleteOutlineIcon
-                        onClick={props.handleDeleteUser.bind(null, {
-                          id: user.user_id,
-                          name: user.name
-                        })}
-                      />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow style={{ background: "#2196F3"}}>
+              <TableCell style={{color: "#fff" }}>#</TableCell>
+              <TableCell style={{color: "#fff" }}>Employee ID</TableCell>
+              <TableCell style={{color: "#fff" }}>Name</TableCell>
+              <TableCell style={{color: "#fff" }}>Section</TableCell>
+              <TableCell style={{color: "#fff" }}>Position</TableCell>
+              <TableCell style={{color: "#fff" }}>Role</TableCell>
+              <TableCell style={{color: "#fff" }}>Status</TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user, index) => {
+              const sec = props.sections.filter(
+                (sec) => sec.id === parseInt(user.secid)
+              );
+              return (
+                <TableRow key={index}>
+                  <TableCell>{++index}</TableCell>
+                  <TableCell>{user.employeeId}</TableCell>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>
+                    {sec.map((_sec) => (
+                      <>{_sec.type}</>
+                    ))}
+                  </TableCell>
+                  <TableCell>{user.position}</TableCell>
+                  <TableCell>
+                    {user.role_id === "1"
+                      ? "Admin"
+                      : user.role_id === "2"
+                      ? "Member"
+                      : "Super Admin"}
+                  </TableCell>
+                  <TableCell>
+                    {user.accnt_status === "deleted" ? (
+                      <span style={{ color: "red" }}>Deleted</span>
+                    ) : user.accnt_status === "deactivated" ? (
+                      <span style={{ color: "orange" }}>Deactivated</span>
+                    ) : (
+                      <span style={{ color: "green" }}>Active</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <div>
+                      <button
+                        className={"btn btn-sm "}
+                        onClick={props.handleEditUser.bind(null, user.user_id)}
+                      >
+                        <EditIcon />
+                      </button>
+                      <button className={"btn btn-sm "}>
+                        <DeleteOutlineIcon
+                          onClick={props.handleDeleteUser.bind(null, {
+                            id: user.user_id,
+                            name: user.name,
+                          })}
+                        />
+                      </button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 20, 30, 50, 70, 80, 100]}
+          component="div"
+          count={users.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+      </TableContainer>
     </div>
   );
 }

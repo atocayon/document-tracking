@@ -31,6 +31,7 @@ import trackDocument from "./trackDocument";
 import fetchPendingDocuments from "./fetchPendingDocuments";
 import fetchPendingDocumentInfo from "./fetchPendingDocumentInfo";
 import searchBySubj from "./searchBySubj";
+import expandDocLogs from "./expandDocLogs";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -57,13 +58,14 @@ const rootReducer = combineReducers({
   addNewDocumentDraft: addNewDocumentDraft,
   documentTrackingNumber: documentTrackingNumber,
   receiveDocument: receiveDocument,
-  notification:notification,
+  notification: notification,
   forwardDocument: forwardDocument,
   afterDocumentReceive: afterDocumentReceive,
-  trackDocument:trackDocument,
+  trackDocument: trackDocument,
   fetchPendingDocuments: fetchPendingDocuments,
-  fetchPendingDocumentInfo:fetchPendingDocumentInfo,
-  searchBySubj: searchBySubj
+  fetchPendingDocumentInfo: fetchPendingDocumentInfo,
+  searchBySubj: searchBySubj,
+  expandDocLogs: expandDocLogs,
 });
 
 export default rootReducer;
