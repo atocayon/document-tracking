@@ -17,7 +17,9 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { getFromStorage } from "../../storage";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-
+import io from "socket.io-client";
+import endPoint from "../../endPoint";
+let socket;
 const useStyles = makeStyles(theme => ({
   root: {
     display: "none",
@@ -36,12 +38,18 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-// function ListItemLink(props) {
-//   return <ListItem button component="a" {...props} />;
-// }
 
 export default function SideBarNavigation(props) {
   const classes = useStyles();
+  const [pending, setPending] = useState(null);
+  useEffect(() => {
+    socket = io(endPoint.ADDRESS);
+    const obj = getFromStorage("documentTracking");
+    socket.emit("countPending", "0", obj.token);
+    socket.on("pendings", data => {
+      setPending(data);
+    });
+  })
 
   return (
     <>
@@ -104,7 +112,7 @@ export default function SideBarNavigation(props) {
             <List component="div" disablePadding>
               <ListItemComponent primary="New" className={classes.nested} />
               <ListItemComponent primary="Drafts" className={classes.nested} />
-              <ListItemComponent primary="Pending" className={classes.nested} />
+              <ListItemComponent primary="Pending" className={classes.nested} pending={pending} />
 
               <ListItemComponent
                 primary="My Documents"

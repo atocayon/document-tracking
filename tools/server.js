@@ -108,8 +108,6 @@ io.on("connection", (socket) => {
   //Assign Document tracking number
   socket.on("assignTrackingNum", assignTrackingNum);
 
-  //Track
-  socket.on("trackDocument", trackDocument);
 
   //Insert Document
   socket.on(
@@ -139,7 +137,25 @@ io.on("connection", (socket) => {
 
   //Expand/dropdown in doc logs
   socket.on("expandDocLogs", (doc_id, status) => {
-    expandDogLogs(doc_id, status,socket);
+    expandDogLogs(doc_id, status, socket);
+  });
+
+  //Receive Documents
+  socket.on(
+    "receiveDocument",
+    (documentTracking, user_id, user_section, callback) => {
+      receiveDocument(documentTracking, user_id, user_section, callback);
+    }
+  );
+
+  //Track Document
+  socket.on("tracking", data => {
+    trackDocument(data);
+  });
+
+  //Count Pending
+  socket.on("countPending", (documentTracking, user_id) => {
+    countPending(documentTracking, user_id);
   });
 
   socket.on("disconnect", () => {
@@ -432,8 +448,139 @@ const insertDocument = (
   });
 };
 
+const receiveDocument = (documentTracking, user_id, user_section, callback) => {
+  const sql = "SELECT * FROM documentLogs WHERE document_id = ?";
+  connection.query(sql, [documentTracking], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      callback("server error");
+    }
+
+    if (rows.length > 0) {
+      console.log(rows);
+      for (let i = 0; i < rows.length; i++) {
+        if (
+          rows[0].destinationType === "External" &&
+          rows[0].user_id === user_id &&
+          rows[0].status === "2"
+        ) {
+          const insertExternal =
+            "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification) VALUES ?";
+          const val = [
+            [documentTracking, user_id, "none", "External", "none", "1", "0"],
+          ];
+          connection.query(insertExternal, [val], function (err, result) {
+            if (err) {
+              console.log(err);
+              callback("server error");
+            }
+            console.log(result);
+            callback("success");
+            countPending(documentTracking, user_id);
+            trackDocument(documentTracking);
+          });
+          break;
+        }
+
+        if (
+          rows[0].destinationType === "Internal" &&
+          rows[0].destination === user_section &&
+          rows[0].status === "2"
+        ) {
+          let insertInternal = "";
+          insertInternal += "INSERT INTO documentLogs ";
+          insertInternal += "(document_id, ";
+          insertInternal += "user_id, ";
+          insertInternal += "remarks, ";
+          insertInternal += "destinationType, ";
+          insertInternal += "destination, ";
+          insertInternal += "status, ";
+          insertInternal += "notification) ";
+          insertInternal += "VALUES ? ";
+          const val1 = [
+            [documentTracking, user_id, "none", "Internal", "none", "1", "0"],
+            [documentTracking, user_id, "none", "Internal", "none", "3", "0"],
+          ];
+          connection.query(insertInternal, [val1], function (err, result) {
+            if (err) {
+              console.log(err);
+              callback("server error");
+            }
+            console.log(result);
+            callback("success");
+            countPending(documentTracking, user_id);
+            trackDocument(documentTracking);
+          });
+
+          break;
+        }
+      }
+    }
+  });
+};
+
+//Count Pending
+const countPending = (documentTracking, user_id) => {
+  if (documentTracking === "0") {
+    const sql =
+      "SELECT * FROM documentLogs WHERE user_id = ? AND status = ? AND notification = ?";
+    connection.query(sql, [user_id, "3", "0"], function (err, rows, fields) {
+      if (err) {
+        console.log(err);
+        throw err;
+      }
+
+      io.emit("pendings", rows.length);
+    });
+  } else {
+    const sql =
+      "SELECT * FROM documentLogs WHERE document_id = ? AND user_id = ? AND status = ? AND notification = ?";
+    connection.query(sql, [documentTracking, user_id, "3", "0"], function (
+      err,
+      rows,
+      fields
+    ) {
+      if (err) {
+        console.log(err);
+        throw err;
+      }
+
+      io.emit("pendings", rows.length);
+    });
+  }
+};
+
 //Track Document
-const trackDocument = () => {};
+const trackDocument = (data) => {
+  let sql = "";
+  sql += "SELECT users.name AS name,  ";
+  sql += "users.position AS position, ";
+  sql += "sections.secshort AS secshort, ";
+  sql += "documentLogs.remarks AS remarks, ";
+  sql += "documentLogs.destinationType AS destinationType, ";
+  sql += "documentLogs.destination AS destination, ";
+  sql += "documentStatus.status AS status, ";
+  sql +=
+      "DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time ";
+  sql += "FROM documentLogs ";
+  sql += "JOIN users ";
+  sql += "ON documentLogs.user_id = users.user_id ";
+  sql += "JOIN documentStatus ";
+  sql += "ON documentLogs.status = documentStatus.statid ";
+  sql += "JOIN sections ";
+  sql += "ON users.section = sections.secid ";
+  sql += "WHERE documentLogs.document_id = ? ";
+  sql += "ORDER BY documentLogs.date_time DESC, ";
+  sql += "documentStatus.status ASC ";
+  connection.query(sql, [data], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      throw err;
+    }
+
+    io.emit("track", rows);
+  });
+};
 
 const login = (email, password, callback) => {
   let sql = "";
@@ -1253,86 +1400,6 @@ router.route("/fetchDocumentDestination/:doc_id").get(function (req, res) {
   });
 });
 
-const receiveDocument = (documentTracking, user_id, user_section, callback) => {
-  const sql =
-    "SELECT * FROM documentLogs WHERE document_id = ? ORDER BY trans_id DESC LIMIT 1";
-};
-
-//receive document
-router.route("/receiveDocument").post(function (req, res) {
-  const { documentTracking, user_id, user_section } = req.body;
-  const sql =
-    "SELECT * FROM documentLogs WHERE document_id = ? ORDER BY trans_id DESC LIMIT 1";
-  connection.query(sql, [documentTracking], function (err, rows, fields) {
-    if (err) {
-      console.log(err);
-      res.status(500).send(err);
-    }
-
-    if (rows.length > 0) {
-      console.log(rows);
-      if (
-        rows[0].destinationType === "External" &&
-        rows[0].user_id === user_id &&
-        rows[0].status === "2"
-      ) {
-        const insertExternal =
-          "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification) VALUES ?";
-        const val = [
-          [documentTracking, user_id, "none", "External", "none", "1", "0"],
-        ];
-        connection.query(insertExternal, [val], function (err, result) {
-          if (err) {
-            console.log(err);
-            res.status(500).send(err);
-          }
-          console.log(result);
-          res.status(200).send({ result: "success" });
-        });
-      }
-
-      if (
-        rows[0].destinationType === "Internal" &&
-        rows[0].destination === user_section &&
-        rows[0].status === "2"
-      ) {
-        let insertInternal = "";
-        insertInternal += "INSERT INTO documentLogs ";
-        insertInternal += "(document_id, ";
-        insertInternal += "user_id, ";
-        insertInternal += "remarks, ";
-        insertInternal += "destinationType, ";
-        insertInternal += "destination, ";
-        insertInternal += "status, ";
-        insertInternal += "notification) ";
-        insertInternal += "VALUES ? ";
-        const val1 = [
-          [documentTracking, user_id, "none", "Internal", "none", "1", "0"],
-          [documentTracking, user_id, "none", "Internal", "none", "3", "0"],
-        ];
-        connection.query(insertInternal, [val1], function (err, result) {
-          if (err) {
-            console.log(err);
-            res.status(500).send(err);
-          }
-          console.log(result);
-          res.status(200).send({ result: "success" });
-        });
-      }
-
-      if (
-        rows[0].destination !== user_section ||
-        rows[0].status !== "2" ||
-        rows[0].user_id !== user_id ||
-        rows[0].status !== "2"
-      ) {
-        console.log("failed");
-        res.status(200).send({ result: "failed" });
-      }
-    }
-  });
-});
-
 //Fetch Pending Documents
 router.route("/fetchPendingDocument/:user_id").get(function (req, res) {
   let sql = "";
@@ -1440,40 +1507,6 @@ router.route("/afterDocumentReceive").post(function (req, res) {
       }
       res.status(200).send(result);
     });
-  });
-});
-
-//Document track
-router.route("/track/:doc_id").get(function (req, res) {
-  const doc_id = req.params.doc_id;
-
-  let sql = "";
-  sql += "SELECT users.name AS name,  ";
-  sql += "users.position AS position, ";
-  sql += "sections.secshort AS secshort, ";
-  sql += "documentLogs.remarks AS remarks, ";
-  sql += "documentLogs.destinationType AS destinationType, ";
-  sql += "documentLogs.destination AS destination, ";
-  sql += "documentStatus.status AS status, ";
-  sql +=
-    "DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time ";
-  sql += "FROM documentLogs ";
-  sql += "JOIN users ";
-  sql += "ON documentLogs.user_id = users.user_id ";
-  sql += "JOIN documentStatus ";
-  sql += "ON documentLogs.status = documentStatus.statid ";
-  sql += "JOIN sections ";
-  sql += "ON users.section = sections.secid ";
-  sql += "WHERE documentLogs.document_id = ? ";
-  sql += "ORDER BY documentLogs.date_time DESC, ";
-  sql += "documentStatus.status ASC ";
-  connection.query(sql, [doc_id], function (err, rows, fields) {
-    if (err) {
-      console.log(err);
-      res.status(500).send(err);
-    }
-
-    res.status(200).send(rows);
   });
 });
 

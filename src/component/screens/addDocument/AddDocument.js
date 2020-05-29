@@ -116,9 +116,6 @@ function AddDocument({
   useEffect(() => {
     socket = io(endPoint.ADDRESS);
     const timeID = setInterval(() => tick(), 1000);
-
-
-
     const obj = getFromStorage("documentTracking");
 
     if (obj && obj.token) {
@@ -367,7 +364,7 @@ function AddDocument({
   return (
     <>
       <Grid container spacing={3}>
-        <PrimarySearchAppBar />
+        <PrimarySearchAppBar id={user.user_id} />
         <Grid item xs={2}>
           <SideBarNavigation
             open={open}

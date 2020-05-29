@@ -32,7 +32,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
 import ListItemText from "@material-ui/core/ListItemText";
-import DescriptionIcon from '@material-ui/icons/Description';
+import DescriptionIcon from "@material-ui/icons/Description";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
 import reactotron from "../../../ReactotronConfig";
@@ -53,9 +53,9 @@ function Dashboard(props) {
         });
       }
 
-      if(props.receive === "failed") {
-        const variant = "warning";
-        props.enqueueSnackbar("Document receive unauthorized", {
+      if (props.receive === "failed") {
+        const variant = "error";
+        props.enqueueSnackbar("There's an error receiving the document", {
           variant,
         });
       }
@@ -83,8 +83,23 @@ function Dashboard(props) {
     throw err;
   };
 
-  const handleTrackDocument = async () => {
-    await props.trackDocument(props.trackingNum.documentTrackingNumber);
+  const handleTrackDocument = async (e) => {
+    e.preventDefault();
+
+    if (!trackOrSearchOnly) {
+      await props.trackDocument(
+        props.trackingNum.documentTrackingNumber,
+        props.user.user_id,
+        props.user.secshort,
+        socket
+      );
+      _onScan.play();
+    }
+
+    if (trackOrSearchOnly) {
+      await props.trackOnly(props.trackingNum.documentTrackingNumber, socket);
+      _onScan.play();
+    }
   };
 
   const handleScanning = async (data) => {
@@ -93,13 +108,14 @@ function Dashboard(props) {
       await props.handleScanAndReceive(
         data,
         props.user.user_id,
-        props.user.secshort
+        props.user.secshort,
+        socket
       );
       _onScan.play();
     }
 
     if (trackOrSearchOnly) {
-      await props.trackOnly(data);
+      await props.trackOnly(data, socket);
       _onScan.play();
     }
   };
@@ -154,43 +170,45 @@ function Dashboard(props) {
                     </div>
                   </div>
                   <div className={"col-md-8"}>
-                    <FormControl fullWidth>
-                      <InputLabel htmlFor="outlined-adornment-amount">
-                        {trackOrSearchOnly
-                          ? "Search / Tracking"
-                          : "Document Tracking Number"}
-                      </InputLabel>
-                      <Input
-                        id={"tackDocument"}
-                        name={"documentTrackingNumber"}
-                        label={
-                          trackOrSearchOnly
+                    <form onSubmit={handleTrackDocument}>
+                      <FormControl fullWidth>
+                        <InputLabel htmlFor="outlined-adornment-amount">
+                          {trackOrSearchOnly
                             ? "Search / Tracking"
-                            : "Tracking Number"
-                        }
-                        variant={"outlined"}
-                        onChange={props.documentTrackingNumber}
-                        value={props.trackingNum.documentTrackingNumber}
-                        type={"search"}
-                        endAdornment={
-                          props.receive !== "" || props.track.length > 0 ? (
-                            <InputAdornment position="end">
-                              <IconButton
-                                title={"clear"}
-                                aria-label="toggle password visibility"
-                                onClick={props.resetTrackOrReceive}
-                                onMouseDown={props.resetTrackOrReceive}
-                                edge="end"
-                              >
-                                <HighlightOffRoundedIcon />
-                              </IconButton>
-                            </InputAdornment>
-                          ) : (
-                            ""
-                          )
-                        }
-                      />
-                    </FormControl>
+                            : "Document Tracking Number"}
+                        </InputLabel>
+                        <Input
+                          id={"tackDocument"}
+                          name={"documentTrackingNumber"}
+                          label={
+                            trackOrSearchOnly
+                              ? "Search / Tracking"
+                              : "Tracking Number"
+                          }
+                          variant={"outlined"}
+                          onChange={props.documentTrackingNumber}
+                          value={props.trackingNum.documentTrackingNumber}
+                          type={"search"}
+                          endAdornment={
+                            props.receive !== "" || props.track.length > 0 ? (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  title={"clear"}
+                                  aria-label="toggle password visibility"
+                                  onClick={props.resetTrackOrReceive}
+                                  onMouseDown={props.resetTrackOrReceive}
+                                  edge="end"
+                                >
+                                  <HighlightOffRoundedIcon />
+                                </IconButton>
+                              </InputAdornment>
+                            ) : (
+                              ""
+                            )
+                          }
+                        />
+                      </FormControl>
+                    </form>
                   </div>
                   <div className={"col-md-2"}>
                     {trackOrSearchOnly && (
@@ -207,7 +225,6 @@ function Dashboard(props) {
 
               <div className={"row"}>
                 <div className={"col-md-12"}>
-
                   {!trackOrSearchOnly &&
                   props.receive === "" &&
                   props.track.length === 0 &&
@@ -282,7 +299,7 @@ function Dashboard(props) {
 
                   {props.track.length > 0 && props.search.length === 0 ? (
                     <DocumentTrack track={props.track} />
-                  ): null}
+                  ) : null}
                 </div>
               </div>
             </Grid>
