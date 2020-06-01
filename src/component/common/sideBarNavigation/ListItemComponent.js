@@ -120,8 +120,8 @@ export default function ListItemComponent(props) {
             props.primary === "Pending" ? (
               <>
                 {props.pending > 0 && (
-                  <Badge color="secondary" variant="dot">
-                    <Typography>{props.primary}</Typography>
+                  <Badge badgeContent={props.pending} color="secondary">
+                    {props.primary}
                   </Badge>
                 )}
                 {props.pending === 0 && props.primary}

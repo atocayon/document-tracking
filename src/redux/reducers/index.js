@@ -32,6 +32,7 @@ import fetchPendingDocuments from "./fetchPendingDocuments";
 import fetchPendingDocumentInfo from "./fetchPendingDocumentInfo";
 import searchBySubj from "./searchBySubj";
 import expandDocLogs from "./expandDocLogs";
+import fetchActiveUserList from "./fetchActiveUserList";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -66,6 +67,7 @@ const rootReducer = combineReducers({
   fetchPendingDocumentInfo: fetchPendingDocumentInfo,
   searchBySubj: searchBySubj,
   expandDocLogs: expandDocLogs,
+  fetchActiveUserList:fetchActiveUserList,
 });
 
 export default rootReducer;

@@ -35,7 +35,9 @@ import ListItemText from "@material-ui/core/ListItemText";
 import DescriptionIcon from "@material-ui/icons/Description";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
+import { fetchActiveUserList } from "../../../redux/actions/fetchActiveUserList";
 import reactotron from "../../../ReactotronConfig";
+import UserList from "../../common/userList/UserList";
 const _onClick = new UIFx(onClick);
 const _onScan = new UIFx(onScan);
 let socket;
@@ -45,6 +47,7 @@ function Dashboard(props) {
   const [trackOrSearchOnly, setTrackOrSearchOnly] = useState(false);
   useEffect(() => {
     socket = io(endPoint.ADDRESS);
+    props.fetchActiveUserList(socket);
     if (props.receive !== "") {
       if (props.receive === "success") {
         const variant = "info";
@@ -66,28 +69,17 @@ function Dashboard(props) {
     setOpen(!open);
   };
 
-  const handleChange = (event) => {
-    setSelectedValue(event.target.value);
-    props.changeDocumentDestination();
-  };
-
-  const handleReceiveDocument = async () => {
-    await props.receiveDocument(
-      props.trackingNum.documentTrackingNumber,
-      props.user.user_id,
-      props.user.secshort
-    );
-  };
-
   const handleError = (err) => {
     throw err;
   };
 
   const handleTrackDocument = async (e) => {
     e.preventDefault();
-
+    Reactotron.log("On Type la");
+    Reactotron.log(trackOrSearchOnly);
     if (!trackOrSearchOnly) {
-      await props.trackDocument(
+      Reactotron.log("polse ini");
+      await props.handleScanAndReceive(
         props.trackingNum.documentTrackingNumber,
         props.user.user_id,
         props.user.secshort,
@@ -306,7 +298,9 @@ function Dashboard(props) {
           </Grid>
         </Paper>
       </Grid>
-      <Grid item xs={2}></Grid>
+      <Grid item xs={2}>
+        <UserList user={props.userList} />
+      </Grid>
     </Grid>
   );
 }
@@ -317,6 +311,7 @@ function mapStateToProps(state) {
     receive: state.receiveDocument,
     track: state.trackDocument,
     search: state.searchBySubj,
+    userList: state.fetchActiveUserList,
   };
 }
 
@@ -328,6 +323,7 @@ const mapDispatchToProps = {
   resetTrackOrReceive,
   trackOnly,
   searchBySubj,
+  fetchActiveUserList,
 };
 
 export default connect(

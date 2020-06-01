@@ -13,18 +13,22 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
 import DescriptionIcon from "@material-ui/icons/Description";
 import ListItemText from "@material-ui/core/ListItemText";
-
+import { fetchActiveUserList } from "../../../redux/actions/fetchActiveUserList";
+import UserList from "../../common/userList/UserList";
+import io from "socket.io-client";
+import endPoint from "../../endPoint";
+let socket;
 function PendingForRelease(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
 
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
-
+    socket = io(endPoint.ADDRESS);
+    props.fetchActiveUserList(socket);
     async function fetch() {
       await props.fetchPendingDocuments(obj.token);
     }
-
 
     fetch().catch((err) => {
       throw err;
@@ -72,43 +76,53 @@ function PendingForRelease(props) {
             </div>
           </div>
 
-            {props.pending.length === 0 && (
-                <div style={{ textAlign: "center", marginTop: 200 }}>
-                    <h6 style={{ color: "#9E9E9E" }}>No pending documents available</h6>
-                </div>
-            )}
-            <div className={"row"}>
-                <div className={"col-md-8"} style={{ marginLeft: 50, marginRight: 10, paddingBottom: 200, overflow: "auto" }}>
-                    {props.pending.length > 0 &&
-                    props.pending.map((document, index) => (
-                        <Link
-                            key={index}
-                            to={"/pending_doc/" + document.documentId}
-                            style={{ textDecoration: "none" }}
-                        >
-                            <ListItem>
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <DescriptionIcon />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={document.subject}
-                                    secondary={document.doc_type + " by "+document.creator}
-                                />
-                            </ListItem>
-                        </Link>
-                    ))}
-
-
-                </div>
-                <div className={"col-md-4"}></div>
+          {props.pending.length === 0 && (
+            <div style={{ textAlign: "center", marginTop: 200 }}>
+              <h6 style={{ color: "#9E9E9E" }}>
+                No pending documents available
+              </h6>
             </div>
-
-
+          )}
+          <div className={"row"}>
+            <div
+              className={"col-md-8"}
+              style={{
+                marginLeft: 50,
+                marginRight: 10,
+                paddingBottom: 200,
+                overflow: "auto",
+              }}
+            >
+              {props.pending.length > 0 &&
+                props.pending.map((document, index) => (
+                  <Link
+                    key={index}
+                    to={"/pending_doc/" + document.documentId}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <ListItem>
+                      <ListItemAvatar>
+                        <Avatar>
+                          <DescriptionIcon />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={document.subject}
+                        secondary={
+                          document.doc_type + " by " + document.creator
+                        }
+                      />
+                    </ListItem>
+                  </Link>
+                ))}
+            </div>
+            <div className={"col-md-4"}></div>
+          </div>
         </Paper>
       </Grid>
-      <Grid item xs={2}></Grid>
+      <Grid item xs={2}>
+        <UserList user={props.userList} />
+      </Grid>
     </Grid>
   );
 }
@@ -116,11 +130,13 @@ function PendingForRelease(props) {
 function mapStateToProps(state) {
   return {
     pending: state.fetchPendingDocuments,
+    userList: state.fetchActiveUserList,
   };
 }
 
 const mapDispatchToProps = {
   fetchPendingDocuments,
+  fetchActiveUserList,
 };
 
 export default connect(

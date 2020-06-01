@@ -108,7 +108,6 @@ io.on("connection", (socket) => {
   //Assign Document tracking number
   socket.on("assignTrackingNum", assignTrackingNum);
 
-
   //Insert Document
   socket.on(
     "addDocument",
@@ -149,17 +148,18 @@ io.on("connection", (socket) => {
   );
 
   //Track Document
-  socket.on("tracking", data => {
+  socket.on("tracking", (data) => {
     trackDocument(data);
   });
 
   //Count Pending
-  socket.on("countPending", (documentTracking, user_id) => {
-    countPending(documentTracking, user_id);
+  socket.on("countPending", (user_id) => {
+    countPending( user_id);
   });
 
   socket.on("disconnect", () => {
     console.log("Disconnected");
+    socket.emit("Hey, are you still there?")
   });
 });
 
@@ -449,6 +449,7 @@ const insertDocument = (
 };
 
 const receiveDocument = (documentTracking, user_id, user_section, callback) => {
+  console.log("Gn rreceive na");
   const sql = "SELECT * FROM documentLogs WHERE document_id = ?";
   connection.query(sql, [documentTracking], function (err, rows, fields) {
     if (err) {
@@ -460,9 +461,9 @@ const receiveDocument = (documentTracking, user_id, user_section, callback) => {
       console.log(rows);
       for (let i = 0; i < rows.length; i++) {
         if (
-          rows[0].destinationType === "External" &&
-          rows[0].user_id === user_id &&
-          rows[0].status === "2"
+          rows[i].destinationType === "External" &&
+          rows[i].user_id === user_id &&
+          rows[i].status === "2"
         ) {
           const insertExternal =
             "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification) VALUES ?";
@@ -476,16 +477,16 @@ const receiveDocument = (documentTracking, user_id, user_section, callback) => {
             }
             console.log(result);
             callback("success");
-            countPending(documentTracking, user_id);
+            countPending(user_id);
             trackDocument(documentTracking);
           });
           break;
         }
 
         if (
-          rows[0].destinationType === "Internal" &&
-          rows[0].destination === user_section &&
-          rows[0].status === "2"
+          rows[i].destinationType === "Internal" &&
+          rows[i].destination === user_section &&
+          rows[i].status === "2"
         ) {
           let insertInternal = "";
           insertInternal += "INSERT INTO documentLogs ";
@@ -508,7 +509,7 @@ const receiveDocument = (documentTracking, user_id, user_section, callback) => {
             }
             console.log(result);
             callback("success");
-            countPending(documentTracking, user_id);
+            countPending(user_id);
             trackDocument(documentTracking);
           });
 
@@ -520,8 +521,7 @@ const receiveDocument = (documentTracking, user_id, user_section, callback) => {
 };
 
 //Count Pending
-const countPending = (documentTracking, user_id) => {
-  if (documentTracking === "0") {
+const countPending = (user_id) => {
     const sql =
       "SELECT * FROM documentLogs WHERE user_id = ? AND status = ? AND notification = ?";
     connection.query(sql, [user_id, "3", "0"], function (err, rows, fields) {
@@ -532,36 +532,21 @@ const countPending = (documentTracking, user_id) => {
 
       io.emit("pendings", rows.length);
     });
-  } else {
-    const sql =
-      "SELECT * FROM documentLogs WHERE document_id = ? AND user_id = ? AND status = ? AND notification = ?";
-    connection.query(sql, [documentTracking, user_id, "3", "0"], function (
-      err,
-      rows,
-      fields
-    ) {
-      if (err) {
-        console.log(err);
-        throw err;
-      }
-
-      io.emit("pendings", rows.length);
-    });
-  }
 };
 
 //Track Document
 const trackDocument = (data) => {
   let sql = "";
-  sql += "SELECT users.name AS name,  ";
+  sql += "SELECT ";
+  sql += "users.name AS name,  ";
   sql += "users.position AS position, ";
   sql += "sections.secshort AS secshort, ";
-  sql += "documentLogs.remarks AS remarks, ";
-  sql += "documentLogs.destinationType AS destinationType, ";
-  sql += "documentLogs.destination AS destination, ";
-  sql += "documentStatus.status AS status, ";
   sql +=
-      "DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time ";
+    "GROUP_CONCAT(concat(documentStatus.status, ' on ', DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p')) ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS transactions , ";
+  sql += "GROUP_CONCAT(documentLogs.remarks ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS remarks, ";
+  sql += "GROUP_CONCAT(documentLogs.destination ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS destination, ";
+  sql +=
+    "DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time ";
   sql += "FROM documentLogs ";
   sql += "JOIN users ";
   sql += "ON documentLogs.user_id = users.user_id ";
@@ -570,8 +555,7 @@ const trackDocument = (data) => {
   sql += "JOIN sections ";
   sql += "ON users.section = sections.secid ";
   sql += "WHERE documentLogs.document_id = ? ";
-  sql += "ORDER BY documentLogs.date_time DESC, ";
-  sql += "documentStatus.status ASC ";
+  sql += "GROUP BY documentLogs.document_id, documentLogs.user_id ORDER BY documentLogs.date_time DESC ";
   connection.query(sql, [data], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -684,16 +668,19 @@ const logout = (id, callback) => {
   });
 };
 
+//Active user list
 const fetchUserActiveList = () => {
   let sql = "";
-  sql += "SELECT users.name AS name, ";
+  sql += "SELECT users.user_id as user_id, users.name AS name, ";
   sql += "users.position AS position, ";
-  sql += "users_session.timeStamp AS timeStamp, ";
+  sql += "users_session.timeStamp AS timeStamp ";
   sql += "FROM users_session ";
   sql += "JOIN users ";
   sql += "ON users_session.userId = users.user_id ";
+  sql += "WHERE users_session.isDeleted = ? ";
+  sql += "ORDER BY users_session.timeStamp ASC";
 
-  connection.query(sql, function (err, rows, fields) {
+  connection.query(sql, ["0"],function (err, rows, fields) {
     if (err) {
       console.log(err);
     }

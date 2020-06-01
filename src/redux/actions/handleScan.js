@@ -3,9 +3,12 @@ import Reactotron from "reactotron-react-js";
 import axios from "axios";
 
 export function handleScan(data, user_id, secshort, socket) {
+
   return async function (dispatch) {
     dispatch({ type: actionTypes.HANDLE_SCAN, data });
     await socket.emit("receiveDocument", data, user_id, secshort, (message) => {
+      Reactotron.log("Na receive");
+      Reactotron.log(message);
       if (message === "server error") {
         dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "failed" });
       }

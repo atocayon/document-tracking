@@ -105,7 +105,7 @@ function PendingDocumentInfo(props) {
     await props.afterDocumentReceive(
       props.match.params.doc_id,
       token,
-      "none",
+      props.forwardDocument.remarks,
       props.pendingDocumentInfo.destinationType,
       "none",
       "4"
@@ -139,6 +139,8 @@ function PendingDocumentInfo(props) {
           open={completedDialog}
           handleClose={handleSetCompletedDialog}
           handleCompleted={handleCompleted}
+          value={props.forwardDocument}
+          onChangeDestination={props.onChangeForwardDocument}
         />
         <Paper
           elevation={3}
@@ -284,25 +286,33 @@ function PendingDocumentInfo(props) {
                 ))}
               </div>
               <div style={{ marginTop: 50, textAlign: "right" }}>
-                <Fab
-                  title={"Complete"}
-                  onMouseDown={handleSetCompletedDialog}
-                  color="primary"
-                  aria-label="add"
-                  style={{ position: "fixed", bottom: 100, right: 500 }}
-                >
-                  <DoneIcon />
-                </Fab>
 
-                <Fab
-                  title={"Forward"}
-                  onMouseDown={handleSetForwardDialog}
-                  color="secondary"
-                  aria-label="add"
-                  style={{ position: "fixed", bottom: 30, right: 500 }}
-                >
-                  <SendIcon />
-                </Fab>
+                <button className={"btn btn-outline-info btn-sm"} onClick={handleSetCompletedDialog}>
+                  <DoneIcon /> Completed
+                </button>
+                &nbsp;&nbsp;&nbsp;
+                <button className={"btn btn-info btn-sm"} onClick={handleSetForwardDialog}>
+                  <SendIcon /> Forward
+                </button>
+                {/*<Fab*/}
+                {/*  title={"Complete"}*/}
+                {/*  onMouseDown={handleSetCompletedDialog}*/}
+                {/*  color="primary"*/}
+                {/*  aria-label="add"*/}
+                {/*  style={{ position: "fixed", bottom: 100, right: 500 }}*/}
+                {/*>*/}
+                {/*  <DoneIcon />*/}
+                {/*</Fab>*/}
+
+                {/*<Fab*/}
+                {/*  title={"Forward"}*/}
+                {/*  onMouseDown={handleSetForwardDialog}*/}
+                {/*  color="secondary"*/}
+                {/*  aria-label="add"*/}
+                {/*  style={{ position: "fixed", bottom: 30, right: 500 }}*/}
+                {/*>*/}
+                {/*  <SendIcon />*/}
+                {/*</Fab>*/}
               </div>
             </div>
             <div className={"col-md-2"}></div>
