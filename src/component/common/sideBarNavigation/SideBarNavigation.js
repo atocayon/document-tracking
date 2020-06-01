@@ -45,11 +45,11 @@ export default function SideBarNavigation(props) {
   useEffect(() => {
     socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
-    socket.emit("countPending", "0", obj.token);
+    socket.emit("countPending", obj.token);
     socket.on("pendings", data => {
       setPending(data);
     });
-  })
+  }, [pending]);
 
   return (
     <>

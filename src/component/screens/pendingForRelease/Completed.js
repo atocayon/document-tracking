@@ -6,6 +6,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
+import InputField from "../../common/textField/InputField";
 
 export default function Completed(props) {
   return (
@@ -22,6 +23,16 @@ export default function Completed(props) {
           <DialogContentText>
             You're about to tag this document as completed in your office.
           </DialogContentText>
+          <br />
+          <br />
+          <InputField
+              id={"remarks"}
+              name={"remarks"}
+              label={"Remarks"}
+              type={"text"}
+              value={props.value.remarks}
+              onChange={props.onChangeDestination}
+          />
         </DialogContent>
         <DialogContent></DialogContent>
         <DialogActions>

@@ -51,8 +51,10 @@ import { removeFirstIndexOnEditAddDocument } from "../../../redux/actions/addDoc
 import nl2br from "react-newline-to-break";
 import { clearAddDocumentMessage } from "../../../redux/actions/addNewDocument";
 import { clearDraftsMessage } from "../../../redux/actions/addNewDocumentDraft";
+import { fetchActiveUserList } from "../../../redux/actions/fetchActiveUserList";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
+import UserList from "../../common/userList/UserList";
 let socket;
 
 function AddDocument({
@@ -88,6 +90,8 @@ function AddDocument({
   removeFirstIndexOnEditAddDocument,
   clearAddDocumentMessage,
   clearDraftsMessage,
+  fetchActiveUserList,
+  userActiveList,
 }) {
   const checkboxItem = [
     { id: 0, value: "For Approval" },
@@ -115,6 +119,7 @@ function AddDocument({
 
   useEffect(() => {
     socket = io(endPoint.ADDRESS);
+    fetchActiveUserList(socket);
     const timeID = setInterval(() => tick(), 1000);
     const obj = getFromStorage("documentTracking");
 
@@ -645,7 +650,9 @@ function AddDocument({
             </Grid>
           </Paper>
         </Grid>
-        <Grid item xs={2}></Grid>
+        <Grid item xs={2}>
+          <UserList user={userActiveList} />
+        </Grid>
       </Grid>
     </>
   );
@@ -663,6 +670,7 @@ function mapStateToProps(state) {
     submit_new_document: state.addNewDocument,
     submit_new_document_draft: state.addNewDocumentDraft,
     _notification: state.notification,
+    userActiveList: state.fetchActiveUserList,
   };
 }
 
@@ -688,6 +696,7 @@ const mapDispatchToProps = {
   removeFirstIndexOnEditAddDocument,
   clearAddDocumentMessage,
   clearDraftsMessage,
+  fetchActiveUserList,
 };
 
 export default connect(

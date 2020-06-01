@@ -5,18 +5,22 @@ import Avatar from "@material-ui/core/Avatar";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Typography from "@material-ui/core/Typography";
+import { getFromStorage } from "../../storage";
 
 export default function UserList(props) {
+  const obj = getFromStorage("documentTracking");
+
+  let _users = props.user.filter((data) => data.user_id !== obj.token);
   return (
     <List>
-      {props.user.map(users => {
+      {_users.map((users) => {
         return (
           <ListItem alignItems="flex-start">
             <ListItemAvatar>
-              <Avatar alt={users.username} />
+              <Avatar alt={users.name} />
             </ListItemAvatar>
             <ListItemText
-              primary={users.username}
+              primary={users.name}
               secondary={
                 <React.Fragment>
                   <Typography
