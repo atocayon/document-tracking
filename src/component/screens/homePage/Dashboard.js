@@ -38,6 +38,8 @@ import endPoint from "../../endPoint";
 import { fetchActiveUserList } from "../../../redux/actions/fetchActiveUserList";
 import reactotron from "../../../ReactotronConfig";
 import UserList from "../../common/userList/UserList";
+import {getFromStorage} from "../../storage";
+import { logout } from "../../../redux/actions/logout";
 const _onClick = new UIFx(onClick);
 const _onScan = new UIFx(onScan);
 let socket;
@@ -63,7 +65,20 @@ function Dashboard(props) {
         });
       }
     }
-  }, [props.receive]);
+
+    if (props._logout !== null){
+      if (props._logout === "false"){
+        const variant = "error";
+        props.enqueueSnackbar("Error Logging out", {
+          variant,
+        });
+      }
+
+      if (props._logout === "true"){
+        window.location.reload(true);
+      }
+    }
+  }, [props.receive, props._logout]);
 
   const handleClick = () => {
     setOpen(!open);
@@ -118,14 +133,24 @@ function Dashboard(props) {
   };
 
   const handleSearch = async () => {
-    // Reactotron.log(props.trackingNum.documentTrackingNumber);
+
     await props.searchBySubj(props.trackingNum.documentTrackingNumber);
+  };
+
+  const handleLogOut = async (e) => {
+    e.preventDefault();
+    socket = io(endPoint.ADDRESS);
+    const obj = getFromStorage("documentTracking");
+    if (obj && obj.token){
+      const { token } = obj;
+      await props.logout(token, socket);
+    }
   };
 
   return (
     <Grid container spacing={3}>
       <BarcodeReader onError={handleError} onScan={handleScanning} />
-      <PrimarySearchAppBar />
+      <PrimarySearchAppBar handleLogOut={handleLogOut} />
 
       <Grid item xs={2}>
         <SideBarNavigation
@@ -312,6 +337,7 @@ function mapStateToProps(state) {
     track: state.trackDocument,
     search: state.searchBySubj,
     userList: state.fetchActiveUserList,
+    _logout: state.logout
   };
 }
 
@@ -324,6 +350,7 @@ const mapDispatchToProps = {
   trackOnly,
   searchBySubj,
   fetchActiveUserList,
+  logout
 };
 
 export default connect(

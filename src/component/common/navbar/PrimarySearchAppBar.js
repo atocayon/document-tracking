@@ -12,20 +12,16 @@ import MoreIcon from "@material-ui/icons/MoreVert";
 import Drawer from "@material-ui/core/Drawer";
 import logo from "../../../img/logo.png";
 import { connect } from "react-redux";
-import { logout } from "../../../redux/actions/logout";
-import io from "socket.io-client";
-import endPoint from "../../endPoint";
-import { notification } from "../../../redux/actions/notification";
+
+
 //Include
 import LeftDrawer from "./LeftDrawer";
 import RightDrawer from "./RightDrawer";
 import MobileMenu from "./RenderMobileMenu";
 import ProfileMenu from "./ProfileMenu";
-import { getFromStorage } from "../../storage";
 import { withSnackbar } from "notistack";
 import SettingsIcon from "@material-ui/icons/Settings";
-import Reactotron from "reactotron-react-js";
-let socket;
+
 function PrimarySearchAppBar(props) {
   const classes = useStyles(); // css styles
 
@@ -37,11 +33,10 @@ function PrimarySearchAppBar(props) {
     top: false,
     left: false,
     bottom: false,
-    right: false
+    right: false,
   }); //Used for Drawer
 
-
-  const toggleDrawer = (side, open) => event => {
+  const toggleDrawer = (side, open) => (event) => {
     if (
       event.type === "keydown" &&
       (event.key === "Tab" || event.key === "Shift")
@@ -56,7 +51,7 @@ function PrimarySearchAppBar(props) {
 
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-  const handleProfileMenuOpen = event => {
+  const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -69,32 +64,24 @@ function PrimarySearchAppBar(props) {
     handleMobileMenuClose();
   };
 
-  const handleMobileMenuOpen = event => {
+  const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const handleLogOut = async () => {
-    socket = io(endPoint.ADDRESS);
-    const obj = getFromStorage("documentTracking");
-    if (obj && obj.token) {
-      const { token } = obj;
-      await props.logout(token, socket);
-      window.location.reload(true);
-    }
-  };
+
 
   const menuId = "primary-search-account-menu";
 
   const profileMenu = (
     <ProfileMenu
-        id={props.id}
+      id={props.id}
       anchorElProfileMenu={anchorEl}
       anchorOriginProfileMenu={{ vertical: "top", horizontal: "right" }}
       idProfileMenu={menuId}
       transformOriginProfileMenu={{ vertical: "top", horizontal: "right" }}
       openProfileMenu={isMenuOpen}
       onCloseProfileMenu={handleMenuClose}
-      handleLogOut={handleLogOut}
+      handleLogOut={props.handleLogOut}
     />
   );
 
@@ -113,7 +100,7 @@ function PrimarySearchAppBar(props) {
     />
   );
 
-  const leftSideList = side => (
+  const leftSideList = (side) => (
     <LeftDrawer
       nameLeftDrawer={classes.list}
       leftDrawerRole={"presentation"}
@@ -122,7 +109,7 @@ function PrimarySearchAppBar(props) {
     />
   );
 
-  const rightSideList = side => (
+  const rightSideList = (side) => (
     <RightDrawer
       // notification={props.notifications}
       nameRightDrawer={classes.list}
@@ -139,7 +126,7 @@ function PrimarySearchAppBar(props) {
           position={"fixed"}
           style={{
             backgroundColor: "#fafafa",
-            color: "#263238"
+            color: "#263238",
           }}
         >
           <Toolbar>
@@ -176,8 +163,6 @@ function PrimarySearchAppBar(props) {
                 {/*{props.notifications.length === 0 && (*/}
                 {/*    <NotificationsIcon />*/}
                 {/*)}*/}
-
-
               </IconButton>
               <IconButton
                 edge="end"
@@ -223,68 +208,55 @@ function PrimarySearchAppBar(props) {
   );
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   grow: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   menuButton: {
     display: "block",
     marginRight: theme.spacing(0),
     [theme.breakpoints.up("lg")]: {
-      display: "none"
-    }
+      display: "none",
+    },
   },
   title: {
     display: "none",
     [theme.breakpoints.up("lg")]: {
-      display: "block"
-    }
+      display: "block",
+    },
   },
 
   inputRoot: {
-    color: "inherit"
+    color: "inherit",
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 7),
     transition: theme.transitions.create("width"),
     width: "100%",
     [theme.breakpoints.up("md")]: {
-      width: 200
-    }
+      width: 200,
+    },
   },
   sectionDesktop: {
     display: "none",
     [theme.breakpoints.up("md")]: {
-      display: "flex"
-    }
+      display: "flex",
+    },
   },
   sectionMobile: {
     display: "flex",
     [theme.breakpoints.up("md")]: {
-      display: "none"
-    }
+      display: "none",
+    },
   },
   list: {
-    width: 250
+    width: 250,
   },
   fullList: {
-    width: "auto"
-  }
+    width: "auto",
+  },
 }));
 
-function mapStateToProps(state) {
-  return {
-    _logout: state.logout,
 
-  };
-}
 
-const mapDispatchToProps = {
-  logout,
-
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withSnackbar(PrimarySearchAppBar));
+export default PrimarySearchAppBar;

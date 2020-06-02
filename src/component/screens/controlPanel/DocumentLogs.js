@@ -21,7 +21,7 @@ import Reactotron from "reactotron-react-js";
 import { connect } from "react-redux";
 import { expandDocLogs } from "../../../redux/actions/expandDocLogs";
 import { clearExpandLogs } from "../../../redux/actions/expandDocLogs";
-
+import InfoIcon from "@material-ui/icons/Info";
 let socket;
 
 const StyledTableCell = withStyles((theme) => ({
@@ -62,7 +62,7 @@ function Row(props) {
   const classes = useRowStyles();
 
   const handleExpandMore = async (val) => {
-    if (props.expand_info.length === 0 ) {
+    if (props.expand_info.length === 0) {
       await props.expandDocLogs(val, props.socket);
       setOpen({ ...open, [val.doc_id]: true });
     }
@@ -104,6 +104,12 @@ function Row(props) {
         <TableCell colSpan={8}>
           <Collapse in={open[row.trans_id]} timeout="auto" unmountOnExit>
             <Box margin={1}>
+              <h5 style={{color: "#2196F3"}}>
+                <b>
+                  <InfoIcon />
+                  &nbsp;Document Track History
+                </b>
+              </h5>
               <Table>
                 <TableBody>
                   {props.expand_info.map((data, index) => (
@@ -133,7 +139,7 @@ function DocumentLogs(props) {
     columns: [
       "",
       "Tracking #",
-      "User",
+      "Operator",
       "Remarks",
       "Destination Type",
       "Status",
