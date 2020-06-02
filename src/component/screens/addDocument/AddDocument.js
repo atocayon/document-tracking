@@ -52,6 +52,7 @@ import nl2br from "react-newline-to-break";
 import { clearAddDocumentMessage } from "../../../redux/actions/addNewDocument";
 import { clearDraftsMessage } from "../../../redux/actions/addNewDocumentDraft";
 import { fetchActiveUserList } from "../../../redux/actions/fetchActiveUserList";
+import { logout } from "../../../redux/actions/logout";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
 import UserList from "../../common/userList/UserList";
@@ -92,6 +93,8 @@ function AddDocument({
   clearDraftsMessage,
   fetchActiveUserList,
   userActiveList,
+  logout,
+  _logout,
 }) {
   const checkboxItem = [
     { id: 0, value: "For Approval" },
@@ -185,10 +188,28 @@ function AddDocument({
       }
     }
 
+    if (_logout !== null){
+      if(_logout === "false"){
+        const variant = "error";
+        enqueueSnackbar("Error logging out", {
+          variant,
+        });
+      }
+
+      if (_logout === "true"){
+        window.location.reload(true);
+      }
+    }
+
     return () => {
       clearInterval(timeID);
     };
-  }, [match.params.id, submit_new_document, submit_new_document_draft]);
+  }, [
+    match.params.id,
+    submit_new_document,
+    submit_new_document_draft,
+    _logout,
+  ]);
 
   const handleClick = () => {
     setOpen(!open);
@@ -366,10 +387,19 @@ function AddDocument({
 
   const createCheckboxes = () => checkboxItem.map(createCheckbox);
 
+  const handleLogOut = async (e) => {
+    e.preventDefault();
+    socket = io(endPoint.ADDRESS);
+    const obj = getFromStorage("documentTracking");
+    if (obj && obj.token) {
+      const { token } = obj;
+      await logout(token, socket);
+    }
+  };
   return (
     <>
       <Grid container spacing={3}>
-        <PrimarySearchAppBar id={user.user_id} />
+        <PrimarySearchAppBar handleLogOut={handleLogOut} />
         <Grid item xs={2}>
           <SideBarNavigation
             open={open}
@@ -671,6 +701,7 @@ function mapStateToProps(state) {
     submit_new_document_draft: state.addNewDocumentDraft,
     _notification: state.notification,
     userActiveList: state.fetchActiveUserList,
+    _logout: state.logout,
   };
 }
 
@@ -697,6 +728,7 @@ const mapDispatchToProps = {
   clearAddDocumentMessage,
   clearDraftsMessage,
   fetchActiveUserList,
+  logout,
 };
 
 export default connect(

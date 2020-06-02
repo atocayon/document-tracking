@@ -151,8 +151,19 @@ function ControlPanel(props) {
       fetch().catch((err) => {
         throw err;
       });
+
+      if (props.user_logout !== null){
+        if (props.user_logout === "true"){
+          window.location.reload(true);
+        }
+
+        if (props.user_logout === "false"){
+          const variant = "error";
+          props.enqueueSnackbar("Logout failed", { variant });
+        }
+      }
     }
-  }, []);
+  }, [props.user_logout]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -190,9 +201,6 @@ function ControlPanel(props) {
     if (obj && obj.token) {
       const { token } = obj;
       await props.logout(token, socket);
-      return window.location.reload(true);
-    } else {
-      return window.location.reload(true);
     }
   };
 

@@ -143,7 +143,13 @@ io.on("connection", (socket) => {
   socket.on(
     "receiveDocument",
     (documentTracking, user_id, user_section, callback) => {
-      receiveDocument(documentTracking, user_id, user_section, callback);
+      receiveDocument(
+        documentTracking,
+        user_id,
+        user_section,
+        callback,
+        socket
+      );
     }
   );
 
@@ -154,12 +160,12 @@ io.on("connection", (socket) => {
 
   //Count Pending
   socket.on("countPending", (user_id) => {
-    countPending( user_id);
+    countPending(user_id, socket);
   });
 
   socket.on("disconnect", () => {
     console.log("Disconnected");
-    socket.emit("Hey, are you still there?")
+    socket.emit("Hey, are you still there?");
   });
 });
 
@@ -289,8 +295,7 @@ const getDocLogs = (socket) => {
   sql += "ON documentLogs.user_id = users.user_id ";
   sql += "JOIN documentStatus ";
   sql += "ON documentLogs.status = documentStatus.statid ";
-  sql += "ORDER BY documentLogs.date_time DESC, ";
-  sql += "documentStatus.status DESC ";
+  sql += "ORDER BY documentLogs.date_time DESC ";
 
   connection.query(sql, (err, rows, fields) => {
     if (err) {
@@ -319,8 +324,7 @@ const expandDogLogs = (doc_id, status, socket) => {
   sql += "JOIN documentStatus ";
   sql += "ON documentLogs.status = documentStatus.statid ";
   sql += "WHERE documentLogs.document_id = ? AND documentStatus.status != ?";
-  sql += "ORDER BY documentLogs.date_time DESC, ";
-  sql += "documentStatus.status DESC ";
+  sql += "ORDER BY documentLogs.date_time ASC ";
   connection.query(sql, [doc_id, status], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -448,7 +452,13 @@ const insertDocument = (
   });
 };
 
-const receiveDocument = (documentTracking, user_id, user_section, callback) => {
+const receiveDocument = (
+  documentTracking,
+  user_id,
+  user_section,
+  callback,
+  socket
+) => {
   console.log("Gn rreceive na");
   const sql = "SELECT * FROM documentLogs WHERE document_id = ?";
   connection.query(sql, [documentTracking], function (err, rows, fields) {
@@ -477,7 +487,7 @@ const receiveDocument = (documentTracking, user_id, user_section, callback) => {
             }
             console.log(result);
             callback("success");
-            countPending(user_id);
+            countPending(user_id, socket);
             trackDocument(documentTracking);
           });
           break;
@@ -509,7 +519,7 @@ const receiveDocument = (documentTracking, user_id, user_section, callback) => {
             }
             console.log(result);
             callback("success");
-            countPending(user_id);
+            countPending(user_id, socket);
             trackDocument(documentTracking);
           });
 
@@ -521,17 +531,17 @@ const receiveDocument = (documentTracking, user_id, user_section, callback) => {
 };
 
 //Count Pending
-const countPending = (user_id) => {
-    const sql =
-      "SELECT * FROM documentLogs WHERE user_id = ? AND status = ? AND notification = ?";
-    connection.query(sql, [user_id, "3", "0"], function (err, rows, fields) {
-      if (err) {
-        console.log(err);
-        throw err;
-      }
+const countPending = (user_id, socket) => {
+  const sql =
+    "SELECT * FROM documentLogs WHERE user_id = ? AND status = ? AND notification = ?";
+  connection.query(sql, [user_id, "3", "0"], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      throw err;
+    }
 
-      io.emit("pendings", rows.length);
-    });
+    socket.emit("pendings", rows.length);
+  });
 };
 
 //Track Document
@@ -543,8 +553,10 @@ const trackDocument = (data) => {
   sql += "sections.secshort AS secshort, ";
   sql +=
     "GROUP_CONCAT(concat(documentStatus.status, ' on ', DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p')) ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS transactions , ";
-  sql += "GROUP_CONCAT(documentLogs.remarks ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS remarks, ";
-  sql += "GROUP_CONCAT(documentLogs.destination ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS destination, ";
+  sql +=
+    "GROUP_CONCAT(documentLogs.remarks ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS remarks, ";
+  sql +=
+    "GROUP_CONCAT(documentLogs.destination ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS destination, ";
   sql +=
     "DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time ";
   sql += "FROM documentLogs ";
@@ -555,7 +567,8 @@ const trackDocument = (data) => {
   sql += "JOIN sections ";
   sql += "ON users.section = sections.secid ";
   sql += "WHERE documentLogs.document_id = ? ";
-  sql += "GROUP BY documentLogs.document_id, documentLogs.user_id ORDER BY documentLogs.date_time DESC ";
+  sql +=
+    "GROUP BY documentLogs.document_id, documentLogs.user_id ORDER BY documentLogs.date_time DESC ";
   connection.query(sql, [data], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -655,15 +668,15 @@ const login = (email, password, callback) => {
 
 const logout = (id, callback) => {
   const sql = "UPDATE users_session SET isDeleted = ? WHERE userId = ?";
-  connection.query(sql, ["1", id], function (err, result) {
+  connection.query(sql, ["1", id], async function (err, result) {
     if (err) {
       console.log(err);
       return callback("server error");
     }
 
     if (result) {
-      console.log(result);
-      fetchUserActiveList();
+      await fetchUserActiveList();
+      return callback("logout");
     }
   });
 };
@@ -671,7 +684,7 @@ const logout = (id, callback) => {
 //Active user list
 const fetchUserActiveList = () => {
   let sql = "";
-  sql += "SELECT users.user_id as user_id, users.name AS name, ";
+  sql += "SELECT CONVERT(users.user_id, CHAR) as user_id, users.name AS name, ";
   sql += "users.position AS position, ";
   sql += "users_session.timeStamp AS timeStamp ";
   sql += "FROM users_session ";
@@ -680,7 +693,7 @@ const fetchUserActiveList = () => {
   sql += "WHERE users_session.isDeleted = ? ";
   sql += "ORDER BY users_session.timeStamp ASC";
 
-  connection.query(sql, ["0"],function (err, rows, fields) {
+  connection.query(sql, ["0"], function (err, rows, fields) {
     if (err) {
       console.log(err);
     }
@@ -690,6 +703,18 @@ const fetchUserActiveList = () => {
 };
 
 //Verify User Token
+const verifyToken = (token, callback, socket) => {
+  const sql = "SELECT * FROM users_session WHERE userId = ?";
+  connection.query(sql, [token], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      return callback("server error");
+    }
+
+    console.log(rows[0]);
+    socket.emit("verifiedToken", rows[0]);
+  });
+};
 router.route("/verifyToken/:token").get(function (req, res) {
   let token = req.params.token;
 
@@ -706,6 +731,40 @@ router.route("/verifyToken/:token").get(function (req, res) {
 });
 
 //Fetch All users by section
+const fetchSectionUser = (section, callback, socket) => {
+  let sql = "";
+  sql += "SELECT users.user_id AS user_id, ";
+  sql += "users.employeeId AS employeeId, ";
+  sql += "users.name AS name, ";
+  sql += "users.username AS username, ";
+  sql += "users.password AS password, ";
+  sql += "users.contact AS contact, ";
+  sql += "users.email AS email, ";
+  sql += "users.section AS secid, ";
+  sql += "users.position AS position, ";
+  sql += "users.role AS role, ";
+  sql += "users.status AS status, ";
+  sql += "sections.section AS section, ";
+  sql += "sections.secshort AS secshort, ";
+  sql += "divisions.department AS department, ";
+  sql += "divisions.depshort AS depshort ";
+  sql += "FROM users ";
+  sql += "JOIN sections ";
+  sql += "ON users.section = sections.secid ";
+  sql += "JOIN divisions ";
+  sql += "ON sections.divid = divisions.depid ";
+  sql += "WHERE users.section = ? ORDER BY name ASC ";
+
+  connection.query(sql, [section], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      return callback("server error");
+    }
+
+    console.log(rows);
+    io.emit("sectionUsers", rows);
+  });
+};
 router.route("/sectionUser/:section").get(function (req, res) {
   let section = req.params.section;
 
@@ -743,6 +802,43 @@ router.route("/sectionUser/:section").get(function (req, res) {
 });
 
 //Fetch Users Data By ID
+const fetchUserData = (id, callback, socket) => {
+  let sql = "";
+  sql += "SELECT users.user_id AS user_id, ";
+  sql += "users.employeeId AS employeeId, ";
+  sql += "users.name AS name, ";
+  sql += "users.username AS username, ";
+  sql += "users.password AS password, ";
+  sql += "users.contact AS contact, ";
+  sql += "users.email AS email, ";
+  sql += "users.section AS secid, ";
+  sql += "users.position AS position, ";
+  sql += "users_role.role AS role, ";
+  sql += "users_role.role_id AS role_id, ";
+  sql += "users.status AS status, ";
+  sql += "sections.section AS section, ";
+  sql += "sections.secshort AS secshort, ";
+  sql += "divisions.department AS department, ";
+  sql += "divisions.depshort AS depshort ";
+  sql += "FROM users ";
+  sql += "JOIN sections ";
+  sql += "ON users.section = sections.secid ";
+  sql += "JOIN divisions ";
+  sql += "ON sections.divid = divisions.depid ";
+  sql += "JOIN users_role ";
+  sql += "ON users.role = users_role.role_id ";
+  sql += "WHERE users.user_id = ? ";
+
+  connection.query(sql, [parseInt(id)], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      return callback("server error");
+    }
+
+    console.log(rows);
+    socket.emit("userData", rows[0]);
+  });
+};
 router.route("/user/:id").get(function (req, res) {
   let id = req.params.id;
 
@@ -783,6 +879,62 @@ router.route("/user/:id").get(function (req, res) {
 });
 
 //Update Users Info
+const updateUserInfo = (
+  employeeId,
+  name,
+  username,
+  contact,
+  email,
+  section,
+  position,
+  role,
+  callback,
+  socket
+) => {
+  const sql = "SELECT * FROM users WHERE user_id = ?";
+  connection.query(sql, [parseInt(employeeId)], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      return callback("server error");
+    }
+
+    if (rows.length > 0) {
+      let sql1 = "";
+      sql1 += "UPDATE users ";
+      sql1 += "SET employeeId = ? , ";
+      sql1 += "name = ?, ";
+      sql1 += "username = ?, ";
+      sql1 += "contact = ?, ";
+      sql1 += "email = ?, ";
+      sql1 += "section = ?, ";
+      sql1 += "position = ?, ";
+      sql1 += "role = ? ";
+      sql1 += "WHERE user_id = ? ";
+      connection.query(
+        sql1,
+        [
+          employeeId,
+          name,
+          username,
+          contact,
+          email,
+          section,
+          position,
+          role,
+          employeeId,
+        ],
+        function (err, result) {
+          if (err) {
+            console.log(err);
+            return callback("server error");
+          }
+          console.log(result);
+          return callback("success");
+        }
+      );
+    }
+  });
+};
 router.route("/updateUser/:id").post(function (req, res) {
   let id = req.params.id;
   const {
@@ -842,6 +994,16 @@ router.route("/updateUser/:id").post(function (req, res) {
 });
 
 //Update User Role
+const updateUserRole = (role, id, callback, socket) => {
+  const sql = "UPDATE users SET role = ? WHERE user_id = ?";
+  connection.query(sql, [role, parseInt(id)], function (err, result) {
+    if (err) {
+      return callback("server error");
+    }
+
+    return callback("updated");
+  });
+};
 router.route("/updateRole").post(function (req, res) {
   const { role, id } = req.body;
   const sql = "UPDATE users SET role = ? WHERE user_id = ?";
@@ -855,6 +1017,16 @@ router.route("/updateRole").post(function (req, res) {
 });
 
 //Update user Status
+const updateUserStatus = (status, id, callback, socket) => {
+  const sql = "UPDATE users SET status = ? WHERE user_id = ?";
+  connection.query(sql, [status, parseInt(id)], function (err, result) {
+    if (err) {
+      return callback("server error");
+    }
+
+    return callback("updated");
+  });
+};
 router.route("/updateStatus").post(function (req, res) {
   const { status, id } = req.body;
 
@@ -869,6 +1041,17 @@ router.route("/updateStatus").post(function (req, res) {
 });
 
 //Delete User
+const deleteUser = (id, callback, socket) => {
+  const sql = "DELETE FROM users WHERE user_id = ?";
+  connection.query(sql, [id], function (err, result) {
+    if (err) {
+      console.log(err);
+      return callback("server error");
+    }
+
+    return callback("deleted");
+  });
+};
 router.route("/deleteUser").post(function (req, res) {
   const { id } = req.body;
   const sql = "DELETE FROM users WHERE user_id = ?";
@@ -883,6 +1066,18 @@ router.route("/deleteUser").post(function (req, res) {
 });
 
 //Handle Transfer Office
+const userTransferOffice = (section, id, callback, socket) => {
+  const sql = "UPDATE users SET section = ? WHERE user_id = ?";
+  connection.query(sql, [section, parseInt(id)], function (err, result) {
+    if (err) {
+      return callback("server error");
+    }
+
+    // console.log(result);
+    return callback("success");
+  });
+};
+
 router.route("/transferOffice").post(function (req, res) {
   const { id, section } = req.body;
 
@@ -899,6 +1094,27 @@ router.route("/transferOffice").post(function (req, res) {
 });
 
 //Fetch section by section id
+const fetchSectionById = (secid, callback) => {
+  let sql = "";
+  sql += "SELECT sections.secid AS secid, ";
+  sql += "sections.divid AS divid, ";
+  sql += "sections.section AS section, ";
+  sql += "sections.secshort AS secshort, ";
+  sql += "divisions.department AS department, ";
+  sql += "divisions.depshort AS depshort ";
+  sql += "FROM sections ";
+  sql += "JOIN divisions ";
+  sql += "ON sections.divid = divisions.depid ";
+  sql += "WHERE sections.secid = ? ";
+  connection.query(sql, [parseInt(secid)], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      return callback("server error");
+    }
+    console.log(rows[0]);
+    io.emit("sectionInfoById", rows[0]);
+  });
+};
 router.route("/sections/:secid").post(function (req, res) {
   const secid = req.params.secid;
   let sql = "";
@@ -922,7 +1138,30 @@ router.route("/sections/:secid").post(function (req, res) {
   });
 });
 
-//Fetch Section
+//Fetch Sections
+const fetchSections = (socket) => {
+  let sql = "";
+  sql += "SELECT sections.divid AS divid, ";
+  sql += "sections.secid AS secid, ";
+  sql += "sections.section AS section, ";
+  sql += "sections.secshort AS secshort, ";
+  sql += "sections.active AS active, ";
+  sql += "divisions.department AS department, ";
+  sql += "divisions.depshort AS depshort ";
+  sql += "FROM sections ";
+  sql += "JOIN divisions ";
+  sql += "ON sections.divid = divisions.depid ";
+  sql += "ORDER BY sections.secid ASC ";
+
+  connection.query(sql, function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+    }
+
+    console.log(rows);
+    io.emit("sections", rows);
+  });
+};
 router.route("/sections").get(function (req, res) {
   let sql = "";
   sql += "SELECT sections.divid AS divid, ";
@@ -948,6 +1187,21 @@ router.route("/sections").get(function (req, res) {
 });
 
 //Add New Section
+const addNewSection = (division, section, secshort, callback) => {
+  const sql =
+    "INSERT INTO sections (divid, section, secshort, active) VALUES ?";
+  const values = [[division, section, secshort, 1]];
+  connection.query(sql, [values], function (err, result) {
+    if (err) {
+      console.log(err);
+      return callback("sever error");
+    }
+
+    console.log(result);
+    fetchSections();
+    return callback("success");
+  });
+};
 router.route("/addNewSection").post(function (req, res) {
   const { division, section, secshort } = req.body;
   const sql =
@@ -965,6 +1219,24 @@ router.route("/addNewSection").post(function (req, res) {
 });
 
 //Update Section
+const updateSection = (secid, divid, section, secshort, callback, socket) => {
+  const sql =
+    "UPDATE sections SET divid = ?, section = ?, secshort = ?, active = ? WHERE secid = ?";
+  connection.query(
+    sql,
+    [parseInt(divid), section, secshort, 1, parseInt(secid)],
+    function (err, result) {
+      if (err) {
+        console.log(err);
+        return callback("server error");
+      }
+
+      console.log(result);
+      fetchSectionById(secid, callback);
+      return callback("updated");
+    }
+  );
+};
 router.route("/updateSection").post(function (req, res) {
   const { secid, divid, section, secshort } = req.body;
   const sql =
@@ -985,6 +1257,19 @@ router.route("/updateSection").post(function (req, res) {
 });
 
 //DELETE SECTION
+const deleteSection = (id, callback) => {
+  const sql = "DELETE FROM sections WHERE secid = ?";
+  connection.query(sql, [parseInt(id)], function (err, result) {
+    if (err) {
+      console.log(err);
+      return callback("server error");
+    }
+
+    console.log(result);
+    fetchSections();
+    return callback("success");
+  });
+};
 router.route("/deleteSection/:id").post(function (req, res) {
   let id = req.params.id;
   const sql = "DELETE FROM sections WHERE secid = ?";
@@ -1000,6 +1285,17 @@ router.route("/deleteSection/:id").post(function (req, res) {
 });
 
 //Fetch Divisions
+const fetchDivisions = () => {
+  const sql = "SELECT * FROM divisions";
+  connection.query(sql, function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+    }
+
+    console.log(rows);
+    io.emit("divisions", rows);
+  });
+};
 router.route("/fetchDivisions").get(function (req, res) {
   const sql = "SELECT * FROM divisions";
   connection.query(sql, function (err, rows, fields) {
@@ -1014,6 +1310,17 @@ router.route("/fetchDivisions").get(function (req, res) {
 });
 
 //Fetch Division By ID
+const fetchDivisionById = (id, callback, socket) => {
+  const sql = "SELECT * FROM divisions WHERE depid= ?";
+  connection.query(sql, [parseInt(id)], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      return callback("server error");
+    }
+    console.log(rows);
+    socket.emit("divisionInfo", rows[0]);
+  });
+};
 router.route("/fetchDivisionById/:id").get(function (req, res) {
   let id = req.params.id;
   const sql = "SELECT * FROM divisions WHERE depid= ?";
@@ -1028,6 +1335,20 @@ router.route("/fetchDivisionById/:id").get(function (req, res) {
 });
 
 //Add Division
+const addNewDivision = (department, depshort, payrollshort, callback) => {
+  const sql =
+      "INSERT INTO divisions (department, depshort, payrollshort) VALUES ?";
+  const values = [[department, depshort, payrollshort]];
+  connection.query(sql, [values], function (err, result) {
+    if (err) {
+      console.log(err);
+      return callback("server error");
+    }
+    console.log(result);
+    fetchDivisions();
+    return callback("success");
+  });
+}
 router.route("/addDivision").post(function (req, res) {
   const { department, depshort, payrollshort } = req.body;
   const sql =
@@ -1162,21 +1483,6 @@ router.route("/documentType").get(function (req, res) {
     res.status(200).send(rows);
   });
 });
-
-//Insert New Document
-// router.route("/addNewDocument").post(function (req, res) {
-//   const {
-//     documentID,
-//     creator,
-//     subject,
-//     doc_type,
-//     note,
-//     action_req,
-//     documentLogs,
-//   } = req.body;
-//
-//
-// });
 
 //Insert Draft
 router.route("/draft").post(function (req, res) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import {makeStyles, useTheme, withStyles} from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
@@ -19,6 +19,7 @@ import { getFromStorage } from "../../storage";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
+import Badge from "@material-ui/core/Badge";
 let socket;
 const useStyles = makeStyles(theme => ({
   root: {
@@ -37,6 +38,35 @@ const useStyles = makeStyles(theme => ({
     paddingLeft: theme.spacing(4)
   }
 }));
+
+const StyledBadge = withStyles((theme) => ({
+  badge: {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      animation: '$ripple 1.2s infinite ease-in-out',
+      border: '1px solid currentColor',
+      content: '""',
+    },
+  },
+  '@keyframes ripple': {
+    '0%': {
+      transform: 'scale(.8)',
+      opacity: 1,
+    },
+    '100%': {
+      transform: 'scale(2.4)',
+      opacity: 0,
+    },
+  },
+}))(Badge);
 
 
 export default function SideBarNavigation(props) {
@@ -61,10 +91,20 @@ export default function SideBarNavigation(props) {
                 style={{ paddingTop: 70, paddingBottom: 30, color: "#2196F3" }}
               >
                 <ListItemAvatar>
-                  <Avatar
-                    alt={props.user.name}
-                    src="/static/images/avatar/1.jpg"
-                  />
+                  <StyledBadge
+                      overlap="circle"
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                      }}
+                      variant="dot"
+                  >
+                    <Avatar
+                        alt={props.user.name}
+                        src="/static/images/avatar/1.jpg"
+                    />
+                  </StyledBadge>
+
                 </ListItemAvatar>
                 <ListItemText
                   primary={props.user.name}

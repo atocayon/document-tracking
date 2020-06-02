@@ -44,15 +44,16 @@ function Login(props) {
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
+
     socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
-    if (obj && obj.token) {
-      setRedirect(true);
-    }
+    // if (obj && obj.token) {
+    //   setRedirect(true);
+    // }
     if (Object.keys(props._login).length > 0) {
       if (props._login.success === true) {
         const variant = "info";
-        props.enqueueSnackbar("Welcome " + props._login.message, {
+        props.enqueueSnackbar("Hello! " + props._login.message , {
           variant,
         });
         setRedirect(true);

@@ -10,7 +10,7 @@ import { connect } from "react-redux";
 import { verifyToken } from "../../../redux/actions/verifyToken";
 import { fetchCurrentSystemUser } from "../../../redux/actions/fetchCurrentSystemUser";
 import { withSnackbar } from "notistack";
-import {fetchSectionsList} from "../../../redux/actions/fetchSectionsList";
+import { fetchSectionsList } from "../../../redux/actions/fetchSectionsList";
 
 function Home(props) {
   const [endSession, setEndSession] = useState(false);
@@ -26,22 +26,33 @@ function Home(props) {
         await props.fetchSectionsList();
       }
 
-      callback().catch(err => {
+      callback().catch((err) => {
         console.log(err);
       });
     }
     setEndSession(!(obj && obj.token));
   }, []);
 
-
   return (
     <div>
       {endSession && <Redirect to={"/login"} />}
       {Object.keys(props.token).length > 0 && (
-        <>{props.token.isDeleted === "1" && <Redirect to={"/login"} />}
-          {props.user.role === "super_admin" && <ControlPanel user={props.user} />}
-          {props.user.role === "member" && <Dashboard user={props.user} sections={props.sections} />}
-          {props.user.role === "admin" && <Dashboard user={props.user} sections={props.sections} />}
+        <>
+          {props.token.isDeleted === "1" ? (
+            <Redirect to={"/login"} />
+          ) : (
+            <>
+              {props.user.role === "super_admin" && (
+                <ControlPanel user={props.user} />
+              )}
+              {props.user.role === "member" && (
+                <Dashboard user={props.user} sections={props.sections} />
+              )}
+              {props.user.role === "admin" && (
+                <Dashboard user={props.user} sections={props.sections} />
+              )}
+            </>
+          )}
         </>
       )}
     </div>
@@ -52,14 +63,14 @@ function mapStateToProps(state) {
   return {
     token: state.verifyToken,
     user: state.fetchCurrentSystemUser,
-    sections: state.fetchSectionsList
+    sections: state.fetchSectionsList,
   };
 }
 
 const mapDispatchToProps = {
   verifyToken,
   fetchCurrentSystemUser,
-  fetchSectionsList
+  fetchSectionsList,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
