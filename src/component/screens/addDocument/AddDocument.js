@@ -234,7 +234,9 @@ function AddDocument({
         destination,
         internal,
         "2",
-        "0"
+        "0",
+          "0",
+          "0"
       );
 
       await addDocumentDestination(_destination);
@@ -261,7 +263,9 @@ function AddDocument({
         destination,
         external,
         "2",
-        "0"
+        "0",
+          "0",
+          "0"
       );
       await addDocumentDestination(_destination);
       await clearExternalDestinationInput();
@@ -320,6 +324,8 @@ function AddDocument({
       "none",
       "5",
       "0",
+        "0",
+        "0"
     ]);
 
     setFinalize(true);

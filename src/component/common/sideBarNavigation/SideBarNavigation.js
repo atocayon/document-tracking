@@ -79,7 +79,7 @@ export default function SideBarNavigation(props) {
     socket.on("pendings", data => {
       setPending(data);
     });
-  }, [pending]);
+  }, [pending, socket]);
 
   return (
     <>
