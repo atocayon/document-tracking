@@ -31,6 +31,7 @@ export function trackOnly(data, socket) {
   return async function (dispatch) {
     await dispatch({ type: actionTypes.HANDLE_SCAN, data });
     await socket.emit("tracking", data);
+
     await socket.on("track", (_data) => {
       Reactotron.log(_data);
       dispatch({

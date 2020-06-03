@@ -401,7 +401,7 @@ const insertDocument = (
           sql += "destinationType, ";
           sql += "destination, ";
           sql += "status, ";
-          sql += "notification) ";
+          sql += "notification, level, ref) ";
           sql += "VALUES ? ";
 
           connection.query(sql, [documentLogs], function (err, result) {
@@ -436,7 +436,7 @@ const insertDocument = (
           }
 
           const sql3 =
-            "INSERT INTO documentLogs (document_id, user_id, remarks, destinationType, destination, status, notification) VALUES ?";
+            "INSERT INTO documentLogs (document_id, user_id, remarks, destinationType, destination, status, notification, level, ref) VALUES ?";
 
           connection.query(sql3, [documentLogs], function (err, result) {
             if (err) {
@@ -459,7 +459,6 @@ const receiveDocument = (
   callback,
   socket
 ) => {
-  console.log("Gn rreceive na");
   const sql = "SELECT * FROM documentLogs WHERE document_id = ?";
   connection.query(sql, [documentTracking], function (err, rows, fields) {
     if (err) {
@@ -475,10 +474,22 @@ const receiveDocument = (
           rows[i].user_id === user_id &&
           rows[i].status === "2"
         ) {
+          let currentDocLevel = rows[i].level;
+          let ref = rows[i].trans_id;
           const insertExternal =
-            "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification) VALUES ?";
+            "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, level, ref) VALUES ?";
           const val = [
-            [documentTracking, user_id, "none", "External", "none", "1", "0"],
+            [
+              documentTracking,
+              user_id,
+              "none",
+              "External",
+              "none",
+              "1",
+              "0",
+              currentDocLevel,
+              ref,
+            ],
           ];
           connection.query(insertExternal, [val], function (err, result) {
             if (err) {
@@ -496,8 +507,11 @@ const receiveDocument = (
         if (
           rows[i].destinationType === "Internal" &&
           rows[i].destination === user_section &&
-          rows[i].status === "2"
+          rows[i].status === "2" &&
+          rows[i].notification === "0"
         ) {
+          let currentDocLevel = rows[i].level;
+          let ref = rows[i].trans_id;
           let insertInternal = "";
           insertInternal += "INSERT INTO documentLogs ";
           insertInternal += "(document_id, ";
@@ -506,11 +520,20 @@ const receiveDocument = (
           insertInternal += "destinationType, ";
           insertInternal += "destination, ";
           insertInternal += "status, ";
-          insertInternal += "notification) ";
+          insertInternal += "notification, level, ref) ";
           insertInternal += "VALUES ? ";
           const val1 = [
-            [documentTracking, user_id, "none", "Internal", "none", "1", "0"],
-            [documentTracking, user_id, "none", "Internal", "none", "3", "0"],
+            [
+              documentTracking,
+              user_id,
+              "none",
+              "Internal",
+              "none",
+              "1",
+              "0",
+              currentDocLevel,
+              ref,
+            ],
           ];
           connection.query(insertInternal, [val1], function (err, result) {
             if (err) {
@@ -534,7 +557,7 @@ const receiveDocument = (
 const countPending = (user_id, socket) => {
   const sql =
     "SELECT * FROM documentLogs WHERE user_id = ? AND status = ? AND notification = ?";
-  connection.query(sql, [user_id, "3", "0"], function (err, rows, fields) {
+  connection.query(sql, [user_id, "1", "0"], function (err, rows, fields) {
     if (err) {
       console.log(err);
       throw err;
@@ -547,28 +570,29 @@ const countPending = (user_id, socket) => {
 //Track Document
 const trackDocument = (data) => {
   let sql = "";
-  sql += "SELECT ";
-  sql += "users.name AS name,  ";
-  sql += "users.position AS position, ";
-  sql += "sections.secshort AS secshort, ";
-  sql +=
-    "GROUP_CONCAT(concat(documentStatus.status, ' on ', DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p')) ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS transactions , ";
-  sql +=
-    "GROUP_CONCAT(documentLogs.remarks ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS remarks, ";
-  sql +=
-    "GROUP_CONCAT(documentLogs.destination ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS destination, ";
-  sql +=
-    "DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time ";
-  sql += "FROM documentLogs ";
-  sql += "JOIN users ";
-  sql += "ON documentLogs.user_id = users.user_id ";
-  sql += "JOIN documentStatus ";
-  sql += "ON documentLogs.status = documentStatus.statid ";
-  sql += "JOIN sections ";
-  sql += "ON users.section = sections.secid ";
-  sql += "WHERE documentLogs.document_id = ? ";
-  sql +=
-    "GROUP BY documentLogs.document_id, documentLogs.user_id ORDER BY documentLogs.date_time DESC ";
+  sql += "SELECT * FROM documentLogs WHERE document_id = ?";
+  // sql += "SELECT ";
+  // sql += "users.name AS name,  ";
+  // sql += "users.position AS position, ";
+  // sql += "sections.secshort AS secshort, ";
+  // sql +=
+  //   "GROUP_CONCAT(concat(documentStatus.status, ' on ', DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p')) ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS transactions , ";
+  // sql +=
+  //   "GROUP_CONCAT(documentLogs.remarks ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS remarks, ";
+  // sql +=
+  //   "GROUP_CONCAT(documentLogs.destination ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS destination, ";
+  // sql +=
+  //   "DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time ";
+  // sql += "FROM documentLogs ";
+  // sql += "JOIN users ";
+  // sql += "ON documentLogs.user_id = users.user_id ";
+  // sql += "JOIN documentStatus ";
+  // sql += "ON documentLogs.status = documentStatus.statid ";
+  // sql += "JOIN sections ";
+  // sql += "ON users.section = sections.secid ";
+  // sql += "WHERE documentLogs.document_id = ? ";
+  // sql +=
+  //   "GROUP BY documentLogs.document_id, documentLogs.user_id ORDER BY documentLogs.date_time DESC ";
   connection.query(sql, [data], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -578,6 +602,7 @@ const trackDocument = (data) => {
     io.emit("track", rows);
   });
 };
+
 
 const login = (email, password, callback) => {
   let sql = "";
@@ -1337,7 +1362,7 @@ router.route("/fetchDivisionById/:id").get(function (req, res) {
 //Add Division
 const addNewDivision = (department, depshort, payrollshort, callback) => {
   const sql =
-      "INSERT INTO divisions (department, depshort, payrollshort) VALUES ?";
+    "INSERT INTO divisions (department, depshort, payrollshort) VALUES ?";
   const values = [[department, depshort, payrollshort]];
   connection.query(sql, [values], function (err, result) {
     if (err) {
@@ -1348,7 +1373,7 @@ const addNewDivision = (department, depshort, payrollshort, callback) => {
     fetchDivisions();
     return callback("success");
   });
-}
+};
 router.route("/addDivision").post(function (req, res) {
   const { department, depshort, payrollshort } = req.body;
   const sql =
@@ -1719,7 +1744,7 @@ router.route("/fetchPendingDocument/:user_id").get(function (req, res) {
   sql += "AND documentLogs.notification = ? ";
   sql += "ORDER BY documentLogs.date_time DESC ";
 
-  connection.query(sql, [req.params.user_id, "3", "0"], function (
+  connection.query(sql, [req.params.user_id, "1", "0"], function (
     err,
     rows,
     fields
@@ -1772,34 +1797,101 @@ router.route("/afterDocumentReceive").post(function (req, res) {
     status,
   } = req.body;
 
-  const sql =
-    "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification) VALUES ?";
-  const values = [
-    [documentId, user_id, remarks, destinationType, destination, status, "0"],
-  ];
-
-  connection.query(sql, [values], function (err, result) {
+  const level =
+    "SELECT * FROM documentLogs WHERE document_id = ? AND status = ? AND notification = ?";
+  connection.query(level, [documentId, "1", "0"], function (err, rows, fields) {
     if (err) {
       console.log(err);
-      res.status(500).send(err);
     }
+    let currentDocLevel = rows[0].level;
+    let ref = rows[0].ref;
+    parseInt(currentDocLevel);
 
-    let update = "";
-    update += "UPDATE documentLogs SET ";
-    update += "notification   = ? ";
-    update += "WHERE document_id = ? ";
-    update += "AND user_id = ? ";
-    update += "AND status = ? ";
-    connection.query(update, ["1", documentId, user_id, "3"], function (
-      err,
-      result
-    ) {
-      if (err) {
-        console.log(err);
-        res.status(500).send(err);
-      }
-      res.status(200).send(result);
-    });
+    if (status === "2") {
+      const newLevel =
+        "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, level, ref) VALUES ?";
+      const values = [
+        [
+          documentId,
+          user_id,
+          remarks,
+          destinationType,
+          destination,
+          status,
+          "0",
+          ++currentDocLevel,
+          ref,
+        ],
+      ];
+
+      connection.query(newLevel, [values], function (err, result) {
+        if (err) {
+          console.log(err);
+          res.status(500).send(err);
+        }
+
+        let updateNewLevel = "";
+        updateNewLevel += "UPDATE documentLogs SET ";
+        updateNewLevel += "notification   = ? ";
+        updateNewLevel += "WHERE document_id = ? ";
+        updateNewLevel += "AND user_id = ? ";
+        updateNewLevel += "AND status = ? ";
+        updateNewLevel += "AND level = ? ";
+        connection.query(
+          updateNewLevel,
+          ["1", documentId, user_id, "1", rows[0].level],
+          function (err, result) {
+            if (err) {
+              console.log(err);
+              res.status(500).send(err);
+            }
+            res.status(200).send(result);
+          }
+        );
+      });
+    } else {
+      const sameLevel =
+        "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, level, ref) VALUES ?";
+      const values = [
+        [
+          documentId,
+          user_id,
+          remarks,
+          destinationType,
+          destination,
+          status,
+          "0",
+          currentDocLevel,
+          ref,
+        ],
+      ];
+
+      connection.query(sameLevel, [values], function (err, result) {
+        if (err) {
+          console.log(err);
+          res.status(500).send(err);
+        }
+
+        let updateSameLevel = "";
+        updateSameLevel += "UPDATE documentLogs SET ";
+        updateSameLevel += "notification   = ? ";
+        updateSameLevel += "WHERE document_id = ? ";
+        updateSameLevel += "AND user_id = ? ";
+        updateSameLevel += "AND status = ? ";
+        updateSameLevel += "AND level = ? ";
+        connection.query(
+          updateSameLevel,
+          ["1", documentId, user_id, "1", currentDocLevel],
+          function (err, result) {
+            if (err) {
+              console.log(err);
+              res.status(500).send(err);
+            }
+            res.status(200).send(result);
+          }
+        );
+      });
+    }
   });
 });
 
