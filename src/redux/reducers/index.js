@@ -33,6 +33,7 @@ import fetchPendingDocumentInfo from "./fetchPendingDocumentInfo";
 import searchBySubj from "./searchBySubj";
 import expandDocLogs from "./expandDocLogs";
 import fetchActiveUserList from "./fetchActiveUserList";
+import onClickTrackShowMore from "./onClickTrackShowMore";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -68,6 +69,7 @@ const rootReducer = combineReducers({
   searchBySubj: searchBySubj,
   expandDocLogs: expandDocLogs,
   fetchActiveUserList:fetchActiveUserList,
+  onClickTrackShowMore: onClickTrackShowMore
 });
 
 export default rootReducer;
