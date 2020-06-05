@@ -463,7 +463,7 @@ const receiveDocument = (
   connection.query(sql, [documentTracking], function (err, rows, fields) {
     if (err) {
       console.log(err);
-      callback("server error");
+      return callback("server error");
     }
 
     if (rows.length > 0) {
@@ -494,12 +494,11 @@ const receiveDocument = (
           connection.query(insertExternal, [val], function (err, result) {
             if (err) {
               console.log(err);
-              callback("server error");
+              return callback("server error");
             }
-            console.log(result);
-            callback("success");
             countPending(user_id, socket);
             trackDocument(documentTracking);
+            return callback("success");
           });
           break;
         }
@@ -538,12 +537,11 @@ const receiveDocument = (
           connection.query(insertInternal, [val1], function (err, result) {
             if (err) {
               console.log(err);
-              callback("server error");
+              return callback("server error");
             }
-            console.log(result);
-            callback("success");
             countPending(user_id, socket);
             trackDocument(documentTracking);
+            return callback("success");
           });
 
           break;
@@ -570,30 +568,30 @@ const countPending = (user_id, socket) => {
 //Track Document
 const trackDocument = (data) => {
   let sql = "";
-  sql += "SELECT * FROM documentLogs WHERE document_id = ?";
-  // sql += "SELECT ";
-  // sql += "users.name AS name,  ";
-  // sql += "users.position AS position, ";
-  // sql += "sections.secshort AS secshort, ";
-  // sql +=
-  //   "GROUP_CONCAT(concat(documentStatus.status, ' on ', DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p')) ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS transactions , ";
-  // sql +=
-  //   "GROUP_CONCAT(documentLogs.remarks ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS remarks, ";
-  // sql +=
-  //   "GROUP_CONCAT(documentLogs.destination ORDER BY documentLogs.date_time DESC SEPARATOR '*') AS destination, ";
-  // sql +=
-  //   "DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time ";
-  // sql += "FROM documentLogs ";
-  // sql += "JOIN users ";
-  // sql += "ON documentLogs.user_id = users.user_id ";
-  // sql += "JOIN documentStatus ";
-  // sql += "ON documentLogs.status = documentStatus.statid ";
-  // sql += "JOIN sections ";
-  // sql += "ON users.section = sections.secid ";
-  // sql += "WHERE documentLogs.document_id = ? ";
-  // sql +=
-  //   "GROUP BY documentLogs.document_id, documentLogs.user_id ORDER BY documentLogs.date_time DESC ";
-  connection.query(sql, [data], function (err, rows, fields) {
+  sql += "SELECT ";
+  sql += "documentLogs.trans_id  AS trans_id, ";
+  sql += "documentLogs.document_id AS document_id, ";
+  sql += "users.name AS name,  ";
+  sql += "users.position AS position, ";
+  sql += "sections.secshort AS secshort, ";
+  sql += "documentLogs.remarks AS remarks, ";
+  sql += "documentLogs.destination  AS destination, ";
+  sql += "documentStatus.status AS status, ";
+  sql += "users.name AS operator, ";
+  sql += "documentLogs.ref AS ref_id, ";
+  sql +=
+    "DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time ";
+  sql += "FROM documentLogs ";
+  sql += "JOIN users ";
+  sql += "ON documentLogs.user_id = users.user_id ";
+  sql += "JOIN documentStatus ";
+  sql += "ON documentLogs.status = documentStatus.statid ";
+  sql += "JOIN sections ";
+  sql += "ON users.section = sections.secid ";
+  sql += "WHERE documentLogs.document_id = ? ";
+  sql += "AND documentLogs.ref = ? ";
+  sql += "ORDER BY documentLogs.trans_id DESC";
+  connection.query(sql, [data, "0"], function (err, rows, fields) {
     if (err) {
       console.log(err);
       throw err;
@@ -603,6 +601,41 @@ const trackDocument = (data) => {
   });
 };
 
+//Fetch sub document
+router.route("/fetchSubDocument").post(function (req, res) {
+  const { trans_id, tracking } = req.body;
+  let sql = "";
+  sql += "SELECT ";
+  sql += "documentLogs.trans_id  AS trans_id, ";
+  sql += "documentLogs.document_id AS document_id, ";
+  sql += "users.name AS name,  ";
+  sql += "users.position AS position, ";
+  sql += "sections.secshort AS secshort, ";
+  sql +=
+    "DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time , ";
+  sql += "documentLogs.remarks AS remarks, ";
+  sql += "documentLogs.destination AS destination, ";
+  sql += "documentStatus.status AS status, ";
+  sql += "users.name AS operator ";
+  sql += "FROM documentLogs ";
+  sql += "JOIN users ";
+  sql += "ON documentLogs.user_id = users.user_id ";
+  sql += "JOIN documentStatus ";
+  sql += "ON documentLogs.status = documentStatus.statid ";
+  sql += "JOIN sections ";
+  sql += "ON users.section = sections.secid ";
+  sql += "WHERE documentLogs.document_id = ? ";
+  sql += "AND documentLogs.ref = ? ";
+  sql += "ORDER BY documentLogs.trans_id DESC";
+  connection.query(sql, [tracking, trans_id], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    res.status(200).send(rows);
+  });
+});
 
 const login = (email, password, callback) => {
   let sql = "";

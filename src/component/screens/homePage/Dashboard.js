@@ -205,7 +205,7 @@ function Dashboard(props) {
                           variant={"outlined"}
                           onChange={props.documentTrackingNumber}
                           value={props.trackingNum.documentTrackingNumber}
-                          type={"search"}
+                          type={"text"}
                           endAdornment={
                             props.receive !== "" || props.track.length > 0 ? (
                               <InputAdornment position="end">
@@ -315,7 +315,7 @@ function Dashboard(props) {
                   ) : null}
 
                   {props.track.length > 0 && props.search.length === 0 ? (
-                    <DocumentTrack track={props.track} />
+                    <DocumentTrack track={props.track} trackingNum={props.trackingNum.documentTrackingNumber} />
                   ) : null}
                 </div>
               </div>
