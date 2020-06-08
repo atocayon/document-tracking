@@ -1,4 +1,4 @@
-import React, {Component, useEffect, useState} from "react";
+import React, { Component, useEffect, useState } from "react";
 import Grid from "@material-ui/core/Grid";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
@@ -14,31 +14,64 @@ import List from "@material-ui/core/List";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
 import { withSnackbar } from "notistack";
+import { connect } from "react-redux";
+import { fetchUserDocuments } from "../../../redux/actions/fetchUserDocuments";
+import { handleSearchUserDocuments } from "../../../redux/actions/handleSearchUserDocuments";
+import TablePagination from "@material-ui/core/TablePagination";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Input from "@material-ui/core/Input";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import IconButton from "@material-ui/core/IconButton";
+import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
 
 function MyDocuments(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
-  const [documents, setDocuments] = useState([]);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
-      axios
-        .get("http://10.10.10.16:4000/dts/fetchUserDocuments/" + token)
-        .then(res => {
-          Reactotron.log(res);
-          setDocuments(res.data);
-        })
-        .catch(err => {
-          const variant = "error";
-          props.enqueueSnackbar("Server Error", {variant});
-        });
+      async function fetch() {
+        await props.fetchUserDocuments(token);
+      }
+      fetch().catch((err) => {
+        throw err;
+      });
     }
     setEndSession(!(obj && obj.token));
   }, []);
 
   const handleClick = () => {
     setOpen(!open);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const onChangeSearch = ({ target }) => {
+    setSearch(target.value);
+  };
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (search !== "") {
+      await props.handleSearchUserDocuments(search);
+    }
+  };
+
+  const handleClearSearch = (e) => {
+    e.preventDefault();
+    window.location.reload(true);
   };
   return (
     <Grid container spacing={3}>
@@ -58,54 +91,113 @@ function MyDocuments(props) {
             marginTop: 70,
             paddingTop: 0,
             height: "100vh",
-            overflow: "auto"
+            overflow: "auto",
           }}
         >
           <div className={"jumbotron"} style={{ padding: 50 }}>
             <div className={"row"}>
-              <div className={"col-md-2"}>
-                <div className={"row"}>
-                  <div className={"col-md-6"}></div>
-                  <div className={"col-md-6"}>
-                    <div style={{ textAlign: "right" }}></div>
-                  </div>
-                </div>
+              <div className={"col-md-6"}>
+                <form onSubmit={handleSearch}>
+                  <FormControl fullWidth>
+                    <InputLabel htmlFor="outlined-adornment-amount">
+                      Search by subject and press enter
+                    </InputLabel>
+                    <Input
+                      label={"Search by subject and press enter"}
+                      variant={"outlined"}
+                      onChange={onChangeSearch}
+                      type={"text"}
+                      endAdornment={
+                        search !== "" ? (
+                          <InputAdornment position="end">
+                            <IconButton
+                              title={"clear"}
+                              aria-label="toggle password visibility"
+                              onClick={handleClearSearch}
+                              onMouseDown={handleClearSearch}
+                              edge="end"
+                            >
+                              <HighlightOffRoundedIcon />
+                            </IconButton>
+                          </InputAdornment>
+                        ) : (
+                          ""
+                        )
+                      }
+                    />
+                  </FormControl>
+                </form>
               </div>
-              <div className={"col-md-8"}>
-                {/*<h5 style={{ textAlign: "left" }}>Draft Documents</h5>*/}
-              </div>
-              <div className={"col-md-2"}></div>
+              <div className={"col-md-6"}></div>
             </div>
           </div>
 
-          {documents.length === 0 && (
-              <div style={{textAlign: "center", marginTop: 200}}>
-                  <h6 style={{ color: "#9E9E9E" }}>You don't have any documents yet</h6>
-              </div>
+          {props.userDocument.length === 0 && (
+            <div style={{ textAlign: "center", marginTop: 200 }}>
+              <h6 style={{ color: "#9E9E9E" }}>
+                No documents found
+              </h6>
+            </div>
           )}
 
-          <div style={{ marginLeft: 50, marginRight: 10}}>
+          <div style={{ marginLeft: 50, marginRight: 10 }}>
             <div className={"row"}>
-              <div className={"col-md-8"} style={{paddingBottom: 200, overflow: "auto" }}>
+              <div className={"col-md-10"} style={{ paddingBottom: 200 }}>
                 <List>
-                  {documents.length > 0 && documents.map(document => (
-                      <Link to={"/doc/"+document.documentID} style={{ textDecoration: "none" }}>
-                        <ListItem>
-                          <ListItemAvatar>
-                            <Avatar>
-                              <DescriptionIcon />
-                            </Avatar>
-                          </ListItemAvatar>
-                          <ListItemText primary={document.subject} secondary={document.type} />
-                        </ListItem>
-                      </Link>
-                  ))}
-
+                  {props.userDocument.length > 0 &&
+                    props.userDocument
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((document) => {
+                        let doc =
+                          document.maxStatus === "forwarded"
+                            ? document.maxStatus + " to " + document.destination
+                            : document.maxStatus + " by " + document.name;
+                        return (
+                          <Link
+                            to={"/doc/" + document.documentID}
+                            style={{ textDecoration: "none" }}
+                          >
+                            <ListItem>
+                              <ListItemAvatar>
+                                <Avatar>
+                                  <DescriptionIcon />
+                                </Avatar>
+                              </ListItemAvatar>
+                              <ListItemText
+                                primary={document.subject}
+                                secondary={document.type + " - Status: " + doc}
+                              />
+                            </ListItem>
+                          </Link>
+                        );
+                      })}
                 </List>
-
-
+                <div style={{ position: "fixed", bottom: 0, marginBottom: 20 }}>
+                  <TablePagination
+                    rowsPerPageOptions={[
+                      5,
+                      10,
+                      25,
+                      30,
+                      50,
+                      100,
+                      200,
+                      500,
+                      1000,
+                    ]}
+                    component="div"
+                    count={props.userDocument.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                  />
+                </div>
               </div>
-              <div className={"col-md-4"}></div>
+              <div className={"col-md-2"}></div>
             </div>
           </div>
         </Paper>
@@ -115,4 +207,18 @@ function MyDocuments(props) {
   );
 }
 
-export default withSnackbar(MyDocuments);
+function mapStateToProps(state) {
+  return {
+    userDocument: state.fetchUserDocuments,
+  };
+}
+
+const mapDispatchToProps = {
+  fetchUserDocuments,
+  handleSearchUserDocuments,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withSnackbar(MyDocuments));

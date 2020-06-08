@@ -15,10 +15,20 @@ export function handleScan(data, user_id, secshort, socket) {
       if (message === "success") {
         dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "success" });
         socket.emit("tracking", data);
-        socket.on("track", (_data) => {
+        socket.on("track", async (_data) => {
+          let arr = [];
+          for (let i = 0; i < _data.length; i++) {
+            let data_branches = await get_branches(
+                _data[i].trans_id,
+                _data[i].document_id
+            );
+
+            arr.push({ doc: _data[i], sub: data_branches });
+          }
+
           dispatch({
             type: actionTypes.TRACK_DOCUMENT,
-            data: _data,
+            data: arr,
           });
         });
       }
@@ -41,8 +51,6 @@ export function trackOnly(data, socket) {
 
         arr.push({ doc: _data[i], sub: data_branches });
       }
-
-      Reactotron.log(arr);
 
       dispatch({
         type: actionTypes.TRACK_DOCUMENT,

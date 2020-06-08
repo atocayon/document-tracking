@@ -191,7 +191,7 @@ function Dashboard(props) {
                       <FormControl fullWidth>
                         <InputLabel htmlFor="outlined-adornment-amount">
                           {trackOrSearchOnly
-                            ? "Search / Tracking"
+                            ? "Search / Track"
                             : "Document Tracking Number"}
                         </InputLabel>
                         <Input
@@ -199,7 +199,7 @@ function Dashboard(props) {
                           name={"documentTrackingNumber"}
                           label={
                             trackOrSearchOnly
-                              ? "Search / Tracking"
+                              ? "Search / Track"
                               : "Tracking Number"
                           }
                           variant={"outlined"}
