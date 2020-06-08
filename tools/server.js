@@ -626,7 +626,7 @@ router.route("/fetchSubDocument").post(function (req, res) {
   sql += "ON users.section = sections.secid ";
   sql += "WHERE documentLogs.document_id = ? ";
   sql += "AND documentLogs.ref = ? ";
-  sql += "ORDER BY documentLogs.trans_id DESC";
+  sql += "ORDER BY documentLogs.trans_id ASC";
   connection.query(sql, [tracking, trans_id], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -1671,10 +1671,24 @@ router.route("/fetchUserDocuments/:userID").get(function (req, res) {
   sql += "documents.subject as subject, ";
   sql += "document_type.id as docType_id, ";
   sql += "document_type.type as type, ";
+  sql += "documentLogs.trans_id AS trans_id, ";
+  sql += "documentLogs.document_id AS document_id, ";
+  sql += "documentLogs.maxStatus AS maxStatus, ";
+  sql += "documentLogs.destination AS destination, ";
+  sql += "documentLogs.name AS name, ";
   sql += "documents.note ";
   sql += "FROM documents ";
   sql += "JOIN document_type ";
   sql += "ON documents.doc_type = document_type.id ";
+  sql += "JOIN (SELECT documentLogs.trans_id AS trans_id, ";
+  sql += "documentLogs.document_id, ";
+  sql += "documentStatus.status AS maxStatus, ";
+  sql += "users.name AS name, ";
+  sql += "documentLogs.destination AS destination  ";
+  sql += "FROM documentLogs JOIN documentStatus ON documentLogs.status = documentStatus.statid ";
+  sql += "JOIN users ON documentLogs.user_id = users.user_id ";
+  sql += "ORDER BY documentLogs.trans_id DESC LIMIT 1) documentLogs ";
+  sql += "ON documents.documentID = documentLogs.document_id ";
   sql += "WHERE documents.creator = ? ";
   sql += "AND documents.status = ? ";
   sql += "ORDER BY documents.date_time_created DESC ";
@@ -1689,6 +1703,45 @@ router.route("/fetchUserDocuments/:userID").get(function (req, res) {
   });
 });
 
+//SEARCH BY SUBJ
+router.route("/searchUserDocument/:value").get(function (req, res) {
+  let sql = "";
+  sql += "SELECT documents.documentID as documentID, ";
+  sql += "documents.subject as subject, ";
+  sql += "document_type.id as docType_id, ";
+  sql += "document_type.type as type, ";
+  sql += "documentLogs.trans_id AS trans_id, ";
+  sql += "documentLogs.document_id AS document_id, ";
+  sql += "documentLogs.maxStatus AS maxStatus, ";
+  sql += "documentLogs.destination AS destination, ";
+  sql += "documentLogs.name AS name, ";
+  sql += "documents.note ";
+  sql += "FROM documents ";
+  sql += "JOIN document_type ";
+  sql += "ON documents.doc_type = document_type.id ";
+  sql += "JOIN (SELECT documentLogs.trans_id AS trans_id, ";
+  sql += "documentLogs.document_id, ";
+  sql += "documentStatus.status AS maxStatus, ";
+  sql += "users.name AS name, ";
+  sql += "documentLogs.destination AS destination  ";
+  sql += "FROM documentLogs JOIN documentStatus ON documentLogs.status = documentStatus.statid ";
+  sql += "JOIN users ON documentLogs.user_id = users.user_id ";
+  sql += "ORDER BY documentLogs.trans_id DESC LIMIT 1) documentLogs ";
+  sql += "ON documents.documentID = documentLogs.document_id ";
+  sql += "WHERE documents.subject LIKE ? ";
+  sql += "ORDER BY documents.date_time_created DESC ";
+  connection.query(sql, ["%"+req.params.value+"%"], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    console.log(rows);
+    res.status(200).send(rows);
+  });
+});
+
+
 //Fetch Documents of Section
 router.route("/fetchSectionDocuments/:userID").get(function (req, res) {
   const userID = req.params.userID;
@@ -1699,18 +1752,31 @@ router.route("/fetchSectionDocuments/:userID").get(function (req, res) {
       res.status(500).send(err);
     }
 
-    console.log(rows[0].section);
     let sql = "";
     sql += "SELECT documents.documentID as documentID, ";
     sql += "documents.subject as subject, ";
     sql += "documents.doc_type as docType_id, ";
     sql += "documents.note as note, ";
     sql += "document_type.type as docType, ";
+    sql += "documentLogs.trans_id AS trans_id, ";
+    sql += "documentLogs.document_id AS document_id, ";
+    sql += "documentLogs.maxStatus AS maxStatus, ";
+    sql += "documentLogs.destination AS destination, ";
+    sql += "documentLogs.name AS name, ";
     sql += "documents.creator as creatorID, ";
     sql += "users.name as creator ";
     sql += "FROM documents ";
     sql += "JOIN document_type ";
     sql += "ON documents.doc_type = document_type.id ";
+    sql += "JOIN (SELECT documentLogs.trans_id AS trans_id, ";
+    sql += "documentLogs.document_id, ";
+    sql += "documentStatus.status AS maxStatus, ";
+    sql += "users.name AS name, ";
+    sql += "documentLogs.destination AS destination  ";
+    sql += "FROM documentLogs JOIN documentStatus ON documentLogs.status = documentStatus.statid ";
+    sql += "JOIN users ON documentLogs.user_id = users.user_id ";
+    sql += "ORDER BY documentLogs.trans_id DESC LIMIT 1) documentLogs ";
+    sql += "ON documents.documentID = documentLogs.document_id ";
     sql += "JOIN users ";
     sql += "ON documents.creator = users.user_id ";
     sql += "WHERE users.section = ? ";
@@ -1831,8 +1897,8 @@ router.route("/afterDocumentReceive").post(function (req, res) {
   } = req.body;
 
   const level =
-    "SELECT * FROM documentLogs WHERE document_id = ? AND status = ? AND notification = ?";
-  connection.query(level, [documentId, "1", "0"], function (err, rows, fields) {
+    "SELECT * FROM documentLogs WHERE document_id = ? AND status = ? AND user_id = ? AND notification = ?";
+  connection.query(level, [documentId, "1", user_id, "0"], function (err, rows, fields) {
     if (err) {
       console.log(err);
     }

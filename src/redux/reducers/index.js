@@ -34,6 +34,8 @@ import searchBySubj from "./searchBySubj";
 import expandDocLogs from "./expandDocLogs";
 import fetchActiveUserList from "./fetchActiveUserList";
 import onClickTrackShowMore from "./onClickTrackShowMore";
+import fetchUserDocuments from "./fetchUserDocuments";
+import fetchSectionDocuments from "./fetchSectionDocuments";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -69,7 +71,9 @@ const rootReducer = combineReducers({
   searchBySubj: searchBySubj,
   expandDocLogs: expandDocLogs,
   fetchActiveUserList:fetchActiveUserList,
-  onClickTrackShowMore: onClickTrackShowMore
+  onClickTrackShowMore: onClickTrackShowMore,
+  fetchUserDocuments: fetchUserDocuments,
+  fetchSectionDocuments: fetchSectionDocuments
 });
 
 export default rootReducer;
