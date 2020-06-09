@@ -1,6 +1,6 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-const localIpUrl = require("local-ip-url");
+import server_ip from "../server_ip";
 
 export function afterDocumentReceive(
   documentId,
@@ -12,7 +12,7 @@ export function afterDocumentReceive(
 ) {
   return function (dispatch) {
     return axios
-      .post("http://10.10.10.16:4000/dts/afterDocumentReceive", {
+      .post(server_ip.SERVER_IP_ADDRESS+"afterDocumentReceive", {
         documentId,
         user_id,
         remarks,

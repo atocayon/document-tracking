@@ -1,7 +1,6 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-import Reactotron from "reactotron-react-js";
-const localIpUrl = require("local-ip-url");
+import server_ip from "../server_ip";
 
 export function updateDivision(data) {
   const _data = {
@@ -14,7 +13,7 @@ export function updateDivision(data) {
   return function (dispatch) {
     return axios
       .post(
-        "http://10.10.10.16:4000/dts/updateDivision/" + parseInt(data.depid),
+          server_ip.SERVER_IP_ADDRESS+"updateDivision/" + parseInt(data.depid),
         {
           department: data.department,
           depshort: data.depshort,

@@ -1,6 +1,5 @@
 import actionTypes from "./actionTypes";
 
-
 export function fetchAllUsers(socket) {
   return async function (dispatch) {
     await socket.emit("getAllUsers");

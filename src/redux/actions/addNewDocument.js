@@ -1,6 +1,5 @@
 import actionTypes from "./actionTypes";
-import axios from "axios";
-const localIpUrl = require("local-ip-url");
+
 
 export function addNewDocument(
   documentID,

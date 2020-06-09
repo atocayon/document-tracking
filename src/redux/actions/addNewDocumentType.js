@@ -1,11 +1,12 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-const localIpUrl = require("local-ip-url");
+import server_ip from "../server_ip";
+
 
 export function addNewDocumentType(data) {
   return function (dispatch) {
     return axios
-      .post("http://10.10.10.16:4000/dts/addDocumentType", { ...data })
+      .post(server_ip.SERVER_IP_ADDRESS+"addDocumentType", { ...data })
       .then((res) => {
         dispatch({ type: actionTypes.ADD_DOCUMENT_TYPE, data });
       })

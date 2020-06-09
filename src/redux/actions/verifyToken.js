@@ -1,13 +1,14 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
-const localIpUrl = require("local-ip-url");
+import server_ip from "../server_ip";
+
 
 export function verifyToken(token) {
   Reactotron.log(token);
   return function (dispatch) {
     return axios
-      .get("http://10.10.10.16:4000/dts/verifyToken/" + token)
+      .get(server_ip.SERVER_IP_ADDRESS+"verifyToken/" + token)
       .then((_token) => {
         dispatch({ type: actionTypes.VERIFY_TOKEN, data: _token.data });
       })

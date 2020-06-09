@@ -1,19 +1,19 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-import Reactotron from "reactotron-react-js";
+import server_ip from "../server_ip";
 
 export function fetchPendingDocumentInfo(doc_id) {
   return async function (dispatch) {
     let fetchDocument = await axios.get(
-      "http://10.10.10.16:4000/dts/fetchDocument/" + doc_id
+        server_ip.SERVER_IP_ADDRESS+"fetchDocument/" + doc_id
     );
 
     let fetchActionReq = await axios.get(
-      "http://10.10.10.16:4000/dts/fetchActionReq/" + doc_id
+        server_ip.SERVER_IP_ADDRESS+"fetchActionReq/" + doc_id
     );
 
     let fetchDocumentDestination = await axios.get(
-      "http://10.10.10.16:4000/dts/fetchDocumentDestination/" + doc_id
+        server_ip.SERVER_IP_ADDRESS+"fetchDocumentDestination/" + doc_id
     );
 
     dispatch({
@@ -30,7 +30,7 @@ export function fetchPendingDocumentInfo(doc_id) {
 
     for (let i = 0; i < fetchDocumentDestination.data.length; i++) {
       let fetchActionTaken = await axios.post(
-        "http://10.10.10.16:4000/dts/fetchActionTaken",
+          server_ip.SERVER_IP_ADDRESS+"fetchActionTaken",
         {
           user_id: fetchDocumentDestination.data[i].receiver_id,
           document_id: fetchDocumentDestination.data[i].document_id,
@@ -38,7 +38,7 @@ export function fetchPendingDocumentInfo(doc_id) {
       );
 
       let fetchDateTimeRelease = await axios.post(
-        "http://10.10.10.16:4000/dts/fetchDateTimeReleased",
+          server_ip.SERVER_IP_ADDRESS+"fetchDateTimeReleased",
         {
           user_id: fetchDocumentDestination.data[i].receiver_id,
           document_id: fetchDocumentDestination.data[i].document_id,

@@ -1,7 +1,7 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
-const localIpUrl = require("local-ip-url");
+import server_ip from "../server_ip";
 
 export function addNewSection(data) {
   const _data = {
@@ -13,7 +13,7 @@ export function addNewSection(data) {
   Reactotron.log(_data);
   return function (dispatch) {
     return axios
-      .post("http://10.10.10.16:4000/dts/addNewSection", {
+      .post(server_ip.SERVER_IP_ADDRESS+"addNewSection", {
         division: data.division,
         section: data.section,
         secshort: data.secshort,

@@ -1,6 +1,7 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
+import server_ip from "../server_ip";
 const localIpUrl = require("local-ip-url");
 
 export function updateUserProfile(data) {
@@ -18,7 +19,7 @@ export function updateUserProfile(data) {
   return function (dispatch) {
     return axios
       .post(
-        "http://10.10.10.16:4000/dts/updateUser/" + parseInt(data.user_id),
+          server_ip.SERVER_IP_ADDRESS+"updateUser/" + parseInt(data.user_id),
         {
           employeeId: data.employeeId,
           name: data.name,

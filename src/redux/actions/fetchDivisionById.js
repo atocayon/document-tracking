@@ -1,12 +1,12 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-import Reactotron from "reactotron-react-js";
-const localIpUrl = require("local-ip-url");
+import server_ip from "../server_ip";
+
 
 export function fetchDivisionById(id) {
   return function (dispatch) {
     return axios
-      .get("http://10.10.10.16:4000/dts/fetchDivisionById/" + id)
+      .get(server_ip.SERVER_IP_ADDRESS+"fetchDivisionById/" + id)
       .then((res) => {
         dispatch({ type: actionTypes.FETCH_DIVISION_BY_ID, data: res.data });
       })

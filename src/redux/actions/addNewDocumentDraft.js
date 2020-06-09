@@ -1,6 +1,7 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-const localIpUrl = require("local-ip-url");
+import server_ip from "../server_ip";
+
 
 export function addNewDocumentDraft(
   documentID,
@@ -12,7 +13,7 @@ export function addNewDocumentDraft(
 ) {
   return function (dispatch) {
     return axios
-      .post("http://10.10.10.16:4000/dts/draft", {
+      .post(server_ip.SERVER_IP_ADDRESS+"draft", {
         documentID: documentID,
         creator: user_id,
         subject: subject,

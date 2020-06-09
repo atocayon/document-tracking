@@ -1,11 +1,11 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-const localIpUrl = require("local-ip-url");
+import server_ip from "../server_ip";
 
 export function deleteDivision(id) {
   return function (dispatch) {
     return axios
-      .post("http://10.10.10.16:4000/dts/deleteDivision/" + id)
+      .post(server_ip.SERVER_IP_ADDRESS+"deleteDivision/" + id)
       .then((res) => {
         if (res.status === 200) {
           dispatch({
