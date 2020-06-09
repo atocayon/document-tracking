@@ -94,36 +94,44 @@ function DocumentInfo(props) {
           <div className={"row"}>
             <div className={"col-md-2"}></div>
             <div className={"col-md-8"}>
-              <div id={"barcode"}>
-                <ReactToPrint
-                  trigger={() => (
-                    <a
-                      href={"#"}
-                      className={"btn"}
-                      title={"Print this barcode"}
-                    >
-                      {" "}
-                      <BarcodeComponent
-                        ref={barcodeRef}
-                        trackingNumber={props.match.params.doc_id}
-                      />
-                    </a>
-                  )}
-                  content={() => barcodeRef.current}
-                />
+              <div className={"row"}>
+                <div className={"col-md-6"}>
+                  <div id={"barcode"}>
+                    <ReactToPrint
+                        trigger={() => (
+                            <a
+                                href={"#"}
+                                className={"btn"}
+                                title={"Print this barcode"}
+                            >
+                              {" "}
+                              <BarcodeComponent
+                                  ref={barcodeRef}
+                                  trackingNumber={props.match.params.doc_id}
+                              />
+                            </a>
+                        )}
+                        content={() => barcodeRef.current}
+                    />
+                  </div>
+                </div>
+                <div className={"col-md-6"}>
+                  <div style={{ float: "right" }}>
+                    <ReactToPrint
+                        copyStyles={true}
+                        content={() => componentRef.current}
+                        trigger={() => (
+                            <a href={"#"} className={"btn btn-info"} title={"Print"}>
+                              <PrintIcon /> &nbsp;Print
+                            </a>
+                        )}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div style={{ float: "right" }}>
-                <ReactToPrint
-                  copyStyles={true}
-                  content={() => componentRef.current}
-                  trigger={() => (
-                    <a href={"#"} className={"btn"} title={"Print"}>
-                      <PrintIcon /> &nbsp;Print
-                    </a>
-                  )}
-                />
-              </div>
+
+
             </div>
             <div className={"col-md-2"}></div>
           </div>
