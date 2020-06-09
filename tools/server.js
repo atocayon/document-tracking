@@ -1818,7 +1818,7 @@ router.route("/fetchDocumentDestination/:doc_id").get(function (req, res) {
   sql +=
     "SELECT documentLogs.remarks AS remarks, documentLogs.document_id AS document_id, ";
   sql +=
-    "DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time_receive, ";
+    "DATE_FORMAT(documentLogs.date_time, '%c/%d/%y %h:%i %p') AS date_time_receive, ";
   sql += "users.name AS receiver, ";
   sql += "documentLogs.user_id AS receiver_id, ";
   sql += "sections.secshort AS section ";
@@ -1844,7 +1844,7 @@ router.route("/fetchDateTimeReleased").post(function (req, res) {
   const { user_id, document_id } = req.body;
 
   const sql =
-    "SELECT DATE_FORMAT(date_time, '%M %d, %Y @ %h:%i %p') AS date_time_released FROM documentLogs WHERE user_id = ? AND document_id = ? AND (status = ? || status =?)";
+    "SELECT DATE_FORMAT(date_time, '%c/%d/%y %h:%i %p') AS date_time_released FROM documentLogs WHERE user_id = ? AND document_id = ? AND (status = ? || status =?)";
   connection.query(sql, [user_id, document_id, "2", "4"], function (
     err,
     rows,

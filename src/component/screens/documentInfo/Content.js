@@ -109,11 +109,11 @@ export default class Content extends Component{
                         <table className={"table table-bordered"} style={{fontSize: 14}}>
                             <thead>
                             <tr>
-                                <th>Name of office/division/section/unit</th>
-                                <th>Date/Time Received</th>
+                                <th>Name of <br/>office&nbsp;/&nbsp;division<br/>/&nbsp;section&nbsp;/ unit</th>
+                                <th>Date/<br/>Time Received</th>
                                 <th>Action Taken</th>
-                                <th>Date/Time Released</th>
-                                <th>Signature/Initial</th>
+                                <th>Date/<br/>Time Released</th>
+                                <th>Initial</th>
                             </tr>
                             </thead>
                             <tbody>
