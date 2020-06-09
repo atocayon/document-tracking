@@ -459,7 +459,14 @@ const receiveDocument = (
   callback,
   socket
 ) => {
+  let today = new Date();
+  let date =
+    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+  let time =
+    today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+  let dateTime = date + " " + time;
   const sql = "SELECT * FROM documentLogs WHERE document_id = ?";
+
   connection.query(sql, [documentTracking], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -477,7 +484,7 @@ const receiveDocument = (
           let currentDocLevel = rows[i].level;
           let ref = rows[i].trans_id;
           const insertExternal =
-            "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, level, ref) VALUES ?";
+            "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, date_time, level, ref) VALUES ?";
           const val = [
             [
               documentTracking,
@@ -487,6 +494,7 @@ const receiveDocument = (
               "none",
               "1",
               "0",
+              dateTime,
               currentDocLevel,
               ref,
             ],
@@ -519,7 +527,7 @@ const receiveDocument = (
           insertInternal += "destinationType, ";
           insertInternal += "destination, ";
           insertInternal += "status, ";
-          insertInternal += "notification, level, ref) ";
+          insertInternal += "notification, date_time,level, ref) ";
           insertInternal += "VALUES ? ";
           const val1 = [
             [
@@ -530,6 +538,7 @@ const receiveDocument = (
               "none",
               "1",
               "0",
+              dateTime,
               currentDocLevel,
               ref,
             ],
@@ -1185,7 +1194,7 @@ router.route("/sections/:secid").post(function (req, res) {
   sql += "FROM sections ";
   sql += "JOIN divisions ";
   sql += "ON sections.divid = divisions.depid ";
-  sql += "WHERE sections.secid = ? ";
+  sql += "WHERE sections.secid = ? ORDER BY sections.section ASC";
   connection.query(sql, [parseInt(secid)], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -1209,7 +1218,7 @@ const fetchSections = (socket) => {
   sql += "FROM sections ";
   sql += "JOIN divisions ";
   sql += "ON sections.divid = divisions.depid ";
-  sql += "ORDER BY sections.secid ASC ";
+  sql += "ORDER BY sections.section ASC ";
 
   connection.query(sql, function (err, rows, fields) {
     if (err) {
@@ -1232,7 +1241,7 @@ router.route("/sections").get(function (req, res) {
   sql += "FROM sections ";
   sql += "JOIN divisions ";
   sql += "ON sections.divid = divisions.depid ";
-  sql += "ORDER BY sections.secid ASC ";
+  sql += "ORDER BY sections.section ASC ";
   connection.query(sql, function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -1596,6 +1605,8 @@ router.route("/fetchDocument/:doc_id").get(function (req, res) {
   const doc = req.params.doc_id;
   let sql = "";
   sql += "SELECT documents.subject as subject, ";
+  sql +=
+    "DATE_FORMAT(documents.date_time_created, '%M %d, %Y @ %h:%i %p') AS date_time_created, ";
   sql += "users.name AS creator, ";
   sql += "users.position AS creatorPosition, ";
   sql += "sections.secshort AS creatorSection, ";
@@ -1685,7 +1696,8 @@ router.route("/fetchUserDocuments/:userID").get(function (req, res) {
   sql += "documentStatus.status AS maxStatus, ";
   sql += "users.name AS name, ";
   sql += "documentLogs.destination AS destination  ";
-  sql += "FROM documentLogs JOIN documentStatus ON documentLogs.status = documentStatus.statid ";
+  sql +=
+    "FROM documentLogs JOIN documentStatus ON documentLogs.status = documentStatus.statid ";
   sql += "JOIN users ON documentLogs.user_id = users.user_id ";
   sql += "ORDER BY documentLogs.trans_id DESC LIMIT 1) documentLogs ";
   sql += "ON documents.documentID = documentLogs.document_id ";
@@ -1724,13 +1736,18 @@ router.route("/searchUserDocument/:value").get(function (req, res) {
   sql += "documentStatus.status AS maxStatus, ";
   sql += "users.name AS name, ";
   sql += "documentLogs.destination AS destination  ";
-  sql += "FROM documentLogs JOIN documentStatus ON documentLogs.status = documentStatus.statid ";
+  sql +=
+    "FROM documentLogs JOIN documentStatus ON documentLogs.status = documentStatus.statid ";
   sql += "JOIN users ON documentLogs.user_id = users.user_id ";
   sql += "ORDER BY documentLogs.trans_id DESC LIMIT 1) documentLogs ";
   sql += "ON documents.documentID = documentLogs.document_id ";
   sql += "WHERE documents.subject LIKE ? ";
   sql += "ORDER BY documents.date_time_created DESC ";
-  connection.query(sql, ["%"+req.params.value+"%"], function (err, rows, fields) {
+  connection.query(sql, ["%" + req.params.value + "%"], function (
+    err,
+    rows,
+    fields
+  ) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -1740,7 +1757,6 @@ router.route("/searchUserDocument/:value").get(function (req, res) {
     res.status(200).send(rows);
   });
 });
-
 
 //Fetch Documents of Section
 router.route("/fetchSectionDocuments/:userID").get(function (req, res) {
@@ -1773,7 +1789,8 @@ router.route("/fetchSectionDocuments/:userID").get(function (req, res) {
     sql += "documentStatus.status AS maxStatus, ";
     sql += "users.name AS name, ";
     sql += "documentLogs.destination AS destination  ";
-    sql += "FROM documentLogs JOIN documentStatus ON documentLogs.status = documentStatus.statid ";
+    sql +=
+      "FROM documentLogs JOIN documentStatus ON documentLogs.status = documentStatus.statid ";
     sql += "JOIN users ON documentLogs.user_id = users.user_id ";
     sql += "ORDER BY documentLogs.trans_id DESC LIMIT 1) documentLogs ";
     sql += "ON documents.documentID = documentLogs.document_id ";
@@ -1798,15 +1815,21 @@ router.route("/fetchSectionDocuments/:userID").get(function (req, res) {
 router.route("/fetchDocumentDestination/:doc_id").get(function (req, res) {
   const documentID = req.params.doc_id;
   let sql = "";
-  sql += "SELECT DISTINCT documentLogs.destination as destination, ";
-  sql += "documentLogs.user_id as creator, ";
-  sql += "documentStatus.status as documentStatus ";
+  sql +=
+    "SELECT documentLogs.remarks AS remarks, documentLogs.document_id AS document_id, ";
+  sql +=
+    "DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time_receive, ";
+  sql += "users.name AS receiver, ";
+  sql += "documentLogs.user_id AS receiver_id, ";
+  sql += "sections.secshort AS section ";
   sql += "FROM documentLogs ";
-  sql += "JOIN documentStatus ";
-  sql += "ON documentLogs.status = documentStatus.statid ";
-  sql += "WHERE document_id = ? ";
-  sql += "AND destination != ? ";
-  connection.query(sql, [documentID, "none"], function (err, rows, fields) {
+  sql += "JOIN users ";
+  sql += "ON documentLogs.user_id = users.user_id ";
+  sql += "JOIN sections ON users.section = sections.secid ";
+  sql += "WHERE documentLogs.document_id = ? ";
+  sql += "AND documentLogs.status = ?";
+
+  connection.query(sql, [documentID, "1"], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
@@ -1814,6 +1837,41 @@ router.route("/fetchDocumentDestination/:doc_id").get(function (req, res) {
 
     console.log(rows);
     res.status(200).send(rows);
+  });
+});
+
+router.route("/fetchDateTimeReleased").post(function (req, res) {
+  const { user_id, document_id } = req.body;
+
+  const sql =
+    "SELECT DATE_FORMAT(date_time, '%M %d, %Y @ %h:%i %p') AS date_time_released FROM documentLogs WHERE user_id = ? AND document_id = ? AND (status = ? || status =?)";
+  connection.query(sql, [user_id, document_id, "2", "4"], function (
+    err,
+    rows,
+    fields
+  ) {
+    if (err) {
+      console.log(err);
+    }
+
+    res.status(200).send(rows[0]);
+  });
+});
+
+router.route("/fetchActionTaken").post(function (req, res) {
+  const { user_id, document_id } = req.body;
+  const sql =
+    "SELECT remarks FROM documentLogs WHERE user_id = ? AND document_id = ? AND (status = ? || status = ?)";
+  connection.query(sql, [user_id, document_id, "2", "4"], function (
+    err,
+    rows,
+    fields
+  ) {
+    if (err) {
+      console.log(err);
+    }
+    console.log(rows);
+    res.status(200).send(rows[0]);
   });
 });
 
@@ -1895,10 +1953,19 @@ router.route("/afterDocumentReceive").post(function (req, res) {
     destination,
     status,
   } = req.body;
-
+  let today = new Date();
+  let date =
+    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+  let time =
+    today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+  let dateTime = date + " " + time;
   const level =
     "SELECT * FROM documentLogs WHERE document_id = ? AND status = ? AND user_id = ? AND notification = ?";
-  connection.query(level, [documentId, "1", user_id, "0"], function (err, rows, fields) {
+  connection.query(level, [documentId, "1", user_id, "0"], function (
+    err,
+    rows,
+    fields
+  ) {
     if (err) {
       console.log(err);
     }
@@ -1908,7 +1975,7 @@ router.route("/afterDocumentReceive").post(function (req, res) {
 
     if (status === "2") {
       const newLevel =
-        "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, level, ref) VALUES ?";
+        "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, date_time,level, ref) VALUES ?";
       const values = [
         [
           documentId,
@@ -1918,6 +1985,7 @@ router.route("/afterDocumentReceive").post(function (req, res) {
           destination,
           status,
           "0",
+          dateTime,
           ++currentDocLevel,
           ref,
         ],
@@ -1950,7 +2018,7 @@ router.route("/afterDocumentReceive").post(function (req, res) {
       });
     } else {
       const sameLevel =
-        "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, level, ref) VALUES ?";
+        "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, date_time,level, ref) VALUES ?";
       const values = [
         [
           documentId,
@@ -1960,6 +2028,7 @@ router.route("/afterDocumentReceive").post(function (req, res) {
           destination,
           status,
           "0",
+          dateTime,
           currentDocLevel,
           ref,
         ],
