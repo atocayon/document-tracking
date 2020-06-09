@@ -125,14 +125,33 @@ export default class Content extends Component {
             >
               <thead>
                 <tr>
-                  <th>Name of <br/>office&nbsp;/&nbsp;division<br/>/&nbsp;section&nbsp;/ unit</th>
-                  <th>Date/<br/>Time Received</th>
+                  <th>
+                    Name of <br />
+                    office&nbsp;/&nbsp;division
+                    <br />
+                    /&nbsp;section&nbsp;/ unit
+                  </th>
+                  <th>
+                    Date/
+                    <br />
+                    Time Received
+                  </th>
                   <th>Action Taken</th>
-                  <th>Date/<br/>Time Released</th>
+                  <th>
+                    Date/
+                    <br />
+                    Time Released
+                  </th>
                   <th>Initial</th>
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td colSpan={5}>
+                    {this.props.documentInfo.creatorSection}&nbsp;Note:&nbsp;
+                    {this.props.documentInfo.note}
+                  </td>
+                </tr>
                 {this.props.pendingDocumentInfo.destination.map(
                   (data, index) => (
                     <tr key={index}>
