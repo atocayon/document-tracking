@@ -125,8 +125,9 @@ export default class Content extends Component {
               </thead>
               <tbody>
                 <tr>
-                  <td colSpan={5}>
-                    {this.props.documentInfo.creatorSection}&nbsp;Note:&nbsp;
+                  <td>{this.props.documentInfo.creatorSection}</td>
+                  <td colSpan={4}>
+                    <b>Note:</b>&nbsp;&nbsp;
                     {this.props.documentInfo.note}
                   </td>
                 </tr>
