@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import Grid from "@material-ui/core/Grid";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
@@ -28,6 +28,7 @@ import DoneIcon from "@material-ui/icons/Done";
 import Completed from "./Completed";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
+import Content from "./Content";
 
 function PendingDocumentInfo(props) {
   const [open, setOpen] = useState(true);
@@ -37,6 +38,7 @@ function PendingDocumentInfo(props) {
   const [selectedValue, setSelectedValue] = useState("");
   const [token, setToken] = useState("");
   const [redirect, setRedirect] = useState(false);
+  const componentRef = useRef();
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     setToken(obj.token);
@@ -125,23 +127,7 @@ function PendingDocumentInfo(props) {
       <Grid item xs={8}>
         {endSession && <Redirect to={"/"} />}
         {redirect && <Redirect to={"/pending"} />}
-        <Forward
-          open={forwardDialog}
-          handleClose={handleSetForwardDialog}
-          sections={props.sections}
-          selectedValue={selectedValue}
-          handleChange={handleChange}
-          onChangeDestination={props.onChangeForwardDocument}
-          value={props.forwardDocument}
-          handleForward={handleForward}
-        />
-        <Completed
-          open={completedDialog}
-          handleClose={handleSetCompletedDialog}
-          handleCompleted={handleCompleted}
-          value={props.forwardDocument}
-          onChangeDestination={props.onChangeForwardDocument}
-        />
+
         <Paper
           elevation={3}
           style={{
@@ -151,172 +137,41 @@ function PendingDocumentInfo(props) {
             overflow: "auto",
           }}
         >
-          <div className={"jumbotron"} style={{ padding: 50 }}>
-            <div className={"row"}>
-              <div className={"col-md-2"}>
-                <div className={"row"}>
-                  <div className={"col-md-6"}></div>
-                  <div className={"col-md-6"}>
-                    <div style={{ textAlign: "right" }}></div>
-                  </div>
-                </div>
-              </div>
-              <div className={"col-md-8"}></div>
-              <div className={"col-md-2"}></div>
-            </div>
-          </div>
+          <Content ref={componentRef} pendingDocumentInfo={props.pendingDocumentInfo} />
 
-          <div className={"row"}>
-            <div className={"col-md-2"}></div>
-            <div
-              className={"col-md-8"}
-              style={{ overflow: "auto", paddingBottom: 200 }}
-            >
-              <br />
-              <div className={"col-md-6"}>
-                <InputField
-                  label={"Creator"}
-                  name={"subject"}
-                  disabled={true}
-                  type={"text"}
-                  // variant={"outlined"}
-                  value={
-                    props.pendingDocumentInfo.creator +
-                      ", " +
-                      props.pendingDocumentInfo.creatorPosition +
-                      " (" +
-                      props.pendingDocumentInfo.creatorSection +
-                      ")" || ""
-                  }
-                />
-                {/*<small>on {props.documentInfo.date_time_created}</small>*/}
-                <br />
-                <br />
-                <InputField
-                  label={"Forwarder"}
-                  name={"subject"}
-                  disabled={true}
-                  type={"text"}
-                  value={
-                    props.pendingDocumentInfo.sender +
-                      ", " +
-                      props.pendingDocumentInfo.senderPosition +
-                      " (" +
-                      props.pendingDocumentInfo.senderSection +
-                      ")" || ""
-                  }
-                />
-                {/*<small>on {props.documentInfo.date_time_forwarded} </small>*/}
-              </div>
-              <br />
-              <br />
-              <h5 style={{ color: "#2196F3" }}>
-                <DescriptionIcon />
-                &nbsp;Document Information
-              </h5>
 
-              <br />
-              <InputField
-                label={"Subject"}
-                name={"subject"}
-                variant={"outlined"}
-                disabled={true}
-                type={"text"}
-                value={props.pendingDocumentInfo.subject || ""}
-              />
+              <button
+                  className={"btn btn-outline-info btn-sm"}
+                  onClick={handleSetCompletedDialog}
+              >
+                <DoneIcon /> Completed
+              </button>
+              &nbsp;&nbsp;&nbsp;
+              <button
+                  className={"btn btn-info btn-sm"}
+                  onClick={handleSetForwardDialog}
+              >
+                <SendIcon /> Forward
+              </button>
 
-              <br />
-              <br />
 
-              <InputField
-                id={"documentType"}
-                label={"Document Type"}
-                name={"doc_type"}
-                variant={"outlined"}
-                disabled={true}
-                type={"text"}
-                value={props.pendingDocumentInfo.doc_type}
-              />
-              <br />
-              <br />
-              <br />
-              <h5 style={{ color: "#2196F3" }}>
-                <FeedbackIcon />
-                &nbsp;Action Required
-              </h5>
-              <br />
-              <FormGroup>
-                {props.pendingDocumentInfo.action_req.map((action, index) => (
-                  <CheckBox
-                    checked={true}
-                    key={index}
-                    label={action.action_req}
-                    value={action.document_action_req_id}
-                    name={"action_req"}
-                  />
-                ))}
-              </FormGroup>
-              <br />
-              <br />
-              <h5 style={{ color: "#2196F3" }}>
-                <CommentIcon />
-                &nbsp;Note
-              </h5>
-              <br />
-              <div>{props.pendingDocumentInfo.note}</div>
-
-              <br />
-              <br />
-              <h5 style={{ color: "#2196F3" }}>
-                <ExploreIcon />
-                &nbsp;Destination
-              </h5>
-              <br />
-              <div>
-                {props.pendingDocumentInfo.destination.map((res, index) => (
-                  <Chip
-                    key={index}
-                    avatar={
-                      <Avatar>
-                        <BusinessIcon />
-                      </Avatar>
-                    }
-                    label={res.destination}
-                  />
-                ))}
-              </div>
-              <div style={{ marginTop: 50, textAlign: "right" }}>
-
-                <button className={"btn btn-outline-info btn-sm"} onClick={handleSetCompletedDialog}>
-                  <DoneIcon /> Completed
-                </button>
-                &nbsp;&nbsp;&nbsp;
-                <button className={"btn btn-info btn-sm"} onClick={handleSetForwardDialog}>
-                  <SendIcon /> Forward
-                </button>
-                {/*<Fab*/}
-                {/*  title={"Complete"}*/}
-                {/*  onMouseDown={handleSetCompletedDialog}*/}
-                {/*  color="primary"*/}
-                {/*  aria-label="add"*/}
-                {/*  style={{ position: "fixed", bottom: 100, right: 500 }}*/}
-                {/*>*/}
-                {/*  <DoneIcon />*/}
-                {/*</Fab>*/}
-
-                {/*<Fab*/}
-                {/*  title={"Forward"}*/}
-                {/*  onMouseDown={handleSetForwardDialog}*/}
-                {/*  color="secondary"*/}
-                {/*  aria-label="add"*/}
-                {/*  style={{ position: "fixed", bottom: 30, right: 500 }}*/}
-                {/*>*/}
-                {/*  <SendIcon />*/}
-                {/*</Fab>*/}
-              </div>
-            </div>
-            <div className={"col-md-2"}></div>
-          </div>
+          <Forward
+            open={forwardDialog}
+            handleClose={handleSetForwardDialog}
+            sections={props.sections}
+            selectedValue={selectedValue}
+            handleChange={handleChange}
+            onChangeDestination={props.onChangeForwardDocument}
+            value={props.forwardDocument}
+            handleForward={handleForward}
+          />
+          <Completed
+            open={completedDialog}
+            handleClose={handleSetCompletedDialog}
+            handleCompleted={handleCompleted}
+            value={props.forwardDocument}
+            onChangeDestination={props.onChangeForwardDocument}
+          />
         </Paper>
       </Grid>
       <Grid item xs={2}></Grid>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 18, 2020 at 07:56 AM
+-- Generation Time: Jun 09, 2020 at 07:18 AM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.1
 
@@ -48,24 +48,6 @@ INSERT INTO `divisions` (`depid`, `department`, `depshort`, `payrollshort`) VALU
 -- --------------------------------------------------------
 
 --
--- Table structure for table `documentDrafts`
---
-
-CREATE TABLE `documentDrafts` (
-  `draft_id` int(11) NOT NULL,
-  `documentID` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `documentDrafts`
---
-
-INSERT INTO `documentDrafts` (`draft_id`, `documentID`) VALUES
-(4, 1000000006);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `documentLogs`
 --
 
@@ -78,31 +60,23 @@ CREATE TABLE `documentLogs` (
   `destination` varchar(120) NOT NULL,
   `status` varchar(11) NOT NULL,
   `notification` varchar(11) NOT NULL,
-  `date_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `date_time` datetime NOT NULL DEFAULT current_timestamp(),
+  `level` varchar(11) NOT NULL,
+  `ref` varchar(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `documentLogs`
 --
 
-INSERT INTO `documentLogs` (`trans_id`, `document_id`, `user_id`, `remarks`, `destinationType`, `destination`, `status`, `notification`, `date_time`) VALUES
-(1, '1000000000', '3', 'none', 'Internal', 'Registrar', '2', '0', '2020-05-14 05:58:26'),
-(2, '1000000000', '3', 'none', 'Internal', 'none', '5', '0', '2020-05-14 05:58:28'),
-(3, '1000000000', '3', 'none', 'Internal', 'GSAS', '2', '0', '2020-05-14 05:58:29'),
-(4, '1000000001', '3', 'none', 'External', 'asdd', '2', '0', '2020-05-14 05:58:31'),
-(5, '1000000002', '3', 'none', 'External', 'asdsd', '2', '0', '2020-05-14 05:58:33'),
-(6, '1000000003', '3', 'none', 'External', 'none', '5', '0', '2020-05-14 05:58:34'),
-(7, '1000000003', '3', 'none', 'External', 'asdd', '2', '0', '2020-05-14 05:58:36'),
-(8, '1000000004', '3', 'none', 'Internal', 'none', '5', '0', '2020-05-14 05:58:38'),
-(9, '1000000004', '3', 'none', 'Internal', 'Motor Pool', '2', '0', '2020-05-14 05:58:39'),
-(10, '1000000005', '3', 'none', 'External', 'none', '5', '0', '2020-05-14 05:58:41'),
-(11, '1000000005', '3', 'none', 'External', 'asdd', '2', '0', '2020-05-14 05:58:42'),
-(12, '1000000005', '3', 'none', 'External', 'asdd', '2', '0', '2020-05-14 05:58:43'),
-(13, '1000000007', '49', 'none', 'Internal', 'none', '5', '0', '2020-05-14 05:58:45'),
-(14, '1000000007', '49', 'none', 'Internal', 'IMS', '2', '1', '2020-05-15 06:42:37'),
-(94, '1000000007', '50', 'none', 'Internal', 'none', '1', '0', '2020-05-14 05:58:47'),
-(95, '1000000008', '50', 'none', 'Internal', 'none', '5', '0', '2020-05-14 05:58:50'),
-(96, '1000000008', '50', 'none', 'Internal', 'Research', '2', '1', '2020-05-15 06:41:57');
+INSERT INTO `documentLogs` (`trans_id`, `document_id`, `user_id`, `remarks`, `destinationType`, `destination`, `status`, `notification`, `date_time`, `level`, `ref`) VALUES
+(1, '1000000000', '49', 'none', 'Internal', 'none', '5', '0', '2020-06-09 09:19:10', '0', '0'),
+(2, '1000000000', '49', 'none', 'Internal', 'MRDD', '2', '0', '2020-06-09 09:19:10', '0', '0'),
+(3, '1000000000', '59', 'none', 'Internal', 'none', '1', '1', '2020-06-09 09:19:28', '0', '2'),
+(4, '1000000000', '59', 'qwerty', '', 'none', '4', '0', '2020-06-09 10:35:34', '0', '2'),
+(5, '1000000001', '49', 'none', 'Internal', 'none', '5', '0', '2020-06-09 13:01:56', '0', '0'),
+(6, '1000000001', '49', 'none', 'Internal', 'IMS', '2', '0', '2020-06-09 13:01:56', '0', '0'),
+(7, '1000000001', '58', 'none', 'Internal', 'none', '1', '0', '2020-06-09 13:05:03', '0', '6');
 
 -- --------------------------------------------------------
 
@@ -125,15 +99,8 @@ CREATE TABLE `documents` (
 --
 
 INSERT INTO `documents` (`documentID`, `creator`, `subject`, `doc_type`, `note`, `date_time_created`, `status`) VALUES
-(1000000000, '3', '402', '9', 'Impedit dicta quia ', '2020-04-27 09:46:41', '1'),
-(1000000001, '3', '505', '14', 'Sapiente nisi sit ea', '2020-05-08 02:43:17', '1'),
-(1000000002, '3', '892', '16', 'Blanditiis fugiat ha', '2020-05-08 02:48:23', '1'),
-(1000000003, '3', '99', '6', 'Sint irure dolor off', '2020-05-08 02:52:03', '1'),
-(1000000004, '3', '412', '5', 'Enim qui sunt id hic', '2020-05-08 02:52:52', '1'),
-(1000000005, '3', '253', '14', 'Ab incididunt beatae', '2020-05-08 02:54:30', '1'),
-(1000000006, '3', '560', '7', 'Soluta inventore off', '2020-05-08 03:19:29', '0'),
-(1000000007, '49', '862', '7', 'Asperiores omnis qua', '2020-05-08 05:47:46', '1'),
-(1000000008, '50', '977', '1', 'Sint asperiores inci', '2020-05-14 05:33:20', '1');
+(1000000000, '49', 'Sample Doc', '12', 'Amet facere mollit ', '2020-06-09 01:19:10', '1'),
+(1000000001, '49', '361', '6', 'Maxime reprehenderit', '2020-06-09 05:01:56', '1');
 
 -- --------------------------------------------------------
 
@@ -151,7 +118,7 @@ CREATE TABLE `documentStatus` (
 --
 
 INSERT INTO `documentStatus` (`statid`, `status`) VALUES
-(1, 'receive'),
+(1, 'received'),
 (2, 'forwarded'),
 (3, 'pending'),
 (4, 'completed'),
@@ -159,7 +126,6 @@ INSERT INTO `documentStatus` (`statid`, `status`) VALUES
 (6, 'external'),
 (7, 'MRDD Canvasser'),
 (9, 'General Canvasser'),
-(10, 'COMPLETED'),
 (11, 'CANCELLED'),
 (99, 'System Admin');
 
@@ -180,42 +146,14 @@ CREATE TABLE `document_action_req` (
 --
 
 INSERT INTO `document_action_req` (`document_action_req_id`, `documentID`, `action_req`) VALUES
-(1, '1000000000', 'For Approval'),
-(2, '1000000000', 'For Signature'),
-(3, '1000000000', 'For Action'),
-(4, '1000000000', 'For Comment'),
-(5, '1000000000', 'For Information'),
-(6, '1000000000', 'For File'),
-(7, '1000000001', 'For Approval'),
-(8, '1000000001', 'For Endorsement'),
-(9, '1000000001', 'For Action'),
-(10, '1000000001', 'For File'),
-(11, '1000000002', 'For Signature'),
-(12, '1000000002', 'For Endorsement'),
-(13, '1000000002', 'For Action'),
-(14, '1000000002', 'For File'),
-(15, '1000000003', 'For Approval'),
-(16, '1000000003', 'For Signature'),
-(17, '1000000003', 'For Endorsement'),
-(18, '1000000003', 'For Recommendation'),
-(19, '1000000003', 'For Action'),
-(20, '1000000003', 'For Comment'),
-(21, '1000000003', 'For File'),
-(22, '1000000004', 'For Approval'),
-(23, '1000000004', 'For Action'),
-(24, '1000000004', 'For Comment'),
-(25, '1000000004', 'For Information'),
-(26, '1000000004', 'For File'),
-(27, '1000000005', 'For Approval'),
-(28, '1000000005', 'For Comment'),
-(29, '1000000005', 'For File'),
-(30, '1000000006', 'For Signature'),
-(31, '1000000006', 'For Endorsement'),
-(32, '1000000006', 'For Action'),
-(33, '1000000007', 'For Action'),
-(34, '1000000008', 'For Endorsement'),
-(35, '1000000008', 'For Information'),
-(36, '1000000008', 'For File');
+(1, '1000000000', 'For Endorsement'),
+(2, '1000000000', 'For Action'),
+(3, '1000000001', 'For Approval'),
+(4, '1000000001', 'For Signature'),
+(5, '1000000001', 'For Recommendation'),
+(6, '1000000001', 'For Action'),
+(7, '1000000001', 'For Comment'),
+(8, '1000000001', 'For Information');
 
 -- --------------------------------------------------------
 
@@ -248,7 +186,8 @@ INSERT INTO `document_type` (`id`, `type`) VALUES
 (13, 'Referral Slip'),
 (14, 'Request for Obligation of Allotments'),
 (15, 'Requisition and Issue Voucher'),
-(16, 'Unclassified');
+(16, 'Unclassified'),
+(18, 'Travel Documents');
 
 -- --------------------------------------------------------
 
@@ -339,8 +278,17 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `employeeId`, `name`, `username`, `password`, `contact`, `email`, `section`, `position`, `role`, `status`) VALUES
 (3, '20190410', 'Aljon C. Tocayon', 'actWhiteHat27', '$2b$10$Ua01PGxt4Jh46MA91UtS4O68HxIx/EsylWXg/D2k1BDXRohWAnqce', '09051680244', 'atocayon27@gmail.com', '1', 'Computer Programmer', '3', '1'),
-(49, '123456789', 'sample', 'sample', '$2b$10$TfF0JvjQ3YIGcA1gV36lluYdncF7TAhZERrrtFfrtjG9Gbs8A9HVC', '789456132', 'sample@sample.com', '2', 'sample', '1', '1'),
-(50, '456789', 'user', 'user', '$2b$10$A81EDBjfGpq6WYLnA71HIu6qyK.3cpDbVAFbEKop9BdIniuaIBLcW', '789465132', 'user@user.com', '1', 'user', '2', '1');
+(49, '123456789', 'Research', 'sample', '$2b$10$TfF0JvjQ3YIGcA1gV36lluYdncF7TAhZERrrtFfrtjG9Gbs8A9HVC', '789456132', 'research@gmail.com', '2', 'sample', '1', '1'),
+(50, '456789', 'actwhitehat27', 'user', '$2b$10$A81EDBjfGpq6WYLnA71HIu6qyK.3cpDbVAFbEKop9BdIniuaIBLcW', '789465132', 'user@user.com', '1', 'programmer', '2', '1'),
+(51, '20140153', 'Jerson', 'jerson', '$2b$10$e.6vn.xXgQg6asyhHu/7eOlFsDJL.ZfMhjIVnI2etjXsw974DddfC', '09175252025', 'jerson@gmail.com', '7', 'Admin Officer IV', '2', '1'),
+(52, '04', 'Jessa', 'jessa', '$2b$10$hqjfRJJA7rJa7f9WsBnnd.YddnJjAHcmmgOlB7D128t5SvKerGJba', '0919', 'jessa@gmail.com', '6', 'Accountant III', '1', '1'),
+(53, '789465132', 'Andrew', 'andrew', '$2b$10$Pw/rtlU338lfZSTLFiY.E.0qHkGWx2eBpyz1y9/ICy1DmX2k0uMcq', '123456', 'andrew@soledad.com', '1', 'IMS Head', '1', '1'),
+(56, '20140156', 'Daniel Gerard Diaz', 'dpdiaz', '$2b$10$QmC.D7Hk8NRBEykszfQ1Ju/Mp5O6GeZiVuggC3a1HbcLLWOo.v34W', '09196969696', 'dpdiaz69@gmail.com', '1', 'ISR V', '1', '1'),
+(57, '10', 'Lordelita Marcos', 'lor', '$2b$10$WNPONUvCN77Bfa6GwEo8ieDs0rExeRCFefM24xeNa4MwubPF6C902', '091912', 'lordelita@gmail.com', '5', 'Admin', '2', '1'),
+(58, '20140155', 'Jarydd', 'jarydd', '$2b$10$kTFs74Rkdjz2QNpwyrg/DeqI/zP.TDyUwMvc16kBCQdm8s2UCNGw.', '09175252025', 'jaryddcinco@gmail.com', '1', 'Computer Programmer II', '1', '1'),
+(59, '21', 'mel', 'mel', '$2b$10$cgAdAfPaBE.4UFZXsyN2Ee3lc35N3Vh4oOvp0Ykp.2QbCxQLf.uAu', '091923123', 'mel@gmail.com', '27', 'lalala', '2', '1'),
+(60, '28', 'cherry', 'cherry', '$2b$10$QRvf/UeBdaoclzAzgPtXcunOtrJiAx6kVPkpRtUbBwbtbzi/TD94m', '09562784572', 'cherry@gmail.com', '3', 'Admin Assistant III', '2', '1'),
+(61, '12345', 'lrs', 'lrs', '$2b$10$0a1g8OW/OXSTkyX2OlU/CuzPHPvof2yzJXYBfKHSqGdZr9FZF.MS2', '456745674567', 'lrs@gmail.com', '12', 'lrs', '2', '1');
 
 -- --------------------------------------------------------
 
@@ -380,9 +328,17 @@ CREATE TABLE `users_session` (
 --
 
 INSERT INTO `users_session` (`id`, `userId`, `timeStamp`, `isDeleted`) VALUES
-(1, '3', '2020-05-18 05:32:00', '1'),
-(2, '49', '2020-05-18 05:28:23', '1'),
-(3, '50', '2020-05-18 00:55:47', '1');
+(1, '3', '2020-06-08 06:11:48', '1'),
+(2, '49', '2020-06-09 05:02:02', '1'),
+(3, '50', '2020-06-01 07:37:56', '1'),
+(4, '51', '2020-06-08 06:55:46', '1'),
+(5, '52', '2020-06-09 00:00:04', '1'),
+(6, '53', '2020-06-01 07:38:03', '1'),
+(7, '57', '2020-05-29 02:45:30', '1'),
+(8, '58', '2020-06-09 05:02:13', '0'),
+(9, '59', '2020-06-09 02:35:43', '1'),
+(10, '60', '2020-06-02 05:32:56', '1'),
+(11, '61', '2020-06-08 06:18:26', '1');
 
 -- --------------------------------------------------------
 
@@ -413,12 +369,6 @@ INSERT INTO `users_status` (`status_id`, `status`) VALUES
 --
 ALTER TABLE `divisions`
   ADD PRIMARY KEY (`depid`);
-
---
--- Indexes for table `documentDrafts`
---
-ALTER TABLE `documentDrafts`
-  ADD PRIMARY KEY (`draft_id`);
 
 --
 -- Indexes for table `documentLogs`
@@ -499,16 +449,10 @@ ALTER TABLE `divisions`
   MODIFY `depid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `documentDrafts`
---
-ALTER TABLE `documentDrafts`
-  MODIFY `draft_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
 -- AUTO_INCREMENT for table `documentLogs`
 --
 ALTER TABLE `documentLogs`
-  MODIFY `trans_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=146;
+  MODIFY `trans_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `documentStatus`
@@ -520,13 +464,13 @@ ALTER TABLE `documentStatus`
 -- AUTO_INCREMENT for table `document_action_req`
 --
 ALTER TABLE `document_action_req`
-  MODIFY `document_action_req_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `document_action_req_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `document_type`
 --
 ALTER TABLE `document_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `sections`
@@ -544,7 +488,7 @@ ALTER TABLE `system_logs`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT for table `users_role`
@@ -556,7 +500,7 @@ ALTER TABLE `users_role`
 -- AUTO_INCREMENT for table `users_session`
 --
 ALTER TABLE `users_session`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `users_status`

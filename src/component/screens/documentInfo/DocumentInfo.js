@@ -24,6 +24,10 @@ import BusinessIcon from "@material-ui/icons/Business";
 import BarcodeComponent from "../../common/barcode/BarcodeComponent";
 import ReactToPrint from "react-to-print";
 import PrintIcon from "@material-ui/icons/Print";
+import { connect } from "react-redux";
+import { fetchDocumentInfo } from "../../../redux/actions/fetchDocumentInfo";
+import Content from "./Content";
+
 function DocumentInfo(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
@@ -31,48 +35,19 @@ function DocumentInfo(props) {
   const [actionRequired, setActionRequired] = useState([]);
   const [destination, setDestination] = useState([]);
   const componentRef = useRef();
+  const barcodeRef = useRef();
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
-      axios
-        .get(
-          "http://10.10.10.16:4000/dts/fetchDocument/" +
-            props.match.params.doc_id
-        )
-        .then((res) => {
-          setDocument(res.data);
 
-          axios
-            .get(
-              "http://10.10.10.16:4000/dts/fetchActionReq/" +
-                props.match.params.doc_id
-            )
-            .then((res) => {
-              setActionRequired(res.data);
+      async function fetch() {
+        await props.fetchDocumentInfo(props.match.params.doc_id);
+      }
 
-              axios
-                .get(
-                  "http://10.10.10.16:4000/dts/fetchDocumentDestination/" +
-                    props.match.params.doc_id
-                )
-                .then((_destination) => {
-                  setDestination(_destination.data);
-                })
-                .catch((err) => {
-                  const variant = "error";
-                  props.enqueueSnackbar("Server Error", { variant });
-                });
-            })
-            .catch((err) => {
-              const variant = "error";
-              props.enqueueSnackbar("Server Error", { variant });
-            });
-        })
-        .catch((err) => {
-          const variant = "error";
-          props.enqueueSnackbar("Server Error", { variant });
-        });
+      fetch().catch((err) => {
+        throw err;
+      });
     }
     setEndSession(!(obj && obj.token));
   }, []);
@@ -111,140 +86,50 @@ function DocumentInfo(props) {
           }}
         >
           {endSession && <Redirect to={"/"} />}
-          <div className={"jumbotron"} style={{ padding: 50 }}>
-            <div className={"row"}>
-              <div className={"col-md-2"}>
-                <div className={"row"}>
-                  <div className={"col-md-6"}></div>
-                  <div className={"col-md-6"}>
-                    <div style={{ textAlign: "right" }}></div>
-                  </div>
-                </div>
-              </div>
-              <div className={"col-md-8"}>
-                {/*<h5 style={{ textAlign: "left" }}>Draft Documents</h5>*/}
-              </div>
-              <div className={"col-md-2"}></div>
-            </div>
-          </div>
-
+          <Content
+            ref={componentRef}
+            documentInfo={props.documentInfo}
+            doc_id={props.match.params.doc_id}
+          />
           <div className={"row"}>
             <div className={"col-md-2"}></div>
             <div className={"col-md-8"}>
-              <div>
-                <h5 style={{ color: "#2196F3" }}>
-                  <DescriptionIcon />
-                  &nbsp;Document Information
-                </h5>
-                <br />
-              </div>
-
-              <div style={{ textAlign: "left" }}>
-                <small>&nbsp;&nbsp;DOCUMENT TRACKING NUMBER</small>
-              </div>
               <div id={"barcode"}>
-                <BarcodeComponent
-                  ref={componentRef}
-                  trackingNumber={props.match.params.doc_id}
-                />
                 <ReactToPrint
-                  trigger={() => (
-                    <a
-                      href={"#"}
-                      className={"btn"}
-                      title={"Print this barcode"}
-                    >
-                      {" "}
-                      <PrintIcon />
-                    </a>
-                  )}
-                  content={() => componentRef.current}
+                    trigger={() => (
+                        <a
+                            href={"#"}
+                            className={"btn"}
+                            title={"Print this barcode"}
+                        >
+                          {" "}
+                          <BarcodeComponent
+                              ref={barcodeRef}
+                              trackingNumber={props.match.params.doc_id}
+                          />
+                        </a>
+                    )}
+                    content={() => barcodeRef.current}
                 />
               </div>
 
-              <br />
-              <br />
-              <InputField
-                id={"tackDocument"}
-                label={"Subject"}
-                name={"subject"}
-                variant={"outlined"}
-                disabled={true}
-                type={"text"}
-                value={Object.keys(document).length > 0 && document.subject}
-              />
-
-              <br />
-              <br />
-
-              <InputField
-                id={"documentType"}
-                label={"Document Type"}
-                name={"documentType"}
-                variant={"outlined"}
-                disabled={true}
-                type={"text"}
-                value={Object.keys(document).length > 0 && document.type}
-              />
-
-              <br />
-              <br />
-
-              <h5 style={{ color: "#2196F3" }}>
-                <FeedbackIcon />
-                &nbsp;Action Required
-              </h5>
-              <br />
-              <FormGroup>
-                {actionRequired.map((action) => (
-                  <CheckBox
-                    checked={true}
-                    key={action.document_action_req_id}
-                    label={action.action_req}
-                    value={action.action_req}
-                    name={"action_req"}
-                  />
-                ))}
-              </FormGroup>
-
-              <br />
-              <br />
-
-              <h5 style={{ color: "#2196F3" }}>
-                <CommentIcon />
-                &nbsp;Note
-              </h5>
-              <div>{document.note}</div>
-
-              {destination.length > 0 && (
-                <>
-                  <br />
-                  <br />
-                  <h5 style={{ color: "#2196F3" }}>
-                    <ExploreIcon />
-                    &nbsp;Destination
-                  </h5>
-                  <br />
-                  {destination.map((res) => (
-                    <>
-                      <Chip
-                        key={res.destination}
-                        avatar={
-                          <Avatar>
-                            <BusinessIcon />
-                          </Avatar>
-                        }
-                        label={res.destination}
-                      />
-                      &nbsp;&nbsp;
-                    </>
-                  ))}
-                </>
-              )}
-              <br />
+              <div style={{float: "right"}}>
+                <ReactToPrint
+                    copyStyles={true}
+                    content={() => componentRef.current}
+                    trigger={() => (
+                        <a href={"#"} className={"btn"} title={"Print"}>
+                          <PrintIcon /> &nbsp;Print
+                        </a>
+                    )}
+                />
+              </div>
             </div>
             <div className={"col-md-2"}></div>
           </div>
+
+
+
         </Paper>
       </Grid>
       <Grid item xs={2}></Grid>
@@ -252,4 +137,17 @@ function DocumentInfo(props) {
   );
 }
 
-export default withSnackbar(DocumentInfo);
+function mapStateToProps(state) {
+  return {
+    documentInfo: state.fetchDocumentInfo,
+  };
+}
+
+const mapDispatchToProps = {
+  fetchDocumentInfo,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withSnackbar(DocumentInfo));
