@@ -96,40 +96,37 @@ function DocumentInfo(props) {
             <div className={"col-md-8"}>
               <div id={"barcode"}>
                 <ReactToPrint
-                    trigger={() => (
-                        <a
-                            href={"#"}
-                            className={"btn"}
-                            title={"Print this barcode"}
-                        >
-                          {" "}
-                          <BarcodeComponent
-                              ref={barcodeRef}
-                              trackingNumber={props.match.params.doc_id}
-                          />
-                        </a>
-                    )}
-                    content={() => barcodeRef.current}
+                  trigger={() => (
+                    <a
+                      href={"#"}
+                      className={"btn"}
+                      title={"Print this barcode"}
+                    >
+                      {" "}
+                      <BarcodeComponent
+                        ref={barcodeRef}
+                        trackingNumber={props.match.params.doc_id}
+                      />
+                    </a>
+                  )}
+                  content={() => barcodeRef.current}
                 />
               </div>
 
-              <div style={{float: "right"}}>
+              <div style={{ float: "right" }}>
                 <ReactToPrint
-                    copyStyles={true}
-                    content={() => componentRef.current}
-                    trigger={() => (
-                        <a href={"#"} className={"btn"} title={"Print"}>
-                          <PrintIcon /> &nbsp;Print
-                        </a>
-                    )}
+                  copyStyles={true}
+                  content={() => componentRef.current}
+                  trigger={() => (
+                    <a href={"#"} className={"btn"} title={"Print"}>
+                      <PrintIcon /> &nbsp;Print
+                    </a>
+                  )}
                 />
               </div>
             </div>
             <div className={"col-md-2"}></div>
           </div>
-
-
-
         </Paper>
       </Grid>
       <Grid item xs={2}></Grid>

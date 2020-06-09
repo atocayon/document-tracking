@@ -135,7 +135,7 @@ export default class Content extends Component {
               <tbody>
                 {this.props.pendingDocumentInfo.destination.map(
                   (data, index) => (
-                    <tr>
+                    <tr key={index}>
                       <td>{data.office}</td>
                       <td>{data.date_time_receive}</td>
                       <td>{data.action_taken.remarks}</td>
