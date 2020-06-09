@@ -29,6 +29,8 @@ import Completed from "./Completed";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import Content from "./Content";
+import ReactToPrint from "react-to-print";
+import PrintIcon from "@material-ui/icons/Print";
 
 function PendingDocumentInfo(props) {
   const [open, setOpen] = useState(true);
@@ -116,6 +118,23 @@ function PendingDocumentInfo(props) {
 
   return (
     <Grid container spacing={3}>
+      <Forward
+        open={forwardDialog}
+        handleClose={handleSetForwardDialog}
+        sections={props.sections}
+        selectedValue={selectedValue}
+        handleChange={handleChange}
+        onChangeDestination={props.onChangeForwardDocument}
+        value={props.forwardDocument}
+        handleForward={handleForward}
+      />
+      <Completed
+        open={completedDialog}
+        handleClose={handleSetCompletedDialog}
+        handleCompleted={handleCompleted}
+        value={props.forwardDocument}
+        onChangeDestination={props.onChangeForwardDocument}
+      />
       <PrimarySearchAppBar />
       <Grid item xs={2}>
         <SideBarNavigation
@@ -135,43 +154,52 @@ function PendingDocumentInfo(props) {
             paddingTop: 0,
             height: "100vh",
             overflow: "auto",
+            paddingBottom: 150,
           }}
         >
-          <Content ref={componentRef} pendingDocumentInfo={props.pendingDocumentInfo} />
-
-
-              <button
-                  className={"btn btn-outline-info btn-sm"}
-                  onClick={handleSetCompletedDialog}
-              >
-                <DoneIcon /> Completed
-              </button>
-              &nbsp;&nbsp;&nbsp;
-              <button
-                  className={"btn btn-info btn-sm"}
-                  onClick={handleSetForwardDialog}
-              >
-                <SendIcon /> Forward
-              </button>
-
-
-          <Forward
-            open={forwardDialog}
-            handleClose={handleSetForwardDialog}
-            sections={props.sections}
-            selectedValue={selectedValue}
-            handleChange={handleChange}
-            onChangeDestination={props.onChangeForwardDocument}
-            value={props.forwardDocument}
-            handleForward={handleForward}
-          />
-          <Completed
-            open={completedDialog}
-            handleClose={handleSetCompletedDialog}
-            handleCompleted={handleCompleted}
-            value={props.forwardDocument}
-            onChangeDestination={props.onChangeForwardDocument}
-          />
+          <div>
+            <Content
+              ref={componentRef}
+              pendingDocumentInfo={props.pendingDocumentInfo}
+            />
+          </div>
+          <div className={"row"}>
+            <div className={"col-md-2"}></div>
+            <div className={"col-md-8"}>
+              <div className={"row"}>
+                <div className={"col-md-6"}>
+                  <div style={{ float: "left", marginTop: -120 }}>
+                    <ReactToPrint
+                      content={() => componentRef.current}
+                      trigger={() => (
+                        <a href={"#"} className={"btn"} title={"Print"}>
+                          <PrintIcon /> &nbsp;Print
+                        </a>
+                      )}
+                    />
+                  </div>
+                </div>
+                <div className={"col-md-6"}>
+                  <div style={{ float: "right", marginTop: -120 }}>
+                    <button
+                      className={"btn btn-outline-info btn-sm"}
+                      onClick={handleSetCompletedDialog}
+                    >
+                      <DoneIcon /> Completed
+                    </button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button
+                      className={"btn btn-info btn-sm"}
+                      onClick={handleSetForwardDialog}
+                    >
+                      <SendIcon /> Forward
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className={"col-md-2"}></div>
+          </div>
         </Paper>
       </Grid>
       <Grid item xs={2}></Grid>
