@@ -185,7 +185,7 @@ function PendingDocumentInfo(props) {
                       className={"btn btn-outline-info btn-sm"}
                       onClick={handleSetCompletedDialog}
                     >
-                      <DoneIcon /> Completed
+                      <DoneIcon /> Take Action
                     </button>
                     &nbsp;&nbsp;&nbsp;
                     <button

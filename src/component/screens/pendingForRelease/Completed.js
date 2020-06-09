@@ -17,13 +17,9 @@ export default function Completed(props) {
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title" style={{ color: "#2196F3" }}>
-          <DescriptionIcon /> Completed ?
+          <DescriptionIcon /> Take Action
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            You're about to tag this document as completed in your office.
-          </DialogContentText>
-          <br />
           <br />
           <InputField
               id={"remarks"}
