@@ -152,18 +152,19 @@ function ControlPanel(props) {
         throw err;
       });
 
-      if (props.user_logout !== null){
-        if (props.user_logout === "true"){
-          window.location.reload(true);
-        }
+    }
 
-        if (props.user_logout === "false"){
-          const variant = "error";
-          props.enqueueSnackbar("Logout failed", { variant });
-        }
+    if (props._logout !== null) {
+      if (props._logout === "true") {
+        window.location.reload(true);
+      }
+
+      if (props._logout === "false") {
+        const variant = "error";
+        props.enqueueSnackbar("Logout failed", { variant });
       }
     }
-  }, [props.user_logout]);
+  }, [props._logout, socket]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -197,11 +198,7 @@ function ControlPanel(props) {
   };
 
   const handleLogOutControlPanel = async () => {
-    const obj = await getFromStorage("documentTracking");
-    if (obj && obj.token) {
-      const { token } = obj;
-      await props.logout(token, socket);
-    }
+    await props.logout(token, socket);
   };
 
   const handleInputChange = ({ target }) => {
@@ -510,6 +507,7 @@ function ControlPanel(props) {
                 label={props.user.username}
                 icon={<PowerSettingsNewIcon />}
                 onClick={handleLogOutControlPanel}
+                onMouseDown={handleLogOutControlPanel}
               />
             </Tabs>
           </AppBar>
@@ -614,7 +612,7 @@ function mapStateToProps(state) {
     fetch_documentType: state.fetchDocumentTypeById,
     update_user: state.updateUserProfile,
     delete_user: state.deleteUser,
-    user_logout: state.logout,
+    _logout: state.logout,
   };
 }
 
