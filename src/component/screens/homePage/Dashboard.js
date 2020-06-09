@@ -66,19 +66,7 @@ function Dashboard(props) {
       }
     }
 
-    if (props._logout !== null){
-      if (props._logout === "false"){
-        const variant = "error";
-        props.enqueueSnackbar("Error Logging out", {
-          variant,
-        });
-      }
-
-      if (props._logout === "true"){
-        window.location.reload(true);
-      }
-    }
-  }, [props.receive, props._logout]);
+  }, [props.receive]);
 
   const handleClick = () => {
     setOpen(!open);
@@ -137,20 +125,10 @@ function Dashboard(props) {
     await props.searchBySubj(props.trackingNum.documentTrackingNumber);
   };
 
-  const handleLogOut = async (e) => {
-    e.preventDefault();
-    socket = io(endPoint.ADDRESS);
-    const obj = getFromStorage("documentTracking");
-    if (obj && obj.token){
-      const { token } = obj;
-      await props.logout(token, socket);
-    }
-  };
-
   return (
     <Grid container spacing={3}>
       <BarcodeReader onError={handleError} onScan={handleScanning} />
-      <PrimarySearchAppBar handleLogOut={handleLogOut} />
+      <PrimarySearchAppBar />
 
       <Grid item xs={2}>
         <SideBarNavigation
@@ -337,7 +315,6 @@ function mapStateToProps(state) {
     track: state.trackDocument,
     search: state.searchBySubj,
     userList: state.fetchActiveUserList,
-    _logout: state.logout
   };
 }
 
@@ -350,7 +327,6 @@ const mapDispatchToProps = {
   trackOnly,
   searchBySubj,
   fetchActiveUserList,
-  logout
 };
 
 export default connect(

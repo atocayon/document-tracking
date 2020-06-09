@@ -13,7 +13,6 @@ import Drawer from "@material-ui/core/Drawer";
 import logo from "../../../img/logo.png";
 import { connect } from "react-redux";
 
-
 //Include
 import LeftDrawer from "./LeftDrawer";
 import RightDrawer from "./RightDrawer";
@@ -21,7 +20,12 @@ import MobileMenu from "./RenderMobileMenu";
 import ProfileMenu from "./ProfileMenu";
 import { withSnackbar } from "notistack";
 import SettingsIcon from "@material-ui/icons/Settings";
+import io from "socket.io-client";
+import endPoint from "../../endPoint";
+import { getFromStorage } from "../../storage";
+import { logout } from "../../../redux/actions/logout";
 
+let socket;
 function PrimarySearchAppBar(props) {
   const classes = useStyles(); // css styles
 
@@ -35,6 +39,22 @@ function PrimarySearchAppBar(props) {
     bottom: false,
     right: false,
   }); //Used for Drawer
+
+  useEffect(() => {
+    socket = io(endPoint.ADDRESS);
+    if (props._logout !== null) {
+      if (props._logout === "false") {
+        const variant = "error";
+        props.enqueueSnackbar("Error Logging out", {
+          variant,
+        });
+      }
+
+      if (props._logout === "true") {
+        window.location.reload(true);
+      }
+    }
+  }, [props._logout, socket]);
 
   const toggleDrawer = (side, open) => (event) => {
     if (
@@ -68,7 +88,14 @@ function PrimarySearchAppBar(props) {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-
+  const handleLogOut = async (e) => {
+    e.preventDefault();
+    const obj = getFromStorage("documentTracking");
+    if (obj && obj.token) {
+      const { token } = obj;
+      await props.logout(token, socket);
+    }
+  };
 
   const menuId = "primary-search-account-menu";
 
@@ -81,7 +108,7 @@ function PrimarySearchAppBar(props) {
       transformOriginProfileMenu={{ vertical: "top", horizontal: "right" }}
       openProfileMenu={isMenuOpen}
       onCloseProfileMenu={handleMenuClose}
-      handleLogOut={props.handleLogOut}
+      handleLogOut={handleLogOut}
     />
   );
 
@@ -257,6 +284,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function mapStateToProps(state) {
+  return {
+    _logout: state.logout,
+  };
+}
 
+const mapDispatchToProps = {
+  logout,
+};
 
-export default PrimarySearchAppBar;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withSnackbar(PrimarySearchAppBar));
