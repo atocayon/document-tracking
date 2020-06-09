@@ -1,11 +1,12 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-const localIpUrl = require("local-ip-url");
+import server_ip from "../server_ip";
+
 
 export function fetchDocumentTypes() {
   return function (dispatch) {
     return axios
-      .get("http://10.10.10.16:4000/dts/documentType")
+      .get(server_ip.SERVER_IP_ADDRESS+"documentType")
       .then((document) => {
         dispatch({
           type: actionTypes.FETCH_DOCUMENT_TYPES,

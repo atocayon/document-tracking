@@ -1,13 +1,13 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
-const localIpUrl = require("local-ip-url");
+import server_ip from "../server_ip";
 
 export function receiveDocument(documentTracking, user_id, user_section) {
   Reactotron.log(documentTracking, user_id, user_section);
   return function (dispatch) {
     return axios
-      .post("http://10.10.10.16:4000/dts/receiveDocument", {
+      .post(server_ip.SERVER_IP_ADDRESS+"receiveDocument", {
         documentTracking: documentTracking,
         user_id: user_id,
         user_section: user_section,
@@ -19,7 +19,7 @@ export function receiveDocument(documentTracking, user_id, user_section) {
         } else {
           axios
             .get(
-              "http://10.10.10.16:4000/dts/fetchActionReq/" +
+                server_ip.SERVER_IP_ADDRESS+"fetchActionReq/" +
                 res.data.documentId
             )
             .then((action_req) => {

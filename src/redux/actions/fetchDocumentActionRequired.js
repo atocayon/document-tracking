@@ -1,11 +1,12 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
+import server_ip from "../server_ip";
 const localIpUrl = require("local-ip-url");
 
 export function fetchDocumentActionRequired(doc_id) {
   return function (dispatch) {
     return axios
-      .get("http://10.10.10.16:4000/dts/fetchActionReq/" + doc_id)
+      .get(server_ip.SERVER_IP_ADDRESS+"fetchActionReq/" + doc_id)
       .then((res) => {
         const checkedArr = [];
         const checkbox = {};

@@ -1,12 +1,12 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-import Reactotron from "reactotron-react-js";
-const localIpUrl = require("local-ip-url");
+import server_ip from "../server_ip";
+
 
 export function fetchUserById(id) {
   return function (dispatch) {
     return axios
-      .get("http://10.10.10.16:4000/dts/user/" + parseInt(id))
+      .get(server_ip.SERVER_IP_ADDRESS+"user/" + parseInt(id))
       .then((_user) => {
         dispatch({
           type: actionTypes.FETCH_USER_BY_ID,

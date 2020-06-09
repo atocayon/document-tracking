@@ -27,51 +27,17 @@ export function userRegistration(
   };
 
   return async function (dispatch) {
-      await socket.emit("addUser",
-          user_role,
-          employeeId,
-          name,
-          username,
-          password,
-          contact,
-          email,
-          section,
-          position
-  );
-      // dispatch({ type: actionTypes.ADD_USER, _data });
-      // dispatch({
-      //     type: actionTypes.USER_REGISTRATION,
-      //     message: "success",
-      // });
-
-    // return axios
-    //   .post("http://10.10.10.16:4000/dts/addUser", {
-    //     section,
-    //     role: user_role,
-    //     employeeId,
-    //     name,
-    //     username,
-    //     password,
-    //     confirmPassword,
-    //     email,
-    //     contact,
-    //     position,
-    //   })
-    //   .then((_res) => {
-    //     if (_res.status === 200) {
-    //       if (_res.data.success === "success") {
-    //
-    //       }
-    //       if (_res.data.success === "failed") {
-    //         dispatch({
-    //           type: actionTypes.USER_REGISTRATION,
-    //           message: "failed",
-    //         });
-    //       }
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     alert("Server Error");
-    //   });
+    await socket.emit(
+      "addUser",
+      user_role,
+      employeeId,
+      name,
+      username,
+      password,
+      contact,
+      email,
+      section,
+      position
+    );
   };
 }

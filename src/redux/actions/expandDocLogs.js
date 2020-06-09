@@ -1,6 +1,5 @@
 import actionTypes from "./actionTypes";
-import axios from "axios";
-import Reactotron from "reactotron-react-js";
+
 export function expandDocLogs(data, socket) {
 
   return async function (dispatch) {

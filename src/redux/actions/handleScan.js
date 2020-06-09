@@ -1,6 +1,7 @@
 import actionTypes from "./actionTypes";
 import Reactotron from "reactotron-react-js";
 import axios from "axios";
+import server_ip from "../server_ip";
 
 export function handleScan(data, user_id, secshort, socket) {
   return async function (dispatch) {
@@ -64,7 +65,7 @@ async function get_branches(trans_id, tracking) {
 
   let arr = [];
   let data_branches = await axios.post(
-    "http://10.10.10.16:4000/dts/fetchSubDocument",
+      server_ip.SERVER_IP_ADDRESS+"fetchSubDocument",
     {
       trans_id,
       tracking,

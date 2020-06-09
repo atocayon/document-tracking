@@ -1,11 +1,11 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-const localIpUrl = require("local-ip-url");
+import server_ip from "../server_ip";
 
 export function deleteDocumentType(id) {
   return function (dispatch) {
     return axios
-      .post("http://10.10.10.16:4000/dts/deleteDocumentType/" + id)
+      .post(server_ip.SERVER_IP_ADDRESS+"deleteDocumentType/" + id)
       .then((res) => {
         dispatch({ type: actionTypes.DELETE_DOCUMENT_TYPE, data: id });
       })

@@ -1,11 +1,12 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-const localIpUrl = require("local-ip-url");
+import server_ip from "../server_ip";
+
 
 export function fetchDivisions() {
   return function (dispatch) {
     return axios
-      .get("http://10.10.10.16:4000/dts/fetchDivisions")
+      .get(server_ip.SERVER_IP_ADDRESS+"fetchDivisions")
       .then((res) => {
         dispatch({ type: actionTypes.FETCH_DIVISIONS, data: res.data });
       })

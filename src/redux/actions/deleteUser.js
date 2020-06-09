@@ -1,11 +1,12 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-const localIpUrl = require("local-ip-url");
+import server_ip from "../server_ip";
+
 
 export function deleteUser(id) {
   return function (dispatch) {
     axios
-      .post("http://10.10.10.16:4000/dts/deleteUser", {
+      .post(server_ip.SERVER_IP_ADDRESS+"deleteUser", {
         id: id,
       })
       .then((_res) => {
