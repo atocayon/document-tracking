@@ -474,8 +474,18 @@ const receiveDocument = (
     }
 
     if (rows.length > 0) {
-      console.log(rows);
       for (let i = 0; i < rows.length; i++) {
+        if (
+            rows[i].destinationType === "Internal" &&
+            rows[i].status === "1" &&
+            rows[i].user_id === user_id &&
+            rows[i].user_id === user_id &&
+            rows[i].notification === "0"
+        ) {
+          console.log("gn receive na ini");
+          callback("failed");
+          break;
+        }
         if (
           rows[i].destinationType === "External" &&
           rows[i].user_id === user_id &&
@@ -548,13 +558,23 @@ const receiveDocument = (
               console.log(err);
               return callback("server error");
             }
-            countPending(user_id, socket);
-            trackDocument(documentTracking);
-            return callback("success");
-          });
 
+            const update = "UPDATE documentLogs SET notification =  ? WHERE status = ? AND destination = ? AND document_id = ?";
+            connection.query(update, ["1", "2",user_section, documentTracking], function (err, result) {
+              if (err) {
+                console.log(err);
+                return callback("server error");
+              }
+
+              countPending(user_id, socket);
+              trackDocument(documentTracking);
+              return callback("success");
+            });
+
+          });
           break;
         }
+
       }
     }
   });
@@ -1878,7 +1898,7 @@ router.route("/fetchActionTaken").post(function (req, res) {
 //Fetch Pending Documents
 router.route("/fetchPendingDocument/:user_id").get(function (req, res) {
   let sql = "";
-  sql += "SELECT DISTINCT users.name AS creator, ";
+  sql += "SELECT users.name AS creator, ";
   sql += "sections.section AS creatorSection, ";
   sql += "users.position AS creatorPosition, ";
   sql += "documents.subject AS subject, ";

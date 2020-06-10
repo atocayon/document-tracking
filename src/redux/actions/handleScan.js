@@ -33,6 +33,10 @@ export function handleScan(data, user_id, secshort, socket) {
           });
         });
       }
+
+      if (message === "failed"){
+        dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "pending" });
+      }
     });
   };
 }
