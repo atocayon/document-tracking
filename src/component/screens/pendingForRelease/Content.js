@@ -148,11 +148,11 @@ export default class Content extends Component {
               <tbody>
                 <tr>
                   <td>
-                    {this.props.documentInfo.creatorSection}&n
+                    {this.props.pendingDocumentInfo.creatorSection}
                   </td>
                   <td colSpan={4}>
                     <b>Note:</b>&nbsp;&nbsp;
-                    {this.props.documentInfo.note}
+                    {this.props.pendingDocumentInfo.note}
                   </td>
                 </tr>
                 {this.props.pendingDocumentInfo.destination.map(

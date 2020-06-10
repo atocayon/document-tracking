@@ -64,6 +64,13 @@ function Dashboard(props) {
           variant,
         });
       }
+
+      if (props.receive === "pending"){
+        const variant = "error";
+        props.enqueueSnackbar("This document is already pending in your office", {
+          variant,
+        });
+      }
     }
 
   }, [props.receive]);
@@ -78,10 +85,7 @@ function Dashboard(props) {
 
   const handleTrackDocument = async (e) => {
     e.preventDefault();
-    Reactotron.log("On Type la");
-    Reactotron.log(trackOrSearchOnly);
     if (!trackOrSearchOnly) {
-      Reactotron.log("polse ini");
       await props.handleScanAndReceive(
         props.trackingNum.documentTrackingNumber,
         props.user.user_id,
