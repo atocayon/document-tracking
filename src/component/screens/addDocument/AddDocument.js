@@ -436,7 +436,7 @@ function AddDocument({
                         </div>
                       </div>
                     </div>
-                    <div className={"col-md-8"}>
+                    <div className={"col-md-7"}>
                       <h5 style={{ textAlign: "left" }}>
                         Add New Document &nbsp;
                         <span style={{ color: "#2196F3" }}>
@@ -444,7 +444,7 @@ function AddDocument({
                         </span>
                       </h5>
                     </div>
-                    <div className={"col-md-2"}>
+                    <div className={"col-md-3"}>
                       <span>
                         <small>
                           {date._date.toLocaleDateString() +
