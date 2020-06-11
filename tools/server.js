@@ -241,31 +241,31 @@ const addUser = (
 //Fetch All Users Query
 const Users = () => {
   let sql = "";
-  sql += "SELECT users.user_id AS user_id, ";
-  sql += "users.employeeId AS employeeId, ";
-  sql += "users.name AS name, ";
-  sql += "users.username AS username, ";
-  sql += "users.contact AS contact, ";
-  sql += "users.email AS email, ";
-  sql += "users.section AS secid, ";
-  sql += "sections.section AS section, ";
-  sql += "sections.secshort AS secshort, ";
-  sql += "divisions.department AS department, ";
-  sql += "divisions.depshort AS depshort, ";
-  sql += "users.position AS position, ";
-  sql += "users.role AS role_id, ";
-  sql += "users_role.role AS role, ";
-  sql += "users_status.status AS accnt_status ";
-  sql += "FROM users ";
-  sql += "JOIN sections ";
-  sql += "ON users.section = sections.secid ";
-  sql += "JOIN divisions ";
-  sql += "ON sections.divid = divisions.depid ";
-  sql += "JOIN users_role ";
-  sql += "ON users.role = users_role.role_id ";
-  sql += "JOIN users_status ";
-  sql += "ON users.status = users_status.status_id ";
-  sql += "ORDER BY users.user_id ASC ";
+  sql += "SELECT a.user_id AS user_id, ";
+  sql += "a.employeeId AS employeeId, ";
+  sql += "a.name AS name, ";
+  sql += "a.username AS username, ";
+  sql += "a.contact AS contact, ";
+  sql += "a.email AS email, ";
+  sql += "a.section AS secid, ";
+  sql += "a.position AS position, ";
+  sql += "a.role AS role_id, ";
+  sql += "b.section AS section, ";
+  sql += "b.secshort AS secshort, ";
+  sql += "c.department AS department, ";
+  sql += "c.depshort AS depshort, ";
+  sql += "d.role AS role, ";
+  sql += "e.status AS accnt_status ";
+  sql += "FROM users a ";
+  sql += "JOIN sections b ";
+  sql += "ON a.section = b.secid ";
+  sql += "JOIN divisions c ";
+  sql += "ON b.divid = c.depid ";
+  sql += "JOIN users_role d ";
+  sql += "ON a.role = d.role_id ";
+  sql += "JOIN users_status e ";
+  sql += "ON a.status = e.status_id ";
+  sql += "ORDER BY a.user_id ASC ";
   connection.query(sql, function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -278,22 +278,21 @@ const Users = () => {
 //Fetch Document Logs Query
 const getDocLogs = (socket) => {
   let sql = "";
-  sql += "SELECT documentLogs.document_id AS trans_id, ";
-  sql += "users.name AS name, ";
-  sql += "documentLogs.remarks AS remarks, ";
-  sql += "documentLogs.destinationType AS destinationType, ";
-  sql += "documentLogs.destination AS destination, ";
-  sql += "documentStatus.status AS status, ";
-  sql +=
-    "DATE_FORMAT(documentLogs.date_time,'%M %d, %Y @ %h:%i:%s %p ') AS date_time ";
-  sql += "FROM documents ";
+  sql += "SELECT b.document_id AS trans_id, ";
+  sql += "b.remarks AS remarks, ";
+  sql += "b.destinationType AS destinationType, ";
+  sql += "b.destination AS destination, ";
+  sql += "DATE_FORMAT(b.date_time,'%M %d, %Y @ %h:%i:%s %p ') AS date_time, ";
+  sql += "c.name AS name, ";
+  sql += "d.status AS status ";
+  sql += "FROM documents a ";
   sql +=
     "JOIN (SELECT MAX(trans_id) as trans, document_id, remarks, destinationType, destination, date_time, user_id,status ";
   sql +=
-    "FROM documentLogs GROUP BY document_id) AS documentLogs on documents.documentID = documentLogs.document_id ";
-  sql += "JOIN users ";
+    "FROM documentLogs GROUP BY document_id) AS b ON documents.documentID = documentLogs.document_id ";
+  sql += "JOIN users c ";
   sql += "ON documentLogs.user_id = users.user_id ";
-  sql += "JOIN documentStatus ";
+  sql += "JOIN documentStatus d ";
   sql += "ON documentLogs.status = documentStatus.statid ";
   sql += "ORDER BY documentLogs.date_time DESC ";
 
@@ -308,23 +307,23 @@ const getDocLogs = (socket) => {
 
 const expandDogLogs = (doc_id, status, socket) => {
   let sql = "";
-  sql += "SELECT documentLogs.document_id AS trans_id, ";
-  sql += "users.name AS name, ";
-  sql += "documentLogs.remarks AS remarks,  ";
-  sql += "documentLogs.destinationType AS destinationType, ";
-  sql += "documentLogs.destination AS destination, ";
-  sql += "documentStatus.status AS status, ";
+  sql += "SELECT a.document_id AS trans_id, ";
+  sql += "c.name AS name, ";
+  sql += "a.remarks AS remarks,  ";
+  sql += "a.destinationType AS destinationType, ";
+  sql += "a.destination AS destination, ";
+  sql += "d.status AS status, ";
   sql +=
-    "DATE_FORMAT(documentLogs.date_time,'%M %d, %Y @ %h:%i:%s %p ') AS date_time ";
-  sql += "FROM documentLogs ";
-  sql += "JOIN documents ";
-  sql += "ON documentLogs.document_id = documents.documentID ";
-  sql += "JOIN users ";
-  sql += "ON documentLogs.user_id = users.user_id ";
-  sql += "JOIN documentStatus ";
-  sql += "ON documentLogs.status = documentStatus.statid ";
-  sql += "WHERE documentLogs.document_id = ? AND documentStatus.status != ?";
-  sql += "ORDER BY documentLogs.date_time ASC ";
+    "DATE_FORMAT(a.date_time,'%M %d, %Y @ %h:%i:%s %p ') AS date_time ";
+  sql += "FROM documentLogs a ";
+  sql += "JOIN documents b ";
+  sql += "ON a.document_id = b.documentID ";
+  sql += "JOIN users c ";
+  sql += "ON a.user_id = c.user_id ";
+  sql += "JOIN documentStatus d ";
+  sql += "ON a.status = d.statid ";
+  sql += "WHERE a.document_id = ? AND d.status != ?";
+  sql += "ORDER BY a.date_time ASC ";
   connection.query(sql, [doc_id, status], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -476,11 +475,11 @@ const receiveDocument = (
     if (rows.length > 0) {
       for (let i = 0; i < rows.length; i++) {
         if (
-            rows[i].destinationType === "Internal" &&
-            rows[i].status === "1" &&
-            rows[i].user_id === user_id &&
-            rows[i].user_id === user_id &&
-            rows[i].notification === "0"
+          rows[i].destinationType === "Internal" &&
+          rows[i].status === "1" &&
+          rows[i].user_id === user_id &&
+          rows[i].user_id === user_id &&
+          rows[i].notification === "0"
         ) {
           console.log("gn receive na ini");
           callback("failed");
@@ -559,22 +558,25 @@ const receiveDocument = (
               return callback("server error");
             }
 
-            const update = "UPDATE documentLogs SET notification =  ? WHERE status = ? AND destination = ? AND document_id = ?";
-            connection.query(update, ["1", "2",user_section, documentTracking], function (err, result) {
-              if (err) {
-                console.log(err);
-                return callback("server error");
+            const update =
+              "UPDATE documentLogs SET notification =  ? WHERE status = ? AND destination = ? AND document_id = ?";
+            connection.query(
+              update,
+              ["1", "2", user_section, documentTracking],
+              function (err, result) {
+                if (err) {
+                  console.log(err);
+                  return callback("server error");
+                }
+
+                countPending(user_id, socket);
+                trackDocument(documentTracking);
+                return callback("success");
               }
-
-              countPending(user_id, socket);
-              trackDocument(documentTracking);
-              return callback("success");
-            });
-
+            );
           });
           break;
         }
-
       }
     }
   });
@@ -598,28 +600,28 @@ const countPending = (user_id, socket) => {
 const trackDocument = (data) => {
   let sql = "";
   sql += "SELECT ";
-  sql += "documentLogs.trans_id  AS trans_id, ";
-  sql += "documentLogs.document_id AS document_id, ";
-  sql += "users.name AS name,  ";
-  sql += "users.position AS position, ";
-  sql += "sections.secshort AS secshort, ";
-  sql += "documentLogs.remarks AS remarks, ";
-  sql += "documentLogs.destination  AS destination, ";
-  sql += "documentStatus.status AS status, ";
-  sql += "users.name AS operator, ";
-  sql += "documentLogs.ref AS ref_id, ";
+  sql += "a.trans_id  AS trans_id, ";
+  sql += "a.document_id AS document_id, ";
+  sql += "a.ref AS ref_id, ";
+  sql += "a.remarks AS remarks, ";
+  sql += "a.destination  AS destination, ";
   sql +=
-    "DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time ";
-  sql += "FROM documentLogs ";
-  sql += "JOIN users ";
-  sql += "ON documentLogs.user_id = users.user_id ";
-  sql += "JOIN documentStatus ";
-  sql += "ON documentLogs.status = documentStatus.statid ";
-  sql += "JOIN sections ";
-  sql += "ON users.section = sections.secid ";
-  sql += "WHERE documentLogs.document_id = ? ";
-  sql += "AND documentLogs.ref = ? ";
-  sql += "ORDER BY documentLogs.trans_id DESC";
+      "DATE_FORMAT(a.date_time, '%M %d, %Y @ %h:%i %p') AS date_time, ";
+  sql += "b.name AS name,  ";
+  sql += "b.position AS position, ";
+  sql += "b.name AS operator, ";
+  sql += "c.status AS status, ";
+  sql += "d.secshort AS secshort ";
+  sql += "FROM documentLogs a ";
+  sql += "JOIN users b ";
+  sql += "ON a.user_id = b.user_id ";
+  sql += "JOIN documentStatus c ";
+  sql += "ON a.status = c.statid ";
+  sql += "JOIN sections d ";
+  sql += "ON b.section = d.secid ";
+  sql += "WHERE a.document_id = ? ";
+  sql += "AND a.ref = ? ";
+  sql += "ORDER BY a.trans_id DESC";
   connection.query(sql, [data, "0"], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -635,27 +637,27 @@ router.route("/fetchSubDocument").post(function (req, res) {
   const { trans_id, tracking } = req.body;
   let sql = "";
   sql += "SELECT ";
-  sql += "documentLogs.trans_id  AS trans_id, ";
-  sql += "documentLogs.document_id AS document_id, ";
-  sql += "users.name AS name,  ";
-  sql += "users.position AS position, ";
-  sql += "sections.secshort AS secshort, ";
+  sql += "a.trans_id  AS trans_id, ";
+  sql += "a.document_id AS document_id, ";
   sql +=
-    "DATE_FORMAT(documentLogs.date_time, '%M %d, %Y @ %h:%i %p') AS date_time , ";
-  sql += "documentLogs.remarks AS remarks, ";
-  sql += "documentLogs.destination AS destination, ";
-  sql += "documentStatus.status AS status, ";
-  sql += "users.name AS operator ";
-  sql += "FROM documentLogs ";
-  sql += "JOIN users ";
-  sql += "ON documentLogs.user_id = users.user_id ";
-  sql += "JOIN documentStatus ";
-  sql += "ON documentLogs.status = documentStatus.statid ";
-  sql += "JOIN sections ";
-  sql += "ON users.section = sections.secid ";
-  sql += "WHERE documentLogs.document_id = ? ";
-  sql += "AND documentLogs.ref = ? ";
-  sql += "ORDER BY documentLogs.trans_id ASC";
+      "DATE_FORMAT(a.date_time, '%M %d, %Y @ %h:%i %p') AS date_time , ";
+  sql += "a.remarks AS remarks, ";
+  sql += "a.destination AS destination, ";
+  sql += "b.name AS name,  ";
+  sql += "b.position AS position, ";
+  sql += "b.name AS operator ";
+  sql += "c.status AS status, ";
+  sql += "d.secshort AS secshort ";
+  sql += "FROM documentLogs a ";
+  sql += "JOIN users b ";
+  sql += "ON a.user_id = b.user_id ";
+  sql += "JOIN documentStatus c ";
+  sql += "ON a.status = c.statid ";
+  sql += "JOIN sections d ";
+  sql += "ON b.section = d.secid ";
+  sql += "WHERE a.document_id = ? ";
+  sql += "AND a.ref = ? ";
+  sql += "ORDER BY a.trans_id ASC";
   connection.query(sql, [tracking, trans_id], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -669,13 +671,13 @@ router.route("/fetchSubDocument").post(function (req, res) {
 const login = (email, password, callback) => {
   let sql = "";
   sql += "SELECT ";
-  sql += "users.user_id AS user_id, ";
-  sql += "users.name AS name, ";
-  sql += "users.password AS password, ";
-  sql += "users_role.role AS role ";
-  sql += "FROM users ";
-  sql += "JOIN users_role ";
-  sql += "ON users.role = users_role.role_id ";
+  sql += "a.user_id AS user_id, ";
+  sql += "a.name AS name, ";
+  sql += "a.password AS password, ";
+  sql += "b.role AS role ";
+  sql += "FROM users a ";
+  sql += "JOIN users_role b ";
+  sql += "ON a.role = b.role_id ";
   sql += "WHERE email = ? ";
 
   connection.query(sql, [email], function (err, rows, fields) {
@@ -771,14 +773,15 @@ const logout = (id, callback) => {
 //Active user list
 const fetchUserActiveList = () => {
   let sql = "";
-  sql += "SELECT CONVERT(users.user_id, CHAR) as user_id, users.name AS name, ";
-  sql += "users.position AS position, ";
-  sql += "users_session.timeStamp AS timeStamp ";
-  sql += "FROM users_session ";
-  sql += "JOIN users ";
-  sql += "ON users_session.userId = users.user_id ";
-  sql += "WHERE users_session.isDeleted = ? ";
-  sql += "ORDER BY users_session.timeStamp ASC";
+  sql += "SELECT  ";
+  sql += "a.timeStamp AS timeStamp, ";
+  sql += "b.position AS position, ";
+  sql += "CONVERT(b.user_id, CHAR) as user_id, b.name AS name ";
+  sql += "FROM users_session a ";
+  sql += "JOIN users b ";
+  sql += "ON a.userId = b.user_id ";
+  sql += "WHERE a.isDeleted = ? ";
+  sql += "ORDER BY a.timeStamp ASC";
 
   connection.query(sql, ["0"], function (err, rows, fields) {
     if (err) {
@@ -790,18 +793,6 @@ const fetchUserActiveList = () => {
 };
 
 //Verify User Token
-const verifyToken = (token, callback, socket) => {
-  const sql = "SELECT * FROM users_session WHERE userId = ?";
-  connection.query(sql, [token], function (err, rows, fields) {
-    if (err) {
-      console.log(err);
-      return callback("server error");
-    }
-
-    console.log(rows[0]);
-    socket.emit("verifiedToken", rows[0]);
-  });
-};
 router.route("/verifyToken/:token").get(function (req, res) {
   let token = req.params.token;
 
@@ -817,66 +808,32 @@ router.route("/verifyToken/:token").get(function (req, res) {
   });
 });
 
-//Fetch All users by section
-const fetchSectionUser = (section, callback, socket) => {
-  let sql = "";
-  sql += "SELECT users.user_id AS user_id, ";
-  sql += "users.employeeId AS employeeId, ";
-  sql += "users.name AS name, ";
-  sql += "users.username AS username, ";
-  sql += "users.password AS password, ";
-  sql += "users.contact AS contact, ";
-  sql += "users.email AS email, ";
-  sql += "users.section AS secid, ";
-  sql += "users.position AS position, ";
-  sql += "users.role AS role, ";
-  sql += "users.status AS status, ";
-  sql += "sections.section AS section, ";
-  sql += "sections.secshort AS secshort, ";
-  sql += "divisions.department AS department, ";
-  sql += "divisions.depshort AS depshort ";
-  sql += "FROM users ";
-  sql += "JOIN sections ";
-  sql += "ON users.section = sections.secid ";
-  sql += "JOIN divisions ";
-  sql += "ON sections.divid = divisions.depid ";
-  sql += "WHERE users.section = ? ORDER BY name ASC ";
 
-  connection.query(sql, [section], function (err, rows, fields) {
-    if (err) {
-      console.log(err);
-      return callback("server error");
-    }
-
-    console.log(rows);
-    io.emit("sectionUsers", rows);
-  });
-};
 router.route("/sectionUser/:section").get(function (req, res) {
   let section = req.params.section;
 
   let sql = "";
-  sql += "SELECT users.user_id AS user_id, ";
-  sql += "users.employeeId AS employeeId, ";
-  sql += "users.name AS name, ";
-  sql += "users.username AS username, ";
-  sql += "users.password AS password, ";
-  sql += "users.contact AS contact, ";
-  sql += "users.email AS email, ";
-  sql += "users.section AS secid, ";
-  sql += "users.position AS position, ";
-  sql += "users.role AS role, ";
-  sql += "users.status AS status, ";
-  sql += "sections.section AS section, ";
-  sql += "sections.secshort AS secshort, ";
-  sql += "divisions.department AS department, ";
-  sql += "divisions.depshort AS depshort ";
-  sql += "FROM users ";
-  sql += "JOIN sections ";
-  sql += "ON users.section = sections.secid ";
-  sql += "JOIN divisions ";
-  sql += "ON sections.divid = divisions.depid ";
-  sql += "WHERE users.section = ? ORDER BY name ASC ";
+  sql += "SELECT a.user_id AS user_id, ";
+  sql += "a.employeeId AS employeeId, ";
+  sql += "a.name AS name, ";
+  sql += "a.username AS username, ";
+  sql += "a.password AS password, ";
+  sql += "a.contact AS contact, ";
+  sql += "a.email AS email, ";
+  sql += "a.section AS secid, ";
+  sql += "a.position AS position, ";
+  sql += "a.role AS role, ";
+  sql += "a.status AS status, ";
+  sql += "b.section AS section, ";
+  sql += "b.secshort AS secshort, ";
+  sql += "c.department AS department, ";
+  sql += "c.depshort AS depshort ";
+  sql += "FROM users a ";
+  sql += "JOIN sections b ";
+  sql += "ON a.section = b.secid ";
+  sql += "JOIN divisions c ";
+  sql += "ON b.divid = c.depid ";
+  sql += "WHERE a.section = ? ORDER BY a.name ASC ";
   connection.query(sql, [section], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -888,72 +845,35 @@ router.route("/sectionUser/:section").get(function (req, res) {
   });
 });
 
-//Fetch Users Data By ID
-const fetchUserData = (id, callback, socket) => {
-  let sql = "";
-  sql += "SELECT users.user_id AS user_id, ";
-  sql += "users.employeeId AS employeeId, ";
-  sql += "users.name AS name, ";
-  sql += "users.username AS username, ";
-  sql += "users.password AS password, ";
-  sql += "users.contact AS contact, ";
-  sql += "users.email AS email, ";
-  sql += "users.section AS secid, ";
-  sql += "users.position AS position, ";
-  sql += "users_role.role AS role, ";
-  sql += "users_role.role_id AS role_id, ";
-  sql += "users.status AS status, ";
-  sql += "sections.section AS section, ";
-  sql += "sections.secshort AS secshort, ";
-  sql += "divisions.department AS department, ";
-  sql += "divisions.depshort AS depshort ";
-  sql += "FROM users ";
-  sql += "JOIN sections ";
-  sql += "ON users.section = sections.secid ";
-  sql += "JOIN divisions ";
-  sql += "ON sections.divid = divisions.depid ";
-  sql += "JOIN users_role ";
-  sql += "ON users.role = users_role.role_id ";
-  sql += "WHERE users.user_id = ? ";
 
-  connection.query(sql, [parseInt(id)], function (err, rows, fields) {
-    if (err) {
-      console.log(err);
-      return callback("server error");
-    }
-
-    console.log(rows);
-    socket.emit("userData", rows[0]);
-  });
-};
 router.route("/user/:id").get(function (req, res) {
   let id = req.params.id;
 
   let sql = "";
-  sql += "SELECT users.user_id AS user_id, ";
-  sql += "users.employeeId AS employeeId, ";
-  sql += "users.name AS name, ";
-  sql += "users.username AS username, ";
-  sql += "users.password AS password, ";
-  sql += "users.contact AS contact, ";
-  sql += "users.email AS email, ";
-  sql += "users.section AS secid, ";
-  sql += "users.position AS position, ";
-  sql += "users_role.role AS role, ";
-  sql += "users_role.role_id AS role_id, ";
-  sql += "users.status AS status, ";
-  sql += "sections.section AS section, ";
-  sql += "sections.secshort AS secshort, ";
-  sql += "divisions.department AS department, ";
-  sql += "divisions.depshort AS depshort ";
-  sql += "FROM users ";
-  sql += "JOIN sections ";
-  sql += "ON users.section = sections.secid ";
-  sql += "JOIN divisions ";
-  sql += "ON sections.divid = divisions.depid ";
-  sql += "JOIN users_role ";
-  sql += "ON users.role = users_role.role_id ";
-  sql += "WHERE users.user_id = ? ";
+  sql += "SELECT a.user_id AS user_id, ";
+  sql += "a.employeeId AS employeeId, ";
+  sql += "a.name AS name, ";
+  sql += "a.username AS username, ";
+  sql += "a.password AS password, ";
+  sql += "a.contact AS contact, ";
+  sql += "a.email AS email, ";
+  sql += "a.section AS secid, ";
+  sql += "a.position AS position, ";
+  sql += "d.role AS role, ";
+  sql += "d.role_id AS role_id, ";
+  sql += "a.status AS status, ";
+  sql += "b.section AS section, ";
+  sql += "b.secshort AS secshort, ";
+  sql += "c.department AS department, ";
+  sql += "c.depshort AS depshort ";
+  sql += "FROM users a ";
+  sql += "JOIN sections b ";
+  sql += "ON a.section = b.secid ";
+  sql += "JOIN divisions c ";
+  sql += "ON b.divid = c.depid ";
+  sql += "JOIN users_role d ";
+  sql += "ON a.role = d.role_id ";
+  sql += "WHERE a.user_id = ? ";
   connection.query(sql, [parseInt(id)], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -966,62 +886,6 @@ router.route("/user/:id").get(function (req, res) {
 });
 
 //Update Users Info
-const updateUserInfo = (
-  employeeId,
-  name,
-  username,
-  contact,
-  email,
-  section,
-  position,
-  role,
-  callback,
-  socket
-) => {
-  const sql = "SELECT * FROM users WHERE user_id = ?";
-  connection.query(sql, [parseInt(employeeId)], function (err, rows, fields) {
-    if (err) {
-      console.log(err);
-      return callback("server error");
-    }
-
-    if (rows.length > 0) {
-      let sql1 = "";
-      sql1 += "UPDATE users ";
-      sql1 += "SET employeeId = ? , ";
-      sql1 += "name = ?, ";
-      sql1 += "username = ?, ";
-      sql1 += "contact = ?, ";
-      sql1 += "email = ?, ";
-      sql1 += "section = ?, ";
-      sql1 += "position = ?, ";
-      sql1 += "role = ? ";
-      sql1 += "WHERE user_id = ? ";
-      connection.query(
-        sql1,
-        [
-          employeeId,
-          name,
-          username,
-          contact,
-          email,
-          section,
-          position,
-          role,
-          employeeId,
-        ],
-        function (err, result) {
-          if (err) {
-            console.log(err);
-            return callback("server error");
-          }
-          console.log(result);
-          return callback("success");
-        }
-      );
-    }
-  });
-};
 router.route("/updateUser/:id").post(function (req, res) {
   let id = req.params.id;
   const {
@@ -1081,16 +945,6 @@ router.route("/updateUser/:id").post(function (req, res) {
 });
 
 //Update User Role
-const updateUserRole = (role, id, callback, socket) => {
-  const sql = "UPDATE users SET role = ? WHERE user_id = ?";
-  connection.query(sql, [role, parseInt(id)], function (err, result) {
-    if (err) {
-      return callback("server error");
-    }
-
-    return callback("updated");
-  });
-};
 router.route("/updateRole").post(function (req, res) {
   const { role, id } = req.body;
   const sql = "UPDATE users SET role = ? WHERE user_id = ?";
@@ -1104,16 +958,6 @@ router.route("/updateRole").post(function (req, res) {
 });
 
 //Update user Status
-const updateUserStatus = (status, id, callback, socket) => {
-  const sql = "UPDATE users SET status = ? WHERE user_id = ?";
-  connection.query(sql, [status, parseInt(id)], function (err, result) {
-    if (err) {
-      return callback("server error");
-    }
-
-    return callback("updated");
-  });
-};
 router.route("/updateStatus").post(function (req, res) {
   const { status, id } = req.body;
 
@@ -1128,17 +972,6 @@ router.route("/updateStatus").post(function (req, res) {
 });
 
 //Delete User
-const deleteUser = (id, callback, socket) => {
-  const sql = "DELETE FROM users WHERE user_id = ?";
-  connection.query(sql, [id], function (err, result) {
-    if (err) {
-      console.log(err);
-      return callback("server error");
-    }
-
-    return callback("deleted");
-  });
-};
 router.route("/deleteUser").post(function (req, res) {
   const { id } = req.body;
   const sql = "DELETE FROM users WHERE user_id = ?";
@@ -1153,17 +986,6 @@ router.route("/deleteUser").post(function (req, res) {
 });
 
 //Handle Transfer Office
-const userTransferOffice = (section, id, callback, socket) => {
-  const sql = "UPDATE users SET section = ? WHERE user_id = ?";
-  connection.query(sql, [section, parseInt(id)], function (err, result) {
-    if (err) {
-      return callback("server error");
-    }
-
-    // console.log(result);
-    return callback("success");
-  });
-};
 
 router.route("/transferOffice").post(function (req, res) {
   const { id, section } = req.body;
@@ -1181,40 +1003,19 @@ router.route("/transferOffice").post(function (req, res) {
 });
 
 //Fetch section by section id
-const fetchSectionById = (secid, callback) => {
-  let sql = "";
-  sql += "SELECT sections.secid AS secid, ";
-  sql += "sections.divid AS divid, ";
-  sql += "sections.section AS section, ";
-  sql += "sections.secshort AS secshort, ";
-  sql += "divisions.department AS department, ";
-  sql += "divisions.depshort AS depshort ";
-  sql += "FROM sections ";
-  sql += "JOIN divisions ";
-  sql += "ON sections.divid = divisions.depid ";
-  sql += "WHERE sections.secid = ? ";
-  connection.query(sql, [parseInt(secid)], function (err, rows, fields) {
-    if (err) {
-      console.log(err);
-      return callback("server error");
-    }
-    console.log(rows[0]);
-    io.emit("sectionInfoById", rows[0]);
-  });
-};
 router.route("/sections/:secid").post(function (req, res) {
   const secid = req.params.secid;
   let sql = "";
-  sql += "SELECT sections.secid AS secid, ";
-  sql += "sections.divid AS divid, ";
-  sql += "sections.section AS section, ";
-  sql += "sections.secshort AS secshort, ";
-  sql += "divisions.department AS department, ";
-  sql += "divisions.depshort AS depshort ";
-  sql += "FROM sections ";
-  sql += "JOIN divisions ";
-  sql += "ON sections.divid = divisions.depid ";
-  sql += "WHERE sections.secid = ? ORDER BY sections.section ASC";
+  sql += "SELECT a.secid AS secid, ";
+  sql += "a.divid AS divid, ";
+  sql += "a.section AS section, ";
+  sql += "a.secshort AS secshort, ";
+  sql += "b.department AS department, ";
+  sql += "b.depshort AS depshort ";
+  sql += "FROM sections a ";
+  sql += "JOIN divisions b ";
+  sql += "ON a.divid = b.depid ";
+  sql += "WHERE a.secid = ? ORDER BY a.section ASC";
   connection.query(sql, [parseInt(secid)], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -1226,42 +1027,19 @@ router.route("/sections/:secid").post(function (req, res) {
 });
 
 //Fetch Sections
-const fetchSections = (socket) => {
-  let sql = "";
-  sql += "SELECT sections.divid AS divid, ";
-  sql += "sections.secid AS secid, ";
-  sql += "sections.section AS section, ";
-  sql += "sections.secshort AS secshort, ";
-  sql += "sections.active AS active, ";
-  sql += "divisions.department AS department, ";
-  sql += "divisions.depshort AS depshort ";
-  sql += "FROM sections ";
-  sql += "JOIN divisions ";
-  sql += "ON sections.divid = divisions.depid ";
-  sql += "ORDER BY sections.section ASC ";
-
-  connection.query(sql, function (err, rows, fields) {
-    if (err) {
-      console.log(err);
-    }
-
-    console.log(rows);
-    io.emit("sections", rows);
-  });
-};
 router.route("/sections").get(function (req, res) {
   let sql = "";
-  sql += "SELECT sections.divid AS divid, ";
-  sql += "sections.secid AS secid, ";
-  sql += "sections.section AS section, ";
-  sql += "sections.secshort AS secshort, ";
-  sql += "sections.active AS active, ";
-  sql += "divisions.department AS department, ";
-  sql += "divisions.depshort AS depshort ";
-  sql += "FROM sections ";
-  sql += "JOIN divisions ";
-  sql += "ON sections.divid = divisions.depid ";
-  sql += "ORDER BY sections.section ASC ";
+  sql += "SELECT a.divid AS divid, ";
+  sql += "a.secid AS secid, ";
+  sql += "a.section AS section, ";
+  sql += "a.secshort AS secshort, ";
+  sql += "a.active AS active, ";
+  sql += "b.department AS department, ";
+  sql += "b.depshort AS depshort ";
+  sql += "FROM sections a ";
+  sql += "JOIN divisions b ";
+  sql += "ON a.divid = b.depid ";
+  sql += "ORDER BY a.section ASC ";
   connection.query(sql, function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -1274,21 +1052,6 @@ router.route("/sections").get(function (req, res) {
 });
 
 //Add New Section
-const addNewSection = (division, section, secshort, callback) => {
-  const sql =
-    "INSERT INTO sections (divid, section, secshort, active) VALUES ?";
-  const values = [[division, section, secshort, 1]];
-  connection.query(sql, [values], function (err, result) {
-    if (err) {
-      console.log(err);
-      return callback("sever error");
-    }
-
-    console.log(result);
-    fetchSections();
-    return callback("success");
-  });
-};
 router.route("/addNewSection").post(function (req, res) {
   const { division, section, secshort } = req.body;
   const sql =
@@ -1306,24 +1069,6 @@ router.route("/addNewSection").post(function (req, res) {
 });
 
 //Update Section
-const updateSection = (secid, divid, section, secshort, callback, socket) => {
-  const sql =
-    "UPDATE sections SET divid = ?, section = ?, secshort = ?, active = ? WHERE secid = ?";
-  connection.query(
-    sql,
-    [parseInt(divid), section, secshort, 1, parseInt(secid)],
-    function (err, result) {
-      if (err) {
-        console.log(err);
-        return callback("server error");
-      }
-
-      console.log(result);
-      fetchSectionById(secid, callback);
-      return callback("updated");
-    }
-  );
-};
 router.route("/updateSection").post(function (req, res) {
   const { secid, divid, section, secshort } = req.body;
   const sql =
@@ -1344,19 +1089,6 @@ router.route("/updateSection").post(function (req, res) {
 });
 
 //DELETE SECTION
-const deleteSection = (id, callback) => {
-  const sql = "DELETE FROM sections WHERE secid = ?";
-  connection.query(sql, [parseInt(id)], function (err, result) {
-    if (err) {
-      console.log(err);
-      return callback("server error");
-    }
-
-    console.log(result);
-    fetchSections();
-    return callback("success");
-  });
-};
 router.route("/deleteSection/:id").post(function (req, res) {
   let id = req.params.id;
   const sql = "DELETE FROM sections WHERE secid = ?";
@@ -1372,17 +1104,6 @@ router.route("/deleteSection/:id").post(function (req, res) {
 });
 
 //Fetch Divisions
-const fetchDivisions = () => {
-  const sql = "SELECT * FROM divisions";
-  connection.query(sql, function (err, rows, fields) {
-    if (err) {
-      console.log(err);
-    }
-
-    console.log(rows);
-    io.emit("divisions", rows);
-  });
-};
 router.route("/fetchDivisions").get(function (req, res) {
   const sql = "SELECT * FROM divisions";
   connection.query(sql, function (err, rows, fields) {
@@ -1397,17 +1118,6 @@ router.route("/fetchDivisions").get(function (req, res) {
 });
 
 //Fetch Division By ID
-const fetchDivisionById = (id, callback, socket) => {
-  const sql = "SELECT * FROM divisions WHERE depid= ?";
-  connection.query(sql, [parseInt(id)], function (err, rows, fields) {
-    if (err) {
-      console.log(err);
-      return callback("server error");
-    }
-    console.log(rows);
-    socket.emit("divisionInfo", rows[0]);
-  });
-};
 router.route("/fetchDivisionById/:id").get(function (req, res) {
   let id = req.params.id;
   const sql = "SELECT * FROM divisions WHERE depid= ?";
@@ -1422,20 +1132,6 @@ router.route("/fetchDivisionById/:id").get(function (req, res) {
 });
 
 //Add Division
-const addNewDivision = (department, depshort, payrollshort, callback) => {
-  const sql =
-    "INSERT INTO divisions (department, depshort, payrollshort) VALUES ?";
-  const values = [[department, depshort, payrollshort]];
-  connection.query(sql, [values], function (err, result) {
-    if (err) {
-      console.log(err);
-      return callback("server error");
-    }
-    console.log(result);
-    fetchDivisions();
-    return callback("success");
-  });
-};
 router.route("/addDivision").post(function (req, res) {
   const { department, depshort, payrollshort } = req.body;
   const sql =
@@ -1600,15 +1296,15 @@ router.route("/draft").post(function (req, res) {
 router.route("/getDrafts/:user").get(function (req, res) {
   const userID = req.params.user;
   let sql = "";
-  sql += "SELECT documents.documentID as documentID, ";
-  sql += "documents.subject as subject, ";
-  sql += "document_type.type as doc_type ";
-  sql += "FROM documents ";
-  sql += "JOIN document_type ";
-  sql += "ON documents.doc_type = document_type.id ";
-  sql += "WHERE documents.creator = ? ";
-  sql += "AND documents.status = ? ";
-  sql += "ORDER BY documents.date_time_created DESC ";
+  sql += "SELECT a.documentID as documentID, ";
+  sql += "a.subject as subject, ";
+  sql += "b.type as doc_type ";
+  sql += "FROM documents a ";
+  sql += "JOIN document_type b ";
+  sql += "ON a.doc_type = b.id ";
+  sql += "WHERE a.creator = ? ";
+  sql += "AND a.status = ? ";
+  sql += "ORDER BY a.date_time_created DESC ";
 
   connection.query(sql, [userID, "0"], function (err, rows, fields) {
     if (err) {
@@ -1624,23 +1320,23 @@ router.route("/getDrafts/:user").get(function (req, res) {
 router.route("/fetchDocument/:doc_id").get(function (req, res) {
   const doc = req.params.doc_id;
   let sql = "";
-  sql += "SELECT documents.subject as subject, ";
+  sql += "SELECT a.subject as subject, ";
+  sql += "a.note, ";
   sql +=
-    "DATE_FORMAT(documents.date_time_created, '%M %d, %Y @ %h:%i %p') AS date_time_created, ";
-  sql += "users.name AS creator, ";
-  sql += "users.position AS creatorPosition, ";
-  sql += "sections.secshort AS creatorSection, ";
-  sql += "document_type.id as docType_id, ";
-  sql += "document_type.type as type, ";
-  sql += "documents.note ";
-  sql += "FROM documents ";
-  sql += "JOIN document_type ";
-  sql += "ON documents.doc_type = document_type.id ";
-  sql += "JOIN users ";
-  sql += "ON documents.creator = users.user_id ";
-  sql += "JOIN sections ";
-  sql += "ON users.section = sections.secid ";
-  sql += "WHERE documents.documentID = ? ";
+    "DATE_FORMAT(a.date_time_created, '%M %d, %Y @ %h:%i %p') AS date_time_created, ";
+  sql += "b.id as docType_id, ";
+  sql += "b.type as type, ";
+  sql += "c.name AS creator, ";
+  sql += "c.position AS creatorPosition, ";
+  sql += "d.secshort AS creatorSection ";
+  sql += "FROM documents a ";
+  sql += "JOIN document_type b ";
+  sql += "ON a.doc_type = b.id ";
+  sql += "JOIN users c ";
+  sql += "ON a.creator = c.user_id ";
+  sql += "JOIN sections d ";
+  sql += "ON c.section = d.secid ";
+  sql += "WHERE a.documentID = ? ";
   connection.query(sql, [doc], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -1670,19 +1366,20 @@ router.route("/fetchActionReq/:doc_id").get(function (req, res) {
 //Fetch the last person/office/user document forwarder
 router.route("/lastForwarder/:doc_id").get(function (req, res) {
   let sql = "";
-  sql += "SELECT users.name AS sender, ";
-  sql += "sections.secshort AS senderSection, ";
-  sql += "users.position AS senderPosition, ";
-  sql += "documentLogs.remarks AS remarks, ";
-  sql += "documentLogs.destinationType AS destinationType ";
-  sql += "FROM documentLogs ";
-  sql += "JOIN users ";
-  sql += "ON documentLogs.user_id = users.user_id ";
-  sql += "JOIN sections ";
-  sql += "ON users.section = sections.secid ";
-  sql += "WHERE documentLogs.document_id = ? ";
-  sql += "AND documentLogs.status = ? ";
-  sql += "ORDER BY documentLogs.date_time DESC LIMIT 1";
+  sql += "SELECT  ";
+  sql += "a.remarks AS remarks, ";
+  sql += "a.destinationType AS destinationType ";
+  sql += "b.name AS sender, ";
+  sql += "b.position AS senderPosition, ";
+  sql += "c.secshort AS senderSection ";
+  sql += "FROM documentLogs a ";
+  sql += "JOIN users b ";
+  sql += "ON a.user_id = b.user_id ";
+  sql += "JOIN sections c ";
+  sql += "ON b.section = c.secid ";
+  sql += "WHERE a.document_id = ? ";
+  sql += "AND a.status = ? ";
+  sql += "ORDER BY a.date_time DESC LIMIT 1";
 
   connection.query(sql, [req.params.doc_id, "2"], function (err, rows, fields) {
     if (err) {
@@ -1698,32 +1395,32 @@ router.route("/lastForwarder/:doc_id").get(function (req, res) {
 router.route("/fetchUserDocuments/:userID").get(function (req, res) {
   const userID = req.params.userID;
   let sql = "";
-  sql += "SELECT documents.documentID as documentID, ";
-  sql += "documents.subject as subject, ";
-  sql += "document_type.id as docType_id, ";
-  sql += "document_type.type as type, ";
-  sql += "documentLogs.trans_id AS trans_id, ";
-  sql += "documentLogs.document_id AS document_id, ";
-  sql += "documentLogs.maxStatus AS maxStatus, ";
-  sql += "documentLogs.destination AS destination, ";
-  sql += "documentLogs.name AS name, ";
-  sql += "documents.note ";
-  sql += "FROM documents ";
-  sql += "JOIN document_type ";
-  sql += "ON documents.doc_type = document_type.id ";
-  sql += "JOIN (SELECT documentLogs.trans_id AS trans_id, ";
-  sql += "documentLogs.document_id, ";
-  sql += "documentStatus.status AS maxStatus, ";
-  sql += "users.name AS name, ";
-  sql += "documentLogs.destination AS destination  ";
+  sql += "SELECT a.documentID as documentID, ";
+  sql += "a.subject as subject, ";
+  sql += "a.note, ";
+  sql += "b.id as docType_id, ";
+  sql += "b.type as type, ";
+  sql += "c.trans_id AS trans_id, ";
+  sql += "c.document_id AS document_id, ";
+  sql += "c.maxStatus AS maxStatus, ";
+  sql += "c.destination AS destination, ";
+  sql += "c.name AS name ";
+  sql += "FROM documents a ";
+  sql += "JOIN document_type b ";
+  sql += "ON a.doc_type =b.id ";
+  sql += "JOIN (SELECT logs.trans_id AS trans_id, ";
+  sql += "logs.document_id, ";
+  sql += "status.status AS maxStatus, ";
+  sql += "usr.name AS name, ";
+  sql += "logs.destination AS destination  ";
   sql +=
-    "FROM documentLogs JOIN documentStatus ON documentLogs.status = documentStatus.statid ";
-  sql += "JOIN users ON documentLogs.user_id = users.user_id ";
-  sql += "ORDER BY documentLogs.trans_id DESC LIMIT 1) documentLogs ";
-  sql += "ON documents.documentID = documentLogs.document_id ";
-  sql += "WHERE documents.creator = ? ";
-  sql += "AND documents.status = ? ";
-  sql += "ORDER BY documents.date_time_created DESC ";
+    "FROM documentLogs logs JOIN documentStatus status ON logs.status = status.statid ";
+  sql += "JOIN users usr ON logs.user_id = usr.user_id ";
+  sql += "ORDER BY documentLogs.trans_id DESC LIMIT 1) c ";
+  sql += "ON a.documentID = c.document_id ";
+  sql += "WHERE a.creator = ? ";
+  sql += "AND a.status = ? ";
+  sql += "ORDER BY a.date_time_created DESC ";
   connection.query(sql, [userID, "1"], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -1738,31 +1435,31 @@ router.route("/fetchUserDocuments/:userID").get(function (req, res) {
 //SEARCH BY SUBJ
 router.route("/searchUserDocument/:value").get(function (req, res) {
   let sql = "";
-  sql += "SELECT documents.documentID as documentID, ";
-  sql += "documents.subject as subject, ";
-  sql += "document_type.id as docType_id, ";
-  sql += "document_type.type as type, ";
-  sql += "documentLogs.trans_id AS trans_id, ";
-  sql += "documentLogs.document_id AS document_id, ";
-  sql += "documentLogs.maxStatus AS maxStatus, ";
-  sql += "documentLogs.destination AS destination, ";
-  sql += "documentLogs.name AS name, ";
-  sql += "documents.note ";
-  sql += "FROM documents ";
-  sql += "JOIN document_type ";
-  sql += "ON documents.doc_type = document_type.id ";
-  sql += "JOIN (SELECT documentLogs.trans_id AS trans_id, ";
-  sql += "documentLogs.document_id, ";
-  sql += "documentStatus.status AS maxStatus, ";
-  sql += "users.name AS name, ";
-  sql += "documentLogs.destination AS destination  ";
+  sql += "SELECT a.documentID as documentID, ";
+  sql += "a.subject as subject, ";
+  sql += "b.id as docType_id, ";
+  sql += "b.type as type, ";
+  sql += "c.trans_id AS trans_id, ";
+  sql += "c.document_id AS document_id, ";
+  sql += "c.maxStatus AS maxStatus, ";
+  sql += "c.destination AS destination, ";
+  sql += "c.name AS name, ";
+  sql += "a.note ";
+  sql += "FROM documents a ";
+  sql += "JOIN document_type b ";
+  sql += "ON a.doc_type = b.id ";
+  sql += "JOIN (SELECT logs.trans_id AS trans_id, ";
+  sql += "logs.document_id, ";
+  sql += "status.status AS maxStatus, ";
+  sql += "usr.name AS name, ";
+  sql += "logs.destination AS destination  ";
   sql +=
-    "FROM documentLogs JOIN documentStatus ON documentLogs.status = documentStatus.statid ";
-  sql += "JOIN users ON documentLogs.user_id = users.user_id ";
-  sql += "ORDER BY documentLogs.trans_id DESC LIMIT 1) documentLogs ";
-  sql += "ON documents.documentID = documentLogs.document_id ";
-  sql += "WHERE documents.subject LIKE ? ";
-  sql += "ORDER BY documents.date_time_created DESC ";
+    "FROM documentLogs logs JOIN documentStatus status ON logs.status = status.statid ";
+  sql += "JOIN users usr ON logs.user_id = usr.user_id ";
+  sql += "ORDER BY logs.trans_id DESC LIMIT 1) c ";
+  sql += "ON a.documentID = c.document_id ";
+  sql += "WHERE a.subject LIKE ? ";
+  sql += "ORDER BY a.date_time_created DESC ";
   connection.query(sql, ["%" + req.params.value + "%"], function (
     err,
     rows,
@@ -1789,36 +1486,36 @@ router.route("/fetchSectionDocuments/:userID").get(function (req, res) {
     }
 
     let sql = "";
-    sql += "SELECT documents.documentID as documentID, ";
-    sql += "documents.subject as subject, ";
-    sql += "documents.doc_type as docType_id, ";
-    sql += "documents.note as note, ";
-    sql += "document_type.type as docType, ";
-    sql += "documentLogs.trans_id AS trans_id, ";
-    sql += "documentLogs.document_id AS document_id, ";
-    sql += "documentLogs.maxStatus AS maxStatus, ";
-    sql += "documentLogs.destination AS destination, ";
-    sql += "documentLogs.name AS name, ";
-    sql += "documents.creator as creatorID, ";
-    sql += "users.name as creator ";
-    sql += "FROM documents ";
-    sql += "JOIN document_type ";
+    sql += "SELECT a.documentID as documentID, ";
+    sql += "a.subject as subject, ";
+    sql += "a.doc_type as docType_id, ";
+    sql += "a.note as note, ";
+    sql += "b.type as docType, ";
+    sql += "c.trans_id AS trans_id, ";
+    sql += "c.document_id AS document_id, ";
+    sql += "c.maxStatus AS maxStatus, ";
+    sql += "c.destination AS destination, ";
+    sql += "c.name AS name, ";
+    sql += "a.creator as creatorID, ";
+    sql += "d.name as creator ";
+    sql += "FROM documents a ";
+    sql += "JOIN document_type b ";
     sql += "ON documents.doc_type = document_type.id ";
-    sql += "JOIN (SELECT documentLogs.trans_id AS trans_id, ";
-    sql += "documentLogs.document_id, ";
-    sql += "documentStatus.status AS maxStatus, ";
-    sql += "users.name AS name, ";
-    sql += "documentLogs.destination AS destination  ";
+    sql += "JOIN (SELECT logs.trans_id AS trans_id, ";
+    sql += "logs.document_id, ";
+    sql += "status.status AS maxStatus, ";
+    sql += "usr.name AS name, ";
+    sql += "logs.destination AS destination  ";
     sql +=
-      "FROM documentLogs JOIN documentStatus ON documentLogs.status = documentStatus.statid ";
-    sql += "JOIN users ON documentLogs.user_id = users.user_id ";
-    sql += "ORDER BY documentLogs.trans_id DESC LIMIT 1) documentLogs ";
-    sql += "ON documents.documentID = documentLogs.document_id ";
-    sql += "JOIN users ";
-    sql += "ON documents.creator = users.user_id ";
-    sql += "WHERE users.section = ? ";
-    sql += "AND documents.status = ? ";
-    sql += "ORDER BY documents.date_time_created DESC ";
+      "FROM documentLogs logs JOIN documentStatus status ON logs.status = status.statid ";
+    sql += "JOIN users usr ON logs.user_id = usr.user_id ";
+    sql += "ORDER BY logs.trans_id DESC LIMIT 1) c ";
+    sql += "ON a.documentID = c.document_id ";
+    sql += "JOIN users d ";
+    sql += "ON a.creator = d.user_id ";
+    sql += "WHERE d.section = ? ";
+    sql += "AND a.status = ? ";
+    sql += "ORDER BY a.date_time_created DESC ";
     connection.query(sql, [rows[0].section, "1"], function (err, rows, fields) {
       if (err) {
         console.log(err);
@@ -1836,18 +1533,19 @@ router.route("/fetchDocumentDestination/:doc_id").get(function (req, res) {
   const documentID = req.params.doc_id;
   let sql = "";
   sql +=
-    "SELECT documentLogs.remarks AS remarks, documentLogs.document_id AS document_id, ";
+    "SELECT a.remarks AS remarks, a.document_id AS document_id, ";
   sql +=
-    "DATE_FORMAT(documentLogs.date_time, '%c/%d/%y %h:%i %p') AS date_time_receive, ";
-  sql += "users.name AS receiver, ";
-  sql += "documentLogs.user_id AS receiver_id, ";
-  sql += "sections.secshort AS section ";
-  sql += "FROM documentLogs ";
-  sql += "JOIN users ";
-  sql += "ON documentLogs.user_id = users.user_id ";
-  sql += "JOIN sections ON users.section = sections.secid ";
-  sql += "WHERE documentLogs.document_id = ? ";
-  sql += "AND documentLogs.status = ?";
+    "DATE_FORMAT(a.date_time, '%c/%d/%y %h:%i %p') AS date_time_receive, ";
+  sql += "b.name AS receiver, ";
+  sql += "a.user_id AS receiver_id, ";
+  sql += "c.secshort AS section ";
+  sql += "FROM documentLogs a ";
+  sql += "JOIN users b ";
+  sql += "ON a.user_id = b.user_id ";
+  sql += "JOIN sections c ";
+  sql += "ON b.section = c.secid ";
+  sql += "WHERE a.document_id = ? ";
+  sql += "AND a.status = ?";
 
   connection.query(sql, [documentID, "1"], function (err, rows, fields) {
     if (err) {
@@ -1862,9 +1560,11 @@ router.route("/fetchDocumentDestination/:doc_id").get(function (req, res) {
 
 router.route("/fetchDateTimeReleased").post(function (req, res) {
   const { user_id, document_id } = req.body;
-
-  const sql =
-    "SELECT DATE_FORMAT(date_time, '%c/%d/%y %h:%i %p') AS date_time_released FROM documentLogs WHERE user_id = ? AND document_id = ? AND (status = ? || status =?)";
+  let sql = "";
+  sql +=
+    "SELECT DATE_FORMAT(date_time, '%c/%d/%y %h:%i %p') AS date_time_released";
+  sql += "FROM documentLogs ";
+  sql += "WHERE user_id = ? AND document_id = ? AND (status = ? || status =?)";
   connection.query(sql, [user_id, document_id, "2", "4"], function (
     err,
     rows,
@@ -1898,28 +1598,28 @@ router.route("/fetchActionTaken").post(function (req, res) {
 //Fetch Pending Documents
 router.route("/fetchPendingDocument/:user_id").get(function (req, res) {
   let sql = "";
-  sql += "SELECT users.name AS creator, ";
-  sql += "sections.section AS creatorSection, ";
-  sql += "users.position AS creatorPosition, ";
-  sql += "documents.subject AS subject, ";
-  sql += "document_type.type AS doc_type,  ";
-  sql += "documents.note AS note, ";
-  sql += "documentLogs.remarks AS remarks, ";
-  sql += "documentLogs.destinationType AS destinationType, ";
-  sql += "documentLogs.document_id AS documentId ";
-  sql += "FROM documentLogs ";
-  sql += "JOIN documents ";
-  sql += "ON documentLogs.document_id = documents.documentID ";
-  sql += "JOIN document_type ";
-  sql += "ON documents.doc_type = document_type.id ";
-  sql += "JOIN users ";
-  sql += "ON documents.creator = users.user_id ";
-  sql += "JOIN sections ";
-  sql += "ON users.section = sections.secid ";
-  sql += "WHERE documentLogs.user_id = ? ";
-  sql += "AND documentLogs.status = ? ";
-  sql += "AND documentLogs.notification = ? ";
-  sql += "ORDER BY documentLogs.date_time DESC ";
+  sql += "SELECT d.name AS creator, ";
+  sql += "e.section AS creatorSection, ";
+  sql += "d.position AS creatorPosition, ";
+  sql += "b.subject AS subject, ";
+  sql += "c.type AS doc_type,  ";
+  sql += "b.note AS note, ";
+  sql += "a.remarks AS remarks, ";
+  sql += "a.destinationType AS destinationType, ";
+  sql += "a.document_id AS documentId ";
+  sql += "FROM documentLogs a ";
+  sql += "JOIN documents b ";
+  sql += "ON a.document_id = b.documentID ";
+  sql += "JOIN document_type c ";
+  sql += "ON b.doc_type = c.id ";
+  sql += "JOIN users d ";
+  sql += "ON b.creator = d.user_id ";
+  sql += "JOIN sections e ";
+  sql += "ON d.section = e.secid ";
+  sql += "WHERE a.user_id = ? ";
+  sql += "AND a.status = ? ";
+  sql += "AND a.notification = ? ";
+  sql += "ORDER BY a.date_time DESC ";
 
   connection.query(sql, [req.params.user_id, "1", "0"], function (
     err,
@@ -1940,19 +1640,19 @@ router.route("/fetchPendingDocument/:user_id").get(function (req, res) {
 router.route("/notification/:user_section").get(function (req, res) {
   const section = req.params.user_section;
   let sql = "";
-  sql += "SELECT documents.subject AS subject, ";
-  sql += "users.name AS creator, ";
-  sql += "document_type.type AS doc_type, ";
-  sql += "documentLogs.document_id AS documentId ";
-  sql += "FROM documents ";
-  sql += "JOIN users ";
-  sql += "ON documents.creator = users.user_id ";
-  sql += "JOIN document_type ";
-  sql += "ON documents.doc_type = document_type.id ";
-  sql += "JOIN documentLogs ";
-  sql += "ON documents.documentID = documentLogs.document_id ";
-  sql += "WHERE documentLogs.destination = ? ";
-  sql += "AND notification = ? ";
+  sql += "SELECT a.subject AS subject, ";
+  sql += "b.name AS creator, ";
+  sql += "d.type AS doc_type, ";
+  sql += "e.document_id AS documentId ";
+  sql += "FROM documents a ";
+  sql += "JOIN users b ";
+  sql += "ON a.creator = b.user_id ";
+  sql += "JOIN document_type d ";
+  sql += "ON a.doc_type = d.id ";
+  sql += "JOIN documentLogs e ";
+  sql += "ON a.documentID = e.document_id ";
+  sql += "WHERE e.destination = ? ";
+  sql += "AND e.notification = ? ";
   connection.query(sql, [section, "0"], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -2088,16 +1788,16 @@ router.route("/searchBySubject/:subj").get(function (req, res) {
   let subj = req.params.subj;
   let sql = "";
   sql +=
-    "SELECT documents.documentId AS documentId, documents.subject AS subject, ";
-  sql += "users.name AS creator, ";
-  sql += "users.position AS creatorPosition, ";
-  sql += "sections.section AS creatorSection ";
-  sql += "FROM documents ";
-  sql += "JOIN users ";
-  sql += "ON documents.creator = users.user_id ";
-  sql += "JOIN sections ";
-  sql += "ON users.section = sections.secid ";
-  sql += "WHERE subject LIKE ? ORDER BY documents.date_time_created DESC";
+    "SELECT a.documentId AS documentId, a.subject AS subject, ";
+  sql += "b.name AS creator, ";
+  sql += "b.position AS creatorPosition, ";
+  sql += "d.section AS creatorSection ";
+  sql += "FROM documents a ";
+  sql += "JOIN users b ";
+  sql += "ON a.creator = b.user_id ";
+  sql += "JOIN sections d ";
+  sql += "ON b.section = d.secid ";
+  sql += "WHERE a.subject LIKE ? ORDER BY a.date_time_created DESC";
 
   connection.query(sql, ["%" + subj + "%"], function (err, rows, fields) {
     if (err) {

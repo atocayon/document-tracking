@@ -186,7 +186,7 @@ function DocumentLogs(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {doc.rows
+            {doc.rows.length > 0 && doc.rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => (
                 <Row
