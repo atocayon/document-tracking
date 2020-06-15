@@ -234,9 +234,7 @@ function AddDocument({
         destination,
         internal,
         "2",
-        "0",
-          "0",
-          "0"
+        "0"
       );
 
       await addDocumentDestination(_destination);
@@ -263,9 +261,7 @@ function AddDocument({
         destination,
         external,
         "2",
-        "0",
-          "0",
-          "0"
+        "0"
       );
       await addDocumentDestination(_destination);
       await clearExternalDestinationInput();
@@ -323,9 +319,7 @@ function AddDocument({
       destination,
       "none",
       "5",
-      "0",
-        "0",
-        "0"
+      "0"
     ]);
 
     setFinalize(true);
@@ -467,10 +461,11 @@ function AddDocument({
                   <div className={"col-md-8"}>
                     {finalize ? (
                       <FinalizeDocument
+                          depshort={user.depshort}
                         trackingNumber={
                           match.params.id
                             ? match.params.id
-                            : documentId && documentId.documentID
+                            : documentId.documentID && documentId.documentID
                         }
                         data={addDocument}
                         documentType={documentType}
@@ -487,20 +482,19 @@ function AddDocument({
                           </h5>
                           <br />
                         </div>
-                        <InputField
-                          id={"tackDocument"}
-                          label={"Tracking Number"}
-                          variant={"outlined"}
-                          disabled={true}
-                          value={
-                            match.params.id
-                              ? match.params.id
-                              : (documentId && documentId.documentID) || ""
-                          }
-                          type={"number"}
-                        />
-                        <br />
-                        <br />
+                        {/*<InputField*/}
+                        {/*  id={"tackDocument"}*/}
+                        {/*  label={"Tracking Number"}*/}
+                        {/*  variant={"outlined"}*/}
+                        {/*  disabled={true}*/}
+                        {/*  value={*/}
+                        {/*    match.params.id*/}
+                        {/*      ? match.params.id*/}
+                        {/*      : documentId || ""*/}
+                        {/*  }*/}
+                        {/*  type={"text"}*/}
+                        {/*/>*/}
+
                         <InputField
                           id={"tackDocument"}
                           label={"Subject"}
@@ -659,14 +653,14 @@ function AddDocument({
                             marginTop: 50,
                           }}
                         >
-                          <button
-                            className={"btn btn-outline-info"}
-                            onClick={handleSaveAsDraft}
-                          >
-                            <DraftsIcon />
-                            &nbsp;Save as Draft
-                          </button>
-                          &nbsp;&nbsp;&nbsp;
+                          {/*<button*/}
+                          {/*  className={"btn btn-outline-info"}*/}
+                          {/*  onClick={handleSaveAsDraft}*/}
+                          {/*>*/}
+                          {/*  <DraftsIcon />*/}
+                          {/*  &nbsp;Save as Draft*/}
+                          {/*</button>*/}
+                          {/*&nbsp;&nbsp;&nbsp;*/}
                           <button
                             className={"btn btn-info"}
                             onClick={handleSubmit}

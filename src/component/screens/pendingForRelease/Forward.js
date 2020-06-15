@@ -10,6 +10,10 @@ import DescriptionIcon from "@material-ui/icons/Description";
 import Radio from "@material-ui/core/Radio";
 import InputField from "../../common/textField/InputField";
 import SelectField from "../../common/selectField/SelectField";
+import Chip from "@material-ui/core/Chip";
+import Avatar from "@material-ui/core/Avatar";
+import BusinessIcon from "@material-ui/icons/Business";
+
 export default function Forward(props) {
   const options = [];
   for (let i = 0; i < props.sections.length; i++) {
@@ -62,6 +66,13 @@ export default function Forward(props) {
                 options={options}
                 onChange={props.onChangeDestination}
               />
+              <br/>
+              <button
+                  className={"btn btn-sm btn-primary"}
+                  onClick={props.addForwardDestination}
+              >
+                Add
+              </button>
             </>
           )}
           {props.selectedValue === "External" && (
@@ -75,11 +86,39 @@ export default function Forward(props) {
                 onChange={props.onChangeDestination}
                 value={props.value.destination}
               />
+              <br/>
+              <br/>
+              <button
+                  className={"btn btn-sm btn-primary"}
+                  onClick={props.addForwardDestination}
+              >
+                Add
+              </button>
             </>
           )}
+
+          <br/>
+          <br/>
+          {props.value.des.length > 0 &&
+          props.value.des.map((des, index) => (
+              <Chip
+                  key={index}
+                  avatar={
+                    <Avatar>
+                      <BusinessIcon />
+                    </Avatar>
+                  }
+                  label={des}
+                  onDelete={(event) => {
+                    event.stopPropagation();
+                    props.removeForwardDestination(index);
+                  }}
+              />
+          ))}
+          <br/>
+
           {props.selectedValue && (
             <>
-              <br />
               <br />
               <InputField
                 id={"remarks"}
@@ -91,6 +130,9 @@ export default function Forward(props) {
               />
             </>
           )}
+
+          <br/>
+
         </DialogContent>
         <DialogActions>
           <Button onClick={props.handleClose} color="primary">

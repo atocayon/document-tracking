@@ -157,10 +157,10 @@ export default function SideBarNavigation(props) {
               <ListItemComponent primary="Drafts" className={classes.nested} />
               <ListItemComponent primary="Pending" className={classes.nested} pending={pending} />
 
-              <ListItemComponent
-                primary="My Documents"
-                className={classes.nested}
-              />
+              {/*<ListItemComponent*/}
+              {/*  primary="My Documents"*/}
+              {/*  className={classes.nested}*/}
+              {/*/>*/}
 
               <ListItemComponent
                 primary="Section Documents"

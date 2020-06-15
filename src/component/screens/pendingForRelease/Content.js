@@ -66,12 +66,7 @@ export default class Content extends Component {
                   type={"text"}
                   // variant={"outlined"}
                   value={
-                    this.props.pendingDocumentInfo.creator +
-                      ", " +
-                      this.props.pendingDocumentInfo.creatorPosition +
-                      " (" +
-                      this.props.pendingDocumentInfo.creatorSection +
-                      ")" || ""
+                      this.props.pendingDocumentInfo.creatorSection || ""
                   }
                 />
               </div>

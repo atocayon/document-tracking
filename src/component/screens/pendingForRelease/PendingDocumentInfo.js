@@ -31,6 +31,8 @@ import AddIcon from "@material-ui/icons/Add";
 import Content from "./Content";
 import ReactToPrint from "react-to-print";
 import PrintIcon from "@material-ui/icons/Print";
+import {addForwardDestination} from "../../../redux/actions/onChangForwardDocument";
+import {removeForwardDestination} from "../../../redux/actions/onChangForwardDocument";
 
 function PendingDocumentInfo(props) {
   const [open, setOpen] = useState(true);
@@ -99,7 +101,7 @@ function PendingDocumentInfo(props) {
       token,
       props.forwardDocument.remarks,
       selectedValue,
-      props.forwardDocument.destination,
+      props.forwardDocument.des,
       "2"
     );
   };
@@ -116,6 +118,12 @@ function PendingDocumentInfo(props) {
     );
   };
 
+  const _addForwardDestination = async (e) => {
+    e.preventDefault();
+    await props.addForwardDestination(props.forwardDocument.destination);
+  };
+
+
   return (
     <Grid container spacing={3}>
       <Forward
@@ -127,6 +135,8 @@ function PendingDocumentInfo(props) {
         onChangeDestination={props.onChangeForwardDocument}
         value={props.forwardDocument}
         handleForward={handleForward}
+        addForwardDestination={_addForwardDestination}
+        removeForwardDestination={props.removeForwardDestination}
       />
       <Completed
         open={completedDialog}
@@ -222,6 +232,8 @@ const mapStateToProps = {
   onChangeForwardDocument,
   changeDocumentDestination,
   afterDocumentReceive,
+  addForwardDestination,
+  removeForwardDestination
 };
 
 export default connect(
