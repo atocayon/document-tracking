@@ -134,9 +134,7 @@ function SectionDocuments(props) {
 
           {props.sectionDocuments.length === 0 && (
             <div style={{ textAlign: "center", marginTop: 200 }}>
-              <h6 style={{ color: "#9E9E9E" }}>
-                No documents found
-              </h6>
+              <h6 style={{ color: "#9E9E9E" }}>No documents found</h6>
             </div>
           )}
           <div style={{ marginLeft: 50, marginRight: 10 }}>
@@ -154,10 +152,6 @@ function SectionDocuments(props) {
                           document.creatorID === userID
                             ? "You"
                             : document.creator;
-                        let status =
-                          document.maxStatus === "forwarded"
-                            ? document.maxStatus + " to " + document.destination
-                            : document.maxStatus + " by " + document.name;
                         return (
                           <Link
                             to={"/doc/" + document.documentID}
@@ -172,11 +166,7 @@ function SectionDocuments(props) {
                               <ListItemText
                                 primary={document.subject}
                                 secondary={
-                                  document.docType +
-                                  " by " +
-                                  secondaryText +
-                                  " - Status: " +
-                                  status
+                                  document.docType + " by " + secondaryText
                                 }
                               />
                             </ListItem>

@@ -22,10 +22,12 @@ import ReactToPrint from "react-to-print";
 import PrintIcon from "@material-ui/icons/Print";
 import BarcodeComponent from "../../common/barcode/BarcodeComponent";
 
-
 class FinalizeDocument extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      counter: 1,
+    };
   }
 
   render() {
@@ -57,10 +59,15 @@ class FinalizeDocument extends Component {
           <div style={{ textAlign: "left" }}>
             <small>&nbsp;&nbsp;DOCUMENT TRACKING NUMBER</small>
           </div>
-          <BarcodeComponent
-            ref={(el) => (this.componentRef = el)}
-            trackingNumber={this.props.trackingNumber.toString()}
-          />
+          <div ref={(el) => (this.componentRef = el)}>
+            {destination.map((data, index) => {
+              return (
+                <BarcodeComponent
+                  trackingNumber={this.props.trackingNumber + "-" + ++index}
+                />
+              );
+            })}
+          </div>
 
           <br />
           <br />
@@ -158,24 +165,23 @@ class FinalizeDocument extends Component {
             </button>
             &nbsp;&nbsp;&nbsp;
             <ReactToPrint
-                onBeforePrint={this.props.handleRelease}
-                trigger={() => {
-                  // NOTE: could just as easily return <SomeComponent />. Do NOT pass an `onClick` prop
-                  // to the root node of the returned component as it will be overwritten.
-                  return (
-                      <a
-                          href={"#"}
-                          className={"btn btn-info"}
-                          title={"Print this barcode"}
-                      >
-                        <SendIcon />
-                        &nbsp;&nbsp;Release
-                      </a>
-                  );
-                }}
-                content={() => this.componentRef}
+              onBeforePrint={this.props.handleRelease}
+              trigger={() => {
+                // NOTE: could just as easily return <SomeComponent />. Do NOT pass an `onClick` prop
+                // to the root node of the returned component as it will be overwritten.
+                return (
+                  <a
+                    href={"#"}
+                    className={"btn btn-info"}
+                    title={"Print this barcode"}
+                  >
+                    <SendIcon />
+                    &nbsp;&nbsp;Release
+                  </a>
+                );
+              }}
+              content={() => this.componentRef}
             />
-
             &nbsp;&nbsp;&nbsp;
           </div>
         </div>

@@ -1,5 +1,5 @@
 import actionTypes from "./actionTypes";
-import Reactotron from "reactotron-react-js";
+
 export function clearAddNewDocumentInput() {
   return function (dispatch) {
     return dispatch({ type: actionTypes.CLEAR_DESTINATION });

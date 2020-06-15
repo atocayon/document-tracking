@@ -6,6 +6,6 @@ export default class BarcodeComponent extends Component {
         super(props);
     }
     render() {
-        return <Barcode value={this.props.trackingNumber} height={40} />;
+        return <Barcode  format="CODE128" value={this.props.trackingNumber} height={40} />;
     }
 }
