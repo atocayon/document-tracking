@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 09, 2020 at 07:18 AM
+-- Generation Time: Jun 16, 2020 at 05:23 AM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.1
 
@@ -21,7 +21,7 @@ SET time_zone = "+00:00";
 --
 -- Database: `documentTracking`
 --
-CREATE DATABASE documentTracking;USE documentTracking;
+
 -- --------------------------------------------------------
 
 --
@@ -53,30 +53,15 @@ INSERT INTO `divisions` (`depid`, `department`, `depshort`, `payrollshort`) VALU
 
 CREATE TABLE `documentLogs` (
   `trans_id` int(11) NOT NULL,
-  `document_id` varchar(11) NOT NULL,
+  `document_id` varchar(50) NOT NULL,
   `user_id` varchar(11) NOT NULL,
   `remarks` varchar(120) NOT NULL,
   `destinationType` varchar(120) NOT NULL,
   `destination` varchar(120) NOT NULL,
   `status` varchar(11) NOT NULL,
   `notification` varchar(11) NOT NULL,
-  `date_time` datetime NOT NULL DEFAULT current_timestamp(),
-  `level` varchar(11) NOT NULL,
-  `ref` varchar(11) NOT NULL
+  `date_time` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `documentLogs`
---
-
-INSERT INTO `documentLogs` (`trans_id`, `document_id`, `user_id`, `remarks`, `destinationType`, `destination`, `status`, `notification`, `date_time`, `level`, `ref`) VALUES
-(1, '1000000000', '49', 'none', 'Internal', 'none', '5', '0', '2020-06-09 09:19:10', '0', '0'),
-(2, '1000000000', '49', 'none', 'Internal', 'MRDD', '2', '0', '2020-06-09 09:19:10', '0', '0'),
-(3, '1000000000', '59', 'none', 'Internal', 'none', '1', '1', '2020-06-09 09:19:28', '0', '2'),
-(4, '1000000000', '59', 'qwerty', '', 'none', '4', '0', '2020-06-09 10:35:34', '0', '2'),
-(5, '1000000001', '49', 'none', 'Internal', 'none', '5', '0', '2020-06-09 13:01:56', '0', '0'),
-(6, '1000000001', '49', 'none', 'Internal', 'IMS', '2', '0', '2020-06-09 13:01:56', '0', '0'),
-(7, '1000000001', '58', 'none', 'Internal', 'none', '1', '0', '2020-06-09 13:05:03', '0', '6');
 
 -- --------------------------------------------------------
 
@@ -85,22 +70,15 @@ INSERT INTO `documentLogs` (`trans_id`, `document_id`, `user_id`, `remarks`, `de
 --
 
 CREATE TABLE `documents` (
-  `documentID` int(11) NOT NULL,
+  `documentID` varchar(50) NOT NULL,
   `creator` varchar(11) NOT NULL,
   `subject` varchar(200) NOT NULL,
   `doc_type` varchar(11) NOT NULL,
   `note` varchar(200) NOT NULL,
   `date_time_created` timestamp NOT NULL DEFAULT current_timestamp(),
-  `status` varchar(11) NOT NULL
+  `status` varchar(11) NOT NULL,
+  `ref` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `documents`
---
-
-INSERT INTO `documents` (`documentID`, `creator`, `subject`, `doc_type`, `note`, `date_time_created`, `status`) VALUES
-(1000000000, '49', 'Sample Doc', '12', 'Amet facere mollit ', '2020-06-09 01:19:10', '1'),
-(1000000001, '49', '361', '6', 'Maxime reprehenderit', '2020-06-09 05:01:56', '1');
 
 -- --------------------------------------------------------
 
@@ -140,20 +118,6 @@ CREATE TABLE `document_action_req` (
   `documentID` varchar(11) NOT NULL,
   `action_req` varchar(120) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `document_action_req`
---
-
-INSERT INTO `document_action_req` (`document_action_req_id`, `documentID`, `action_req`) VALUES
-(1, '1000000000', 'For Endorsement'),
-(2, '1000000000', 'For Action'),
-(3, '1000000001', 'For Approval'),
-(4, '1000000001', 'For Signature'),
-(5, '1000000001', 'For Recommendation'),
-(6, '1000000001', 'For Action'),
-(7, '1000000001', 'For Comment'),
-(8, '1000000001', 'For Information');
 
 -- --------------------------------------------------------
 
@@ -332,7 +296,7 @@ INSERT INTO `users_session` (`id`, `userId`, `timeStamp`, `isDeleted`) VALUES
 (2, '49', '2020-06-09 05:02:02', '1'),
 (3, '50', '2020-06-01 07:37:56', '1'),
 (4, '51', '2020-06-08 06:55:46', '1'),
-(5, '52', '2020-06-09 00:00:04', '1'),
+(5, '52', '2020-06-16 02:50:34', '1'),
 (6, '53', '2020-06-01 07:38:03', '1'),
 (7, '57', '2020-05-29 02:45:30', '1'),
 (8, '58', '2020-06-09 05:02:13', '0'),
@@ -452,7 +416,7 @@ ALTER TABLE `divisions`
 -- AUTO_INCREMENT for table `documentLogs`
 --
 ALTER TABLE `documentLogs`
-  MODIFY `trans_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `trans_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `documentStatus`
@@ -464,7 +428,7 @@ ALTER TABLE `documentStatus`
 -- AUTO_INCREMENT for table `document_action_req`
 --
 ALTER TABLE `document_action_req`
-  MODIFY `document_action_req_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `document_action_req_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `document_type`
