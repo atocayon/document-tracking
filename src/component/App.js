@@ -46,7 +46,7 @@ function App(props) {
           <Route path={"/receiveDocument"} component={ReceiveDocument} />
           <Route path={"/releasedDocument"} component={ReleaseDocument} />
           <Route path={"/pending"} component={PendingForRelease} />
-          <Route path={"/myDocuments"} component={MyDocuments} />
+          <Route path={"/doc_category"} component={MyDocuments} />
           <Route path={"/sectionDocuments"} component={SectionDocuments} />
           <Route path={"/processedDocuments"} component={ProcessedDocuments} />
           <Route path={"/user/:id"} component={Profile} />

@@ -27,7 +27,7 @@ export default function ListItemComponent(props) {
       return <QueryBuilderIcon />;
     }
 
-    if (props.primary === "My Documents") {
+    if (props.primary === "Manage Document Category") {
       return <DescriptionIcon />;
     }
 
@@ -68,8 +68,8 @@ export default function ListItemComponent(props) {
       return "/pending";
     }
 
-    if (props.primary === "My Documents") {
-      return "/myDocuments";
+    if (props.primary === "Manage Document Category") {
+      return "/doc_category";
     }
 
     if (props.primary === "Section Documents") {
