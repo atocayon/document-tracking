@@ -168,6 +168,11 @@ io.on("connection", (socket) => {
     addNewDocCategory(token, category, callback);
   });
 
+  //Fetch Document Category
+  socket.on("fetchDocumentCategory", (token, callback) => {
+    fetchDocumentCategory(token, callback);
+  });
+
   socket.on("disconnect", () => {
     console.log("Disconnected");
     socket.emit("Hey, are you still there?");
@@ -179,10 +184,41 @@ io.on("connection", (socket) => {
 //------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------
 
+//Fetch Document Category
+const fetchDocumentCategory = (token, callback) => {
+  const fetchSection = "SELECT a.section FROM users a WHERE a.user_id = ?";
+  connection.query(fetchSection, [token], function (
+    err,
+    rows,
+    fields
+  ) {
+    if (err) {
+      console.log(err);
+      return callback("server error");
+    }
+    const fetchSectionCategory =
+      "SELECT a.category AS category FROM doc_category a WHERE a.section_id = ?";
+
+    connection.query(fetchSectionCategory, [
+      rows[0].section], function (err, rows, fields) {
+      if (err) {
+        console.log(err);
+        return callback("server error");
+      }
+      console.log(rows);
+      io.emit("sectionDocCategory", rows);
+    });
+  });
+};
+
 //Add New Document Category
 const addNewDocCategory = (token, category, callback) => {
   const fetchSection = "SELECT a.section FROM users a WHERE a.user_id = ?";
-  connection.query(fetchSection, [token], function (err, rows, fields) {
+  connection.query(fetchSection, [token], function (
+    err,
+    rows,
+    fields
+  ) {
     if (err) {
       console.log(err);
       return callback("server error");
@@ -195,7 +231,7 @@ const addNewDocCategory = (token, category, callback) => {
         console.log(err);
         return callback("server error");
       }
-
+      fetchDocumentCategory(token, callback);
       return callback("inserted");
     });
   });

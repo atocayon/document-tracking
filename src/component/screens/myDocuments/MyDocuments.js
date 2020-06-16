@@ -17,7 +17,12 @@ import InputField from "../../common/textField/InputField";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
 import { addNewDocCategory } from "../../../redux/actions/manageDocumentCategory";
-
+import { fetchDocCategory } from "../../../redux/actions/manageDocumentCategory";
+import TableBody from "@material-ui/core/TableBody";
+import TablePagination from "@material-ui/core/TablePagination";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+import DescriptionIcon from "@material-ui/icons/Description";
 let socket;
 const tableHead = ["Document Categories", ""];
 
@@ -34,17 +39,15 @@ function MyDocuments(props) {
     if (obj && obj.token) {
       const { token } = obj;
       setToken(token);
-      async function fetch() {}
+      async function fetch() {
+        await props.fetchDocCategory(token, socket);
+      }
       fetch().catch((err) => {
         throw err;
       });
     }
     setEndSession(!(obj && obj.token));
-
-    if (props.insert !== ""){
-      if (props.insert === "success"){}
-    }
-  }, [props.insert]);
+  }, [socket]);
 
   const handleClick = () => {
     setOpen(!open);
@@ -56,7 +59,16 @@ function MyDocuments(props) {
 
   const handleSubmitNewDocumentCategory = async (e) => {
     e.preventDefault();
-    await props.addNewDocCategory(token, category,socket);
+    await props.addNewDocCategory(token, category, socket);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
   };
 
   return (
@@ -101,7 +113,7 @@ function MyDocuments(props) {
                       variant={"outlined"}
                       onChange={handleOnChangeAddNewDocCategory}
                       // error={error.email}
-                      type={"text"}
+                      type={"search"}
                     />
                     <br />
                     <br />
@@ -121,12 +133,55 @@ function MyDocuments(props) {
                     <TableHead>
                       <TableRow>
                         {tableHead.map((column, index) => (
-                          <TableCell key={index}>{column}</TableCell>
+                          <TableCell
+                            style={{ color: "#2196F3", fontWeight: "bold" }}
+                            key={index}
+                          >
+                            {index === 0 && <DescriptionIcon />} {column}
+                          </TableCell>
                         ))}
                       </TableRow>
                     </TableHead>
+                    <TableBody>
+                      {props.doc_category.length > 0 &&
+                        props.doc_category
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .map((data) => (
+                            <TableRow
+                              hover
+                              role="checkbox"
+                              tabIndex={-1}
+                              key={data.category}
+                            >
+                              <TableCell key={data.category}>
+                                {data.category}
+                              </TableCell>
+                              <TableCell key={data.category}>
+                                <button className={"btn btn-sm"}>
+                                  <EditIcon />
+                                </button>
+                                &nbsp;&nbsp;&nbsp;
+                                <button className={"btn btn-sm"}>
+                                  <DeleteIcon />
+                                </button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                    </TableBody>
                   </Table>
                 </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25, 100]}
+                  component="div"
+                  count={props.doc_category.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onChangePage={handleChangePage}
+                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                />
               </div>
             </div>
           </div>
@@ -140,12 +195,13 @@ function MyDocuments(props) {
 function mapStateToProps(state) {
   return {
     doc_category: state.manageDocumentCategory,
-    insert: state.addNewDocCategory
+    insert: state.addNewDocCategory,
   };
 }
 
 const mapDispatchToProps = {
   addNewDocCategory,
+  fetchDocCategory,
 };
 
 export default connect(
