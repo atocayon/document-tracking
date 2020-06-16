@@ -159,11 +159,6 @@ export default function SideBarNavigation(props) {
               <ListItemComponent primary="Drafts" className={classes.nested} />
               <ListItemComponent primary="Pending" className={classes.nested} pending={pending} />
 
-              {/*<ListItemComponent*/}
-              {/*  primary="My Documents"*/}
-              {/*  className={classes.nested}*/}
-              {/*/>*/}
-
               <ListItemComponent
                 primary="Section Documents"
                 className={classes.nested}
@@ -177,7 +172,9 @@ export default function SideBarNavigation(props) {
           </Collapse>
         </List>
         <Divider />
-
+        <List component="nav" aria-label="secondary mailbox folders">
+          <ListItemComponent primary="Manage Document Category" />
+        </List>
         <List component="nav" aria-label="secondary mailbox folders">
           <ListItemComponent primary="User Management" />
         </List>
@@ -189,6 +186,8 @@ export default function SideBarNavigation(props) {
         <List component="nav" aria-label="secondary mailbox folders">
           <ListItemComponent primary="About" />
         </List>
+
+
       </div>
     </>
   );

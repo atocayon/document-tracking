@@ -37,6 +37,7 @@ import onClickTrackShowMore from "./onClickTrackShowMore";
 import fetchUserDocuments from "./fetchUserDocuments";
 import fetchSectionDocuments from "./fetchSectionDocuments";
 import fetchDocumentInfo from "./fetchDocumentInfo";
+import manageDocumentCategory from "./manageDocumentCategory";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -75,7 +76,8 @@ const rootReducer = combineReducers({
   onClickTrackShowMore: onClickTrackShowMore,
   fetchUserDocuments: fetchUserDocuments,
   fetchSectionDocuments: fetchSectionDocuments,
-  fetchDocumentInfo: fetchDocumentInfo
+  fetchDocumentInfo: fetchDocumentInfo,
+  manageDocumentCategory: manageDocumentCategory
 });
 
 export default rootReducer;

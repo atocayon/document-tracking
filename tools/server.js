@@ -163,6 +163,11 @@ io.on("connection", (socket) => {
     countPending(user_id, socket);
   });
 
+  //Add New Document Category
+  socket.on("addNewDocumentCategory", (token, category, callback) => {
+    addNewDocCategory(token, category, callback);
+  });
+
   socket.on("disconnect", () => {
     console.log("Disconnected");
     socket.emit("Hey, are you still there?");
@@ -173,6 +178,28 @@ io.on("connection", (socket) => {
 //------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------
+
+//Add New Document Category
+const addNewDocCategory = (token, category, callback) => {
+  const fetchSection = "SELECT a.section FROM users a WHERE a.user_id = ?";
+  connection.query(fetchSection, [token], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      return callback("server error");
+    }
+
+    const sql = "INSERT INTO doc_category(section_id, category) VALUES ?";
+    const value = [[rows[0].section, category]];
+    connection.query(sql, [value], function (err, result) {
+      if (err) {
+        console.log(err);
+        return callback("server error");
+      }
+
+      return callback("inserted");
+    });
+  });
+};
 
 //Add User
 const addUser = (
@@ -509,7 +536,7 @@ const insertDocument = (
                 documentLogs[0][5],
                 documentLogs[0][6],
                 dateTime,
-              ]
+              ],
             ];
             connection.query(sql5, [values5], function (err, result) {
               if (err) {
