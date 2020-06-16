@@ -40,7 +40,11 @@ function MyDocuments(props) {
       });
     }
     setEndSession(!(obj && obj.token));
-  }, []);
+
+    if (props.insert !== ""){
+      if (props.insert === "success"){}
+    }
+  }, [props.insert]);
 
   const handleClick = () => {
     setOpen(!open);
@@ -136,6 +140,7 @@ function MyDocuments(props) {
 function mapStateToProps(state) {
   return {
     doc_category: state.manageDocumentCategory,
+    insert: state.addNewDocCategory
   };
 }
 

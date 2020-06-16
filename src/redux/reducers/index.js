@@ -38,6 +38,7 @@ import fetchUserDocuments from "./fetchUserDocuments";
 import fetchSectionDocuments from "./fetchSectionDocuments";
 import fetchDocumentInfo from "./fetchDocumentInfo";
 import manageDocumentCategory from "./manageDocumentCategory";
+import addNewDocCategory from "./addNewDocCategory";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -77,7 +78,8 @@ const rootReducer = combineReducers({
   fetchUserDocuments: fetchUserDocuments,
   fetchSectionDocuments: fetchSectionDocuments,
   fetchDocumentInfo: fetchDocumentInfo,
-  manageDocumentCategory: manageDocumentCategory
+  manageDocumentCategory: manageDocumentCategory,
+  addNewDocCategory: addNewDocCategory
 });
 
 export default rootReducer;
