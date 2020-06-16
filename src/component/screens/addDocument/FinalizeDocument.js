@@ -60,7 +60,7 @@ class FinalizeDocument extends Component {
             <small>&nbsp;&nbsp;DOCUMENT TRACKING NUMBER</small>
           </div>
           <div ref={(el) => (this.componentRef = el)}>
-            {this.props.data.destination > 1 ? this.props.data.destination.map((data, index) => {
+            {this.props.data.destination.length > 1 ? this.props.data.destination.map((data, index) => {
               return (
                 <BarcodeComponent
                   trackingNumber={this.props.trackingNumber + "-" + ++index}
