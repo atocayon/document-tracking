@@ -64,7 +64,7 @@ export default function UserList(props) {
                   }}
                   variant="dot"
                 >
-                  <Avatar alt={data.name} />
+                  <Avatar alt={data.name} src="/static/images/avatar/1.jpg" />
                 </StyledBadge>
               </ListItemAvatar>
               <ListItemText

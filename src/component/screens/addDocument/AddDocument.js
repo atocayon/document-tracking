@@ -312,15 +312,15 @@ function AddDocument({
       enqueueSnackbar("Fill out all required fields...", { variant });
       return;
     }
-    await logDocumentCreator([
-      match.params.id ? match.params.id : documentId && documentId.documentID,
-      user.user_id,
-      "none",
-      destination,
-      "none",
-      "5",
-      "0"
-    ]);
+    // await logDocumentCreator([
+    //   match.params.id ? match.params.id : documentId && documentId.documentID,
+    //   user.user_id,
+    //   "none",
+    //   destination,
+    //   "none",
+    //   "5",
+    //   "0"
+    // ]);
 
     setFinalize(true);
   };

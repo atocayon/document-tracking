@@ -26,9 +26,11 @@ const useStyles = makeStyles(theme => ({
     display: "none",
     width: "100%",
     height: "100vh",
+    overflow: "auto",
     maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
     marginTop: 50,
+    paddingBottom: 100,
     paddingLeft: theme.spacing(2),
     [theme.breakpoints.up("lg")]: {
       display: "block"
