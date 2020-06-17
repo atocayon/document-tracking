@@ -19,8 +19,8 @@ import RegistrationForm from "./screens/newUserForm/RegistrationForm";
 import NotFoundPage from "./screens/pageNotfound/NotFoundPage";
 import UserManagement from "./screens/userManagement/UserManagement";
 import UpdateProfile from "./screens/updateProfile/UpdateProfile";
+import UserFolder from "./screens/folder/UsersFolder";
 import { getFromStorage } from "./storage";
-
 import { withSnackbar } from "notistack";
 import Drafts from "./screens/drafts/Drafts";
 import DocumentInfo from "./screens/documentInfo/DocumentInfo";
@@ -57,7 +57,7 @@ function App(props) {
           <Route path={"/drafts"} component={Drafts} />
           <Route path={"/doc/:doc_id"} component={DocumentInfo} />
           <Route path={"/pending_doc/:doc_id"} component={PendingDocumentInfo} />
-
+          <Route path={"/folder/:folder"} component={UserFolder} />
           <Route component={NotFoundPage} />
         </Switch>
       </div>

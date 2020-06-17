@@ -53,6 +53,7 @@ import { clearAddDocumentMessage } from "../../../redux/actions/addNewDocument";
 import { clearDraftsMessage } from "../../../redux/actions/addNewDocumentDraft";
 import { fetchActiveUserList } from "../../../redux/actions/fetchActiveUserList";
 import { logout } from "../../../redux/actions/logout";
+import {fetchDocCategory} from "../../../redux/actions/manageDocumentCategory";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
 import UserList from "../../common/userList/UserList";
@@ -95,6 +96,9 @@ function AddDocument({
   userActiveList,
   logout,
   _logout,
+  fetchDocCategory,
+  doc_category,
+                       section_doc_category
 }) {
   const checkboxItem = [
     { id: 0, value: "For Approval" },
@@ -133,6 +137,7 @@ function AddDocument({
         await fetchUserById(token);
         await fetchDocumentTypes();
         await fetchAllSections();
+        await fetchDocCategory(token, socket);
         if (match.params.id) {
           await fetchDocumentById(match.params.id);
           await fetchDocumentActionRequired(match.params.id);
@@ -188,15 +193,15 @@ function AddDocument({
       }
     }
 
-    if (_logout !== null){
-      if(_logout === "false"){
+    if (_logout !== null) {
+      if (_logout === "false") {
         const variant = "error";
         enqueueSnackbar("Error logging out", {
           variant,
         });
       }
 
-      if (_logout === "true"){
+      if (_logout === "true") {
         window.location.reload(true);
       }
     }
@@ -452,7 +457,7 @@ function AddDocument({
                   <div className={"col-md-8"}>
                     {finalize ? (
                       <FinalizeDocument
-                          depshort={user.depshort}
+                        depshort={user.depshort}
                         trackingNumber={
                           match.params.id
                             ? match.params.id
@@ -463,6 +468,7 @@ function AddDocument({
                         handleGoBack={handleGoBack}
                         handleRelease={handleRelease}
                         documentDestination={destination}
+                        section_doc_category={section_doc_category}
                       />
                     ) : (
                       <>
@@ -473,19 +479,6 @@ function AddDocument({
                           </h5>
                           <br />
                         </div>
-                        {/*<InputField*/}
-                        {/*  id={"tackDocument"}*/}
-                        {/*  label={"Tracking Number"}*/}
-                        {/*  variant={"outlined"}*/}
-                        {/*  disabled={true}*/}
-                        {/*  value={*/}
-                        {/*    match.params.id*/}
-                        {/*      ? match.params.id*/}
-                        {/*      : documentId || ""*/}
-                        {/*  }*/}
-                        {/*  type={"text"}*/}
-                        {/*/>*/}
-
                         <InputField
                           id={"tackDocument"}
                           label={"Subject"}
@@ -508,6 +501,17 @@ function AddDocument({
                           name={"documentType"}
                           label={"Document Type"}
                           options={documentType}
+                          error={error.documentType}
+                          onChange={addDocumentInputChange}
+                          variant={"outlined"}
+                          value={addDocument.documentType}
+                        />
+                        <br />
+                        <SelectField
+                          id={"documentCategory"}
+                          name={"documentCategory"}
+                          label={"Document Category"}
+                          options={doc_category}
                           error={error.documentType}
                           onChange={addDocumentInputChange}
                           variant={"outlined"}
@@ -623,7 +627,7 @@ function AddDocument({
                         {addDocument.destination.length > 0 &&
                           addDocument.destination.map((des, index) => (
                             <Chip
-                              key={index}
+                              key={des[0]}
                               avatar={
                                 <Avatar>
                                   <BusinessIcon />
@@ -641,7 +645,7 @@ function AddDocument({
                           style={{
                             textAlign: "right",
                             marginBottom: 100,
-                            marginTop: 50,
+                            marginTop: 10,
                           }}
                         >
                           {/*<button*/}
@@ -693,6 +697,8 @@ function mapStateToProps(state) {
     _notification: state.notification,
     userActiveList: state.fetchActiveUserList,
     _logout: state.logout,
+    doc_category: state.listSectionDocCategory,
+    section_doc_category: state.manageDocumentCategory
   };
 }
 
@@ -720,6 +726,7 @@ const mapDispatchToProps = {
   clearDraftsMessage,
   fetchActiveUserList,
   logout,
+  fetchDocCategory
 };
 
 export default connect(

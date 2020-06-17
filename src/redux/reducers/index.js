@@ -41,6 +41,7 @@ import manageDocumentCategory from "./manageDocumentCategory";
 import addNewDocCategory from "./addNewDocCategory";
 import saveEditDocCategory from "./saveEditDocCategory";
 import deleteDocCategory from "./deleteDocCategory";
+import listSectionDocCategory from "./listSectionDocCategory";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -83,7 +84,8 @@ const rootReducer = combineReducers({
   manageDocumentCategory: manageDocumentCategory,
   addNewDocCategory: addNewDocCategory,
   saveEditDocCategory: saveEditDocCategory,
-  deleteDocCategory: deleteDocCategory
+  deleteDocCategory: deleteDocCategory,
+  listSectionDocCategory: listSectionDocCategory
 });
 
 export default rootReducer;

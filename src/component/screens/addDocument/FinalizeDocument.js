@@ -34,9 +34,9 @@ class FinalizeDocument extends Component {
     const docType = this.props.documentType.filter(
       (doc) => doc.id === parseInt(this.props.data.documentType)
     );
-    const destination = this.props.data.destination.filter(
-      (data, index) => index !== 0
-    );
+
+    const category = this.props.section_doc_category.filter(doc => doc.id === parseInt(this.props.data.documentCategory));
+
     return (
       <>
         <div>
@@ -95,7 +95,17 @@ class FinalizeDocument extends Component {
             type={"text"}
             value={docType.map((res) => res.type)}
           />
-
+          <br />
+          <br />
+          <InputField
+              id={"documentCategory"}
+              label={"Document Category"}
+              name={"documentCategory"}
+              variant={"outlined"}
+              disabled={true}
+              type={"text"}
+              value={category.map(res => res.category)}
+          />
           <br />
           <br />
 
@@ -109,7 +119,7 @@ class FinalizeDocument extends Component {
             {this.props.data.action_req.map((action, index) => (
               <CheckBox
                 checked={true}
-                key={index}
+                key={action[1]}
                 label={action[1]}
                 value={action[1]}
                 name={"action_req"}
@@ -145,7 +155,7 @@ class FinalizeDocument extends Component {
           <br />
           {this.props.data.destination.map((destination) => (
             <Chip
-              key={destination[4]}
+              key={destination[0]}
               avatar={
                 <Avatar>
                   <BusinessIcon />

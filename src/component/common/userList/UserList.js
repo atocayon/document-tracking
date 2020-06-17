@@ -10,7 +10,7 @@ import Badge from "@material-ui/core/Badge";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Reactotron from "reactotron-react-js";
 import Divider from "@material-ui/core/Divider";
-
+import InfoIcon from '@material-ui/icons/Info';
 const StyledBadge = withStyles((theme) => ({
   badge: {
     backgroundColor: "#44b700",
@@ -50,11 +50,15 @@ export default function UserList(props) {
   }
 
   return (
-    <List style={{marginTop: 100}}>
-      {filteredData &&
-        filteredData.map((data, index) => (
-          <>
-            <ListItem alignItems="flex-start" key={index}>
+    <div>
+      <h6 style={{ marginTop: 100, marginLeft: 10, fontWeight: "bold", color: "#2196F3" }}>
+        <InfoIcon />
+        &nbsp;Active Users
+      </h6>
+      <List>
+        {filteredData &&
+          filteredData.map((data, index) => (
+            <ListItem alignItems="flex-start" key={data.user_id}>
               <ListItemAvatar>
                 <StyledBadge
                   overlap="circle"
@@ -82,9 +86,8 @@ export default function UserList(props) {
                 }
               />
             </ListItem>
-            <Divider />
-          </>
-        ))}
-    </List>
+          ))}
+      </List>
+    </div>
   );
 }
