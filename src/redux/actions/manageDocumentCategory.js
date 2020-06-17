@@ -39,3 +39,43 @@ export function fetchDocCategory(token, socket) {
     });
   };
 }
+
+export function onChangeEditDocCategory({ target }) {
+  return function (dispatch) {
+    return dispatch({
+      type: actionTypes.ONCHANGE_EDIT_DOC_CATEGORY,
+      data: { name: target.name, value: target.value },
+    });
+  };
+}
+
+export function saveEditDocCategory(data, token, socket) {
+  return async function (dispatch) {
+    await socket.emit("updateDocumentCategory", data, token, (err) => {
+      if (err) {
+        if (err !== "success") {
+          throw err;
+        } else {
+          dispatch({
+            type: actionTypes.SAVE_EDIT_DOC_CATEGORY,
+            data: "success",
+          });
+        }
+      }
+    });
+  };
+}
+
+export function deleteDocCategory(id, token, socket) {
+  return async function (dispatch) {
+    await socket.emit("deleteDocCategory", id, token, (err) => {
+      if (err) {
+        if (err !== "success") {
+          throw err;
+        } else {
+          dispatch({ type: actionTypes.DELETE_DOC_CATEGORY, data: "success" });
+        }
+      }
+    });
+  };
+}

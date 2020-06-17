@@ -173,6 +173,16 @@ io.on("connection", (socket) => {
     fetchDocumentCategory(token, callback);
   });
 
+  //Update Doc Category
+  socket.on("updateDocumentCategory", (data, token, callback) => {
+    updateDocumentCategory(data, token, callback);
+  });
+
+  //Delete Doc Category
+  socket.on("deleteDocCategory", (id, token, callback) => {
+    deleteDocCategory(id, token, callback);
+  });
+
   socket.on("disconnect", () => {
     console.log("Disconnected");
     socket.emit("Hey, are you still there?");
@@ -184,23 +194,52 @@ io.on("connection", (socket) => {
 //------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------
 
+//Delete Doc Category
+const deleteDocCategory = (id, token, callback) => {
+  const sql = "DELETE FROM doc_category WHERE id = ?";
+  connection.query(sql, [parseInt(id)], function (err, result) {
+    if (err) {
+      return callback(err);
+    }
+
+    fetchDocumentCategory(token, callback);
+    return callback("success");
+  });
+};
+
+//Update Document Category
+const updateDocumentCategory = (data, token, callback) => {
+  for (let i = 0; i < data.length; i++) {
+    const sql = "UPDATE doc_category SET category = ? WHERE id = ?";
+    connection.query(sql, [data[i].category, parseInt(data[i].id)], function (
+      err,
+      result
+    ) {
+      if (err) {
+        return callback(err);
+      }
+      fetchDocumentCategory(token, callback);
+      return callback("success");
+    });
+  }
+};
+
 //Fetch Document Category
 const fetchDocumentCategory = (token, callback) => {
   const fetchSection = "SELECT a.section FROM users a WHERE a.user_id = ?";
-  connection.query(fetchSection, [token], function (
-    err,
-    rows,
-    fields
-  ) {
+  connection.query(fetchSection, [token], function (err, rows, fields) {
     if (err) {
       console.log(err);
       return callback("server error");
     }
     const fetchSectionCategory =
-      "SELECT a.category AS category FROM doc_category a WHERE a.section_id = ?";
+      "SELECT a.category AS category, a.id AS id FROM doc_category a WHERE a.section_id = ?";
 
-    connection.query(fetchSectionCategory, [
-      rows[0].section], function (err, rows, fields) {
+    connection.query(fetchSectionCategory, [rows[0].section], function (
+      err,
+      rows,
+      fields
+    ) {
       if (err) {
         console.log(err);
         return callback("server error");
@@ -214,11 +253,7 @@ const fetchDocumentCategory = (token, callback) => {
 //Add New Document Category
 const addNewDocCategory = (token, category, callback) => {
   const fetchSection = "SELECT a.section FROM users a WHERE a.user_id = ?";
-  connection.query(fetchSection, [token], function (
-    err,
-    rows,
-    fields
-  ) {
+  connection.query(fetchSection, [token], function (err, rows, fields) {
     if (err) {
       console.log(err);
       return callback("server error");

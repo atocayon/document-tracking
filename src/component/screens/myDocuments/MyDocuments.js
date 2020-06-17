@@ -18,11 +18,17 @@ import io from "socket.io-client";
 import endPoint from "../../endPoint";
 import { addNewDocCategory } from "../../../redux/actions/manageDocumentCategory";
 import { fetchDocCategory } from "../../../redux/actions/manageDocumentCategory";
+import { onChangeEditDocCategory } from "../../../redux/actions/manageDocumentCategory";
+import { saveEditDocCategory } from "../../../redux/actions/manageDocumentCategory";
+import { deleteDocCategory } from "../../../redux/actions/manageDocumentCategory";
 import TableBody from "@material-ui/core/TableBody";
 import TablePagination from "@material-ui/core/TablePagination";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import DescriptionIcon from "@material-ui/icons/Description";
+import CheckIcon from "@material-ui/icons/Check";
+
+import Reactotron from "reactotron-react-js";
 let socket;
 const tableHead = ["Document Categories", ""];
 
@@ -33,6 +39,8 @@ function MyDocuments(props) {
   const [category, setCategory] = useState("");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [token, setToken] = useState("");
+  const [editDocCategory, setEditDocCategory] = useState({});
+  const [editInput, setEditInput] = useState({});
   useEffect(() => {
     socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
@@ -69,6 +77,19 @@ function MyDocuments(props) {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
+  };
+
+  const handleEdit = (val) => {
+    setEditDocCategory({ ...editDocCategory, [val]: !editDocCategory[val] });
+  };
+
+  const handleSave = async () => {
+    setEditDocCategory({});
+    await props.saveEditDocCategory(props.doc_category, token, socket);
+  };
+
+  const handleDelete = async (val) => {
+    await props.deleteDocCategory(val, token, socket);
   };
 
   return (
@@ -135,7 +156,7 @@ function MyDocuments(props) {
                         {tableHead.map((column, index) => (
                           <TableCell
                             style={{ color: "#2196F3", fontWeight: "bold" }}
-                            key={index}
+                            key={column}
                           >
                             {index === 0 && <DescriptionIcon />} {column}
                           </TableCell>
@@ -149,22 +170,53 @@ function MyDocuments(props) {
                             page * rowsPerPage,
                             page * rowsPerPage + rowsPerPage
                           )
-                          .map((data) => (
+                          .map((data, index) => (
                             <TableRow
                               hover
                               role="checkbox"
                               tabIndex={-1}
-                              key={data.category}
+                              key={data.id}
                             >
-                              <TableCell key={data.category}>
-                                {data.category}
+                              <TableCell>
+                                <input
+                                  className={"form-control"}
+                                  type={"text"}
+                                  name={data.id}
+                                  style={{
+                                    border: "1px solid white",
+                                    padding: 10,
+                                    background: "#fff",
+                                  }}
+                                  value={data.category}
+                                  disabled={!editDocCategory[data.id]}
+                                  onChange={props.onChangeEditDocCategory}
+                                />
                               </TableCell>
-                              <TableCell key={data.category}>
-                                <button className={"btn btn-sm"}>
-                                  <EditIcon />
-                                </button>
+                              <TableCell>
+                                {!editDocCategory[data.id] && (
+                                  <button
+                                    title={"Click to edit"}
+                                    className={"btn btn-sm"}
+                                    onClick={handleEdit.bind(null, data.id)}
+                                  >
+                                    <EditIcon />
+                                  </button>
+                                )}
+                                {editDocCategory[data.id] && (
+                                  <button
+                                    title={"Click to save changes"}
+                                    className={"btn btn-sm"}
+                                    onClick={handleSave}
+                                  >
+                                    <CheckIcon />
+                                  </button>
+                                )}
                                 &nbsp;&nbsp;&nbsp;
-                                <button className={"btn btn-sm"}>
+                                <button
+                                  title={"Click to delete"}
+                                  className={"btn btn-sm"}
+                                  onClick={handleDelete.bind(null, data.id)}
+                                >
                                   <DeleteIcon />
                                 </button>
                               </TableCell>
@@ -202,6 +254,9 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   addNewDocCategory,
   fetchDocCategory,
+  onChangeEditDocCategory,
+  saveEditDocCategory,
+  deleteDocCategory,
 };
 
 export default connect(
