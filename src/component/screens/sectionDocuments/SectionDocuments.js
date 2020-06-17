@@ -6,22 +6,19 @@ import { Link, Redirect } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
 import { getFromStorage } from "../../storage";
 import { withSnackbar } from "notistack";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import Avatar from "@material-ui/core/Avatar";
-import DescriptionIcon from "@material-ui/icons/Description";
-import ListItemText from "@material-ui/core/ListItemText";
 import { connect } from "react-redux";
 import { fetchSectionDocuments } from "../../../redux/actions/fetchSectionDocuments";
 import { handleSearchSectionDocuments } from "../../../redux/actions/handleSearchSectionDocuments";
-import TablePagination from "@material-ui/core/TablePagination";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Input from "@material-ui/core/Input";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import IconButton from "@material-ui/core/IconButton";
-import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
+import { fetchDocCategory } from "../../../redux/actions/manageDocumentCategory";
+import io from "socket.io-client";
+import endPoint from "../../endPoint";
+import FolderOpenIcon from "@material-ui/icons/FolderOpen";
+import Avatar from "@material-ui/core/Avatar";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import List from "@material-ui/core/List";
+let socket;
 
 function SectionDocuments(props) {
   const [open, setOpen] = useState(true);
@@ -31,12 +28,14 @@ function SectionDocuments(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [search, setSearch] = useState("");
   useEffect(() => {
+    socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
       setUserID(token);
       async function fetch() {
         await props.fetchSectionDocuments(token);
+        await props.fetchDocCategory(token, socket);
       }
 
       fetch().catch((err) => {
@@ -97,107 +96,132 @@ function SectionDocuments(props) {
           <div className={"jumbotron"} style={{ padding: 50 }}>
             <div className={"row"}>
               <div className={"col-md-6"}>
-                <form onSubmit={handleSearch}>
-                  <FormControl fullWidth>
-                    <InputLabel htmlFor="outlined-adornment-amount">
-                      Search by subject and press enter
-                    </InputLabel>
-                    <Input
-                      label={"Search by subject and press enter"}
-                      variant={"outlined"}
-                      onChange={onChangeSearch}
-                      type={"text"}
-                      endAdornment={
-                        search !== "" ? (
-                          <InputAdornment position="end">
-                            <IconButton
-                              title={"clear"}
-                              aria-label="toggle password visibility"
-                              onClick={handleClearSearch}
-                              onMouseDown={handleClearSearch}
-                              edge="end"
-                            >
-                              <HighlightOffRoundedIcon />
-                            </IconButton>
-                          </InputAdornment>
-                        ) : (
-                          ""
-                        )
-                      }
-                    />
-                  </FormControl>
-                </form>
+                {/*<form onSubmit={handleSearch}>*/}
+                {/*  <FormControl fullWidth>*/}
+                {/*    <InputLabel htmlFor="outlined-adornment-amount">*/}
+                {/*      Search by subject and press enter*/}
+                {/*    </InputLabel>*/}
+                {/*    <Input*/}
+                {/*      label={"Search by subject and press enter"}*/}
+                {/*      variant={"outlined"}*/}
+                {/*      onChange={onChangeSearch}*/}
+                {/*      type={"text"}*/}
+                {/*      endAdornment={*/}
+                {/*        search !== "" ? (*/}
+                {/*          <InputAdornment position="end">*/}
+                {/*            <IconButton*/}
+                {/*              title={"clear"}*/}
+                {/*              aria-label="toggle password visibility"*/}
+                {/*              onClick={handleClearSearch}*/}
+                {/*              onMouseDown={handleClearSearch}*/}
+                {/*              edge="end"*/}
+                {/*            >*/}
+                {/*              <HighlightOffRoundedIcon />*/}
+                {/*            </IconButton>*/}
+                {/*          </InputAdornment>*/}
+                {/*        ) : (*/}
+                {/*          ""*/}
+                {/*        )*/}
+                {/*      }*/}
+                {/*    />*/}
+                {/*  </FormControl>*/}
+                {/*</form>*/}
               </div>
               <div className={"col-md-6"}></div>
             </div>
           </div>
 
-          {props.sectionDocuments.length === 0 && (
-            <div style={{ textAlign: "center", marginTop: 200 }}>
-              <h6 style={{ color: "#9E9E9E" }}>No documents found</h6>
-            </div>
-          )}
+          {/*{props.sectionDocuments.length === 0 && (*/}
+          {/*  <div style={{ textAlign: "center", marginTop: 200 }}>*/}
+          {/*    <h6 style={{ color: "#9E9E9E" }}>No documents found</h6>*/}
+          {/*  </div>*/}
+          {/*)}*/}
           <div style={{ marginLeft: 50, marginRight: 10 }}>
             <div className={"row"}>
-              <div className={"col-md-10"}>
-                <List>
-                  {props.sectionDocuments.length > 0 &&
-                    props.sectionDocuments
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      .map((document) => {
-                        let secondaryText =
-                          document.creatorID === userID
-                            ? "You"
-                            : document.creator;
-                        return (
-                          <Link
-                            to={"/doc/" + document.documentID}
-                            style={{ textDecoration: "none" }}
-                          >
-                            <ListItem>
-                              <ListItemAvatar>
-                                <Avatar>
-                                  <DescriptionIcon />
-                                </Avatar>
-                              </ListItemAvatar>
-                              <ListItemText
-                                primary={document.subject}
-                                secondary={
-                                  document.docType + " by " + secondaryText
-                                }
-                              />
-                            </ListItem>
-                          </Link>
-                        );
-                      })}
-                </List>
-                <div style={{ position: "fixed", bottom: 0, marginBottom: 20 }}>
-                  <TablePagination
-                    rowsPerPageOptions={[
-                      5,
-                      10,
-                      25,
-                      30,
-                      50,
-                      100,
-                      200,
-                      500,
-                      1000,
-                    ]}
-                    component="div"
-                    count={props.sectionDocuments.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                  />
-                </div>
-              </div>
-              <div className={"col-md-2"}></div>
+              {props.doc_category.length > 0 &&
+                props.doc_category.map((data) => (
+                  <div className={"col-md-3"} style={{ paddingLeft: 20 }}>
+                    <List>
+                      <Link
+                        to={"/folder/" + data.category}
+                        style={{ color: "#000", textDecoration: "none" }}
+                      >
+                        <ListItem>
+                          <ListItemAvatar>
+                            <Avatar variant={"rounded"}>
+                              <FolderOpenIcon fontSize={"large"} />
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={data.category}
+                            secondary={"Folder"}
+                          />
+                        </ListItem>
+                      </Link>
+                    </List>
+                  </div>
+                ))}
             </div>
+            {/*<div className={"row"}>*/}
+            {/*  <div className={"col-md-10"}>*/}
+            {/*    <List>*/}
+            {/*      {props.sectionDocuments.length > 0 &&*/}
+            {/*        props.sectionDocuments*/}
+            {/*          .slice(*/}
+            {/*            page * rowsPerPage,*/}
+            {/*            page * rowsPerPage + rowsPerPage*/}
+            {/*          )*/}
+            {/*          .map((document) => {*/}
+            {/*            let secondaryText =*/}
+            {/*              document.creatorID === userID*/}
+            {/*                ? "You"*/}
+            {/*                : document.creator;*/}
+            {/*            return (*/}
+            {/*              <Link*/}
+            {/*                to={"/doc/" + document.documentID}*/}
+            {/*                style={{ textDecoration: "none" }}*/}
+            {/*              >*/}
+            {/*                <ListItem>*/}
+            {/*                  <ListItemAvatar>*/}
+            {/*                    <Avatar>*/}
+            {/*                      <DescriptionIcon />*/}
+            {/*                    </Avatar>*/}
+            {/*                  </ListItemAvatar>*/}
+            {/*                  <ListItemText*/}
+            {/*                    primary={document.subject}*/}
+            {/*                    secondary={*/}
+            {/*                      document.docType + " by " + secondaryText*/}
+            {/*                    }*/}
+            {/*                  />*/}
+            {/*                </ListItem>*/}
+            {/*              </Link>*/}
+            {/*            );*/}
+            {/*          })}*/}
+            {/*    </List>*/}
+            {/*    <div style={{ position: "fixed", bottom: 0, marginBottom: 20 }}>*/}
+            {/*      <TablePagination*/}
+            {/*        rowsPerPageOptions={[*/}
+            {/*          5,*/}
+            {/*          10,*/}
+            {/*          25,*/}
+            {/*          30,*/}
+            {/*          50,*/}
+            {/*          100,*/}
+            {/*          200,*/}
+            {/*          500,*/}
+            {/*          1000,*/}
+            {/*        ]}*/}
+            {/*        component="div"*/}
+            {/*        count={props.sectionDocuments.length}*/}
+            {/*        rowsPerPage={rowsPerPage}*/}
+            {/*        page={page}*/}
+            {/*        onChangePage={handleChangePage}*/}
+            {/*        onChangeRowsPerPage={handleChangeRowsPerPage}*/}
+            {/*      />*/}
+            {/*    </div>*/}
+            {/*  </div>*/}
+            {/*  <div className={"col-md-2"}></div>*/}
+            {/*</div>*/}
           </div>
         </Paper>
       </Grid>
@@ -209,12 +233,14 @@ function SectionDocuments(props) {
 function mapStateToProps(state) {
   return {
     sectionDocuments: state.fetchSectionDocuments,
+    doc_category: state.manageDocumentCategory,
   };
 }
 
 const mapDispatchToProps = {
   fetchSectionDocuments,
   handleSearchSectionDocuments,
+  fetchDocCategory,
 };
 export default connect(
   mapStateToProps,

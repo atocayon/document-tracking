@@ -36,6 +36,11 @@ export function fetchDocCategory(token, socket) {
         type: actionTypes.FETCH_SECTION_DOCUMENT_CATEGORY,
         data,
       });
+      let arr = [];
+      for (let i = 0 ; i < data.length; i++){
+        arr.push({id: data[i].id, type: data[i].category});
+      }
+      dispatch({type: actionTypes.FETCH_LIST_SECTION_DOC_CATEGORY, data: arr});
     });
   };
 }

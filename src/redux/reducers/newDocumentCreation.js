@@ -3,6 +3,7 @@ import Reactotron from "reactotron-react-js";
 const defaultState = {
   subject: "",
   documentType: "",
+  documentCategory: "",
   action_req: [],
   note: "",
   externalDestination: "",
