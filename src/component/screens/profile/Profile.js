@@ -5,7 +5,6 @@ import EditIcon from "@material-ui/icons/Edit";
 import { Link, Redirect } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
 import ContactInformation from "./ContactInformation";
-import axios from "axios";
 import CircularProgressComponent from "../../common/circularProgress/CircularProgressComponent";
 import { getFromStorage } from "../../storage";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
@@ -28,7 +27,7 @@ function Profile({ match, user, fetchUserById }) {
         await fetchUserById(params);
       }
 
-      fetch().catch(err => {
+      fetch().catch((err) => {
         throw err;
       });
     }
@@ -41,7 +40,7 @@ function Profile({ match, user, fetchUserById }) {
   };
 
   return (
-    <Grid container spacing={3}>
+    <Grid container>
       <PrimarySearchAppBar />
       <Grid item xs={2}>
         <SideBarNavigation
@@ -62,7 +61,7 @@ function Profile({ match, user, fetchUserById }) {
               paddingBottom: "3vh",
               height: "100vh",
               marginTop: 70,
-              overflow: "auto"
+              overflow: "auto",
             }}
           >
             <div className={"jumbotron"}></div>
@@ -72,7 +71,7 @@ function Profile({ match, user, fetchUserById }) {
               style={{
                 paddingLeft: "2vw",
                 paddingRight: "2vw",
-                marginTop: "-12vh"
+                marginTop: "-12vh",
               }}
             >
               <Grid item xs={3}>
@@ -82,7 +81,7 @@ function Profile({ match, user, fetchUserById }) {
                   style={{
                     width: "10vw",
                     background: "#fefefe",
-                    border: "3px solid #fff"
+                    border: "3px solid #fff",
                   }}
                 />
                 <div>
@@ -94,7 +93,7 @@ function Profile({ match, user, fetchUserById }) {
                 <h3
                   style={{
                     textAlign: "left",
-                    fontWeight: "bold"
+                    fontWeight: "bold",
                   }}
                 >
                   {user.name}
@@ -105,7 +104,7 @@ function Profile({ match, user, fetchUserById }) {
                   className={"btn btn-sm btn-info"}
                   to={"/update/" + user.user_id}
                   style={{
-                    textDecoration: "none"
+                    textDecoration: "none",
                   }}
                 >
                   <EditIcon style={{ fontSize: "1vw" }} /> Update Profile
@@ -129,7 +128,7 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  fetchUserById
+  fetchUserById,
 };
 
 export default connect(

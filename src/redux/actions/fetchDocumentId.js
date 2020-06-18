@@ -1,6 +1,4 @@
 import actionTypes from "./actionTypes";
-import axios from "axios";
-const localIpUrl = require("local-ip-url");
 
 export function fetchDocumentId(socket) {
   return async function (dispatch) {

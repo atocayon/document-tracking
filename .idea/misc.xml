@@ -4,6 +4,6 @@
     <option name="languageLevel" value="JSX" />
   </component>
   <component name="ProjectPlainTextFileTypeManager">
-    <file url="file://$PROJECT_DIR$/tools/middleware.js" />
+    <file url="file://$PROJECT_DIR$/src/redux/actions/receiveDocument.js" />
   </component>
 </project>

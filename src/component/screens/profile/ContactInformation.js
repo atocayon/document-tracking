@@ -12,9 +12,7 @@ export default function ContactInformation(props) {
             <td>Phone</td>
 
             <td style={{ color: "#2196F3" }}>
-              {props.user.contact
-                ? props.user.contact
-                : "Not Available"}
+              {props.user.contact ? props.user.contact : "Not Available"}
             </td>
           </tr>
           <tr>
@@ -23,11 +21,9 @@ export default function ContactInformation(props) {
               {props.user.email ? props.user.email : "Not Available"}
             </td>
           </tr>
-
         </tbody>
       </table>
       <hr />
-
     </>
   );
 }

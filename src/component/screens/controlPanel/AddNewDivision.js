@@ -9,7 +9,6 @@ import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import ApartmentIcon from '@material-ui/icons/Apartment';
 import InputField from "../../common/textField/InputField";
 

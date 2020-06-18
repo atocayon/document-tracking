@@ -1,10 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Home from "./screens/homePage/Home";
-import Grid from "@material-ui/core/Grid";
-import PrimarySearchAppBar from "./common/navbar/PrimarySearchAppBar";
-import { Redirect, Route, Switch } from "react-router-dom";
-import SideBarNavigation from "./common/sideBarNavigation/SideBarNavigation";
-
+import { Route, Switch } from "react-router-dom";
 import TrackDocument from "./screens/trackDocument/TrackDocument";
 import AddDocument from "./screens/addDocument/AddDocument";
 import PendingForRelease from "./screens/pendingForRelease/PendingForRelease";

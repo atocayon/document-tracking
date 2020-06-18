@@ -1,16 +1,17 @@
 import React from "react";
 import InputField from "../../common/textField/InputField";
 import Select from "@material-ui/core/Select";
-import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
+import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
 export default function Contact(props) {
   return (
     <>
       <div>
-          <br/>
-          <h5 style={{ textAlign: "left",color: "#2196F3" }}>
-              <ContactPhoneIcon/>&nbsp;Contact Information
-          </h5>
-          <br/>
+        <br />
+        <h5 style={{ textAlign: "left", color: "#2196F3" }}>
+          <ContactPhoneIcon />
+          &nbsp;Contact Information
+        </h5>
+        <br />
         <InputField
           id={"email"}
           name={"email"}
@@ -31,7 +32,6 @@ export default function Contact(props) {
           error={props.error.contact}
           type={"text"}
         />
-
       </div>
     </>
   );

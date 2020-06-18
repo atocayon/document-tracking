@@ -5,8 +5,6 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import Profile from "./Profile";
 import Contact from "./Contact";
 import Work from "./Work";
-import axios from "axios";
-import Reactotron from "reactotron-react-js";
 import { withSnackbar } from "notistack";
 import { getFromStorage } from "../../storage";
 import Grid from "@material-ui/core/Grid";
@@ -16,6 +14,7 @@ import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import { connect } from "react-redux";
 import { fetchCurrentSystemUser } from "../../../redux/actions/fetchCurrentSystemUser";
 import { userRegistration } from "../../../redux/actions/userRegistration";
+import UserList from "../../common/userList/UserList";
 
 function RegistrationForm(props) {
   const [userInfo, setUserInfo] = useState({
@@ -32,7 +31,6 @@ function RegistrationForm(props) {
   const [error, setError] = useState({});
   const [redirect, setRedirect] = useState(false);
   const [endSession, setEndSession] = useState(false);
-  const [user, setUser] = useState({});
   const [open, setOpen] = useState(true);
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
@@ -128,7 +126,7 @@ function RegistrationForm(props) {
   };
 
   return (
-    <Grid container spacing={3}>
+    <Grid container>
       <PrimarySearchAppBar />
       <Grid item xs={2}>
         <SideBarNavigation
@@ -211,7 +209,9 @@ function RegistrationForm(props) {
           </Grid>
         </Paper>
       </Grid>
-      <Grid item xs={2}></Grid>
+      <Grid item xs={2}>
+        <UserList />
+      </Grid>
     </Grid>
   );
 }

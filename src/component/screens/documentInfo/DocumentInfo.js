@@ -5,42 +5,24 @@ import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 import { Redirect } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
-import DescriptionIcon from "@material-ui/icons/Description";
-import Barcode from "react-barcode";
-import axios from "axios";
 import { getFromStorage } from "../../storage";
-import InputField from "../../common/textField/InputField";
-import FeedbackIcon from "@material-ui/icons/Feedback";
-import { FormGroup } from "@material-ui/core";
-import CheckBox from "../../common/checkbox/CheckBox";
-import CommentIcon from "@material-ui/icons/Comment";
-import GetAppIcon from "@material-ui/icons/GetApp";
 import canvas from "../../canvas";
-import Reactotron from "reactotron-react-js";
-import ExploreIcon from "@material-ui/icons/Explore";
-import Chip from "@material-ui/core/Chip";
-import Avatar from "@material-ui/core/Avatar";
-import BusinessIcon from "@material-ui/icons/Business";
 import BarcodeComponent from "../../common/barcode/BarcodeComponent";
 import ReactToPrint from "react-to-print";
 import PrintIcon from "@material-ui/icons/Print";
 import { connect } from "react-redux";
 import { fetchDocumentInfo } from "../../../redux/actions/fetchDocumentInfo";
 import Content from "./Content";
+import UserList from "../../common/userList/UserList";
 
 function DocumentInfo(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
-  const [document, setDocument] = useState({});
-  const [actionRequired, setActionRequired] = useState([]);
-  const [destination, setDestination] = useState([]);
   const componentRef = useRef();
   const barcodeRef = useRef();
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
-      const { token } = obj;
-
       async function fetch() {
         await props.fetchDocumentInfo(props.match.params.doc_id);
       }
@@ -65,7 +47,7 @@ function DocumentInfo(props) {
     }
   };
   return (
-    <Grid container spacing={3}>
+    <Grid container >
       <PrimarySearchAppBar />
       <Grid item xs={2}>
         <SideBarNavigation
@@ -129,15 +111,14 @@ function DocumentInfo(props) {
                   </div>
                 </div>
               </div>
-
-
-
             </div>
             <div className={"col-md-2"}></div>
           </div>
         </Paper>
       </Grid>
-      <Grid item xs={2}></Grid>
+      <Grid item xs={2}>
+          <UserList />
+      </Grid>
     </Grid>
   );
 }

@@ -3,14 +3,8 @@ import InputField from "../../common/textField/InputField";
 import FeedbackIcon from "@material-ui/icons/Feedback";
 import { FormGroup } from "@material-ui/core";
 import CheckBox from "../../common/checkbox/CheckBox";
-import DoneIcon from "@material-ui/icons/Done";
-import SendIcon from "@material-ui/icons/Send";
-import Paper from "@material-ui/core/Paper";
 
 export default class Content extends Component {
-  constructor(props) {
-    super(props);
-  }
 
   render() {
     return (

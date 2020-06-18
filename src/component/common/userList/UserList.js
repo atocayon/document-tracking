@@ -7,7 +7,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Typography from "@material-ui/core/Typography";
 import { getFromStorage } from "../../storage";
 import Badge from "@material-ui/core/Badge";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import { withSnackbar } from "notistack";
 import io from "socket.io-client";
@@ -62,20 +62,25 @@ function UserList(props) {
 
   return (
     <div>
-      <h6
-        style={{
-          marginTop: 100,
-          marginLeft: 10,
-          fontWeight: "bold",
-          color: "#2196F3",
-        }}
-      >
-        <InfoIcon />
-        &nbsp;Active Users
-      </h6>
-      <List>
-        {props.userList.length > 0 &&
-          props.userList.map((data, index) => (
+      {props.userList.length > 0 && (
+        <h6
+          style={{
+            paddingTop: 100,
+            paddingLeft: 20,
+            paddingBottom: 30,
+            fontWeight: "bold",
+            color: "#2196F3",
+            borderBottom: "1px solid #E9ECEF",
+          }}
+        >
+          <InfoIcon />
+          &nbsp;Active Users
+        </h6>
+      )}
+
+      {props.userList.length > 0 && (
+        <List>
+          {props.userList.map((data, index) => (
             <ListItem alignItems="flex-start" key={data.user_id}>
               <ListItemAvatar>
                 <StyledBadge
@@ -105,7 +110,14 @@ function UserList(props) {
               />
             </ListItem>
           ))}
-      </List>
+        </List>
+      )}
+
+      {props.userList.length === 0 && (
+        <div style={{ textAlign: "center", marginTop: "40vh", color: "#9E9E9E" }}>
+          <small>No other active user(s)</small>
+        </div>
+      )}
     </div>
   );
 }

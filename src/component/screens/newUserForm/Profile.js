@@ -5,21 +5,21 @@ import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import SelectField from "../../common/selectField/SelectField";
-import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import AccountBoxIcon from "@material-ui/icons/AccountBox";
 
 const role = [
   { id: "1", type: "Admin" },
-  { id: "2", type: "Member" }
+  { id: "2", type: "Member" },
 ];
 
 export default function Profile(props) {
   return (
-
     <div>
-        <h5 style={{ textAlign: "left",color: "#2196F3" }}>
-            <AccountBoxIcon />&nbsp;Profile Account
-        </h5>
-        <br/>
+      <h5 style={{ textAlign: "left", color: "#2196F3" }}>
+        <AccountBoxIcon />
+        &nbsp;Profile Account
+      </h5>
+      <br />
       <SelectField
         id={"role"}
         name={"role"}

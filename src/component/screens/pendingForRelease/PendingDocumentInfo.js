@@ -5,19 +5,9 @@ import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation"
 import { getFromStorage } from "../../storage";
 import { Redirect } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
-import InputField from "../../common/textField/InputField";
-import DescriptionIcon from "@material-ui/icons/Description";
-import FeedbackIcon from "@material-ui/icons/Feedback";
-import { FormGroup } from "@material-ui/core";
-import CheckBox from "../../common/checkbox/CheckBox";
-import CommentIcon from "@material-ui/icons/Comment";
-import ExploreIcon from "@material-ui/icons/Explore";
 import { withSnackbar } from "notistack";
 import { connect } from "react-redux";
 import { fetchPendingDocumentInfo } from "../../../redux/actions/fetchPendingDocumentInfo";
-import Chip from "@material-ui/core/Chip";
-import Avatar from "@material-ui/core/Avatar";
-import BusinessIcon from "@material-ui/icons/Business";
 import Forward from "./Forward";
 import { fetchSectionsList } from "../../../redux/actions/fetchSectionsList";
 import { onChangeForwardDocument } from "../../../redux/actions/onChangForwardDocument";
@@ -26,8 +16,6 @@ import { afterDocumentReceive } from "../../../redux/actions/afterDocumentReceiv
 import SendIcon from "@material-ui/icons/Send";
 import DoneIcon from "@material-ui/icons/Done";
 import Completed from "./Completed";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
 import Content from "./Content";
 import ReactToPrint from "react-to-print";
 import PrintIcon from "@material-ui/icons/Print";
@@ -126,7 +114,7 @@ function PendingDocumentInfo(props) {
 
 
   return (
-    <Grid container spacing={3}>
+    <Grid container>
       <Forward
         open={forwardDialog}
         handleClose={handleSetForwardDialog}
