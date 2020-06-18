@@ -35,7 +35,9 @@ class FinalizeDocument extends Component {
       (doc) => doc.id === parseInt(this.props.data.documentType)
     );
 
-    const category = this.props.section_doc_category.filter(doc => doc.id === parseInt(this.props.data.documentCategory));
+    const category = this.props.section_doc_category.filter(
+      (doc) => doc.id === parseInt(this.props.data.documentCategory)
+    );
 
     return (
       <>
@@ -56,21 +58,6 @@ class FinalizeDocument extends Component {
             </h5>
             <br />
           </div>
-          <div style={{ textAlign: "left" }}>
-            <small>&nbsp;&nbsp;DOCUMENT TRACKING NUMBER</small>
-          </div>
-          <div ref={(el) => (this.componentRef = el)}>
-            {this.props.data.destination.length > 1 ? this.props.data.destination.map((data, index) => {
-              return (
-                <BarcodeComponent
-                  trackingNumber={this.props.trackingNumber + "-" + ++index}
-                />
-              );
-            }): ( <BarcodeComponent
-                trackingNumber={this.props.trackingNumber}
-            />)}
-          </div>
-
           <br />
           <br />
           <InputField
@@ -98,13 +85,13 @@ class FinalizeDocument extends Component {
           <br />
           <br />
           <InputField
-              id={"documentCategory"}
-              label={"Document Category"}
-              name={"documentCategory"}
-              variant={"outlined"}
-              disabled={true}
-              type={"text"}
-              value={category.map(res => res.category)}
+            id={"documentCategory"}
+            label={"Document Category"}
+            name={"documentCategory"}
+            variant={"outlined"}
+            disabled={true}
+            type={"text"}
+            value={category.map((res) => res.category)}
           />
           <br />
           <br />
@@ -153,17 +140,27 @@ class FinalizeDocument extends Component {
           </FormGroup>
 
           <br />
-          {this.props.data.destination.map((destination) => (
-            <Chip
-              key={destination[0]}
-              avatar={
-                <Avatar>
-                  <BusinessIcon />
-                </Avatar>
-              }
-              label={destination[4]}
-            />
-          ))}
+          <div ref={(el) => (this.componentRef = el)} className={"row"}>
+            {this.props.data.destination.length > 1 ? (
+              this.props.data.destination.map((data, index) => {
+                return (
+                  <div className={"col-md-5"}>
+                      <div style={{textAlign: "center"}}>
+                        <small>{data[4]}</small>
+
+                      <BarcodeComponent
+                        trackingNumber={
+                          this.props.trackingNumber + "-" + ++index
+                        }
+                      />
+                      </div>
+                  </div>
+                );
+              })
+            ) : (
+              <BarcodeComponent trackingNumber={this.props.trackingNumber} />
+            )}
+          </div>
           <br />
           <br />
 

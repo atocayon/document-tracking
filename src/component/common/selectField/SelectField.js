@@ -18,7 +18,7 @@ export default function SelectField(props) {
         name={props.name}
         onChange={props.onChange}
       >
-
+          <option value={""}>{props.label}</option>
           {props.options.map(option => (
             <option key={option.id} value={option.id}>
               {option.type}

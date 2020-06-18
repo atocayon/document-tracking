@@ -53,7 +53,7 @@ import { clearAddDocumentMessage } from "../../../redux/actions/addNewDocument";
 import { clearDraftsMessage } from "../../../redux/actions/addNewDocumentDraft";
 import { fetchActiveUserList } from "../../../redux/actions/fetchActiveUserList";
 import { logout } from "../../../redux/actions/logout";
-import {fetchDocCategory} from "../../../redux/actions/manageDocumentCategory";
+import { fetchDocCategory } from "../../../redux/actions/manageDocumentCategory";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
 import UserList from "../../common/userList/UserList";
@@ -98,7 +98,7 @@ function AddDocument({
   _logout,
   fetchDocCategory,
   doc_category,
-                       section_doc_category
+  section_doc_category,
 }) {
   const checkboxItem = [
     { id: 0, value: "For Approval" },
@@ -323,7 +323,7 @@ function AddDocument({
 
   const handleGoBack = async () => {
     // Reactotron.log(addDocument.destination);
-    await removeFirstIndexOnEditAddDocument();
+    // await removeFirstIndexOnEditAddDocument();
     setFinalize(false);
   };
 
@@ -336,6 +336,7 @@ function AddDocument({
       addDocument.note,
       addDocument.action_req,
       addDocument.destination,
+      addDocument.documentCategory,
       socket
     );
   };
@@ -698,7 +699,7 @@ function mapStateToProps(state) {
     userActiveList: state.fetchActiveUserList,
     _logout: state.logout,
     doc_category: state.listSectionDocCategory,
-    section_doc_category: state.manageDocumentCategory
+    section_doc_category: state.manageDocumentCategory,
   };
 }
 
@@ -726,7 +727,7 @@ const mapDispatchToProps = {
   clearDraftsMessage,
   fetchActiveUserList,
   logout,
-  fetchDocCategory
+  fetchDocCategory,
 };
 
 export default connect(

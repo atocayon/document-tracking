@@ -156,7 +156,7 @@ export default function SideBarNavigation(props) {
           <Collapse in={props.open} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               <ListItemComponent primary="New" className={classes.nested} />
-              <ListItemComponent primary="Drafts" className={classes.nested} />
+              {/*<ListItemComponent primary="Drafts" className={classes.nested} />*/}
               <ListItemComponent primary="Pending" className={classes.nested} pending={pending} />
 
               <ListItemComponent
