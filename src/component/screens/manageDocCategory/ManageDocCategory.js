@@ -1,10 +1,10 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Grid from "@material-ui/core/Grid";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 import { getFromStorage } from "../../storage";
 import Paper from "@material-ui/core/Paper";
-import { Link, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { withSnackbar } from "notistack";
 import { connect } from "react-redux";
 import TableContainer from "@material-ui/core/TableContainer";
@@ -27,8 +27,6 @@ import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import DescriptionIcon from "@material-ui/icons/Description";
 import CheckIcon from "@material-ui/icons/Check";
-
-import Reactotron from "reactotron-react-js";
 import UserList from "../../common/userList/UserList";
 let socket;
 const tableHead = ["Document Categories", ""];
@@ -93,7 +91,7 @@ function ManageDocCategory(props) {
   };
 
   return (
-    <Grid container spacing={3}>
+    <Grid container>
       <PrimarySearchAppBar />
       <Grid item xs={2}>
         <SideBarNavigation

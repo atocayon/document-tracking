@@ -1,4 +1,4 @@
-import React, {Component, useEffect, useState} from "react";
+import React, { useEffect, useState} from "react";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import owl from "../../../img/owl.png";
@@ -8,15 +8,12 @@ import DoneIcon from "@material-ui/icons/Done";
 import PersonIcon from "@material-ui/icons/Person";
 import WorkIcon from "@material-ui/icons/Work";
 import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
-import ContactSupportIcon from "@material-ui/icons/ContactSupport";
 import SaveIcon from "@material-ui/icons/Save";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { connect } from "react-redux";
 import InputField from "../../common/textField/InputField";
 import { updateUserProfile } from "../../../redux/actions/updateUserProfile";
-import Reactotron from "reactotron-react-js";
-import axios from "axios";
 import { withSnackbar } from "notistack";
 import { getFromStorage } from "../../storage";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
@@ -98,7 +95,7 @@ function UpdateProfile (props) {
   };
 
     return (
-      <Grid container spacing={3}>
+      <Grid container>
         <PrimarySearchAppBar />
         <Grid item xs={2}>
           <SideBarNavigation

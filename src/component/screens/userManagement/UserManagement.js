@@ -2,14 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Paper } from "@material-ui/core";
 import { getFromStorage } from "../../storage";
 import { Link, Redirect } from "react-router-dom";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import InputField from "../../common/textField/InputField";
 import SearchIcon from "@material-ui/icons/Search";
 import Grid from "@material-ui/core/Grid";
 import AddIcon from "@material-ui/icons/Add";
 import axios from "axios";
 import ListOfUsers from "./ListOfUsers";
-import Reactotron from "reactotron-react-js";
 import { withSnackbar } from "notistack";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -240,7 +238,7 @@ function UserManagement(props) {
   };
 
   return (
-    <Grid container spacing={3}>
+    <Grid container>
       <PrimarySearchAppBar />
       <Grid item xs={2}>
         <SideBarNavigation

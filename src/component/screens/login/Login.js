@@ -1,35 +1,28 @@
 import React, { useEffect, useState } from "react";
 import InputField from "../../common/textField/InputField";
 import { Redirect } from "react-router-dom";
-import { getFromStorage, setInStorage } from "../../storage";
-import axios from "axios";
+import { getFromStorage } from "../../storage";
 import { withSnackbar } from "notistack";
 import logo from "../../../img/logo.png";
 import Paper from "@material-ui/core/Paper";
-import Reactotron from "reactotron-react-js";
 import { connect } from "react-redux";
 import { login } from "../../../redux/actions/login";
 import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
-import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
 import FormControl from "@material-ui/core/FormControl";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
-import useSound from "use-sound";
-import sound from "../../sounds/done-for-you.mp3";
 import UIfx from "uifx";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
 import error from "../../sounds/glitch-in-the-matrix.mp3";
 import loginSuccess from "../../sounds/quite-impressed.mp3";
-import onLoad from "../../sounds/gets-in-the-way.mp3";
 import onClick from "../../sounds/pull-out.mp3";
 const errorSound = new UIfx(error);
 const _visible = new UIfx(onClick);
 const _loginSuccess = new UIfx(loginSuccess);
-const _onLoad = new UIfx(onLoad);
 
 let socket;
 function Login(props) {
@@ -44,16 +37,12 @@ function Login(props) {
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
-
     socket = io(endPoint.ADDRESS);
-    const obj = getFromStorage("documentTracking");
-    // if (obj && obj.token) {
-    //   setRedirect(true);
-    // }
+
     if (Object.keys(props._login).length > 0) {
       if (props._login.success === true) {
         const variant = "info";
-        props.enqueueSnackbar("Hello! " + props._login.message , {
+        props.enqueueSnackbar("Hello! " + props._login.message, {
           variant,
         });
         setRedirect(true);
@@ -120,7 +109,6 @@ function Login(props) {
 
   return (
     <>
-      {/*<audio src={sound} autoPlay />*/}
       {redirect && <Redirect to={"/"} />}
       {!redirect && (
         <div className={"container"}>

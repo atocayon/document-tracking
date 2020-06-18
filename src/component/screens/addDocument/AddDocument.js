@@ -7,22 +7,17 @@ import CheckBox from "../../common/checkbox/CheckBox";
 import TextArea from "../../common/textArea/TextArea";
 import { Redirect } from "react-router-dom";
 import { withSnackbar } from "notistack";
-import axios from "axios";
-import Reactotron from "reactotron-react-js";
 import { getFromStorage } from "../../storage";
 import SelectField from "../../common/selectField/SelectField";
 import DoneIcon from "@material-ui/icons/Done";
-import DraftsIcon from "@material-ui/icons/Drafts";
 import DescriptionIcon from "@material-ui/icons/Description";
 import FeedbackIcon from "@material-ui/icons/Feedback";
 import CommentIcon from "@material-ui/icons/Comment";
 import FinalizeDocument from "./FinalizeDocument";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
-import DialogComponent from "../../common/confirmationDialog/DialogComponent";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
-import canvas from "../../canvas";
 import ExploreIcon from "@material-ui/icons/Explore";
 import Radio from "@material-ui/core/Radio";
 import Chip from "@material-ui/core/Chip";
@@ -48,10 +43,8 @@ import { clearAddNewDocumentState } from "../../../redux/actions/clearAddNewDocu
 import { addNewDocumentDraft } from "../../../redux/actions/addNewDocumentDraft";
 import { notification } from "../../../redux/actions/notification";
 import { removeFirstIndexOnEditAddDocument } from "../../../redux/actions/addDocumentDestination";
-import nl2br from "react-newline-to-break";
 import { clearAddDocumentMessage } from "../../../redux/actions/addNewDocument";
 import { clearDraftsMessage } from "../../../redux/actions/addNewDocumentDraft";
-import { fetchActiveUserList } from "../../../redux/actions/fetchActiveUserList";
 import { logout } from "../../../redux/actions/logout";
 import { fetchDocCategory } from "../../../redux/actions/manageDocumentCategory";
 import io from "socket.io-client";
@@ -69,10 +62,8 @@ function AddDocument({
   fetchUserById,
   fetchAllSections,
   user,
-  document,
   documentId,
   documentType,
-  action_req,
   sections,
   addDocumentInputChange,
   addDocument,
@@ -83,12 +74,9 @@ function AddDocument({
   clearInternalDestinationInput,
   removeDestination,
   addNewDocument,
-  logDocumentCreator,
   submit_new_document,
-  clearAddNewDocumentState,
   addNewDocumentDraft,
   submit_new_document_draft,
-  notification,
   clearAddDocumentMessage,
   clearDraftsMessage,
   logout,
@@ -117,9 +105,6 @@ function AddDocument({
   const [finalize, setFinalize] = useState(false);
   const [destination, setDestination] = useState("");
   const [open, setOpen] = useState(true);
-  const [openDialog, setOpenDialog] = useState(false);
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     socket = io(endPoint.ADDRESS);
@@ -318,8 +303,6 @@ function AddDocument({
   };
 
   const handleGoBack = async () => {
-    // Reactotron.log(addDocument.destination);
-    // await removeFirstIndexOnEditAddDocument();
     setFinalize(false);
   };
 
@@ -391,7 +374,7 @@ function AddDocument({
   };
   return (
     <>
-      <Grid container spacing={3}>
+      <Grid container>
         <PrimarySearchAppBar handleLogOut={handleLogOut} />
         <Grid item xs={2}>
           <SideBarNavigation
@@ -432,13 +415,16 @@ function AddDocument({
                       </h5>
                     </div>
                     <div className={"col-md-3"}>
-                      <span>
+                      <div style={{textAlign: 'right'}}>
+                        <span>
                         <small>
                           {date._date.toLocaleDateString() +
-                            " " +
-                            date._date.toLocaleTimeString()}
+                          " " +
+                          date._date.toLocaleTimeString()}
                         </small>
                       </span>
+                      </div>
+
                     </div>
                   </div>
                 </div>

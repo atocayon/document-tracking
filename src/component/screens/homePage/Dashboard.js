@@ -6,7 +6,6 @@ import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import { connect } from "react-redux";
 import { documentTrackingNumber } from "../../../redux/actions/documentTrackingNumber";
 import { withSnackbar } from "notistack";
-import { receiveDocument } from "../../../redux/actions/receiveDocument";
 import { handleScan } from "../../../redux/actions/handleScan";
 import BarcodeReader from "react-barcode-reader";
 import Reactotron from "reactotron-react-js";
@@ -123,7 +122,7 @@ function Dashboard(props) {
   };
 
   return (
-    <Grid container spacing={3}>
+    <Grid container>
       <BarcodeReader onError={handleError} onScan={handleScanning} />
       <PrimarySearchAppBar />
 
@@ -203,14 +202,14 @@ function Dashboard(props) {
                     </form>
                   </div>
                   <div className={"col-md-2"}>
-                    {trackOrSearchOnly && (
-                      <button
-                        className={"btn btn-lg btn-info"}
-                        onClick={handleSearch}
-                      >
-                        Search
-                      </button>
-                    )}
+                    {/*{trackOrSearchOnly && (*/}
+                    {/*  <button*/}
+                    {/*    className={"btn btn-lg btn-info"}*/}
+                    {/*    onClick={handleSearch}*/}
+                    {/*  >*/}
+                    {/*    Search*/}
+                    {/*  </button>*/}
+                    {/*)}*/}
                   </div>
                 </div>
               </div>
@@ -317,7 +316,6 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   documentTrackingNumber,
-  receiveDocument,
   handleScanAndReceive: handleScan,
   trackDocument,
   resetTrackOrReceive,

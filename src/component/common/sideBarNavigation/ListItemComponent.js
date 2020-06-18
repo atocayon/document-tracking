@@ -6,7 +6,6 @@ import QueryBuilderIcon from "@material-ui/icons/QueryBuilder";
 import DescriptionIcon from "@material-ui/icons/Description";
 import FolderSharedIcon from "@material-ui/icons/FolderShared";
 import ArchiveIcon from "@material-ui/icons/Archive";
-import AssessmentIcon from "@material-ui/icons/Assessment";
 import HomeIcon from "@material-ui/icons/Home";
 import DraftsIcon from "@material-ui/icons/Drafts";
 import AddBoxIcon from "@material-ui/icons/AddBox";
@@ -15,7 +14,6 @@ import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import PrintIcon from "@material-ui/icons/Print";
 import InfoIcon from "@material-ui/icons/Info";
 import Badge from "@material-ui/core/Badge";
-import Typography from "@material-ui/core/Typography";
 
 export default function ListItemComponent(props) {
   function icon() {

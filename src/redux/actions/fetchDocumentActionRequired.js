@@ -1,7 +1,6 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
 import server_ip from "../server_ip";
-const localIpUrl = require("local-ip-url");
 
 export function fetchDocumentActionRequired(doc_id) {
   return function (dispatch) {

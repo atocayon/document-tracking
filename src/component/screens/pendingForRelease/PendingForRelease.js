@@ -39,7 +39,7 @@ function PendingForRelease(props) {
     setOpen(!open);
   };
   return (
-    <Grid container spacing={3}>
+    <Grid container>
       <PrimarySearchAppBar />
       <Grid item xs={2}>
         <SideBarNavigation

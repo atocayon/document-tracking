@@ -179,13 +179,13 @@ export default function SideBarNavigation(props) {
           <ListItemComponent primary="User Management" />
         </List>
 
-        <List component="nav" aria-label="secondary mailbox folders">
-          <ListItemComponent primary="Generate Reports" />
-        </List>
+        {/*<List component="nav" aria-label="secondary mailbox folders">*/}
+        {/*  <ListItemComponent primary="Generate Reports" />*/}
+        {/*</List>*/}
 
-        <List component="nav" aria-label="secondary mailbox folders">
-          <ListItemComponent primary="About" />
-        </List>
+        {/*<List component="nav" aria-label="secondary mailbox folders">*/}
+        {/*  <ListItemComponent primary="About" />*/}
+        {/*</List>*/}
 
 
       </div>

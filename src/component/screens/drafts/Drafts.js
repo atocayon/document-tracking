@@ -6,7 +6,6 @@ import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation"
 import Paper from "@material-ui/core/Paper";
 import { getFromStorage } from "../../storage";
 import { Link, Redirect } from "react-router-dom";
-import TableDocument from "../../common/table/TableDocument";
 import Reactotron from "reactotron-react-js";
 import axios from "axios";
 import List from "@material-ui/core/List";
@@ -15,7 +14,6 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
 import DescriptionIcon from "@material-ui/icons/Description";
 import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider";
 
 function Draft(props) {
   const [open, setOpen] = useState(true);
@@ -27,7 +25,6 @@ function Draft(props) {
       axios
         .get("http://10.10.10.16:4000/dts/getDrafts/" + obj.token)
         .then((res) => {
-          // Reactotron.log(res);
           setDrafts(res.data);
         })
         .catch((err) => {
@@ -45,7 +42,7 @@ function Draft(props) {
 
   Reactotron.log(drafts);
   return (
-    <Grid container spacing={3}>
+    <Grid container>
       <PrimarySearchAppBar />
       <Grid item xs={2}>
         <SideBarNavigation

@@ -1,7 +1,6 @@
 import axios from "axios";
 import actionTypes from "./actionTypes";
 import server_ip from "../server_ip";
-const localIpUrl = require("local-ip-url");
 
 export function fetchSectionsList() {
   return function (dispatch) {

@@ -32,9 +32,11 @@ function ProcessedDocuments(props) {
   const [endSession, setEndSession] = useState(false);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [token, setToken] = useState("");
-
+  const [date, setDate] = useState({
+    _date: new Date(),
+  });
   useEffect(() => {
+    const timeID = setInterval(() => tick(), 1000);
     socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
@@ -47,8 +49,17 @@ function ProcessedDocuments(props) {
       });
     }
     setEndSession(!(obj && obj.token));
+    return () => {
+      clearInterval(timeID);
+    };
   }, []);
 
+  const tick = () => {
+    setDate({
+      ...date,
+      _date: new Date(),
+    });
+  };
   const handleClick = () => {
     setOpen(!open);
   };
@@ -62,7 +73,7 @@ function ProcessedDocuments(props) {
     setPage(0);
   };
   return (
-    <Grid container spacing={3}>
+    <Grid container>
       <PrimarySearchAppBar />
       <Grid item xs={2}>
         <SideBarNavigation
@@ -85,17 +96,27 @@ function ProcessedDocuments(props) {
           <div className={"jumbotron"} style={{ padding: 50 }}>
             <div className={"row"}>
               <div className={"col-md-8"}>
-                <h4>
+                <h5>
                   {" "}
                   <DescriptionIcon
-                    fontSize={"large"}
+                    fontSize={"medium"}
                     style={{ color: "#2196F3" }}
                   />{" "}
                   Received and{" "}
                   <span style={{ color: "#2196F3" }}>released documents</span>
-                </h4>
+                </h5>
               </div>
-              <div className={"col-md-4"}></div>
+              <div className={"col-md-4"}>
+                <div style={{ textAlign: "right" }}>
+                  <span>
+                    <small>
+                      {date._date.toLocaleDateString() +
+                        " " +
+                        date._date.toLocaleTimeString()}
+                    </small>
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
