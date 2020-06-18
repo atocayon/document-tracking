@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import List from "@material-ui/core/List";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
@@ -8,9 +8,13 @@ import Typography from "@material-ui/core/Typography";
 import { getFromStorage } from "../../storage";
 import Badge from "@material-ui/core/Badge";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import Reactotron from "reactotron-react-js";
-import Divider from "@material-ui/core/Divider";
-import InfoIcon from '@material-ui/icons/Info';
+import { connect } from "react-redux";
+import { withSnackbar } from "notistack";
+import io from "socket.io-client";
+import endPoint from "../../endPoint";
+import InfoIcon from "@material-ui/icons/Info";
+import { fetchActiveUserList } from "../../../redux/actions/fetchActiveUserList";
+let socket;
 const StyledBadge = withStyles((theme) => ({
   badge: {
     backgroundColor: "#44b700",
@@ -40,24 +44,38 @@ const StyledBadge = withStyles((theme) => ({
   },
 }))(Badge);
 
-export default function UserList(props) {
-  let filteredData;
-  const obj = getFromStorage("documentTracking");
-  if (obj && obj.token) {
-    filteredData = props.user.filter(
-      (data) => data.user_id !== obj.token.toString()
-    );
-  }
+function UserList(props) {
+  useEffect(() => {
+    socket = io(endPoint.ADDRESS);
+    const obj = getFromStorage("documentTracking");
+    if (obj && obj.token) {
+      const { token } = obj;
+      async function fetch() {
+        await props.fetchActiveUserList(token, socket);
+      }
+
+      fetch().catch((err) => {
+        throw err;
+      });
+    }
+  }, []);
 
   return (
     <div>
-      <h6 style={{ marginTop: 100, marginLeft: 10, fontWeight: "bold", color: "#2196F3" }}>
+      <h6
+        style={{
+          marginTop: 100,
+          marginLeft: 10,
+          fontWeight: "bold",
+          color: "#2196F3",
+        }}
+      >
         <InfoIcon />
         &nbsp;Active Users
       </h6>
       <List>
-        {filteredData &&
-          filteredData.map((data, index) => (
+        {props.userList.length > 0 &&
+          props.userList.map((data, index) => (
             <ListItem alignItems="flex-start" key={data.user_id}>
               <ListItemAvatar>
                 <StyledBadge
@@ -91,3 +109,18 @@ export default function UserList(props) {
     </div>
   );
 }
+
+function mapStateToProps(state) {
+  return {
+    userList: state.fetchActiveUserList,
+  };
+}
+
+const mapDispatchToProps = {
+  fetchActiveUserList,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withSnackbar(UserList));

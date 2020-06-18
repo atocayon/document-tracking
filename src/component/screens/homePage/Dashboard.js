@@ -2,17 +2,14 @@ import React, { useEffect, useState } from "react";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
-import InputField from "../../common/textField/InputField";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import { connect } from "react-redux";
 import { documentTrackingNumber } from "../../../redux/actions/documentTrackingNumber";
 import { withSnackbar } from "notistack";
 import { receiveDocument } from "../../../redux/actions/receiveDocument";
-
 import { handleScan } from "../../../redux/actions/handleScan";
 import BarcodeReader from "react-barcode-reader";
 import Reactotron from "reactotron-react-js";
-
 import { trackDocument } from "../../../redux/actions/trackDocument";
 import DocumentTrack from "./DocumentTrack";
 import FormControl from "@material-ui/core/FormControl";
@@ -36,20 +33,16 @@ import DescriptionIcon from "@material-ui/icons/Description";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
 import { fetchActiveUserList } from "../../../redux/actions/fetchActiveUserList";
-import reactotron from "../../../ReactotronConfig";
 import UserList from "../../common/userList/UserList";
-import {getFromStorage} from "../../storage";
-import { logout } from "../../../redux/actions/logout";
+
 const _onClick = new UIFx(onClick);
 const _onScan = new UIFx(onScan);
 let socket;
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
-  const [selectedValue, setSelectedValue] = useState("");
   const [trackOrSearchOnly, setTrackOrSearchOnly] = useState(false);
   useEffect(() => {
     socket = io(endPoint.ADDRESS);
-    props.fetchActiveUserList(socket);
     if (props.receive !== "") {
       if (props.receive === "success") {
         const variant = "info";
@@ -306,7 +299,7 @@ function Dashboard(props) {
         </Paper>
       </Grid>
       <Grid item xs={2}>
-        <UserList user={props.userList} />
+        <UserList />
       </Grid>
     </Grid>
   );
@@ -318,7 +311,7 @@ function mapStateToProps(state) {
     receive: state.receiveDocument,
     track: state.trackDocument,
     search: state.searchBySubj,
-    userList: state.fetchActiveUserList,
+
   };
 }
 
@@ -330,7 +323,7 @@ const mapDispatchToProps = {
   resetTrackOrReceive,
   trackOnly,
   searchBySubj,
-  fetchActiveUserList,
+
 };
 
 export default connect(

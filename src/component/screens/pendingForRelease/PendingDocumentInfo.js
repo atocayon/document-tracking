@@ -33,6 +33,7 @@ import ReactToPrint from "react-to-print";
 import PrintIcon from "@material-ui/icons/Print";
 import {addForwardDestination} from "../../../redux/actions/onChangForwardDocument";
 import {removeForwardDestination} from "../../../redux/actions/onChangForwardDocument";
+import UserList from "../../common/userList/UserList";
 
 function PendingDocumentInfo(props) {
   const [open, setOpen] = useState(true);
@@ -212,7 +213,9 @@ function PendingDocumentInfo(props) {
           </div>
         </Paper>
       </Grid>
-      <Grid item xs={2}></Grid>
+      <Grid item xs={2}>
+        <UserList />
+      </Grid>
     </Grid>
   );
 }

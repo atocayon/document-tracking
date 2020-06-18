@@ -17,6 +17,7 @@ import DialogComponent from "../../common/confirmationDialog/DialogComponent";
 import TransferOfficeDialog from "../../common/transferOfficeDialog/TransferOfficeDialog";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
+import UserList from "../../common/userList/UserList";
 
 function UserManagement(props) {
   const [sectionUsers, setSectionUsers] = useState([]);
@@ -347,7 +348,9 @@ function UserManagement(props) {
           </div>
         </Paper>
       </Grid>
-      <Grid item xs={2}></Grid>
+      <Grid item xs={2}>
+        <UserList />
+      </Grid>
     </Grid>
   );
 }

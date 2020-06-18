@@ -29,6 +29,7 @@ import DescriptionIcon from "@material-ui/icons/Description";
 import CheckIcon from "@material-ui/icons/Check";
 
 import Reactotron from "reactotron-react-js";
+import UserList from "../../common/userList/UserList";
 let socket;
 const tableHead = ["Document Categories", ""];
 
@@ -37,7 +38,7 @@ function ManageDocCategory(props) {
   const [endSession, setEndSession] = useState(false);
   const [page, setPage] = React.useState(0);
   const [category, setCategory] = useState("");
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [token, setToken] = useState("");
   const [editDocCategory, setEditDocCategory] = useState({});
   useEffect(() => {
@@ -225,7 +226,7 @@ function ManageDocCategory(props) {
                   </Table>
                 </TableContainer>
                 <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, 100]}
+                  rowsPerPageOptions={[10, 25, 100]}
                   component="div"
                   count={props.doc_category.length}
                   rowsPerPage={rowsPerPage}
@@ -238,7 +239,9 @@ function ManageDocCategory(props) {
           </div>
         </Paper>
       </Grid>
-      <Grid item xs={2}></Grid>
+      <Grid item xs={2}>
+        <UserList />
+      </Grid>
     </Grid>
   );
 }

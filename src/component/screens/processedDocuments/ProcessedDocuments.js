@@ -17,7 +17,8 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableBody from "@material-ui/core/TableBody";
 import TablePagination from "@material-ui/core/TablePagination";
-
+import DescriptionIcon from "@material-ui/icons/Description";
+import UserList from "../../common/userList/UserList";
 let socket;
 const columns = [
   "Tracking #",
@@ -30,7 +31,7 @@ function ProcessedDocuments(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [token, setToken] = useState("");
 
   useEffect(() => {
@@ -83,57 +84,74 @@ function ProcessedDocuments(props) {
         >
           <div className={"jumbotron"} style={{ padding: 50 }}>
             <div className={"row"}>
-              <div className={"col-md-6"}></div>
-              <div className={"col-md-6"}></div>
+              <div className={"col-md-8"}>
+                <h4>
+                  {" "}
+                  <DescriptionIcon
+                    fontSize={"large"}
+                    style={{ color: "#2196F3" }}
+                  />{" "}
+                  Received and{" "}
+                  <span style={{ color: "#2196F3" }}>released documents</span>
+                </h4>
+              </div>
+              <div className={"col-md-4"}></div>
             </div>
           </div>
 
-          <div style={{ marginLeft: 20, marginRight: 20 }}>
-            <TableContainer>
-              <Table aria-label="sticky table">
-                <TableHead style={{ background: "#2196F3" }}>
-                  <TableRow>
-                    {columns.map((column) => (
-                      <TableCell style={{ color: "#fff" }} key={column}>
-                        {column}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {props.processedDoc.length > 0 &&
-                    props.processedDoc
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      .map((data) => (
-                        <TableRow key={data.document_id}>
-                          <TableCell style={{ color: "#2196F3" }}>
-                            {data.document_id}
-                          </TableCell>
-                          <TableCell>{data.subject}</TableCell>
-                          <TableCell>{data.type}</TableCell>
-                          <TableCell>{data.status}</TableCell>
-                          <TableCell>{data.date_time}</TableCell>
-                        </TableRow>
+          <div className={"row"}>
+            <div
+              className={"col-md-12"}
+              style={{ paddingLeft: 50, paddingRight: 50 }}
+            >
+              <TableContainer>
+                <Table aria-label="sticky table">
+                  <TableHead style={{ background: "#2196F3" }}>
+                    <TableRow>
+                      {columns.map((column) => (
+                        <TableCell style={{ color: "#fff" }} key={column}>
+                          {column}
+                        </TableCell>
                       ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25, 100]}
-              component="div"
-              count={props.processedDoc.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-            />
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {props.processedDoc.length > 0 &&
+                      props.processedDoc
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .map((data) => (
+                          <TableRow key={data.document_id}>
+                            <TableCell style={{ color: "#2196F3" }}>
+                              {data.document_id}
+                            </TableCell>
+                            <TableCell>{data.subject}</TableCell>
+                            <TableCell>{data.type}</TableCell>
+                            <TableCell>{data.status}</TableCell>
+                            <TableCell>{data.date_time}</TableCell>
+                          </TableRow>
+                        ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 100]}
+                component="div"
+                count={props.processedDoc.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onChangePage={handleChangePage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+              />
+            </div>
           </div>
         </Paper>
       </Grid>
-      <Grid item xs={2}></Grid>
+      <Grid item xs={2}>
+        <UserList />
+      </Grid>
     </Grid>
   );
 }

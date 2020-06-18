@@ -13,6 +13,7 @@ import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import { connect } from "react-redux";
 import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import { withSnackbar } from "notistack";
+import UserList from "../../common/userList/UserList";
 
 function Profile({ match, user, fetchUserById }) {
   const [endSession, setEndSession] = useState(false);
@@ -116,7 +117,9 @@ function Profile({ match, user, fetchUserById }) {
           </Paper>
         )}
       </Grid>
-      <Grid item xs={2}></Grid>
+      <Grid item xs={2}>
+        <UserList />
+      </Grid>
     </Grid>
   );
 }

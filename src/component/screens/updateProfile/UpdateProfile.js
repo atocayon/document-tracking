@@ -23,6 +23,7 @@ import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation"
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import {inputChange} from "../../../redux/actions/inputChange";
+import UserList from "../../common/userList/UserList";
 
 function UpdateProfile (props) {
   const [endSession, setEndSession] = useState(false);
@@ -389,7 +390,9 @@ function UpdateProfile (props) {
               )}
           </div>
         </Grid>
-        <Grid item xs={2}></Grid>
+        <Grid item xs={2}>
+          <UserList />
+        </Grid>
       </Grid>
     );
 }
