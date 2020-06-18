@@ -17,6 +17,7 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import List from "@material-ui/core/List";
+import UserList from "../../common/userList/UserList";
 let socket;
 
 function SectionDocuments(props) {
@@ -65,46 +66,11 @@ function SectionDocuments(props) {
           <div className={"jumbotron"} style={{ padding: 50 }}>
             <div className={"row"}>
               <div className={"col-md-6"}>
-                {/*<form onSubmit={handleSearch}>*/}
-                {/*  <FormControl fullWidth>*/}
-                {/*    <InputLabel htmlFor="outlined-adornment-amount">*/}
-                {/*      Search by subject and press enter*/}
-                {/*    </InputLabel>*/}
-                {/*    <Input*/}
-                {/*      label={"Search by subject and press enter"}*/}
-                {/*      variant={"outlined"}*/}
-                {/*      onChange={onChangeSearch}*/}
-                {/*      type={"text"}*/}
-                {/*      endAdornment={*/}
-                {/*        search !== "" ? (*/}
-                {/*          <InputAdornment position="end">*/}
-                {/*            <IconButton*/}
-                {/*              title={"clear"}*/}
-                {/*              aria-label="toggle password visibility"*/}
-                {/*              onClick={handleClearSearch}*/}
-                {/*              onMouseDown={handleClearSearch}*/}
-                {/*              edge="end"*/}
-                {/*            >*/}
-                {/*              <HighlightOffRoundedIcon />*/}
-                {/*            </IconButton>*/}
-                {/*          </InputAdornment>*/}
-                {/*        ) : (*/}
-                {/*          ""*/}
-                {/*        )*/}
-                {/*      }*/}
-                {/*    />*/}
-                {/*  </FormControl>*/}
-                {/*</form>*/}
               </div>
               <div className={"col-md-6"}></div>
             </div>
           </div>
 
-          {/*{props.sectionDocuments.length === 0 && (*/}
-          {/*  <div style={{ textAlign: "center", marginTop: 200 }}>*/}
-          {/*    <h6 style={{ color: "#9E9E9E" }}>No documents found</h6>*/}
-          {/*  </div>*/}
-          {/*)}*/}
           <div style={{ marginLeft: 50, marginRight: 10 }}>
             <div className={"row"}>
               {props.doc_category.length > 0 &&
@@ -135,7 +101,9 @@ function SectionDocuments(props) {
           </div>
         </Paper>
       </Grid>
-      <Grid item xs={2}></Grid>
+      <Grid item xs={2}>
+        <UserList />
+      </Grid>
     </Grid>
   );
 }

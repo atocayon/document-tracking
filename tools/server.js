@@ -977,6 +977,7 @@ const fetchUserActiveList = () => {
   sql += "SELECT  ";
   sql += "a.timeStamp AS timeStamp, ";
   sql += "b.position AS position, ";
+  sql += "b.user_id AS user_id, ";
   sql += "CONVERT(b.user_id, CHAR) as user_id, b.name AS name ";
   sql += "FROM users_session a ";
   sql += "JOIN users b ";

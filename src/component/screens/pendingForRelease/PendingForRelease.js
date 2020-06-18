@@ -13,7 +13,6 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
 import DescriptionIcon from "@material-ui/icons/Description";
 import ListItemText from "@material-ui/core/ListItemText";
-import { fetchActiveUserList } from "../../../redux/actions/fetchActiveUserList";
 import UserList from "../../common/userList/UserList";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
@@ -25,7 +24,6 @@ function PendingForRelease(props) {
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     socket = io(endPoint.ADDRESS);
-    props.fetchActiveUserList(socket);
     async function fetch() {
       await props.fetchPendingDocuments(obj.token);
     }
@@ -121,7 +119,7 @@ function PendingForRelease(props) {
         </Paper>
       </Grid>
       <Grid item xs={2}>
-        <UserList user={props.userList} />
+        <UserList />
       </Grid>
     </Grid>
   );
@@ -130,13 +128,11 @@ function PendingForRelease(props) {
 function mapStateToProps(state) {
   return {
     pending: state.fetchPendingDocuments,
-    userList: state.fetchActiveUserList,
   };
 }
 
 const mapDispatchToProps = {
   fetchPendingDocuments,
-  fetchActiveUserList,
 };
 
 export default connect(
