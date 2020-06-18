@@ -32,7 +32,7 @@ import Reactotron from "reactotron-react-js";
 let socket;
 const tableHead = ["Document Categories", ""];
 
-function MyDocuments(props) {
+function ManageDocCategory(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
   const [page, setPage] = React.useState(0);
@@ -40,7 +40,6 @@ function MyDocuments(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [token, setToken] = useState("");
   const [editDocCategory, setEditDocCategory] = useState({});
-  const [editInput, setEditInput] = useState({});
   useEffect(() => {
     socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
@@ -262,4 +261,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withSnackbar(MyDocuments));
+)(withSnackbar(ManageDocCategory));

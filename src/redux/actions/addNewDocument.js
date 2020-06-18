@@ -1,6 +1,5 @@
 import actionTypes from "./actionTypes";
 
-
 export function addNewDocument(
   documentID,
   user_id,
@@ -9,6 +8,7 @@ export function addNewDocument(
   note,
   action_req,
   destination,
+  category,
   socket
 ) {
   return async function (dispatch) {
@@ -21,6 +21,7 @@ export function addNewDocument(
       note,
       action_req,
       destination,
+      category,
       (message) => {
         if (message) {
           return dispatch({ type: actionTypes.ADD_DOCUMENT, data: "failed" });

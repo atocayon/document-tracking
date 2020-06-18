@@ -7,10 +7,8 @@ import SideBarNavigation from "./common/sideBarNavigation/SideBarNavigation";
 
 import TrackDocument from "./screens/trackDocument/TrackDocument";
 import AddDocument from "./screens/addDocument/AddDocument";
-import ReceiveDocument from "./screens/receiveDocument/ReceiveDocument";
-import ReleaseDocument from "./screens/releaseDocument/ReleaseDocument";
 import PendingForRelease from "./screens/pendingForRelease/PendingForRelease";
-import MyDocuments from "./screens/myDocuments/MyDocuments";
+import ManageDocCategory from "./screens/manageDocCategory/ManageDocCategory";
 import SectionDocuments from "./screens/sectionDocuments/SectionDocuments";
 import ProcessedDocuments from "./screens/processedDocuments/ProcessedDocuments";
 import LoginModal from "./screens/login/Login";
@@ -43,10 +41,8 @@ function App(props) {
           <Route path={"/trackDocument"} component={TrackDocument} />
           <Route path={"/addDocument/:id"} component={AddDocument} />
           <Route path={"/addDocument"} component={AddDocument} />
-          <Route path={"/receiveDocument"} component={ReceiveDocument} />
-          <Route path={"/releasedDocument"} component={ReleaseDocument} />
           <Route path={"/pending"} component={PendingForRelease} />
-          <Route path={"/doc_category"} component={MyDocuments} />
+          <Route path={"/doc_category"} component={ManageDocCategory} />
           <Route path={"/sectionDocuments"} component={SectionDocuments} />
           <Route path={"/processedDocuments"} component={ProcessedDocuments} />
           <Route path={"/user/:id"} component={Profile} />

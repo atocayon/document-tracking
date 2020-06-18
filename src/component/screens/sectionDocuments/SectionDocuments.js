@@ -7,7 +7,6 @@ import Paper from "@material-ui/core/Paper";
 import { getFromStorage } from "../../storage";
 import { withSnackbar } from "notistack";
 import { connect } from "react-redux";
-import { fetchSectionDocuments } from "../../../redux/actions/fetchSectionDocuments";
 import { handleSearchSectionDocuments } from "../../../redux/actions/handleSearchSectionDocuments";
 import { fetchDocCategory } from "../../../redux/actions/manageDocumentCategory";
 import io from "socket.io-client";
@@ -23,18 +22,12 @@ let socket;
 function SectionDocuments(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
-  const [userID, setUserID] = useState("");
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [search, setSearch] = useState("");
   useEffect(() => {
     socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
-      setUserID(token);
       async function fetch() {
-        await props.fetchSectionDocuments(token);
         await props.fetchDocCategory(token, socket);
       }
 
@@ -48,30 +41,6 @@ function SectionDocuments(props) {
     setOpen(!open);
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const onChangeSearch = ({ target }) => {
-    setSearch(target.value);
-  };
-
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (search !== "") {
-      await props.handleSearchSectionDocuments(search);
-    }
-  };
-
-  const handleClearSearch = (e) => {
-    e.preventDefault();
-    window.location.reload(true);
-  };
   return (
     <Grid container spacing={3}>
       <PrimarySearchAppBar />
@@ -162,66 +131,7 @@ function SectionDocuments(props) {
                   </div>
                 ))}
             </div>
-            {/*<div className={"row"}>*/}
-            {/*  <div className={"col-md-10"}>*/}
-            {/*    <List>*/}
-            {/*      {props.sectionDocuments.length > 0 &&*/}
-            {/*        props.sectionDocuments*/}
-            {/*          .slice(*/}
-            {/*            page * rowsPerPage,*/}
-            {/*            page * rowsPerPage + rowsPerPage*/}
-            {/*          )*/}
-            {/*          .map((document) => {*/}
-            {/*            let secondaryText =*/}
-            {/*              document.creatorID === userID*/}
-            {/*                ? "You"*/}
-            {/*                : document.creator;*/}
-            {/*            return (*/}
-            {/*              <Link*/}
-            {/*                to={"/doc/" + document.documentID}*/}
-            {/*                style={{ textDecoration: "none" }}*/}
-            {/*              >*/}
-            {/*                <ListItem>*/}
-            {/*                  <ListItemAvatar>*/}
-            {/*                    <Avatar>*/}
-            {/*                      <DescriptionIcon />*/}
-            {/*                    </Avatar>*/}
-            {/*                  </ListItemAvatar>*/}
-            {/*                  <ListItemText*/}
-            {/*                    primary={document.subject}*/}
-            {/*                    secondary={*/}
-            {/*                      document.docType + " by " + secondaryText*/}
-            {/*                    }*/}
-            {/*                  />*/}
-            {/*                </ListItem>*/}
-            {/*              </Link>*/}
-            {/*            );*/}
-            {/*          })}*/}
-            {/*    </List>*/}
-            {/*    <div style={{ position: "fixed", bottom: 0, marginBottom: 20 }}>*/}
-            {/*      <TablePagination*/}
-            {/*        rowsPerPageOptions={[*/}
-            {/*          5,*/}
-            {/*          10,*/}
-            {/*          25,*/}
-            {/*          30,*/}
-            {/*          50,*/}
-            {/*          100,*/}
-            {/*          200,*/}
-            {/*          500,*/}
-            {/*          1000,*/}
-            {/*        ]}*/}
-            {/*        component="div"*/}
-            {/*        count={props.sectionDocuments.length}*/}
-            {/*        rowsPerPage={rowsPerPage}*/}
-            {/*        page={page}*/}
-            {/*        onChangePage={handleChangePage}*/}
-            {/*        onChangeRowsPerPage={handleChangeRowsPerPage}*/}
-            {/*      />*/}
-            {/*    </div>*/}
-            {/*  </div>*/}
-            {/*  <div className={"col-md-2"}></div>*/}
-            {/*</div>*/}
+
           </div>
         </Paper>
       </Grid>
@@ -232,13 +142,11 @@ function SectionDocuments(props) {
 
 function mapStateToProps(state) {
   return {
-    sectionDocuments: state.fetchSectionDocuments,
     doc_category: state.manageDocumentCategory,
   };
 }
 
 const mapDispatchToProps = {
-  fetchSectionDocuments,
   handleSearchSectionDocuments,
   fetchDocCategory,
 };

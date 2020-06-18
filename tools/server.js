@@ -1,3 +1,4 @@
+
 const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
@@ -119,6 +120,7 @@ io.on("connection", (socket) => {
       note,
       action_req,
       documentLogs,
+      category,
       callback
     ) => {
       insertDocument(
@@ -129,6 +131,7 @@ io.on("connection", (socket) => {
         note,
         action_req,
         documentLogs,
+          category,
         callback
       );
     }
@@ -183,6 +186,11 @@ io.on("connection", (socket) => {
     deleteDocCategory(id, token, callback);
   });
 
+  //Fetch Processed doc
+  socket.on("fetchProcessedDoc", (token, callback) => {
+    fetchProcessedDoc(token, callback);
+  });
+
   socket.on("disconnect", () => {
     console.log("Disconnected");
     socket.emit("Hey, are you still there?");
@@ -193,6 +201,29 @@ io.on("connection", (socket) => {
 //------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------
+
+//Fetch Processed Doc
+const fetchProcessedDoc = (token, callback) => {
+  let sql = "";
+  sql += "SELECT DISTINCT a.document_id AS document_id, ";
+  sql += "DATE_FORMAT(a.date_time, '%M %d, %Y @ %h:%i:%s %p ') AS date_time, ";
+  sql += "b.subject AS subject, ";
+  sql += "c.type AS type, ";
+  sql += "d.status AS status ";
+  sql += "FROM documentLogs a ";
+  sql += "JOIN documents b ON a.document_id = b.documentID ";
+  sql += "JOIN document_type c ON b.doc_type = c.id ";
+  sql += "JOIN documentStatus d ON a.status = d.statid ";
+  sql += "WHERE a.user_id = ? ";
+  sql += "ORDER BY a.date_time DESC";
+  connection.query(sql, [token], function (err, rows, fields) {
+    if (err) {
+      return callback(err);
+    }
+
+    io.emit("processedDocument", rows);
+  })
+};
 
 //Delete Doc Category
 const deleteDocCategory = (id, token, callback) => {
@@ -468,6 +499,7 @@ const insertDocument = (
   note,
   action_req,
   documentLogs,
+  category,
   callback
 ) => {
   let today = new Date();
@@ -483,47 +515,47 @@ const insertDocument = (
       console.log(err);
       return callback("server error");
     }
-
-    if (rows.length > 0) {
-      const update =
-        "UPDATE documents SET creator = ?, subject= ?, doc_type = ?, note = ?, status = ? WHERE documentID = ?";
-      connection.query(
-        update,
-        [creator, subject, doc_type, note, "1", parseInt(documentID)],
-        function (err, result) {
-          if (err) {
-            console.log(err);
-            return callback("server error");
-          }
-
-          let sql = "";
-          sql += "INSERT INTO documentLogs ";
-          sql += "(document_id, ";
-          sql += "user_id, ";
-          sql += "remarks, ";
-          sql += "destinationType, ";
-          sql += "destination, ";
-          sql += "status, ";
-          sql += "notification, level, ref) ";
-          sql += "VALUES ? ";
-
-          connection.query(sql, [documentLogs], function (err, result) {
-            if (err) {
-              console.log(err);
-              return callback("server error");
-            }
-
-            getDocLogs();
-            assignTrackingNum();
-          });
-        }
-      );
-    }
+    //
+    // if (rows.length > 0) {
+    //   const update =
+    //     "UPDATE documents SET creator = ?, subject= ?, doc_type = ?, note = ?, status = ? WHERE documentID = ?";
+    //   connection.query(
+    //     update,
+    //     [creator, subject, doc_type, note, "1", parseInt(documentID)],
+    //     function (err, result) {
+    //       if (err) {
+    //         console.log(err);
+    //         return callback("server error");
+    //       }
+    //
+    //       let sql = "";
+    //       sql += "INSERT INTO documentLogs ";
+    //       sql += "(document_id, ";
+    //       sql += "user_id, ";
+    //       sql += "remarks, ";
+    //       sql += "destinationType, ";
+    //       sql += "destination, ";
+    //       sql += "status, ";
+    //       sql += "notification, level, ref) ";
+    //       sql += "VALUES ? ";
+    //
+    //       connection.query(sql, [documentLogs], function (err, result) {
+    //         if (err) {
+    //           console.log(err);
+    //           return callback("server error");
+    //         }
+    //
+    //         getDocLogs();
+    //         assignTrackingNum();
+    //       });
+    //     }
+    //   );
+    // }
     if (rows.length === 0) {
       if (documentLogs.length > 1) {
         const sql1 =
-          "INSERT INTO documents (documentID, creator, subject, doc_type, note, status, ref) VALUES ?";
-        let values = [[documentID, creator, subject, doc_type, note, "1", "0"]];
+          "INSERT INTO documents (documentID, creator, subject, doc_type, note, status, ref, category) VALUES ?";
+        let values = [[documentID, creator, subject, doc_type, note, "1", "0", category]];
         let destination = [];
         for (let i = 0; i < documentLogs.length; i++) {
           let inc = i + 1;
@@ -535,6 +567,7 @@ const insertDocument = (
             note,
             "1",
             documentID,
+              category
           ]);
 
           destination.push([
@@ -572,14 +605,15 @@ const insertDocument = (
 
               getDocLogs();
               assignTrackingNum();
+              fetchProcessedDoc(creator, callback);
             });
           });
         });
       } else {
         const sql4 =
-          "INSERT INTO documents (documentID, creator, subject, doc_type, note, status, ref) VALUES ?";
+          "INSERT INTO documents (documentID, creator, subject, doc_type, note, status, ref, category) VALUES ?";
         let values4 = [
-          [documentID, creator, subject, doc_type, note, "1", "0"],
+          [documentID, creator, subject, doc_type, note, "1", "0", category],
         ];
 
         connection.query(sql4, [values4], function (err, result) {
@@ -616,6 +650,7 @@ const insertDocument = (
 
               getDocLogs();
               assignTrackingNum();
+              fetchProcessedDoc(creator, callback);
             });
           });
         });
@@ -685,6 +720,7 @@ const receiveDocument = (
             }
             countPending(user_id, socket);
             trackDocument(documentTracking);
+            fetchProcessedDoc(user_id, callback);
             return callback("success");
           });
           break;
@@ -739,6 +775,7 @@ const receiveDocument = (
 
                 countPending(user_id, socket);
                 trackDocument(documentTracking);
+                fetchProcessedDoc(user_id, callback);
                 return callback("success");
               }
             );
@@ -1638,45 +1675,56 @@ router.route("/searchUserDocument/:value").get(function (req, res) {
 });
 
 //Fetch Documents of Section
-router.route("/fetchSectionDocuments/:userID").get(function (req, res) {
+router.route("/fetchSectionDocuments/:userID/:folder").get(function (req, res) {
   const userID = req.params.userID;
+  const folder = req.params.folder;
   const fetchUser = "SELECT * FROM users WHERE user_id = ?";
-  connection.query(fetchUser, [parseInt(userID)], function (err, rows, fields) {
+  connection.query(fetchUser, [parseInt(userID)], function (err, user_id, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
     }
 
-    let sql = "";
-    sql += "SELECT a.documentID as documentID, ";
-    sql += "a.subject as subject, ";
-    sql += "a.doc_type as docType_id, ";
-    sql += "a.note as note, ";
-    sql += "b.type as docType, ";
-    sql += "a.creator as creatorID, ";
-    sql += "d.name as creator ";
-    sql += "FROM documents a ";
-    sql += "JOIN document_type b ";
-    sql += "ON a.doc_type = b.id ";
-    sql += "JOIN users d ";
-    sql += "ON a.creator = d.user_id ";
-    sql += "WHERE d.section = ? ";
-    sql += "AND a.status = ? ";
-    sql += "AND a.ref = ? ";
-    sql += "ORDER BY a.date_time_created DESC ";
-    connection.query(sql, [rows[0].section, "1", "0"], function (
-      err,
-      rows,
-      fields
-    ) {
+    const fetchCategory = "SELECT a.id AS id,a.category AS category FROM doc_category a WHERE a.section_id = ? AND a.category = ?";
+    connection.query(fetchCategory, [user_id[0].section, folder], function (err, category, fields) {
       if (err) {
         console.log(err);
         res.status(500).send(err);
       }
+      let sql = "";
+      sql += "SELECT a.documentID as documentID, ";
+      sql += "a.subject as subject, ";
+      sql += "a.doc_type as docType_id, ";
+      sql += "a.note as note, ";
+      sql += "b.type as docType, ";
+      sql += "a.creator as creatorID, ";
+      sql += "d.name as creator ";
+      sql += "FROM documents a ";
+      sql += "JOIN document_type b ";
+      sql += "ON a.doc_type = b.id ";
+      sql += "JOIN users d ";
+      sql += "ON a.creator = d.user_id ";
+      sql += "WHERE d.section = ? ";
+      sql += "AND a.status = ? ";
+      sql += "AND a.ref = ? ";
+      sql += "AND a.category = ? ";
+      sql += "ORDER BY a.date_time_created DESC ";
+      connection.query(sql, [user_id[0].section, "1", "0", category[0].id], function (
+          err,
+          rows,
+          fields
+      ) {
+        if (err) {
+          console.log(err);
+          res.status(500).send(err);
+        }
 
-      console.log(rows);
-      res.status(200).send(rows);
-    });
+        console.log(rows);
+        res.status(200).send(rows);
+      });
+    })
+
+
   });
 });
 
