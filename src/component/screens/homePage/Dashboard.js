@@ -163,9 +163,7 @@ function Dashboard(props) {
                     <form onSubmit={handleManual}>
                       <FormControl fullWidth>
                         <InputLabel htmlFor="outlined-adornment-amount">
-                          {trackOrSearchOnly
-                            ? "Search / Track"
-                            : "Document Tracking Number"}
+                          Document Tracking Number
                         </InputLabel>
                         <Input
                           id={"tackDocument"}
