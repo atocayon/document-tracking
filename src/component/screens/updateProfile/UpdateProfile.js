@@ -99,6 +99,7 @@ function UpdateProfile (props) {
         <PrimarySearchAppBar />
         <Grid item xs={2}>
           <SideBarNavigation
+              user={props.user}
             open={open}
             handleClick={handleClickSidebar}
           />

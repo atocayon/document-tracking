@@ -45,6 +45,7 @@ function Profile({ match, user, fetchUserById }) {
       <Grid item xs={2}>
         <SideBarNavigation
           open={open}
+          user={user}
           setOpen={setOpen}
           handleClick={handleClick}
         />
