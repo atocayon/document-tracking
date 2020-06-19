@@ -170,11 +170,7 @@ function Dashboard(props) {
                         <Input
                           id={"tackDocument"}
                           name={"documentTrackingNumber"}
-                          label={
-                            trackOrSearchOnly
-                              ? "Search / Track"
-                              : "Tracking Number"
-                          }
+                          label={"Tracking Number"}
                           variant={"outlined"}
                           onChange={props.documentTrackingNumber}
                           value={props.trackingNum.documentTrackingNumber}
