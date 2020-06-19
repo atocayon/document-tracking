@@ -235,7 +235,7 @@ function Dashboard(props) {
                   props.search.length === 0 ? (
                     <div style={{ textAlign: "center", marginTop: "25vh" }}>
                       <h6 style={{ color: "#9E9E9E" }}>
-                        Scan the barcode to track a document
+                        Scan the barcode to track the document
                       </h6>
                       <br />
                       <button
