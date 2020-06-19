@@ -47,6 +47,7 @@ import { clearAddDocumentMessage } from "../../../redux/actions/addNewDocument";
 import { clearDraftsMessage } from "../../../redux/actions/addNewDocumentDraft";
 import { logout } from "../../../redux/actions/logout";
 import { fetchDocCategory } from "../../../redux/actions/manageDocumentCategory";
+
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
 import UserList from "../../common/userList/UserList";
@@ -379,6 +380,7 @@ function AddDocument({
         <Grid item xs={2}>
           <SideBarNavigation
             open={open}
+            user={user}
             setOpen={setOpen}
             handleClick={handleClick}
           />

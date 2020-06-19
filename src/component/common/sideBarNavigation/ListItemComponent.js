@@ -29,7 +29,7 @@ export default function ListItemComponent(props) {
       return <DescriptionIcon />;
     }
 
-    if (props.primary === "Section Documents") {
+    if (props.primary === props.section+" Documents") {
       return <FolderSharedIcon />;
     }
 
@@ -70,7 +70,7 @@ export default function ListItemComponent(props) {
       return "/doc_category";
     }
 
-    if (props.primary === "Section Documents") {
+    if (props.primary === props.section+" Documents") {
       return "/sectionDocuments";
     }
 

@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import Home from "./screens/homePage/Home";
 import { Route, Switch } from "react-router-dom";
-import TrackDocument from "./screens/trackDocument/TrackDocument";
 import AddDocument from "./screens/addDocument/AddDocument";
 import PendingForRelease from "./screens/pendingForRelease/PendingForRelease";
 import ManageDocCategory from "./screens/manageDocCategory/ManageDocCategory";
@@ -34,7 +33,6 @@ function App(props) {
           <Route path={"/"} exact component={Home} />
           <Route path={"/login"} component={LoginModal} />
           <Route path={"/fetchUsersBySection"} component={UserManagement} />
-          <Route path={"/trackDocument"} component={TrackDocument} />
           <Route path={"/addDocument/:id"} component={AddDocument} />
           <Route path={"/addDocument"} component={AddDocument} />
           <Route path={"/pending"} component={PendingForRelease} />

@@ -18,6 +18,7 @@ import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import UserList from "../../common/userList/UserList";
 
 function UserManagement(props) {
+  const [user, setUser] =useState({});
   const [sectionUsers, setSectionUsers] = useState([]);
   const [token, setToken] = useState("");
   const [userRole, setUserRole] = useState("");
@@ -59,6 +60,7 @@ function UserManagement(props) {
         .get("http://10.10.10.16:4000/dts/user/" + token)
         .then((_user) => {
           // Reactotron.log(_user);
+          setUser(_user.data);
           let section = _user.data.secid;
           setUserRole(_user.data.role);
 
@@ -243,6 +245,7 @@ function UserManagement(props) {
       <Grid item xs={2}>
         <SideBarNavigation
           open={open}
+          user={user}
           setOpen={setOpen}
           handleClick={handleClick}
         />

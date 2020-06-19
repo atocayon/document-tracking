@@ -26,7 +26,7 @@ function RegistrationForm(props) {
     confirmPassword: "",
     email: "",
     contact: "",
-    position: ""
+    position: "",
   });
   const [error, setError] = useState({});
   const [redirect, setRedirect] = useState(false);
@@ -41,23 +41,27 @@ function RegistrationForm(props) {
         await props.fetchCurrentSystemUser(token);
       }
 
-      fetch().catch(err => {
+      fetch().catch((err) => {
         throw err;
       });
 
-      if (props.user_reg !== ""){
-        if (props.user_reg === "success"){
+      if (props.user_reg !== "") {
+        if (props.user_reg === "success") {
           const variant = "info";
-          props.enqueueSnackbar(userInfo.name + " registration success...", { variant });
+          props.enqueueSnackbar(userInfo.name + " registration success...", {
+            variant,
+          });
           setRedirect(true);
         }
 
-        if (props.user_reg === "failed"){
+        if (props.user_reg === "failed") {
           const _error = {};
           _error.email = "Already taken";
           setError(_error);
           const variant = "error";
-          props.enqueueSnackbar(userInfo.name + " email is already taken...", { variant });
+          props.enqueueSnackbar(userInfo.name + " email is already taken...", {
+            variant,
+          });
         }
       }
     }
@@ -81,29 +85,28 @@ function RegistrationForm(props) {
     return Object.keys(_error).length === 0;
   }
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (!formValidation()) {
       const variant = "error";
       props.enqueueSnackbar("Please don't leave input fields empty...", {
-        variant
+        variant,
       });
       return;
     }
     if (userInfo.password === userInfo.confirmPassword) {
       await props.userRegistration(
-          props.user.secid,
-          userInfo.role,
-          userInfo.employeeId,
-          userInfo.name,
-          userInfo.username,
-          userInfo.password,
-          userInfo.confirmPassword,
-          userInfo.email,
-          userInfo.contact,
-          userInfo.position
+        props.user.secid,
+        userInfo.role,
+        userInfo.employeeId,
+        userInfo.name,
+        userInfo.username,
+        userInfo.password,
+        userInfo.confirmPassword,
+        userInfo.email,
+        userInfo.contact,
+        userInfo.position
       );
-
     } else {
       const _error = {};
       _error.password = "Password Don't match";
@@ -117,7 +120,7 @@ function RegistrationForm(props) {
   const handleInput = ({ target }) => {
     setUserInfo({
       ...userInfo,
-      [target.name]: target.value
+      [target.name]: target.value,
     });
   };
 
@@ -131,6 +134,7 @@ function RegistrationForm(props) {
       <Grid item xs={2}>
         <SideBarNavigation
           open={open}
+          user={props.user}
           setOpen={setOpen}
           handleClick={handleClick}
         />
@@ -146,7 +150,7 @@ function RegistrationForm(props) {
             marginTop: 70,
             paddingBottom: 100,
             height: "100vh",
-            overflow: "auto"
+            overflow: "auto",
           }}
         >
           <Grid container spacing={3}>
@@ -164,7 +168,9 @@ function RegistrationForm(props) {
                   <div className={"col-md-8"}>
                     <h5>
                       Registration for{" "}
-                      <span style={{ color: "#2196F3" }}>{props.user.section}</span>{" "}
+                      <span style={{ color: "#2196F3" }}>
+                        {props.user.section}
+                      </span>{" "}
                       user account
                     </h5>
                   </div>
@@ -190,7 +196,7 @@ function RegistrationForm(props) {
                     style={{
                       textAlign: "right",
                       marginTop: 50,
-                      marginBottom: 100
+                      marginBottom: 100,
                     }}
                   >
                     <Link to={"/users"} className={"btn btn-outline-info"}>
@@ -219,13 +225,13 @@ function RegistrationForm(props) {
 function mapStateToProps(state) {
   return {
     user: state.fetchCurrentSystemUser,
-    user_reg: state.userRegistration
+    user_reg: state.userRegistration,
   };
 }
 
 const mapDispatchToProps = {
   fetchCurrentSystemUser,
-  userRegistration
+  userRegistration,
 };
 export default connect(
   mapStateToProps,

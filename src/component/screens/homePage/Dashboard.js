@@ -6,7 +6,7 @@ import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import { connect } from "react-redux";
 import { documentTrackingNumber } from "../../../redux/actions/documentTrackingNumber";
 import { withSnackbar } from "notistack";
-import { handleScan } from "../../../redux/actions/handleScan";
+import { receiveDoc } from "../../../redux/actions/handleScan";
 import BarcodeReader from "react-barcode-reader";
 import Reactotron from "reactotron-react-js";
 import { trackDocument } from "../../../redux/actions/trackDocument";
@@ -18,7 +18,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
 import IconButton from "@material-ui/core/IconButton";
 import { resetTrackOrReceive } from "../../../redux/actions/resetTrackOrReceive";
-import { trackOnly } from "../../../redux/actions/handleScan";
+import { trackDoc } from "../../../redux/actions/handleScan";
 import { searchBySubj } from "../../../redux/actions/searchBySubj";
 import UIFx from "uifx";
 import onClick from "../../sounds/pull-out.mp3";
@@ -31,7 +31,6 @@ import ListItemText from "@material-ui/core/ListItemText";
 import DescriptionIcon from "@material-ui/icons/Description";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
-import { fetchActiveUserList } from "../../../redux/actions/fetchActiveUserList";
 import UserList from "../../common/userList/UserList";
 
 const _onClick = new UIFx(onClick);
@@ -75,10 +74,10 @@ function Dashboard(props) {
     throw err;
   };
 
-  const handleTrackDocument = async (e) => {
+  const handleManual = async (e) => {
     e.preventDefault();
     if (!trackOrSearchOnly) {
-      await props.handleScanAndReceive(
+      await props.receiveDoc(
         props.trackingNum.documentTrackingNumber,
         props.user.user_id,
         props.user.secshort,
@@ -88,7 +87,7 @@ function Dashboard(props) {
     }
 
     if (trackOrSearchOnly) {
-      await props.trackOnly(props.trackingNum.documentTrackingNumber, socket);
+      await props.trackDoc(props.trackingNum.documentTrackingNumber, socket);
       _onScan.play();
     }
   };
@@ -96,7 +95,7 @@ function Dashboard(props) {
   const handleScanning = async (data) => {
     if (!trackOrSearchOnly) {
       Reactotron.log("Track and Receive");
-      await props.handleScanAndReceive(
+      await props.receiveDoc(
         data,
         props.user.user_id,
         props.user.secshort,
@@ -106,7 +105,7 @@ function Dashboard(props) {
     }
 
     if (trackOrSearchOnly) {
-      await props.trackOnly(data, socket);
+      await props.trackDoc(data, socket);
       _onScan.play();
     }
   };
@@ -161,7 +160,7 @@ function Dashboard(props) {
                     </div>
                   </div>
                   <div className={"col-md-8"}>
-                    <form onSubmit={handleTrackDocument}>
+                    <form onSubmit={handleManual}>
                       <FormControl fullWidth>
                         <InputLabel htmlFor="outlined-adornment-amount">
                           {trackOrSearchOnly
@@ -316,10 +315,10 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   documentTrackingNumber,
-  handleScanAndReceive: handleScan,
+  receiveDoc,
   trackDocument,
   resetTrackOrReceive,
-  trackOnly,
+  trackDoc,
   searchBySubj,
 
 };

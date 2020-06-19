@@ -117,6 +117,7 @@ export default function newDocumentCreation(state = defaultState, action) {
       return Object.assign({}, state, {
         subject: "",
         documentType: "",
+        documentCategory: "",
         action_req: [],
         note: "",
         externalDestination: "",

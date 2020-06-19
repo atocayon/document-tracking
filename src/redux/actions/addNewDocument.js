@@ -23,13 +23,13 @@ export function addNewDocument(
       destination,
       category,
       (message) => {
-        if (message) {
+        if (message !== "success") {
           return dispatch({ type: actionTypes.ADD_DOCUMENT, data: "failed" });
+        } else {
+          return dispatch({ type: actionTypes.ADD_DOCUMENT, data: "success" });
         }
       }
     );
-
-    return dispatch({ type: actionTypes.ADD_DOCUMENT, data: "success" });
   };
 }
 
