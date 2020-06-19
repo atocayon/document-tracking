@@ -1,27 +1,20 @@
-import React, { Component, useEffect } from "react";
+import React, { Component } from "react";
 import { withSnackbar } from "notistack";
 import DescriptionIcon from "@material-ui/icons/Description";
 import FeedbackIcon from "@material-ui/icons/Feedback";
 import CommentIcon from "@material-ui/icons/Comment";
 import { FormGroup } from "@material-ui/core";
 import CheckBox from "../../common/checkbox/CheckBox";
-
-import CancelIcon from "@material-ui/icons/Cancel";
 import SendIcon from "@material-ui/icons/Send";
 import InputField from "../../common/textField/InputField";
-
-import Barcode from "react-barcode";
 import ExploreIcon from "@material-ui/icons/Explore";
-
+import EditIcon from "@material-ui/icons/Edit";
+import ReactToPrint from "react-to-print";
+import BarcodeComponent from "../../common/barcode/BarcodeComponent";
+import "../../../styles/style.css";
 import Chip from "@material-ui/core/Chip";
 import Avatar from "@material-ui/core/Avatar";
 import BusinessIcon from "@material-ui/icons/Business";
-import EditIcon from "@material-ui/icons/Edit";
-import Reactotron from "reactotron-react-js";
-import ReactToPrint from "react-to-print";
-import PrintIcon from "@material-ui/icons/Print";
-import BarcodeComponent from "../../common/barcode/BarcodeComponent";
-
 class FinalizeDocument extends Component {
   constructor(props) {
     super(props);
@@ -58,8 +51,6 @@ class FinalizeDocument extends Component {
             </h5>
             <br />
           </div>
-          <br />
-          <br />
           <InputField
             id={"tackDocument"}
             label={"Subject"}
@@ -138,28 +129,44 @@ class FinalizeDocument extends Component {
               name={this.props.documentDestination}
             />
           </FormGroup>
-
+          {this.props.data.destination.length > 0 &&
+            this.props.data.destination.map((des, index) => (
+              <Chip
+                key={des[0]}
+                avatar={
+                  <Avatar>
+                    <BusinessIcon />
+                  </Avatar>
+                }
+                label={des[4]}
+              />
+            ))}
           <br />
-          <div ref={(el) => (this.componentRef = el)} className={"row"}>
-            {this.props.data.destination.length > 1 ? (
-              this.props.data.destination.map((data, index) => {
-                return (
-                  <div className={"col-md-5"}>
-                      <div style={{textAlign: "center"}}>
+          <div
+            ref={(el) => (this.componentRef = el)}
+            className={"barcode"}
+            style={{ display: "none" }}
+          >
+            <div className={"barcodeContainer"}>
+              {this.props.data.destination.length > 1 ? (
+                this.props.data.destination.map((data, index) => {
+                  return (
+                    <div style={{textAlign: "center"}} className={"multiBarcode"}>
+                      <p className={"office"}>
                         <small>{data[4]}</small>
-
+                      </p>
                       <BarcodeComponent
                         trackingNumber={
                           this.props.trackingNumber + "-" + ++index
                         }
                       />
-                      </div>
-                  </div>
-                );
-              })
-            ) : (
-              <BarcodeComponent trackingNumber={this.props.trackingNumber} />
-            )}
+                    </div>
+                  );
+                })
+              ) : (
+                <BarcodeComponent trackingNumber={this.props.trackingNumber} />
+              )}
+            </div>
           </div>
           <br />
           <br />

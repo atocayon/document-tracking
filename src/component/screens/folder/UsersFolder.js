@@ -8,6 +8,7 @@ import { Link, Redirect } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
 import { getFromStorage } from "../../storage";
 import { fetchSectionDocuments } from "../../../redux/actions/fetchSectionDocuments";
+import {fetchUserById} from "../../../redux/actions/fetchUserById";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
@@ -29,6 +30,7 @@ function UserFolder(props) {
       setUserID(token);
       async function fetch() {
         await props.fetchSectionDocuments(token, props.match.params.folder);
+        await props.fetchUserById(token);
       }
 
       fetch().catch((err) => {
@@ -36,7 +38,7 @@ function UserFolder(props) {
       });
     }
     setEndSession(!(obj && obj.token));
-  }, [props, props.match.params.folder]);
+  }, []);
 
   const handleClick = () => {
     setOpen(!open);
@@ -56,6 +58,7 @@ function UserFolder(props) {
       <Grid item xs={2}>
         <SideBarNavigation
           open={open}
+          user={props.user}
           setOpen={setOpen}
           handleClick={handleClick}
         />
@@ -137,11 +140,13 @@ function UserFolder(props) {
 function mapStateToProps(state) {
   return {
     document: state.fetchSectionDocuments,
+    user: state.fetchUserById
   };
 }
 
 const mapDispatchToProps = {
   fetchSectionDocuments,
+  fetchUserById
 };
 
 export default connect(

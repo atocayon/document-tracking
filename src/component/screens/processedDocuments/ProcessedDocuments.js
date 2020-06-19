@@ -10,6 +10,7 @@ import { Redirect } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
 import { withSnackbar } from "notistack";
 import { fetchProcessedDocument } from "../../../redux/actions/fetchProcessedDocument";
+import {fetchUserById} from "../../../redux/actions/fetchUserById";
 import TableHead from "@material-ui/core/TableHead";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
@@ -78,6 +79,7 @@ function ProcessedDocuments(props) {
       <Grid item xs={2}>
         <SideBarNavigation
           open={open}
+          user={props.user}
           setOpen={setOpen}
           handleClick={handleClick}
         />
@@ -180,11 +182,13 @@ function ProcessedDocuments(props) {
 function mapStateToProps(state) {
   return {
     processedDoc: state.fetchProcessedDocument,
+    user: state.fetchUserById
   };
 }
 
 const mapDispatchToProps = {
   fetchProcessedDocument,
+  fetchUserById
 };
 
 export default connect(

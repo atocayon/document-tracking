@@ -606,6 +606,7 @@ const insertDocument = (
               getDocLogs();
               assignTrackingNum();
               fetchProcessedDoc(creator, callback);
+              return callback("success");
             });
           });
         });
@@ -651,6 +652,7 @@ const insertDocument = (
               getDocLogs();
               assignTrackingNum();
               fetchProcessedDoc(creator, callback);
+              return callback("success");
             });
           });
         });
@@ -805,25 +807,18 @@ const countPending = (user_id, socket) => {
 const trackDocument = (data) => {
   let sql = "";
   sql += "SELECT ";
-  sql += "a.trans_id  AS trans_id, ";
-  sql += "a.document_id AS document_id, ";
-  sql += "a.remarks AS remarks, ";
-  sql += "a.destination  AS destination, ";
-  sql += "DATE_FORMAT(a.date_time, '%M %d, %Y @ %h:%i %p') AS date_time, ";
-  sql += "b.name AS name,  ";
-  sql += "b.position AS position, ";
-  sql += "b.name AS operator, ";
-  sql += "c.status AS status, ";
-  sql += "d.secshort AS secshort ";
-  sql += "FROM documentLogs a ";
-  sql += "JOIN users b ";
-  sql += "ON a.user_id = b.user_id ";
-  sql += "JOIN documentStatus c ";
-  sql += "ON a.status = c.statid ";
-  sql += "JOIN sections d ";
-  sql += "ON b.section = d.secid ";
-  sql += "WHERE a.document_id = ? ";
-  sql += "ORDER BY a.trans_id DESC";
+  sql += "a.documentID AS document_id, ";
+  sql += "a.subject, ";
+  sql += "a.note, "
+  sql += "DATE_FORMAT(a.date_time_created, '%M %d, %Y @ %h:%i:%s %p') AS date_time, ";
+  sql += "b.name AS name, ";
+  sql += "d.secshort AS section, ";
+  sql += "c.type AS type ";
+  sql += "FROM documents a ";
+  sql += "JOIN users b ON a.creator = b.user_id ";
+  sql += "JOIN document_type c ON a.doc_type = c.id ";
+  sql += "JOIN sections d ON b.section = d.secid ";
+  sql += "WHERE a.documentID = ?";
   connection.query(sql, [data], function (err, rows, fields) {
     if (err) {
       console.log(err);
@@ -834,32 +829,49 @@ const trackDocument = (data) => {
   });
 };
 
-//Fetch sub document
-router.route("/fetchSubDocument").post(function (req, res) {
-  const { trans_id, tracking } = req.body;
+//Fetch sub process
+router.route("/fetchSubProcess").post(function (req, res) {
+  const {tracking} = req.body;
   let sql = "";
   sql += "SELECT ";
-  sql += "a.trans_id  AS trans_id, ";
-  sql += "a.document_id AS document_id, ";
-  sql += "DATE_FORMAT(a.date_time, '%M %d, %Y @ %h:%i %p') AS date_time , ";
+  sql += "a.trans_id AS trans_id, "
   sql += "a.remarks AS remarks, ";
+  sql += "a.destinationType AS destinationType, ";
   sql += "a.destination AS destination, ";
-  sql += "b.name AS name,  ";
-  sql += "b.position AS position, ";
-  sql += "b.name AS operator ";
+  sql += "b.name AS name, ";
   sql += "c.status AS status, ";
-  sql += "d.secshort AS secshort ";
+  sql += "DATE_FORMAT(a.date_time, '%M %d, %Y @ %h:%i:%s %p') AS date_time ";
   sql += "FROM documentLogs a ";
-  sql += "JOIN users b ";
-  sql += "ON a.user_id = b.user_id ";
-  sql += "JOIN documentStatus c ";
-  sql += "ON a.status = c.statid ";
-  sql += "JOIN sections d ";
-  sql += "ON b.section = d.secid ";
-  sql += "WHERE a.document_id = ? ";
-  sql += "AND a.ref = ? ";
-  sql += "ORDER BY a.trans_id ASC";
-  connection.query(sql, [tracking, trans_id], function (err, rows, fields) {
+  sql += "JOIN users b ON  a.user_id = b.user_id ";
+  sql += "JOIN documentStatus c ON a.status = c.statid ";
+  sql += "WHERE a.document_id = ?";
+  connection.query(sql, [tracking], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    res.status(200).send(rows);
+  })
+});
+
+//Fetch sub document
+router.route("/fetchSubDocument").post(function (req, res) {
+  const { tracking } = req.body;
+  let sql = "";
+  sql += "SELECT ";
+  sql += "a.documentID AS document_id, ";
+  sql += "a.subject, ";
+  sql += "a.note, "
+  sql += "DATE_FORMAT(a.date_time_created, '%M %d, %Y @ %h:%i:%s %p') AS date_time, ";
+  sql += "b.name AS name, ";
+  sql += "c.type AS type ";
+  sql += "FROM documents a ";
+  sql += "JOIN users b ON a.creator = b.user_id ";
+  sql += "JOIN document_type c ON a.doc_type = c.id ";
+  sql += "WHERE a.ref = ?";
+
+  connection.query(sql, [tracking], function (err, rows, fields) {
     if (err) {
       console.log(err);
       res.status(500).send(err);

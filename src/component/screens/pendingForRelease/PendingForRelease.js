@@ -8,6 +8,7 @@ import { getFromStorage } from "../../storage";
 import Paper from "@material-ui/core/Paper";
 import { connect } from "react-redux";
 import { fetchPendingDocuments } from "../../../redux/actions/fetchPendingDocuments";
+import {fetchUserById} from "../../../redux/actions/fetchUserById";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
@@ -26,6 +27,7 @@ function PendingForRelease(props) {
     socket = io(endPoint.ADDRESS);
     async function fetch() {
       await props.fetchPendingDocuments(obj.token);
+      await props.fetchUserById(obj.token);
     }
 
     fetch().catch((err) => {
@@ -44,6 +46,7 @@ function PendingForRelease(props) {
       <Grid item xs={2}>
         <SideBarNavigation
           open={open}
+          user={props.user}
           setOpen={setOpen}
           handleClick={handleClick}
         />
@@ -127,12 +130,14 @@ function PendingForRelease(props) {
 
 function mapStateToProps(state) {
   return {
+      user: state.fetchUserById,
     pending: state.fetchPendingDocuments,
   };
 }
 
 const mapDispatchToProps = {
   fetchPendingDocuments,
+    fetchUserById
 };
 
 export default connect(

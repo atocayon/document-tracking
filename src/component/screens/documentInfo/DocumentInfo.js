@@ -12,6 +12,7 @@ import ReactToPrint from "react-to-print";
 import PrintIcon from "@material-ui/icons/Print";
 import { connect } from "react-redux";
 import { fetchDocumentInfo } from "../../../redux/actions/fetchDocumentInfo";
+import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import Content from "./Content";
 import UserList from "../../common/userList/UserList";
 
@@ -25,6 +26,7 @@ function DocumentInfo(props) {
     if (obj && obj.token) {
       async function fetch() {
         await props.fetchDocumentInfo(props.match.params.doc_id);
+        await props.fetchUserById(obj.token);
       }
 
       fetch().catch((err) => {
@@ -47,11 +49,12 @@ function DocumentInfo(props) {
     }
   };
   return (
-    <Grid container >
+    <Grid container>
       <PrimarySearchAppBar />
       <Grid item xs={2}>
         <SideBarNavigation
           open={open}
+          user={props.user}
           setOpen={setOpen}
           handleClick={handleClick}
         />
@@ -68,11 +71,14 @@ function DocumentInfo(props) {
           }}
         >
           {endSession && <Redirect to={"/"} />}
-          <Content
-            ref={componentRef}
-            documentInfo={props.documentInfo}
-            doc_id={props.match.params.doc_id}
-          />
+          <div >
+              <Content
+                  ref={componentRef}
+                  documentInfo={props.documentInfo}
+                  doc_id={props.match.params.doc_id}
+              />
+          </div>
+
           <div className={"row"}>
             <div className={"col-md-2"}></div>
             <div className={"col-md-8"}>
@@ -80,33 +86,37 @@ function DocumentInfo(props) {
                 <div className={"col-md-6"}>
                   <div id={"barcode"}>
                     <ReactToPrint
-                        trigger={() => (
-                            <a
-                                href={"#"}
-                                className={"btn"}
-                                title={"Print this barcode"}
-                            >
-                              {" "}
-                              <BarcodeComponent
-                                  ref={barcodeRef}
-                                  trackingNumber={props.match.params.doc_id}
-                              />
-                            </a>
-                        )}
-                        content={() => barcodeRef.current}
+                      trigger={() => (
+                        <a
+                          href={"#"}
+                          className={"btn"}
+                          title={"Print this barcode"}
+                        >
+                          {" "}
+                          <BarcodeComponent
+                            ref={barcodeRef}
+                            trackingNumber={props.match.params.doc_id}
+                          />
+                        </a>
+                      )}
+                      content={() => barcodeRef.current}
                     />
                   </div>
                 </div>
                 <div className={"col-md-6"}>
                   <div style={{ float: "right" }}>
                     <ReactToPrint
-                        copyStyles={true}
-                        content={() => componentRef.current}
-                        trigger={() => (
-                            <a href={"#"} className={"btn btn-info"} title={"Print"}>
-                              <PrintIcon /> &nbsp;Print
-                            </a>
-                        )}
+                      copyStyles={true}
+                      content={() => componentRef.current}
+                      trigger={() => (
+                        <a
+                          href={"#"}
+                          className={"btn btn-info"}
+                          title={"Print"}
+                        >
+                          <PrintIcon /> &nbsp;Print
+                        </a>
+                      )}
                     />
                   </div>
                 </div>
@@ -117,7 +127,7 @@ function DocumentInfo(props) {
         </Paper>
       </Grid>
       <Grid item xs={2}>
-          <UserList />
+        <UserList />
       </Grid>
     </Grid>
   );
@@ -126,11 +136,13 @@ function DocumentInfo(props) {
 function mapStateToProps(state) {
   return {
     documentInfo: state.fetchDocumentInfo,
+    user: state.fetchUserById,
   };
 }
 
 const mapDispatchToProps = {
   fetchDocumentInfo,
+  fetchUserById,
 };
 
 export default connect(

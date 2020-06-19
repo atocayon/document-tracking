@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
-import Reactotron from "reactotron-react-js";
 import Dashboard from "./Dashboard";
 import { getFromStorage } from "../../storage";
-import axios from "axios";
 import { Redirect } from "react-router-dom";
-import CircularProgressComponent from "../../common/circularProgress/CircularProgressComponent";
 import ControlPanel from "../controlPanel/ControlPanel";
 import { connect } from "react-redux";
 import { verifyToken } from "../../../redux/actions/verifyToken";
 import { fetchCurrentSystemUser } from "../../../redux/actions/fetchCurrentSystemUser";
-import { withSnackbar } from "notistack";
 import { fetchSectionsList } from "../../../redux/actions/fetchSectionsList";
 
 function Home(props) {

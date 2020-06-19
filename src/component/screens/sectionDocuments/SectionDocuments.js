@@ -9,6 +9,7 @@ import { withSnackbar } from "notistack";
 import { connect } from "react-redux";
 import { handleSearchSectionDocuments } from "../../../redux/actions/handleSearchSectionDocuments";
 import { fetchDocCategory } from "../../../redux/actions/manageDocumentCategory";
+import {fetchUserById} from "../../../redux/actions/fetchUserById";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
 import FolderOpenIcon from "@material-ui/icons/FolderOpen";
@@ -30,6 +31,7 @@ function SectionDocuments(props) {
       const { token } = obj;
       async function fetch() {
         await props.fetchDocCategory(token, socket);
+        await props.fetchUserById(token);
       }
 
       fetch().catch((err) => {
@@ -48,6 +50,7 @@ function SectionDocuments(props) {
       <Grid item xs={2}>
         <SideBarNavigation
           open={open}
+          user={props.user}
           setOpen={setOpen}
           handleClick={handleClick}
         />
@@ -111,12 +114,14 @@ function SectionDocuments(props) {
 function mapStateToProps(state) {
   return {
     doc_category: state.manageDocumentCategory,
+    user: state.fetchUserById
   };
 }
 
 const mapDispatchToProps = {
   handleSearchSectionDocuments,
   fetchDocCategory,
+  fetchUserById
 };
 export default connect(
   mapStateToProps,

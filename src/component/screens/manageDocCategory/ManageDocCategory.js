@@ -18,6 +18,7 @@ import io from "socket.io-client";
 import endPoint from "../../endPoint";
 import { addNewDocCategory } from "../../../redux/actions/manageDocumentCategory";
 import { fetchDocCategory } from "../../../redux/actions/manageDocumentCategory";
+import {fetchUserById} from "../../../redux/actions/fetchUserById";
 import { onChangeEditDocCategory } from "../../../redux/actions/manageDocumentCategory";
 import { saveEditDocCategory } from "../../../redux/actions/manageDocumentCategory";
 import { deleteDocCategory } from "../../../redux/actions/manageDocumentCategory";
@@ -47,6 +48,7 @@ function ManageDocCategory(props) {
       setToken(token);
       async function fetch() {
         await props.fetchDocCategory(token, socket);
+        await props.fetchUserById(token);
       }
       fetch().catch((err) => {
         throw err;
@@ -96,6 +98,7 @@ function ManageDocCategory(props) {
       <Grid item xs={2}>
         <SideBarNavigation
           open={open}
+          user={props.user}
           setOpen={setOpen}
           handleClick={handleClick}
         />
@@ -248,6 +251,7 @@ function mapStateToProps(state) {
   return {
     doc_category: state.manageDocumentCategory,
     insert: state.addNewDocCategory,
+    user: state.fetchUserById
   };
 }
 
@@ -257,6 +261,7 @@ const mapDispatchToProps = {
   onChangeEditDocCategory,
   saveEditDocCategory,
   deleteDocCategory,
+  fetchUserById
 };
 
 export default connect(
