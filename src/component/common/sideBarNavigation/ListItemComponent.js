@@ -111,7 +111,7 @@ export default function ListItemComponent(props) {
       exact
       style={{ textDecoration: "none", color: "#000" }}
     >
-      <ListItem button className={props.className}>
+      <ListItem button className={props.className} title={"Click to explore " +props.primary}>
         <ListItemIcon>{icon()}</ListItemIcon>
         <ListItemText
           primary={

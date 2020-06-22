@@ -90,6 +90,7 @@ export default function SideBarNavigation(props) {
           {props.user ? (
             <Link to={"/"} style={{ textDecoration: "none" }}>
               <ListItem
+                title={"Click to go to home page"}
                 style={{ paddingTop: 70, paddingBottom: 30, color: "#2196F3" }}
               >
                 <ListItemAvatar>

@@ -10,6 +10,7 @@ import { connect } from "react-redux";
 import { fetchPendingDocumentInfo } from "../../../redux/actions/fetchPendingDocumentInfo";
 import Forward from "./Forward";
 import { fetchSectionsList } from "../../../redux/actions/fetchSectionsList";
+import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import { onChangeForwardDocument } from "../../../redux/actions/onChangForwardDocument";
 import { changeDocumentDestination } from "../../../redux/actions/onChangForwardDocument";
 import { afterDocumentReceive } from "../../../redux/actions/afterDocumentReceive";
@@ -19,8 +20,8 @@ import Completed from "./Completed";
 import Content from "./Content";
 import ReactToPrint from "react-to-print";
 import PrintIcon from "@material-ui/icons/Print";
-import {addForwardDestination} from "../../../redux/actions/onChangForwardDocument";
-import {removeForwardDestination} from "../../../redux/actions/onChangForwardDocument";
+import { addForwardDestination } from "../../../redux/actions/onChangForwardDocument";
+import { removeForwardDestination } from "../../../redux/actions/onChangForwardDocument";
 import UserList from "../../common/userList/UserList";
 
 function PendingDocumentInfo(props) {
@@ -38,6 +39,7 @@ function PendingDocumentInfo(props) {
     async function fetch() {
       await props.fetchPendingDocumentInfo(props.match.params.doc_id);
       await props.fetchSectionsList();
+      await props.fetchUserById(obj.token);
     }
 
     fetch().catch((err) => {
@@ -90,7 +92,9 @@ function PendingDocumentInfo(props) {
       token,
       props.forwardDocument.remarks,
       selectedValue,
-      props.forwardDocument.des,
+      props.pendingDocumentInfo.destination > 1
+        ? props.forwardDocument.des
+        : props.forwardDocument.destination,
       "2"
     );
   };
@@ -112,10 +116,10 @@ function PendingDocumentInfo(props) {
     await props.addForwardDestination(props.forwardDocument.destination);
   };
 
-
   return (
     <Grid container>
       <Forward
+        doc={props.pendingDocumentInfo}
         open={forwardDialog}
         handleClose={handleSetForwardDialog}
         sections={props.sections}
@@ -138,6 +142,7 @@ function PendingDocumentInfo(props) {
       <Grid item xs={2}>
         <SideBarNavigation
           open={open}
+          user={props.user}
           setOpen={setOpen}
           handleClick={handleClick}
         />
@@ -167,7 +172,7 @@ function PendingDocumentInfo(props) {
             <div className={"col-md-8"}>
               <div className={"row"}>
                 <div className={"col-md-6"}>
-                  <div style={{ float: "left", marginTop: -120 }}>
+                  <div style={{ float: "left", marginTop: 10 }}>
                     <ReactToPrint
                       content={() => componentRef.current}
                       trigger={() => (
@@ -179,7 +184,7 @@ function PendingDocumentInfo(props) {
                   </div>
                 </div>
                 <div className={"col-md-6"}>
-                  <div style={{ float: "right", marginTop: -120 }}>
+                  <div style={{ float: "right", marginTop: 10 }}>
                     <button
                       className={"btn btn-outline-info btn-sm"}
                       onClick={handleSetCompletedDialog}
@@ -210,6 +215,7 @@ function PendingDocumentInfo(props) {
 
 function mapDispatchToProps(state) {
   return {
+    user: state.fetchUserById,
     pendingDocumentInfo: state.fetchPendingDocumentInfo,
     sections: state.fetchSectionsList,
     forwardDocument: state.forwardDocument,
@@ -224,7 +230,8 @@ const mapStateToProps = {
   changeDocumentDestination,
   afterDocumentReceive,
   addForwardDestination,
-  removeForwardDestination
+  removeForwardDestination,
+  fetchUserById,
 };
 
 export default connect(
