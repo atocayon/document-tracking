@@ -151,7 +151,10 @@ class FinalizeDocument extends Component {
               {this.props.data.destination.length > 1 ? (
                 this.props.data.destination.map((data, index) => {
                   return (
-                    <div style={{textAlign: "center"}} className={"multiBarcode"}>
+                    <div
+                      style={{ textAlign: "center" }}
+                      className={"multiBarcode"}
+                    >
                       <p className={"office"}>
                         <small>{data[4]}</small>
                       </p>
@@ -163,8 +166,16 @@ class FinalizeDocument extends Component {
                     </div>
                   );
                 })
-              ) : (
-                <BarcodeComponent trackingNumber={this.props.trackingNumber} />
+              ) : this.props.data.destination.map((data, index) => (
+                  <div style={{ textAlign: "center" }} className={"singleBarcode"}>
+                    <p className={"office"}>
+                      <small>{data[4]}</small>
+                    </p>
+                    <BarcodeComponent
+                        trackingNumber={this.props.trackingNumber}
+                    />
+                  </div>
+                  )
               )}
             </div>
           </div>

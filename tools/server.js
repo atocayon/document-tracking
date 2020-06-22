@@ -418,12 +418,12 @@ const getDocLogs = (socket) => {
   sql +=
     "JOIN (SELECT MAX(trans_id) as trans, document_id, remarks, destinationType, destination, date_time, user_id,status ";
   sql +=
-    "FROM documentLogs GROUP BY document_id) AS b ON documents.documentID = documentLogs.document_id ";
+    "FROM documentLogs GROUP BY document_id) b ON a.documentID = b.document_id ";
   sql += "JOIN users c ";
-  sql += "ON documentLogs.user_id = users.user_id ";
+  sql += "ON b.user_id = c.user_id ";
   sql += "JOIN documentStatus d ";
-  sql += "ON documentLogs.status = documentStatus.statid ";
-  sql += "ORDER BY documentLogs.date_time DESC ";
+  sql += "ON b.status = d.statid ";
+  sql += "ORDER BY b.date_time DESC ";
 
   connection.query(sql, (err, rows, fields) => {
     if (err) {

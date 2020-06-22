@@ -56,14 +56,16 @@ function Dashboard(props) {
         });
       }
 
-      if (props.receive === "pending"){
+      if (props.receive === "pending") {
         const variant = "error";
-        props.enqueueSnackbar("This document is already pending in your office", {
-          variant,
-        });
+        props.enqueueSnackbar(
+          "This document is already pending in your office",
+          {
+            variant,
+          }
+        );
       }
     }
-
   }, [props.receive]);
 
   const handleClick = () => {
@@ -116,7 +118,6 @@ function Dashboard(props) {
   };
 
   const handleSearch = async () => {
-
     await props.searchBySubj(props.trackingNum.documentTrackingNumber);
   };
 
@@ -166,6 +167,7 @@ function Dashboard(props) {
                           Document Tracking Number
                         </InputLabel>
                         <Input
+                            title={"Type/scan the Document Tracking Number"}
                           id={"tackDocument"}
                           name={"documentTrackingNumber"}
                           label={"Tracking Number"}
@@ -220,6 +222,9 @@ function Dashboard(props) {
                       </h6>
                       <br />
                       <button
+                        title={
+                          "Click here to track or search only the document"
+                        }
                         className={"btn btn-sm"}
                         style={{ color: "#2196F3" }}
                         onClick={handleTrackOrSearchOnly}
@@ -239,6 +244,7 @@ function Dashboard(props) {
                       </h6>
                       <br />
                       <button
+                        title={"Click to track and receive a document"}
                         className={"btn btn-sm"}
                         style={{ color: "#2196F3" }}
                         onClick={handleTrackOrSearchOnly}
@@ -281,7 +287,10 @@ function Dashboard(props) {
                   ) : null}
 
                   {props.track.length > 0 && props.search.length === 0 ? (
-                    <DocumentTrack track={props.track} trackingNum={props.trackingNum.documentTrackingNumber} />
+                    <DocumentTrack
+                      track={props.track}
+                      trackingNum={props.trackingNum.documentTrackingNumber}
+                    />
                   ) : null}
                 </div>
               </div>
@@ -302,7 +311,6 @@ function mapStateToProps(state) {
     receive: state.receiveDocument,
     track: state.trackDocument,
     search: state.searchBySubj,
-
   };
 }
 
@@ -313,7 +321,6 @@ const mapDispatchToProps = {
   resetTrackOrReceive,
   trackDoc,
   searchBySubj,
-
 };
 
 export default connect(

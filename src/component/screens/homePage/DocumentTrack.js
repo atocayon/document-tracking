@@ -8,8 +8,39 @@ import StepContent from "@material-ui/core/StepContent";
 import Typography from "@material-ui/core/Typography";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 
+function Progress(props) {
+  return (
+    <Stepper orientation="vertical">
+      <Step active={true} key={props.data.root.document_id}>
+        <StepLabel
+          StepIconComponent={FiberManualRecordIcon}
+          style={{ color: "#2196F3" }}
+        >
+          {props.data.root.status} by {props.data.root.name} on{" "}
+          {props.data.root.date_time}
+        </StepLabel>
+        <StepContent last={false}>
+          <Typography>
+            <small>
+              {props.data.root.status === "forwarded" && (
+                <>
+                  Destination: {props.data.root.destination}
+                  <br />
+                </>
+              )}
+
+              {props.data.root.remarks !== "none" && (
+                <>Remarks: {props.data.root.remarks}</>
+              )}
+            </small>
+          </Typography>
+        </StepContent>
+      </Step>
+    </Stepper>
+  );
+}
+
 function StepperComponent(props) {
-  let index = parseInt(props.index);
   return (
     <Stepper orientation="vertical">
       <Step active={true} key={props.data.root.document_id}>
@@ -23,21 +54,7 @@ function StepperComponent(props) {
           <Typography>
             <small>
               {props.data.subProcess.length > 0 &&
-                props.data.subProcess.map((sub) => (
-                  <>
-                    => {sub.root.status}&nbsp;
-                    {sub.root.status === "forwarded" && "to "+sub.root.destination}
-                    &nbsp;on {sub.root.date_time}
-                    <br />
-                    {sub.root.remarks !== "none" && (
-                      <>
-                        Remarks: {sub.root.remarks}
-                        <br />
-                      </>
-                    )}
-                    <br />
-                  </>
-                ))}
+                props.data.subProcess.map((sub) => <Progress data={sub} />)}
             </small>
           </Typography>
           {props.data.branch.length > 0 &&
@@ -57,17 +74,23 @@ function RootSubProcess(props) {
         StepIconComponent={FiberManualRecordIcon}
         style={{ color: "#2196F3" }}
       >
-        {props.sub.root.status} on {props.sub.root.date_time}
+          {props.sub.root.status} by {props.sub.root.name} on {props.sub.root.date_time}
       </StepLabel>
       <StepContent last={false}>
         <Typography>
           <small>
-            <br />
-            {props.sub.root.status === "forwarded" &&
-              "Destination: " + props.sub.root.destination}
-            <br />
-            {props.sub.root.remarks !== "none" &&
-              "Remarks: " + props.sub.root.remarks}
+            {props.sub.root.status === "forwarded" && (
+              <>
+                Destination: {props.sub.root.destination}
+                <br />
+                  <br/>
+              </>
+            )}
+
+            {props.sub.root.remarks !== "none" && (
+              <>Remarks: {props.sub.root.remarks} <br/></>
+            )}
+
           </small>
         </Typography>
       </StepContent>
@@ -82,7 +105,7 @@ function DocumentTrack(props) {
       <div className={"col-md-8"} style={{ paddingBottom: 100 }}>
         <Stepper orientation="vertical">
           {props.track.map((data) =>
-            data.subProcess > 0 ? (
+            data.subProcess.length > 0 ? (
               <>
                 <Step active={true} key={data.root.document_id}>
                   <StepLabel
@@ -101,11 +124,13 @@ function DocumentTrack(props) {
                         Document Type: {data.root.type}
                         <br />
                         Note: {data.root.note}
+                        <br/>
+                        <br/>
                       </small>
                     </Typography>
                   </StepContent>
                 </Step>
-                {data.root.subProcess.map((sub) => (
+                {data.subProcess.map((sub) => (
                   <RootSubProcess sub={sub} />
                 ))}
               </>

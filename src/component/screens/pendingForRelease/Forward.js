@@ -19,7 +19,7 @@ export default function Forward(props) {
   for (let i = 0; i < props.sections.length; i++) {
     options.push({
       id: props.sections[i].secshort,
-      type: props.sections[i].section
+      type: props.sections[i].section,
     });
   }
 
@@ -66,13 +66,18 @@ export default function Forward(props) {
                 options={options}
                 onChange={props.onChangeDestination}
               />
-              <br/>
-              <button
-                  className={"btn btn-sm btn-primary"}
-                  onClick={props.addForwardDestination}
-              >
-                Add
-              </button>
+
+              {props.doc.destination.length > 1 && (
+                <>
+                  <br />
+                  <button
+                    className={"btn btn-sm btn-primary"}
+                    onClick={props.addForwardDestination}
+                  >
+                    Add
+                  </button>
+                </>
+              )}
             </>
           )}
           {props.selectedValue === "External" && (
@@ -86,22 +91,27 @@ export default function Forward(props) {
                 onChange={props.onChangeDestination}
                 value={props.value.destination}
               />
-              <br/>
-              <br/>
-              <button
-                  className={"btn btn-sm btn-primary"}
-                  onClick={props.addForwardDestination}
-              >
-                Add
-              </button>
+
+              {props.doc.destination.length > 1 && (
+                <>
+                  <br />
+                  <br />
+                  <button
+                    className={"btn btn-sm btn-primary"}
+                    onClick={props.addForwardDestination}
+                  >
+                    Add
+                  </button>
+                </>
+              )}
             </>
           )}
-
-          <br/>
-          <br/>
           {props.value.des.length > 0 &&
-          props.value.des.map((des, index) => (
-              <Chip
+            props.value.des.map((des, index) => (
+              <>
+                <br />
+                <br />
+                <Chip
                   key={index}
                   avatar={
                     <Avatar>
@@ -113,10 +123,10 @@ export default function Forward(props) {
                     event.stopPropagation();
                     props.removeForwardDestination(index);
                   }}
-              />
-          ))}
-          <br/>
-
+                />
+              </>
+            ))}
+          <br />
           {props.selectedValue && (
             <>
               <br />
@@ -130,9 +140,7 @@ export default function Forward(props) {
               />
             </>
           )}
-
-          <br/>
-
+          <br />
         </DialogContent>
         <DialogActions>
           <Button onClick={props.handleClose} color="primary">
