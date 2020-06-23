@@ -35,16 +35,19 @@ function PendingDocumentInfo(props) {
   const componentRef = useRef();
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
-    setToken(obj.token);
-    async function fetch() {
-      await props.fetchPendingDocumentInfo(props.match.params.doc_id);
-      await props.fetchSectionsList();
-      await props.fetchUserById(obj.token);
+    if (obj && obj.token){
+      setToken(obj.token);
+      async function fetch() {
+        await props.fetchPendingDocumentInfo(props.match.params.doc_id);
+        await props.fetchSectionsList();
+        await props.fetchUserById(obj.token);
+      }
+
+      fetch().catch((err) => {
+        throw err;
+      });
     }
 
-    fetch().catch((err) => {
-      throw err;
-    });
     setEndSession(!(obj && obj.token));
 
     if (props.actionForwardOrCompleted !== "") {
