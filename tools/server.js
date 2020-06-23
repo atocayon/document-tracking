@@ -1742,6 +1742,22 @@ router.route("/fetchSectionDocuments/:userID/:folder").get(function (req, res) {
   });
 });
 
+router.route("/fetchDocumentRouteType/:doc_id").get(function (req, res) {
+  const documentID = req.params.doc_id;
+  console.log(documentID);
+  let sql = "";
+  sql += "SELECT a.creator AS creator, a.subject AS subject, a.doc_type AS doc_type, a.note AS note ";
+  sql += "FROM documents a WHERE a.ref = ? ";
+  connection.query(sql, [documentID], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+    console.log(rows);
+    res.status(200).send(rows);
+  })
+});
+
 //Fetch Document Destination
 router.route("/fetchDocumentDestination/:doc_id").get(function (req, res) {
   const documentID = req.params.doc_id;

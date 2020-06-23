@@ -92,7 +92,7 @@ function PendingDocumentInfo(props) {
       token,
       props.forwardDocument.remarks,
       selectedValue,
-      props.pendingDocumentInfo.destination.length > 1
+      props.pendingDocumentInfo.doc_route_type.length > 0
         ? props.forwardDocument.des
         : props.forwardDocument.destination,
       "2"
