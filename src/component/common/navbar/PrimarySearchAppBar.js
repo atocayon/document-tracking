@@ -98,6 +98,7 @@ function PrimarySearchAppBar(props) {
 
   const profileMenu = (
     <ProfileMenu
+        handleStartGuide={props.handleStartGuide}
       id={props.id}
       anchorElProfileMenu={anchorEl}
       anchorOriginProfileMenu={{ vertical: "top", horizontal: "right" }}
@@ -148,25 +149,28 @@ function PrimarySearchAppBar(props) {
       <div className={classes.grow}>
         <AppBar
           position={"fixed"}
-          style={{
-            backgroundColor: "#fafafa",
-            color: "#263238",
-          }}
+          // style={{
+          //   backgroundColor: "#fafafa",
+          //   color: "#263238",
+          // }}
+            color={"inherit"}
         >
           <Toolbar>
-            <IconButton
-              edge="start"
-              className={classes.menuButton}
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer("left", true)}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography className={classes.title} variant="h6" noWrap>
-              <img src={logo} alt={"nmp"} style={{ width: "1.7vw" }} /> |{" "}
-              <b>Document Tracking System</b>
-            </Typography>
+            <div>
+              <IconButton
+                edge="start"
+                className={classes.menuButton}
+                color="inherit"
+                aria-label="open drawer"
+                onClick={toggleDrawer("left", true)}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography className={classes.title} variant="h6" noWrap>
+                <img src={logo} alt={"nmp"} style={{ width: "1.7vw" }} /> |{" "}
+                <b>Document Tracking System</b>
+              </Typography>
+            </div>
 
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
@@ -189,6 +193,7 @@ function PrimarySearchAppBar(props) {
                 {/*)}*/}
               </IconButton>
               <IconButton
+                className={"settings"}
                 edge="end"
                 aria-label="account of current user"
                 aria-controls={menuId}

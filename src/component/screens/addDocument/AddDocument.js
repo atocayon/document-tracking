@@ -47,7 +47,7 @@ import { clearAddDocumentMessage } from "../../../redux/actions/addNewDocument";
 import { clearDraftsMessage } from "../../../redux/actions/addNewDocumentDraft";
 import { logout } from "../../../redux/actions/logout";
 import { fetchDocCategory } from "../../../redux/actions/manageDocumentCategory";
-
+import ReactJoyride from "react-joyride";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
 import UserList from "../../common/userList/UserList";
@@ -97,6 +97,55 @@ function AddDocument({
     { id: 7, value: "For File" },
   ];
 
+  const tutorial = [
+    {
+      target: ".addDocHeader",
+      disableBeacon: true,
+      content:
+        "This is the form that you will going to fill up when you or your section/office will going to route a document.",
+    },
+    {
+      target: ".addDocSubject",
+      content:
+        "This is where you will going to define the subject of the document that you will going to route. (Be precise in defining the subject of your document so that you can easily search it in the future.)",
+    },
+    {
+      target: ".addDocType",
+      content:
+        "This is where you will going to define the document type of your document.",
+    },
+    {
+      target: ".addDocCategory",
+      content:
+        "And this is where you will going to define the category of your document. (The purpose of this is to organize by category all the document(s) that your section had made)",
+    },
+    {
+      target: ".addDocActionReq",
+      content:
+        "This is where you will going choose the action require for your document.",
+    },
+    {
+      target: ".addDocNote",
+      content:
+        "And this is where you will going to place your note for your document.",
+    },
+    {
+      target: ".addDocInternal",
+      content:
+        "Click this and choose the internal destination of your document. (You can choose multiple destination here, just pick the desired destination and then click add)",
+    },
+    {
+      target: ".addDocExternal",
+      content:
+        "Click this and define the external destination of your document. (You can choose multiple destination here, just define the desired destination and then click add)",
+    },
+    {
+      target: ".addDocBtnFinalize",
+      content:
+        "Click this to review all the information of your document. (You can go back  here  if there is a correction before you release the document)",
+    },
+  ];
+
   const [endSession, setEndSession] = useState(false);
   const [date, setDate] = useState({
     _date: new Date(),
@@ -106,7 +155,7 @@ function AddDocument({
   const [finalize, setFinalize] = useState(false);
   const [destination, setDestination] = useState("");
   const [open, setOpen] = useState(true);
-
+  const [startGuide, setStartGuide] = useState(false);
   useEffect(() => {
     socket = io(endPoint.ADDRESS);
     const timeID = setInterval(() => tick(), 1000);
@@ -373,10 +422,25 @@ function AddDocument({
       await logout(token, socket);
     }
   };
+
+  const handleStartGuide = (e) => {
+    e.preventDefault();
+    setStartGuide(true);
+  };
   return (
     <>
       <Grid container>
-        <PrimarySearchAppBar handleLogOut={handleLogOut} />
+        <ReactJoyride
+          steps={tutorial}
+          run={startGuide}
+          showProgress={true}
+          showSkipButton={true}
+          continuous={true}
+          disableOverlayClose={true}
+          // disableOverlay
+          styles={{ options: { primaryColor: "#2196F3" } }}
+        />
+        <PrimarySearchAppBar  />
         <Grid item xs={2}>
           <SideBarNavigation
             open={open}
@@ -408,7 +472,7 @@ function AddDocument({
                         </div>
                       </div>
                     </div>
-                    <div className={"col-md-7"}>
+                    <div className={"col-md-7 addDocHeader"}>
                       <h5 style={{ textAlign: "left" }}>
                         Add New Document &nbsp;
                         <span style={{ color: "#2196F3" }}>
@@ -417,16 +481,15 @@ function AddDocument({
                       </h5>
                     </div>
                     <div className={"col-md-3"}>
-                      <div style={{textAlign: 'right'}}>
+                      <div style={{ textAlign: "right" }}>
                         <span>
-                        <small>
-                          {date._date.toLocaleDateString() +
-                          " " +
-                          date._date.toLocaleTimeString()}
-                        </small>
-                      </span>
+                          <small>
+                            {date._date.toLocaleDateString() +
+                              " " +
+                              date._date.toLocaleTimeString()}
+                          </small>
+                        </span>
                       </div>
-
                     </div>
                   </div>
                 </div>
@@ -464,44 +527,51 @@ function AddDocument({
                           </h5>
                           <br />
                         </div>
-                        <InputField
-                          id={"tackDocument"}
-                          label={"Subject"}
-                          name={"subject"}
-                          variant={"outlined"}
-                          onChange={addDocumentInputChange}
-                          error={error.subject}
-                          type={"text"}
-                          value={addDocument.subject}
-                        />
-                        <small>
-                          - You may remove any sensitive information (e.g
-                          monetary amounts, names, etc.) from the subject if
-                          they are not necessary in tracking the document.
-                        </small>
+                        <div className={"addDocSubject"}>
+                          <InputField
+                            id={"tackDocument"}
+                            label={"Subject"}
+                            name={"subject"}
+                            variant={"outlined"}
+                            onChange={addDocumentInputChange}
+                            error={error.subject}
+                            type={"text"}
+                            value={addDocument.subject}
+                          />
+                          <small>
+                            - You may remove any sensitive information (e.g
+                            monetary amounts, names, etc.) from the subject if
+                            they are not necessary in tracking the document.
+                          </small>
+                        </div>
                         <br />
                         <br />
-                        <SelectField
-                          id={"documentType"}
-                          name={"documentType"}
-                          label={"Document Type"}
-                          options={documentType}
-                          error={error.documentType}
-                          onChange={addDocumentInputChange}
-                          variant={"outlined"}
-                          value={addDocument.documentType}
-                        />
+                        <div className={"addDocType"}>
+                          <SelectField
+                              id={"documentType"}
+                              name={"documentType"}
+                              label={"Document Type"}
+                              options={documentType}
+                              error={error.documentType}
+                              onChange={addDocumentInputChange}
+                              variant={"outlined"}
+                              value={addDocument.documentType}
+                          />
+                        </div>
+
                         <br />
-                        <SelectField
-                          id={"documentCategory"}
-                          name={"documentCategory"}
-                          label={"Document Category"}
-                          options={doc_category}
-                          error={error.documentType}
-                          onChange={addDocumentInputChange}
-                          variant={"outlined"}
-                          value={parseInt(addDocument.documentType)}
-                        />
+                        <div className={"addDocCategory"}>
+                          <SelectField
+                              id={"documentCategory"}
+                              name={"documentCategory"}
+                              label={"Document Category"}
+                              options={doc_category}
+                              error={error.documentType}
+                              onChange={addDocumentInputChange}
+                              variant={"outlined"}
+                              value={parseInt(addDocument.documentType)}
+                          />
+                        </div>
                         <br />
                         <br />
                         <h5 style={{ color: "#2196F3" }}>
@@ -514,20 +584,30 @@ function AddDocument({
                           </span>
                         )}
                         <br />
-                        <FormGroup>{createCheckboxes()}</FormGroup>
+                        <div className={"row"}>
+                          <div className={"col-md-4"}>
+                            <div className={"addDocActionReq"}>
+                              <FormGroup>{createCheckboxes()}</FormGroup>
+                            </div>
+                          </div>
+                        </div>
+
                         <br />
                         <br />
                         <h5 style={{ color: "#2196F3" }}>
                           <CommentIcon />
                           &nbsp;Note
                         </h5>
-                        <TextArea
-                          placeholder={"Write Your Note Here"}
-                          name={"note"}
-                          onChange={addDocumentInputChange}
-                          error={error.note}
-                          value={addDocument.note}
-                        />
+                        <div className={"addDocNote"}>
+                          <TextArea
+                              placeholder={"Write Your Note Here"}
+                              name={"note"}
+                              onChange={addDocumentInputChange}
+                              error={error.note}
+                              value={addDocument.note}
+                          />
+                        </div>
+
                         <br />
                         <br />
                         <h5 style={{ color: "#2196F3" }}>
@@ -546,23 +626,38 @@ function AddDocument({
                           </span>
                         )}
                         <br />
-                        <Radio
-                          checked={destination === "Internal"}
-                          onChange={handleChangeDestination}
-                          value="Internal"
-                          name="radio-button-demo"
-                          inputProps={{ "aria-label": "A" }}
-                        />
-                        <label>Internal</label>
+                        <div className={"row"}>
+                          <div className={"col-md-3"}>
+                            <div className={"addDocInternal"}>
+                              <Radio
+                                  checked={destination === "Internal"}
+                                  onChange={handleChangeDestination}
+                                  value="Internal"
+                                  name="radio-button-demo"
+                                  inputProps={{ "aria-label": "A" }}
+                              />
+                              <label>Internal</label>
+                            </div>
+
+                          </div>
+                          <div className={"col-md-3"}>
+                            <div className={"addDocExternal"}>
+                              <Radio
+                                  checked={destination === "External"}
+                                  onChange={handleChangeDestination}
+                                  value="External"
+                                  name="radio-button-demo"
+                                  inputProps={{ "aria-label": "B" }}
+                              />
+                              <label>External</label>
+                            </div>
+
+                          </div>
+                        </div>
+
+
                         &nbsp;&nbsp;&nbsp;
-                        <Radio
-                          checked={destination === "External"}
-                          onChange={handleChangeDestination}
-                          value="External"
-                          name="radio-button-demo"
-                          inputProps={{ "aria-label": "B" }}
-                        />
-                        <label>External</label>
+
                         <br />
                         <br />
                         {destination === "Internal" && (
@@ -642,7 +737,7 @@ function AddDocument({
                           {/*</button>*/}
                           {/*&nbsp;&nbsp;&nbsp;*/}
                           <button
-                            className={"btn btn-info"}
+                            className={"btn btn-info addDocBtnFinalize"}
                             onClick={handleSubmit}
                           >
                             <DoneIcon />

@@ -32,13 +32,82 @@ import DescriptionIcon from "@material-ui/icons/Description";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
 import UserList from "../../common/userList/UserList";
-
+import ReactJoyride from "react-joyride";
 const _onClick = new UIFx(onClick);
 const _onScan = new UIFx(onScan);
 let socket;
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
   const [trackOrSearchOnly, setTrackOrSearchOnly] = useState(false);
+  const [startGuide, setStartGuide] = useState(false);
+  const [tutorial, setTutorial] = useState([
+    {
+      target: ".start",
+      disableBeacon: true,
+      content: "These is the current users indicator",
+    },
+    {
+      target: ".mainPage",
+      content:
+        "These is the indicator where you can scan a document barcode using a barcode scanner to receive an incoming document.",
+    },
+    {
+      target: ".optionTrackOnly",
+      content:
+        "Optionally you can just click here if you want to scan and track only the document.",
+    },
+    {
+      target: ".trackingInput",
+      content:
+        "These is where the document tracking number will appear after you scan the barcode, or (optionally) you can just type the barcode number manually and press enter if barcode scanner is not available.",
+    },
+    {
+      target: ".sidebar",
+      content: "These is your system navigation control",
+      placement: "right",
+    },
+    {
+      target: ".sidebarNew",
+      content:
+        "This is where you can create a document to be routed internally or externally.",
+      placement: "right",
+    },
+    {
+      target: ".sidebarPending",
+      content:
+        "And this is where you can view the document that you've recently received.",
+      placement: "right",
+    },
+    {
+      target: ".sidebarSectionDoc",
+      content:
+        "And this is where you can view all the documents made/routed by your respective office/section.",
+      placement: "right",
+    },
+    {
+      target: ".sidebarProcessedDoc",
+      content:
+        "And this is where you can view all the documents received and released by your respective office/section.",
+      placement: "right",
+    },
+    {
+      target: ".sidebarManageDocCat",
+      content:
+        "Also, this is where you can manage all the document category in your section.",
+      placement: "right",
+    },
+    {
+      target: ".sidebarUserManage",
+      content:
+        "Lastly, this is where you can manage the users allowed in your respective office/section",
+      placement: "right",
+    },
+    {
+      target: ".settings",
+      content:
+          "Click this icon to navigate to your profile, system guide or if you just want to logout.",
+    },
+  ]);
   useEffect(() => {
     socket = io(endPoint.ADDRESS);
     if (props.receive !== "") {
@@ -121,10 +190,25 @@ function Dashboard(props) {
     await props.searchBySubj(props.trackingNum.documentTrackingNumber);
   };
 
+  const handleStartGuide = (e) => {
+    e.preventDefault();
+    setStartGuide(true);
+  };
+
   return (
     <Grid container>
+      <ReactJoyride
+        steps={tutorial}
+        run={startGuide}
+        showProgress={true}
+        showSkipButton={true}
+        continuous={true}
+        disableOverlayClose={true}
+        // disableOverlay
+          styles={{options: {primaryColor: "#2196F3"}}}
+      />
       <BarcodeReader onError={handleError} onScan={handleScanning} />
-      <PrimarySearchAppBar />
+      <PrimarySearchAppBar handleStartGuide={handleStartGuide} />
 
       <Grid item xs={2}>
         <SideBarNavigation
@@ -167,7 +251,8 @@ function Dashboard(props) {
                           Document Tracking Number
                         </InputLabel>
                         <Input
-                            title={"Type/scan the Document Tracking Number"}
+                          className={"trackingInput"}
+                          title={"Type/scan the Document Tracking Number"}
                           id={"tackDocument"}
                           name={"documentTrackingNumber"}
                           label={"Tracking Number"}
@@ -216,16 +301,17 @@ function Dashboard(props) {
                   props.track.length === 0 &&
                   props.search.length === 0 ? (
                     <div style={{ textAlign: "center", marginTop: "25vh" }}>
-                      <h6 style={{ color: "#9E9E9E" }}>
+                      <h6 style={{ color: "#9E9E9E" }} className={"mainPage"}>
                         Scan the barcode to receive document and the document
                         track will show here
                       </h6>
+
                       <br />
                       <button
                         title={
                           "Click here to track or search only the document"
                         }
-                        className={"btn btn-sm"}
+                        className={"btn btn-sm optionTrackOnly"}
                         style={{ color: "#2196F3" }}
                         onClick={handleTrackOrSearchOnly}
                       >
