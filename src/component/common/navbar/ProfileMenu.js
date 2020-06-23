@@ -14,11 +14,17 @@ export default function ProfileMenu(props) {
       open={props.openProfileMenu}
       onClose={props.onCloseProfileMenu}
     >
-      <MenuItem>
+      <MenuItem className={"profile"}>
         <Link to={"/user"} style={{ textDecoration: "none" }}>
           My Account
         </Link>
       </MenuItem>
+      {props.handleStartGuide && (
+          <MenuItem onClick={props.handleStartGuide}>
+            Show Guide
+          </MenuItem>
+      )}
+
       <MenuItem onClick={props.handleLogOut}>Logout</MenuItem>
     </Menu>
   );

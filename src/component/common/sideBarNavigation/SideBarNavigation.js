@@ -84,15 +84,16 @@ export default function SideBarNavigation(props) {
   }, [pending, socket]);
 
   return (
-    <>
+    <div className={"sidebar"}>
       <div className={classes.root}>
         <List component="nav" aria-label="main mailbox folders">
           {props.user ? (
             <Link to={"/"} style={{ textDecoration: "none" }}>
               <ListItem
+                  className={"start"}
                 title={"Click to go to home page"}
                 style={{ paddingTop: 70, paddingBottom: 30, color: "#2196F3" }}
-              >
+               >
                 <ListItemAvatar>
                   <StyledBadge
                     overlap="circle"
@@ -150,33 +151,53 @@ export default function SideBarNavigation(props) {
 
           <Collapse in={props.open} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItemComponent primary="New" className={classes.nested} />
+              <div className={"sidebarNew"} >
+                <ListItemComponent  primary="New" className={classes.nested} />
+              </div>
+
               {/*<ListItemComponent primary="Drafts" className={classes.nested} />*/}
-              <ListItemComponent
-                primary="Pending"
-                className={classes.nested}
-                pending={pending}
-              />
+              <div className={"sidebarPending"}>
+                <ListItemComponent
 
-              <ListItemComponent
-                section={props.user.secshort}
-                primary={props.user.secshort + " Documents"}
-                className={classes.nested}
-              />
+                    primary="Pending"
+                    className={classes.nested}
+                    pending={pending}
+                />
+              </div>
 
-              <ListItemComponent
-                primary="Received/Released"
-                className={classes.nested}
-              />
+
+              <div className={"sidebarSectionDoc"}>
+                <ListItemComponent
+
+                    section={props.user.secshort}
+                    primary={props.user.secshort + " Documents"}
+                    className={classes.nested}
+                />
+              </div>
+
+              <div className={"sidebarProcessedDoc"}>
+                <ListItemComponent
+
+                    primary="Received/Released"
+                    className={classes.nested}
+                />
+              </div>
+
             </List>
           </Collapse>
         </List>
         <Divider />
         <List component="nav" aria-label="secondary mailbox folders">
-          <ListItemComponent primary="Manage Document Category" />
+          <div className={"sidebarManageDocCat"} >
+            <ListItemComponent primary="Manage Document Category" />
+          </div>
+
         </List>
         <List component="nav" aria-label="secondary mailbox folders">
-          <ListItemComponent primary="User Management" />
+          <div className={"sidebarUserManage"}>
+            <ListItemComponent primary="User Management"  />
+          </div>
+
         </List>
 
         {/*<List component="nav" aria-label="secondary mailbox folders">*/}
@@ -187,6 +208,6 @@ export default function SideBarNavigation(props) {
         {/*  <ListItemComponent primary="About" />*/}
         {/*</List>*/}
       </div>
-    </>
+    </div>
   );
 }
