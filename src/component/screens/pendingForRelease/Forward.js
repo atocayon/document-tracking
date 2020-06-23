@@ -67,7 +67,7 @@ export default function Forward(props) {
                 onChange={props.onChangeDestination}
               />
 
-              {props.doc.destination.length > 1 && (
+              {props.doc.doc_route_type.length > 0 && (
                 <>
                   <br />
                   <button

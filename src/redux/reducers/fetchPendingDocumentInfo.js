@@ -11,6 +11,7 @@ const defaultState = {
   note: "",
   action_req: [],
   destination: [],
+  doc_route_type: []
 };
 
 export default function fetchPendingDocumentInfo(state = defaultState, action) {
@@ -40,6 +41,11 @@ export default function fetchPendingDocumentInfo(state = defaultState, action) {
         senderPosition: action.data.senderPosition,
         senderRemarks: action.data.remarks,
         destinationType: action.data.destinationType,
+      });
+
+    case actionTypes.FETCH_DOC_ROUTE_TYPE:
+      return Object.assign({}, state, {
+        doc_route_type: [...action.data]
       });
     default:
       return state;
