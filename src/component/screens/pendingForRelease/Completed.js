@@ -16,14 +16,13 @@ export default function Completed(props) {
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title" style={{ color: "#2196F3" }}>
-          <DescriptionIcon /> Take Action
+          <DescriptionIcon /> Take Action for this document
         </DialogTitle>
         <DialogContent>
-          <br />
           <InputField
               id={"remarks"}
               name={"remarks"}
-              label={"Remarks"}
+              label={"Your Remarks"}
               type={"text"}
               value={props.value.remarks}
               onChange={props.onChangeDestination}

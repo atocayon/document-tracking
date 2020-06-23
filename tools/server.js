@@ -215,8 +215,9 @@ const fetchProcessedDoc = (token, callback) => {
   sql += "JOIN document_type c ON b.doc_type = c.id ";
   sql += "JOIN documentStatus d ON a.status = d.statid ";
   sql += "WHERE a.user_id = ? ";
+  sql += "AND (a.status = ? OR a.status = ?) ";
   sql += "ORDER BY a.date_time DESC";
-  connection.query(sql, [token], function (err, rows, fields) {
+  connection.query(sql, [token, "2", "1"], function (err, rows, fields) {
     if (err) {
       return callback(err);
     }
