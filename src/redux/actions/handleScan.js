@@ -6,7 +6,7 @@ import server_ip from "../server_ip";
 export function receiveDoc(data, user_id, secshort, socket) {
   return async function (dispatch) {
     dispatch({ type: actionTypes.HANDLE_SCAN, data });
-    await socket.emit("receiveDocument", data, user_id, secshort, (message) => {
+    await socket.emit("receiveDocument", data, user_id, secshort, async (message) => {
       Reactotron.log("Na receive");
       Reactotron.log(message);
       if (message === "server error") {
@@ -14,8 +14,9 @@ export function receiveDoc(data, user_id, secshort, socket) {
       }
 
       if (message === "success") {
+        await trackDoc(data, socket);
         dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "success" });
-        trackDoc(data, socket);
+
       }
 
       if (message === "failed"){
