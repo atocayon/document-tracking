@@ -323,6 +323,10 @@ function AddDocument({
       _error.documentType = "Document type is required";
     }
 
+    if (!addDocument.documentCategory){
+      _error.documentCategory = "Document Category is required";
+    }
+
     if (addDocument.destination.length === 0) {
       _error.destination = "Destination is Required";
     }
@@ -566,7 +570,7 @@ function AddDocument({
                               name={"documentCategory"}
                               label={"Document Category"}
                               options={doc_category}
-                              error={error.documentType}
+                              error={error.documentCategory}
                               onChange={addDocumentInputChange}
                               variant={"outlined"}
                               value={parseInt(addDocument.documentType)}
