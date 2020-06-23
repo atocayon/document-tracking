@@ -1,7 +1,7 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
 import server_ip from "../server_ip";
-
+import Reactotron from "reactotron-react-js";
 export function afterDocumentReceive(
   documentId,
   user_id,
@@ -11,6 +11,7 @@ export function afterDocumentReceive(
   status
 ) {
   return function (dispatch) {
+   // Reactotron.log(destination);
     return axios
       .post(server_ip.SERVER_IP_ADDRESS+"afterDocumentReceive", {
         documentId,

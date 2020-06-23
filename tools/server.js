@@ -1901,67 +1901,36 @@ router.route("/afterDocumentReceive").post(function (req, res) {
     if (err) {
       console.log(err);
     }
-
+    console.log(typeof destination);
     if (status === "2") {
-      if (destination.length > 1) {
-        const sql =
-          "SELECT a.documentID AS documentId, a.subject AS subject, a.doc_type AS doc_type, a.note AS note FROM documents a WHERE a.documentID =?";
-        connection.query(sql, documentId, function (err, doc, fields) {
-          if (err) {
-            throw err;
-          }
-          let forwardArr = [];
-          let insertLogsVal = [];
-          for (let i = 0; i < destination.length; i++) {
-            let inc = i + 1;
-            forwardArr.push([
-              documentId + "-" + inc,
-              user_id,
-              doc[0].subject,
-              doc[0].doc_type,
-              doc[0].note,
-              "1",
-              documentId,
-            ]);
 
-            insertLogsVal.push([
-              documentId + "-" + inc,
+      if (typeof destination === "string"){
+          const insertLogs2 =
+              "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, date_time) VALUES ?";
+          const valInsertLogs2 = [
+            [
+              documentId,
               user_id,
               remarks,
               destinationType,
-              destination[i],
+              destination,
               status,
               "0",
               dateTime,
-            ]);
-          }
-
-          const insert =
-            "INSERT INTO documents(documentID, creator, subject,doc_type, note, status, ref) VALUES ?";
-
-          connection.query(insert, [forwardArr], function (err, result) {
+            ],
+          ];
+          connection.query(insertLogs2, [valInsertLogs2], function (err, result) {
             if (err) {
               throw err;
             }
-
-            const insertLogs =
-              "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, date_time) VALUES ?";
-
-            connection.query(insertLogs, [insertLogsVal], function (
-              err,
-              result
-            ) {
-              if (err) {
-                throw err;
-              }
-              let updateLogs = "";
-              updateLogs += "UPDATE documentLogs SET ";
-              updateLogs += "notification   = ? ";
-              updateLogs += "WHERE document_id = ? ";
-              updateLogs += "AND user_id = ? ";
-              updateLogs += "AND status = ? ";
-              connection.query(
-                updateLogs,
+            let updateLogs2 = "";
+            updateLogs2 += "UPDATE documentLogs SET ";
+            updateLogs2 += "notification   = ? ";
+            updateLogs2 += "WHERE document_id = ? ";
+            updateLogs2 += "AND user_id = ? ";
+            updateLogs2 += "AND status = ? ";
+            connection.query(
+                updateLogs2,
                 ["1", documentId, user_id, "1"],
                 function (err, result) {
                   if (err) {
@@ -1970,48 +1939,84 @@ router.route("/afterDocumentReceive").post(function (req, res) {
 
                   res.status(200).send(result);
                 }
-              );
-            });
+            );
           });
-        });
-      } else {
-        const insertLogs2 =
-          "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, date_time) VALUES ?";
-        const valInsertLogs2 = [
-          [
-            documentId,
-            user_id,
-            remarks,
-            destinationType,
-            destination,
-            status,
-            "0",
-            dateTime,
-          ],
-        ];
-        connection.query(insertLogs2, [valInsertLogs2], function (err, result) {
-          if (err) {
-            throw err;
-          }
-          let updateLogs2 = "";
-          updateLogs2 += "UPDATE documentLogs SET ";
-          updateLogs2 += "notification   = ? ";
-          updateLogs2 += "WHERE document_id = ? ";
-          updateLogs2 += "AND user_id = ? ";
-          updateLogs2 += "AND status = ? ";
-          connection.query(
-            updateLogs2,
-            ["1", documentId, user_id, "1"],
-            function (err, result) {
+
+      }else{
+        if (destination.length > 1) {
+          const sql =
+              "SELECT a.documentID AS documentId, a.subject AS subject, a.doc_type AS doc_type, a.note AS note FROM documents a WHERE a.documentID =?";
+          connection.query(sql, documentId, function (err, doc, fields) {
+            if (err) {
+              throw err;
+            }
+            let forwardArr = [];
+            let insertLogsVal = [];
+            for (let i = 0; i < destination.length; i++) {
+              let inc = i + 1;
+              forwardArr.push([
+                documentId + "-" + inc,
+                user_id,
+                doc[0].subject,
+                doc[0].doc_type,
+                doc[0].note,
+                "1",
+                documentId,
+              ]);
+
+              insertLogsVal.push([
+                documentId + "-" + inc,
+                user_id,
+                remarks,
+                destinationType,
+                destination[i],
+                status,
+                "0",
+                dateTime,
+              ]);
+            }
+
+            const insert =
+                "INSERT INTO documents(documentID, creator, subject,doc_type, note, status, ref) VALUES ?";
+
+            connection.query(insert, [forwardArr], function (err, result) {
               if (err) {
                 throw err;
               }
 
-              res.status(200).send(result);
-            }
-          );
-        });
+              const insertLogs =
+                  "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, date_time) VALUES ?";
+
+              connection.query(insertLogs, [insertLogsVal], function (
+                  err,
+                  result
+              ) {
+                if (err) {
+                  throw err;
+                }
+                let updateLogs = "";
+                updateLogs += "UPDATE documentLogs SET ";
+                updateLogs += "notification   = ? ";
+                updateLogs += "WHERE document_id = ? ";
+                updateLogs += "AND user_id = ? ";
+                updateLogs += "AND status = ? ";
+                connection.query(
+                    updateLogs,
+                    ["1", documentId, user_id, "1"],
+                    function (err, result) {
+                      if (err) {
+                        throw err;
+                      }
+
+                      res.status(200).send(result);
+                    }
+                );
+              });
+            });
+          });
+        }
       }
+
     } else {
       const insertLogs3 =
         "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, date_time) VALUES ?";
