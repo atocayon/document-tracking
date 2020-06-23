@@ -4,7 +4,7 @@ const defaultState = [];
 export default function fetchDocumentTypes(state = defaultState, action) {
   switch (action.type) {
     case actionTypes.FETCH_DOCUMENT_TYPES:
-      return [...state, ...action.data];
+      return [...action.data];
     case actionTypes.ADD_DOCUMENT_TYPE:
       return [...state, { ...action.data }];
 
