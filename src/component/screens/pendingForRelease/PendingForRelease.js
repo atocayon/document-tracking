@@ -8,7 +8,7 @@ import { getFromStorage } from "../../storage";
 import Paper from "@material-ui/core/Paper";
 import { connect } from "react-redux";
 import { fetchPendingDocuments } from "../../../redux/actions/fetchPendingDocuments";
-import {fetchUserById} from "../../../redux/actions/fetchUserById";
+import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
@@ -25,14 +25,16 @@ function PendingForRelease(props) {
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
     socket = io(endPoint.ADDRESS);
-    async function fetch() {
-      await props.fetchPendingDocuments(obj.token);
-      await props.fetchUserById(obj.token);
-    }
+    if (obj && obj.token) {
+      async function fetch() {
+        await props.fetchPendingDocuments(obj.token);
+        await props.fetchUserById(obj.token);
+      }
 
-    fetch().catch((err) => {
-      throw err;
-    });
+      fetch().catch((err) => {
+        throw err;
+      });
+    }
 
     setEndSession(!(obj && obj.token));
   }, []);
@@ -130,14 +132,14 @@ function PendingForRelease(props) {
 
 function mapStateToProps(state) {
   return {
-      user: state.fetchUserById,
+    user: state.fetchUserById,
     pending: state.fetchPendingDocuments,
   };
 }
 
 const mapDispatchToProps = {
   fetchPendingDocuments,
-    fetchUserById
+  fetchUserById,
 };
 
 export default connect(
