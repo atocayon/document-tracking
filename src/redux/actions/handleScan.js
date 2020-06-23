@@ -5,6 +5,7 @@ import server_ip from "../server_ip";
 
 export function receiveDoc(data, user_id, secshort, socket) {
   return async function (dispatch) {
+    let str = data.split("-", 1);
     dispatch({ type: actionTypes.HANDLE_SCAN, data });
     await socket.emit("receiveDocument", data, user_id, secshort, async (message) => {
       Reactotron.log("Na receive");
@@ -14,8 +15,26 @@ export function receiveDoc(data, user_id, secshort, socket) {
       }
 
       if (message === "success") {
-        await trackDoc(data, socket);
+
         dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "success" });
+        await socket.emit("tracking", str.toString());
+
+        await socket.on("track", async (_data) => {
+          let arr = [];
+
+          for (let i = 0; i < _data.length; i++){
+            let fetch = await get_branches(_data[i].document_id);
+            let sub = await getSubProcess(_data[i].document_id);
+            arr.push({root: _data[i], subProcess: sub,branch: fetch});
+          }
+
+          Reactotron.log(arr);
+          dispatch({
+            type: actionTypes.TRACK_DOCUMENT,
+            data: arr,
+          });
+
+        });
 
       }
 
