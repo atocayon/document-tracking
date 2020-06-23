@@ -7,41 +7,44 @@ export function receiveDoc(data, user_id, secshort, socket) {
   return async function (dispatch) {
     let str = data.split("-", 1);
     dispatch({ type: actionTypes.HANDLE_SCAN, data });
-    await socket.emit("receiveDocument", data, user_id, secshort, async (message) => {
-      Reactotron.log("Na receive");
-      Reactotron.log(message);
-      if (message === "server error") {
-        dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "failed" });
-      }
+    await socket.emit(
+      "receiveDocument",
+      data,
+      user_id,
+      secshort,
+       (message) => {
+        Reactotron.log("Na receive");
+        Reactotron.log(message);
+        if (message === "server error") {
+          dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "failed" });
+        }
 
-      if (message === "success") {
+        if (message === "success") {
+          dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "success" });
+          socket.emit("tracking", str.toString());
 
-        dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "success" });
-        await socket.emit("tracking", str.toString());
+          socket.on("track", async (_data) => {
+            let arr = [];
 
-        await socket.on("track", async (_data) => {
-          let arr = [];
+            for (let i = 0; i < _data.length; i++) {
+              let fetch = await get_branches(_data[i].document_id);
+              let sub = await getSubProcess(_data[i].document_id);
+              arr.push({ root: _data[i], subProcess: sub, branch: fetch });
+            }
 
-          for (let i = 0; i < _data.length; i++){
-            let fetch = await get_branches(_data[i].document_id);
-            let sub = await getSubProcess(_data[i].document_id);
-            arr.push({root: _data[i], subProcess: sub,branch: fetch});
-          }
-
-          Reactotron.log(arr);
-          dispatch({
-            type: actionTypes.TRACK_DOCUMENT,
-            data: arr,
+            Reactotron.log(arr);
+            dispatch({
+              type: actionTypes.TRACK_DOCUMENT,
+              data: arr,
+            });
           });
+        }
 
-        });
-
+        if (message === "failed") {
+          dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "pending" });
+        }
       }
-
-      if (message === "failed"){
-        dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "pending" });
-      }
-    });
+    );
   };
 }
 
@@ -54,10 +57,10 @@ export function trackDoc(data, socket) {
     await socket.on("track", async (_data) => {
       let arr = [];
 
-      for (let i = 0; i < _data.length; i++){
+      for (let i = 0; i < _data.length; i++) {
         let fetch = await get_branches(_data[i].document_id);
         let sub = await getSubProcess(_data[i].document_id);
-        arr.push({root: _data[i], subProcess: sub,branch: fetch});
+        arr.push({ root: _data[i], subProcess: sub, branch: fetch });
       }
 
       Reactotron.log(arr);
@@ -65,18 +68,20 @@ export function trackDoc(data, socket) {
         type: actionTypes.TRACK_DOCUMENT,
         data: arr,
       });
-
     });
   };
 }
 
-async function getSubProcess(tracking){
-  let arr =[];
-  let subProcess = await axios.post(server_ip.SERVER_IP_ADDRESS+"fetchSubProcess", {tracking});
+async function getSubProcess(tracking) {
+  let arr = [];
+  let subProcess = await axios.post(
+    server_ip.SERVER_IP_ADDRESS + "fetchSubProcess",
+    { tracking }
+  );
   if (subProcess.data.length > 0) {
     for (let i = 0; i < subProcess.data.length; i++) {
       arr.push({
-        root: subProcess.data[i]
+        root: subProcess.data[i],
       });
     }
     return arr;
@@ -88,9 +93,9 @@ async function getSubProcess(tracking){
 async function get_branches(tracking) {
   let arr = [];
   let data_branches = await axios.post(
-      server_ip.SERVER_IP_ADDRESS+"fetchSubDocument",
+    server_ip.SERVER_IP_ADDRESS + "fetchSubDocument",
     {
-      tracking
+      tracking,
     }
   );
 
@@ -101,7 +106,7 @@ async function get_branches(tracking) {
       arr.push({
         root: data_branches.data[i],
         subProcess: sub,
-        branch: fetch
+        branch: fetch,
       });
     }
     return arr;
