@@ -211,9 +211,9 @@ const fetchProcessedDoc = (token, callback) => {
   sql += "c.type AS type, ";
   sql += "d.status AS status ";
   sql += "FROM documentLogs a ";
-  sql += "JOIN documents b ON a.document_id = b.documentID ";
-  sql += "JOIN document_type c ON b.doc_type = c.id ";
-  sql += "JOIN documentStatus d ON a.status = d.statid ";
+  sql += "LEFT JOIN documents b ON a.document_id = b.documentID ";
+  sql += "LEFT JOIN document_type c ON b.doc_type = c.id ";
+  sql += "LEFT JOIN documentStatus d ON a.status = d.statid ";
   sql += "WHERE a.user_id = ? ";
   sql += "AND (a.status = ? OR a.status = ?) ";
   sql += "ORDER BY a.date_time DESC";
