@@ -216,7 +216,7 @@ const fetchProcessedDoc = (token, callback) => {
   sql += "LEFT JOIN documentStatus d ON a.status = d.statid ";
   sql += "WHERE a.user_id = ? ";
   sql += "AND (a.status = ? OR a.status = ?) ";
-  sql += "ORDER BY a.date_time DESC";
+  sql += "ORDER BY date_time DESC";
   connection.query(sql, [token, "2", "1"], function (err, rows, fields) {
     if (err) {
       return callback(err);
