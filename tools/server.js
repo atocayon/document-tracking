@@ -1983,7 +1983,7 @@ router.route("/afterDocumentReceive").post(function (req, res) {
             user_id,
             remarks,
             destinationType,
-            destination[0],
+            destination,
             status,
             "0",
             dateTime,
