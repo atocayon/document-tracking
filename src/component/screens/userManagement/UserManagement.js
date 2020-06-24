@@ -16,9 +16,12 @@ import TransferOfficeDialog from "../../common/transferOfficeDialog/TransferOffi
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import UserList from "../../common/userList/UserList";
+import { connect } from "react-redux";
+import { fetchSectionUsers } from "../../../redux/actions/fetchSectionUsers";
+import {fetchSectionsList} from "../../../redux/actions/fetchSectionsList";
 
 function UserManagement(props) {
-  const [user, setUser] =useState({});
+  const [user, setUser] = useState({});
   const [sectionUsers, setSectionUsers] = useState([]);
   const [token, setToken] = useState("");
   const [userRole, setUserRole] = useState("");
@@ -56,42 +59,13 @@ function UserManagement(props) {
       const { token } = obj;
       setToken(token);
 
-      axios
-        .get("http://10.10.10.16:4000/dts/user/" + token)
-        .then((_user) => {
-          // Reactotron.log(_user);
-          setUser(_user.data);
-          let section = _user.data.secid;
-          setUserRole(_user.data.role);
+      async function fetch(){
+        await props.fetchSectionUsers(token);
+      }
 
-          axios
-            .get(
-              "http://10.10.10.16:4000/dts/sectionUser/" + section.toString()
-            )
-            .then((users) => {
-              setSectionUsers(users.data);
-
-              axios
-                .get("http://10.10.10.16:4000/dts/sections")
-                .then((res) => {
-                  setSections(res.data);
-                })
-                .catch((err) => {
-                  const variant = "error";
-                  props.enqueueSnackbar("Error on fetching sections", {
-                    variant,
-                  });
-                });
-            })
-            .catch((err) => {
-              const variant = "error";
-              props.enqueueSnackbar("Error on fetching users", { variant });
-            });
-        })
-        .catch((err) => {
-          const variant = "error";
-          props.enqueueSnackbar("Error on fetching users", { variant });
-        });
+      fetch().catch(err => {
+        throw err
+      });
     }
 
     setEndSession(!(obj && obj.token));
@@ -245,7 +219,7 @@ function UserManagement(props) {
       <Grid item xs={2}>
         <SideBarNavigation
           open={open}
-          user={user}
+          user={props.data.currentUser}
           setOpen={setOpen}
           handleClick={handleClick}
         />
@@ -265,7 +239,7 @@ function UserManagement(props) {
           <TransferOfficeDialog
             fullscreen={fullScreen}
             transferOfficeDialog={transferOfficeDialog}
-            sections={sections}
+            sections={props.sections}
             transfer={transfer}
             handleClose={handleClose}
             handleConfirmTransferOffice={handleConfirmTransferOffice}
@@ -333,11 +307,11 @@ function UserManagement(props) {
                 </div>
               </div>
 
-              {sectionUsers.length > 0 && (
+              {props.data.sectionUsers.length > 0 && (
                 <ListOfUsers
-                  sectionUsers={sectionUsers}
+                  sectionUsers={props.data.sectionUsers}
                   token={token}
-                  userRole={userRole}
+                  userRole={props.data.currentUser.role}
                   handleAccountRole={handleAccountRole}
                   handleAccountDeletion={handleAccountDeletion}
                   handleAccountStatus={handleAccountStatus}
@@ -356,4 +330,19 @@ function UserManagement(props) {
   );
 }
 
-export default withSnackbar(UserManagement);
+function mapStateToProps(state) {
+  return {
+    data: state.fetchSectionUsers,
+    sections: state.fetchSectionsList
+  };
+}
+
+const mapDispatchToProps = {
+  fetchSectionUsers,
+  fetchSectionsList
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withSnackbar(UserManagement));

@@ -54,7 +54,14 @@ function RegistrationForm(props) {
           setRedirect(true);
         }
 
-        if (props.user_reg === "failed") {
+        if (props.user_reg === "error") {
+          const variant = "error";
+          props.enqueueSnackbar(userInfo.name + " email is already taken...", {
+            variant,
+          });
+        }
+
+        if (props.user_reg === "email taken") {
           const _error = {};
           _error.email = "Already taken";
           setError(_error);
@@ -62,6 +69,19 @@ function RegistrationForm(props) {
           props.enqueueSnackbar(userInfo.name + " email is already taken...", {
             variant,
           });
+        }
+
+        if (props.user_reg === "username taken") {
+          const _error = {};
+          _error.username = "Already taken";
+          setError(_error);
+          const variant = "error";
+          props.enqueueSnackbar(
+            userInfo.name + " username is already taken...",
+            {
+              variant,
+            }
+          );
         }
       }
     }

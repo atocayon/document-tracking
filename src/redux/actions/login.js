@@ -3,7 +3,7 @@ import {setInStorage} from "../../component/storage";
 
 export function login(data, socket) {
   return async function (dispatch) {
-    await socket.emit("login", data.email, data.password, (message) => {
+    await socket.emit("login", data.emailOrPassword, data.password, (message) => {
       if (message === "server error") {
         return dispatch({
           type: actionTypes.USER_LOGIN,

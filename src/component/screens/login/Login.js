@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import InputField from "../../common/textField/InputField";
 import { Redirect } from "react-router-dom";
-import { getFromStorage } from "../../storage";
 import { withSnackbar } from "notistack";
 import logo from "../../../img/logo.png";
 import Paper from "@material-ui/core/Paper";
@@ -27,7 +26,7 @@ const _loginSuccess = new UIfx(loginSuccess);
 let socket;
 function Login(props) {
   const [login, setLogin] = useState({
-    email: "",
+    emailOrPassword: "",
     password: "",
   });
 
@@ -56,10 +55,10 @@ function Login(props) {
 
         if (props._login.message === "unrecognize email") {
           const _error = {};
-          _error.email = "Unregistered Email";
+          _error.email = "Unregistered Username or Email";
           setError(_error);
           const variant = "error";
-          props.enqueueSnackbar("Unregistered Email", { variant });
+          props.enqueueSnackbar("Unregistered Username or Email", { variant });
           errorSound.play();
         }
 
@@ -151,11 +150,11 @@ function Login(props) {
                         <br />
                         <InputField
                           id={"email"}
-                          label={"Email"}
+                          label={"Username or Email"}
                           name={"email"}
                           onChange={onChange}
                           error={error.email}
-                          type={"email"}
+                          type={"text"}
                         />
                         <br />
                         <br />
