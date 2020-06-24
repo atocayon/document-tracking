@@ -15,7 +15,9 @@ import { connect } from "react-redux";
 import { fetchCurrentSystemUser } from "../../../redux/actions/fetchCurrentSystemUser";
 import { userRegistration } from "../../../redux/actions/userRegistration";
 import UserList from "../../common/userList/UserList";
-
+import io from "socket.io-client";
+import endPoint from "../../endPoint";
+let socket;
 function RegistrationForm(props) {
   const [userInfo, setUserInfo] = useState({
     role: "",
@@ -33,6 +35,7 @@ function RegistrationForm(props) {
   const [endSession, setEndSession] = useState(false);
   const [open, setOpen] = useState(true);
   useEffect(() => {
+    socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     setEndSession(!(obj && obj.token));
     if (obj && obj.token) {
@@ -125,7 +128,8 @@ function RegistrationForm(props) {
         userInfo.confirmPassword,
         userInfo.email,
         userInfo.contact,
-        userInfo.position
+        userInfo.position,
+        socket
       );
     } else {
       const _error = {};
