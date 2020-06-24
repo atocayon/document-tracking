@@ -897,6 +897,7 @@ router.route("/fetchSubDocument").post(function (req, res) {
 });
 
 const login = (emailOrPassword, password, callback) => {
+  console.log(emailOrPassword);
   let sql = "";
   sql += "SELECT ";
   sql += "a.user_id AS user_id, ";
@@ -913,7 +914,7 @@ const login = (emailOrPassword, password, callback) => {
       console.log(err);
       return callback("server error");
     }
-
+    console.log(rows);
     if (rows.length === 0) {
       return callback("unrecognize email");
     }
