@@ -43,6 +43,7 @@ import saveEditDocCategory from "./saveEditDocCategory";
 import deleteDocCategory from "./deleteDocCategory";
 import listSectionDocCategory from "./listSectionDocCategory";
 import fetchProcessedDocument from "./fetchProcessedDocument";
+import fetchSectionUsers from "./fetchSectionUsers";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -87,7 +88,8 @@ const rootReducer = combineReducers({
   saveEditDocCategory: saveEditDocCategory,
   deleteDocCategory: deleteDocCategory,
   listSectionDocCategory: listSectionDocCategory,
-  fetchProcessedDocument:fetchProcessedDocument
+  fetchProcessedDocument:fetchProcessedDocument,
+  fetchSectionUsers: fetchSectionUsers
 });
 
 export default rootReducer;

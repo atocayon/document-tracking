@@ -37,7 +37,16 @@ export function userRegistration(
       contact,
       email,
       section,
-      position
+      position,
+      (res) => {
+        if (res) {
+          if (res !== "error") {
+            dispatch({ type: actionTypes.USER_REGISTRATION, message: res });
+          } else {
+            alert(res);
+          }
+        }
+      }
     );
   };
 }

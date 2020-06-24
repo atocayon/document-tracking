@@ -1,4 +1,3 @@
-
 const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
@@ -28,15 +27,6 @@ server.listen(PORT, () => {
   console.log("========================================================");
 });
 
-// mongoose.connect("mongodb://127.0.0.1:27017/dts", { useNewUrlParser: true });
-// const connection = mongoose.connection;
-
-// connection.once("open", () => {
-//   console.log("========================================================");
-//   console.log("MongoDB database connection established successfully!!!");
-//   console.log("========================================================");
-// });
-
 const connection = mysql.createConnection({
   user: "root",
   password: "",
@@ -60,8 +50,8 @@ connection.connect(function (err) {
 
 io.on("connection", (socket) => {
   //Login
-  socket.on("login", (email, password, callback) => {
-    login(email, password, callback);
+  socket.on("login", (emailOrPassword, password, callback) => {
+    login(emailOrPassword, password, callback);
   });
 
   //Logout
@@ -84,7 +74,8 @@ io.on("connection", (socket) => {
       contact,
       email,
       section,
-      position
+      position,
+      callback
     ) => {
       addUser(
         role,
@@ -95,7 +86,8 @@ io.on("connection", (socket) => {
         contact,
         email,
         section,
-        position
+        position,
+        callback
       );
     }
   );
@@ -131,7 +123,7 @@ io.on("connection", (socket) => {
         note,
         action_req,
         documentLogs,
-          category,
+        category,
         callback
       );
     }
@@ -223,7 +215,7 @@ const fetchProcessedDoc = (token, callback) => {
     }
 
     io.emit("processedDocument", rows);
-  })
+  });
 };
 
 //Delete Doc Category
@@ -314,13 +306,14 @@ const addUser = (
   contact,
   email,
   section,
-  position
+  position,
+  callback
 ) => {
   email = email.toLowerCase();
   email = email.trim();
 
-  const sql = "SELECT * FROM users WHERE email = ? ";
-  connection.query(sql, [email], function (err, rows, fields) {
+  const sql = "SELECT * FROM users WHERE email = ?";
+  connection.query(sql, [email, username], function (err, rows, fields) {
     if (err) {
       console.log(err);
     }
@@ -328,41 +321,58 @@ const addUser = (
     if (rows.length > 0) {
       // res.status(200).send({ success: "failed" });
       console.log("failed");
+      return callback("email taken");
     } else {
-      bcrypt.hash(password, saltRounds, function (err, hash) {
+      const checkUsername = "SELECT * FROM users WHERE username = ?";
+      connection.query(checkUsername, [username], function (err, rows, fields) {
         if (err) {
           console.log(err);
           // res.status(500).send(err);
+          return callback("error");
         }
-        let sql1 = "";
-        sql1 += "INSERT INTO users ";
-        sql1 +=
-          "(employeeId, name, username, password, contact, email, section, position, role, status) ";
-        sql1 += "VALUES ?";
 
-        const values = [
-          [
-            employeeId,
-            name,
-            username,
-            hash,
-            contact,
-            email,
-            section,
-            position,
-            role,
-            "1",
-          ],
-        ];
-        connection.query(sql1, [values], function (err, result) {
-          if (err) {
-            console.log(err);
-            // res.status(500).send(err);
-          }
-          console.log(result);
-          // res.status(200).send({ success: "success" });
-          Users();
-        });
+        if (rows.length > 0) {
+          return callback("username taken");
+        } else {
+          bcrypt.hash(password, saltRounds, function (err, hash) {
+            if (err) {
+              console.log(err);
+              // res.status(500).send(err);
+              return callback("error");
+            }
+            let sql1 = "";
+            sql1 += "INSERT INTO users ";
+            sql1 +=
+              "(employeeId, name, username, password, contact, email, section, position, role, status) ";
+            sql1 += "VALUES ?";
+
+            const values = [
+              [
+                employeeId,
+                name,
+                username,
+                hash,
+                contact,
+                email,
+                section,
+                position,
+                role,
+                "1",
+              ],
+            ];
+            connection.query(sql1, [values], function (err, result) {
+              if (err) {
+                console.log(err);
+                return callback("error");
+                // res.status(500).send(err);
+              }
+              console.log(result);
+              // res.status(200).send({ success: "success" });
+              Users();
+              return callback("success");
+            });
+          });
+        }
       });
     }
   });
@@ -556,7 +566,9 @@ const insertDocument = (
       if (documentLogs.length > 1) {
         const sql1 =
           "INSERT INTO documents (documentID, creator, subject, doc_type, note, status, ref, category) VALUES ?";
-        let values = [[documentID, creator, subject, doc_type, note, "1", "0", category]];
+        let values = [
+          [documentID, creator, subject, doc_type, note, "1", "0", category],
+        ];
         let destination = [];
         for (let i = 0; i < documentLogs.length; i++) {
           let inc = i + 1;
@@ -568,7 +580,7 @@ const insertDocument = (
             note,
             "1",
             documentID,
-              category
+            category,
           ]);
 
           destination.push([
@@ -810,8 +822,9 @@ const trackDocument = (data) => {
   sql += "SELECT ";
   sql += "a.documentID AS document_id, ";
   sql += "a.subject, ";
-  sql += "a.note, "
-  sql += "DATE_FORMAT(a.date_time_created, '%M %d, %Y @ %h:%i:%s %p') AS date_time, ";
+  sql += "a.note, ";
+  sql +=
+    "DATE_FORMAT(a.date_time_created, '%M %d, %Y @ %h:%i:%s %p') AS date_time, ";
   sql += "b.name AS name, ";
   sql += "d.secshort AS section, ";
   sql += "c.type AS type ";
@@ -832,10 +845,10 @@ const trackDocument = (data) => {
 
 //Fetch sub process
 router.route("/fetchSubProcess").post(function (req, res) {
-  const {tracking} = req.body;
+  const { tracking } = req.body;
   let sql = "";
   sql += "SELECT ";
-  sql += "a.trans_id AS trans_id, "
+  sql += "a.trans_id AS trans_id, ";
   sql += "a.remarks AS remarks, ";
   sql += "a.destinationType AS destinationType, ";
   sql += "a.destination AS destination, ";
@@ -853,7 +866,7 @@ router.route("/fetchSubProcess").post(function (req, res) {
     }
 
     res.status(200).send(rows);
-  })
+  });
 });
 
 //Fetch sub document
@@ -863,8 +876,9 @@ router.route("/fetchSubDocument").post(function (req, res) {
   sql += "SELECT ";
   sql += "a.documentID AS document_id, ";
   sql += "a.subject, ";
-  sql += "a.note, "
-  sql += "DATE_FORMAT(a.date_time_created, '%M %d, %Y @ %h:%i:%s %p') AS date_time, ";
+  sql += "a.note, ";
+  sql +=
+    "DATE_FORMAT(a.date_time_created, '%M %d, %Y @ %h:%i:%s %p') AS date_time, ";
   sql += "b.name AS name, ";
   sql += "c.type AS type ";
   sql += "FROM documents a ";
@@ -882,7 +896,7 @@ router.route("/fetchSubDocument").post(function (req, res) {
   });
 });
 
-const login = (email, password, callback) => {
+const login = (emailOrPassword, password, callback) => {
   let sql = "";
   sql += "SELECT ";
   sql += "a.user_id AS user_id, ";
@@ -892,9 +906,9 @@ const login = (email, password, callback) => {
   sql += "FROM users a ";
   sql += "JOIN users_role b ";
   sql += "ON a.role = b.role_id ";
-  sql += "WHERE email = ? ";
+  sql += "WHERE email = ? OR username = ?";
 
-  connection.query(sql, [email], function (err, rows, fields) {
+  connection.query(sql, [emailOrPassword, emailOrPassword], function (err, rows, fields) {
     if (err) {
       console.log(err);
       return callback("server error");
@@ -1693,14 +1707,23 @@ router.route("/fetchSectionDocuments/:userID/:folder").get(function (req, res) {
   const userID = req.params.userID;
   const folder = req.params.folder;
   const fetchUser = "SELECT * FROM users WHERE user_id = ?";
-  connection.query(fetchUser, [parseInt(userID)], function (err, user_id, fields) {
+  connection.query(fetchUser, [parseInt(userID)], function (
+    err,
+    user_id,
+    fields
+  ) {
     if (err) {
       console.log(err);
       res.status(500).send(err);
     }
 
-    const fetchCategory = "SELECT a.id AS id,a.category AS category FROM doc_category a WHERE a.section_id = ? AND a.category = ?";
-    connection.query(fetchCategory, [user_id[0].section, folder], function (err, category, fields) {
+    const fetchCategory =
+      "SELECT a.id AS id,a.category AS category FROM doc_category a WHERE a.section_id = ? AND a.category = ?";
+    connection.query(fetchCategory, [user_id[0].section, folder], function (
+      err,
+      category,
+      fields
+    ) {
       if (err) {
         console.log(err);
         res.status(500).send(err);
@@ -1723,22 +1746,20 @@ router.route("/fetchSectionDocuments/:userID/:folder").get(function (req, res) {
       sql += "AND a.ref = ? ";
       sql += "AND a.category = ? ";
       sql += "ORDER BY a.date_time_created DESC ";
-      connection.query(sql, [user_id[0].section, "1", "0", category[0].id], function (
-          err,
-          rows,
-          fields
-      ) {
-        if (err) {
-          console.log(err);
-          res.status(500).send(err);
+      connection.query(
+        sql,
+        [user_id[0].section, "1", "0", category[0].id],
+        function (err, rows, fields) {
+          if (err) {
+            console.log(err);
+            res.status(500).send(err);
+          }
+
+          console.log(rows);
+          res.status(200).send(rows);
         }
-
-        console.log(rows);
-        res.status(200).send(rows);
-      });
-    })
-
-
+      );
+    });
   });
 });
 
@@ -1746,7 +1767,8 @@ router.route("/fetchDocumentRouteType/:doc_id").get(function (req, res) {
   const documentID = req.params.doc_id;
   console.log(documentID);
   let sql = "";
-  sql += "SELECT a.creator AS creator, a.subject AS subject, a.doc_type AS doc_type, a.note AS note ";
+  sql +=
+    "SELECT a.creator AS creator, a.subject AS subject, a.doc_type AS doc_type, a.note AS note ";
   sql += "FROM documents a WHERE a.ref = ? ";
   connection.query(sql, [documentID], function (err, rows, fields) {
     if (err) {
@@ -1755,7 +1777,7 @@ router.route("/fetchDocumentRouteType/:doc_id").get(function (req, res) {
     }
     console.log(rows);
     res.status(200).send(rows);
-  })
+  });
 });
 
 //Fetch Document Destination
@@ -1919,49 +1941,47 @@ router.route("/afterDocumentReceive").post(function (req, res) {
     }
     console.log(typeof destination);
     if (status === "2") {
+      if (typeof destination === "string") {
+        const insertLogs2 =
+          "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, date_time) VALUES ?";
+        const valInsertLogs2 = [
+          [
+            documentId,
+            user_id,
+            remarks,
+            destinationType,
+            destination,
+            status,
+            "0",
+            dateTime,
+          ],
+        ];
+        connection.query(insertLogs2, [valInsertLogs2], function (err, result) {
+          if (err) {
+            throw err;
+          }
+          let updateLogs2 = "";
+          updateLogs2 += "UPDATE documentLogs SET ";
+          updateLogs2 += "notification   = ? ";
+          updateLogs2 += "WHERE document_id = ? ";
+          updateLogs2 += "AND user_id = ? ";
+          updateLogs2 += "AND status = ? ";
+          connection.query(
+            updateLogs2,
+            ["1", documentId, user_id, "1"],
+            function (err, result) {
+              if (err) {
+                throw err;
+              }
 
-      if (typeof destination === "string"){
-          const insertLogs2 =
-              "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, date_time) VALUES ?";
-          const valInsertLogs2 = [
-            [
-              documentId,
-              user_id,
-              remarks,
-              destinationType,
-              destination,
-              status,
-              "0",
-              dateTime,
-            ],
-          ];
-          connection.query(insertLogs2, [valInsertLogs2], function (err, result) {
-            if (err) {
-              throw err;
+              res.status(200).send(result);
             }
-            let updateLogs2 = "";
-            updateLogs2 += "UPDATE documentLogs SET ";
-            updateLogs2 += "notification   = ? ";
-            updateLogs2 += "WHERE document_id = ? ";
-            updateLogs2 += "AND user_id = ? ";
-            updateLogs2 += "AND status = ? ";
-            connection.query(
-                updateLogs2,
-                ["1", documentId, user_id, "1"],
-                function (err, result) {
-                  if (err) {
-                    throw err;
-                  }
-
-                  res.status(200).send(result);
-                }
-            );
-          });
-
-      }else{
+          );
+        });
+      } else {
         if (destination.length > 1) {
           const sql =
-              "SELECT a.documentID AS documentId, a.subject AS subject, a.doc_type AS doc_type, a.note AS note FROM documents a WHERE a.documentID =?";
+            "SELECT a.documentID AS documentId, a.subject AS subject, a.doc_type AS doc_type, a.note AS note FROM documents a WHERE a.documentID =?";
           connection.query(sql, documentId, function (err, doc, fields) {
             if (err) {
               throw err;
@@ -1993,7 +2013,7 @@ router.route("/afterDocumentReceive").post(function (req, res) {
             }
 
             const insert =
-                "INSERT INTO documents(documentID, creator, subject,doc_type, note, status, ref) VALUES ?";
+              "INSERT INTO documents(documentID, creator, subject,doc_type, note, status, ref) VALUES ?";
 
             connection.query(insert, [forwardArr], function (err, result) {
               if (err) {
@@ -2001,11 +2021,11 @@ router.route("/afterDocumentReceive").post(function (req, res) {
               }
 
               const insertLogs =
-                  "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, date_time) VALUES ?";
+                "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, date_time) VALUES ?";
 
               connection.query(insertLogs, [insertLogsVal], function (
-                  err,
-                  result
+                err,
+                result
               ) {
                 if (err) {
                   throw err;
@@ -2017,22 +2037,21 @@ router.route("/afterDocumentReceive").post(function (req, res) {
                 updateLogs += "AND user_id = ? ";
                 updateLogs += "AND status = ? ";
                 connection.query(
-                    updateLogs,
-                    ["1", documentId, user_id, "1"],
-                    function (err, result) {
-                      if (err) {
-                        throw err;
-                      }
-
-                      res.status(200).send(result);
+                  updateLogs,
+                  ["1", documentId, user_id, "1"],
+                  function (err, result) {
+                    if (err) {
+                      throw err;
                     }
+
+                    res.status(200).send(result);
+                  }
                 );
               });
             });
           });
         }
       }
-
     } else {
       const insertLogs3 =
         "INSERT INTO documentLogs(document_id, user_id, remarks, destinationType, destination, status, notification, date_time) VALUES ?";
