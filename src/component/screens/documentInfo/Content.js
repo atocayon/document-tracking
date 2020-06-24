@@ -30,7 +30,7 @@ export default class Content extends Component {
               </div>
             </div>
             <div className={"col-md-4"}>
-              <div style={{ textAlign: "center" }}>
+              <div style={{ textAlign: "center" }} className={"routingTitleContainer"}>
                 <br />
                 <h5
                   className={"routingTitle"}
@@ -103,18 +103,20 @@ export default class Content extends Component {
                   label={action.action_req}
                   value={action.action_req}
                   name={"action_req"}
+              
                 />
               ))}
             </FormGroup>
 
             <br />
             <br />
-
+            <p className={"note3"} style={{ display: "none" }}>
+              (To be filled-up by receiving action unit/person and to be
+              signed by the head before forwarding to other offices/s)
+            </p>
             <div className={"tableContainer"}>
-              <p className={"note3"} style={{ display: "none" }}>
-                (To be filled-up by receiving action unit/person and to be
-                signed by the head before forwarding to other offices/s)
-              </p>
+
+
               <table
                 className={"table table-bordered"}
                 style={{ fontSize: 14 }}

@@ -1,63 +1,92 @@
 @import url('https://fonts.googleapis.com/css?family=Righteous|Montserrat|Neucha&display=swap');
 
 @media print {
+
+  @page{
+    size: landscape !important;
+  }
+
+  .textInput{
+    width: 130px !important;
+    font-size: 10px !important;
+    color: #000 !important;
+  }
+
+  .routingTitleContainer{
+    width:524px !important;
+    margin-left: 624px !important;
+  }
+
     .routingSlipContent{
-        margin: 10px;
+        margin: 0px;
     }
 
     .formNumber{
-        font-size: 10px !important;
+      margin-left: 624px !important;
+        font-size: 8px !important;
+        margin-bottom: -20px !important;
     }
 
     .routingTitle{
-        font-size: 30px;
-        margin-bottom: -20px !important;
+        font-size: 14px;
     }
     .note{
-        margin-left: 50px !important;
+
+      font-size: 10px !important;
+        width: 524px !important;
+      margin-left: 674px !important;
         display: block !important;
         border: 1px solid #000 !important;
         padding: 10px !important;
         margin-right: 50px !important;
+      margin-top: -80px !important;
     }
 
     .note2{
-        margin-left: 50px !important;
+      font-size: 10px !important;
+      margin-left: 674px !important;
         display: block !important;
         padding: 10px !important;
         margin-right: 50px !important;
-        margin-bottom: -20px !important;
+        margin-bottom: -30px !important;
+        margin-top: -20px !important;
     }
 
     .note3{
+      margin-left: 674px !important;
+      font-size: 10px !important;
         display: block !important;
         padding: 10px !important;
+        margin-top: -50px !important;
         margin-right: 50px !important;
+      margin-bottom: -10px !important;
     }
 
     .originatorInfo{
+      width: 524px !important;
         display: flex;
         flex-direction: row;
-        margin-left: 50px !important;
+      margin-left: 674px !important;
         margin-right: 50px !important;
-        padding: 10px !important;
+        padding: 5px !important;
         border-top: 1px solid #000 !important;
         border-left: 1px solid #000 !important;
         border-right: 1px solid #000 !important;
     }
 
     .input{
-        margin-left: 50px !important;
-        width: 250px !important;
+        margin-left: 20px !important;
+        width: 130px !important;
     }
 
     .actionRequired{
+      width: 524px !important;
         padding: 10px !important;
-        margin-top: -20px !important;
+        margin-top: -50px !important;
         color: #000 !important;
-        margin-left: 50px !important;
+      margin-left: 674px !important;
         margin-right: 50px !important;
-        font-size: 1.2rem !important;
+        font-size: 12px !important;
         border-left: 1px solid #000 !important;
         border-right: 1px solid #000 !important;
     }
@@ -67,24 +96,30 @@
     }
 
     .checkbox{
+      width: 524px !important;
         padding: 10px !important;
-        margin-top: -20px !important;
-        font-size: 18px !important;
-        margin-left: 50px !important;
+        margin-top: -50px !important;
+      margin-left: 674px !important;
         margin-right: 50px !important;
         border-left: 1px solid #000 !important;
         border-right: 1px solid #000 !important;
         border-bottom: 1px solid #000 !important;
     }
 
+    .checkboxLabel{
+      font-size: 10px !important;
+    }
+
     .tableContainer{
-        margin-left: 50px !important;
+      width: 524px !important;
+      margin-left: 674px !important;
         margin-right: 50px !important;
+
 
     }
 
     .tableContainer .table{
-        font-size: 18px !important;
+        font-size: 10px !important;
     }
 
     .jumbotron{
