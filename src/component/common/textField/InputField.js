@@ -1,5 +1,6 @@
 import React from "react";
 import TextField from "@material-ui/core/TextField";
+import "../../../styles/style.css"
 export default function InputField(props) {
   let error = false;
 
@@ -21,6 +22,9 @@ export default function InputField(props) {
       onChange={props.onChange}
       type={props.type}
       helperText={props.error ? props.error:""}
+      InputProps={{
+        className: "textInput"
+      }}
     />
   );
 }

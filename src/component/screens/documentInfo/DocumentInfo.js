@@ -106,7 +106,7 @@ function DocumentInfo(props) {
                 <div className={"col-md-6"}>
                   <div style={{ float: "right" }}>
                     <ReactToPrint
-                      copyStyles={true}
+                  
                       content={() => componentRef.current}
                       trigger={() => (
                         <a

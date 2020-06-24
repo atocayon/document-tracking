@@ -30,7 +30,9 @@ function Progress(props) {
               )}
 
               {props.data.root.remarks !== "none" && (
-                <>Remarks: {props.data.root.remarks}</>
+                <>Remarks: {props.data.root.remarks}
+                    <br/>
+                </>
               )}
             </small>
           </Typography>
@@ -83,7 +85,6 @@ function RootSubProcess(props) {
               <>
                 Destination: {props.sub.root.destination}
                 <br />
-                  <br/>
               </>
             )}
 
