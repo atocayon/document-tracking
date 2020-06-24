@@ -84,7 +84,7 @@ function Login(props) {
   const formValidation = () => {
     const _error = {};
 
-    if (!login.email) _error.email = "Email is required";
+    if (!login.emailOrPassword) _error.email = "Email is required";
     if (!login.password) _error.password = "Password is required";
 
     setError(_error);
@@ -151,7 +151,7 @@ function Login(props) {
                         <InputField
                           id={"email"}
                           label={"Username or Email"}
-                          name={"email"}
+                          name={"emailOrPassword"}
                           onChange={onChange}
                           error={error.email}
                           type={"text"}
