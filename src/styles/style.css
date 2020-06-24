@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css?family=Righteous|Montserrat|Neucha&display=swap');
+
+@media print {
+
+  @page{
+    size: landscape !important;
+  }
+
+  .textInput{
+    width: 130px !important;
+    font-size: 10px !important;
+    color: #000 !important;
+  }
+
+  .routingTitleContainer{
+    width:524px !important;
+    margin-left: 624px !important;
+  }
+
+    .routingSlipContent{
+        margin: 0px;
+    }
+
+    .formNumber{
+      margin-left: 624px !important;
+        font-size: 8px !important;
+        margin-bottom: -20px !important;
+    }
+
+    .routingTitle{
+        font-size: 14px;
+    }
+    .note{
+
+      font-size: 10px !important;
+        width: 524px !important;
+      margin-left: 674px !important;
+        display: block !important;
+        border: 1px solid #000 !important;
+        padding: 10px !important;
+        margin-right: 50px !important;
+      margin-top: -80px !important;
+    }
+
+    .note2{
+      font-size: 10px !important;
+      margin-left: 674px !important;
+        display: block !important;
+        padding: 10px !important;
+        margin-right: 50px !important;
+        margin-bottom: -30px !important;
+        margin-top: -20px !important;
+    }
+
+    .note3{
+      margin-left: 674px !important;
+      font-size: 10px !important;
+        display: block !important;
+        padding: 10px !important;
+        margin-top: -50px !important;
+        margin-right: 50px !important;
+      margin-bottom: -10px !important;
+    }
+
+    .originatorInfo{
+      width: 524px !important;
+        display: flex;
+        flex-direction: row;
+      margin-left: 674px !important;
+        margin-right: 50px !important;
+        padding: 5px !important;
+        border-top: 1px solid #000 !important;
+        border-left: 1px solid #000 !important;
+        border-right: 1px solid #000 !important;
+    }
+
+    .input{
+        margin-left: 20px !important;
+        width: 130px !important;
+    }
+
+    .actionRequired{
+      width: 524px !important;
+        padding: 10px !important;
+        margin-top: -50px !important;
+        color: #000 !important;
+      margin-left: 674px !important;
+        margin-right: 50px !important;
+        font-size: 12px !important;
+        border-left: 1px solid #000 !important;
+        border-right: 1px solid #000 !important;
+    }
+
+    .action_req_icon{
+        display: none !important;
+    }
+
+    .checkbox{
+      width: 524px !important;
+        padding: 10px !important;
+        margin-top: -50px !important;
+      margin-left: 674px !important;
+        margin-right: 50px !important;
+        border-left: 1px solid #000 !important;
+        border-right: 1px solid #000 !important;
+        border-bottom: 1px solid #000 !important;
+    }
+
+    .checkboxLabel{
+      font-size: 10px !important;
+    }
+
+    .tableContainer{
+      width: 524px !important;
+      margin-left: 674px !important;
+        margin-right: 50px !important;
+
+
+    }
+
+    .tableContainer .table{
+        font-size: 10px !important;
+    }
+
+    .jumbotron{
+        background: #fff !important;
+    }
+
+    .barcode{
+        display: block !important;
+    }
+
+    .barcodeContainer{
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        margin-left: 30px !important;
+    }
+
+    .office{
+        margin-top: 10px !important;
+        margin-bottom: -2px !important;
+        font-size: 18px !important;
+    }
+
+    .multiBarcode{
+        margin-left: 30px !important;
+    }
+
+}
