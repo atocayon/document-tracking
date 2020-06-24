@@ -1,8 +1,6 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-import Reactotron from "reactotron-react-js";
 import server_ip from "../server_ip";
-const localIpUrl = require("local-ip-url");
 
 export function updateUserProfile(data) {
   const _data = {
