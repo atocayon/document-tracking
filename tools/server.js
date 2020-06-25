@@ -418,23 +418,18 @@ const Users = () => {
 //Fetch Document Logs Query
 const getDocLogs = (socket) => {
   let sql = "";
-  sql += "SELECT b.document_id AS trans_id, ";
-  sql += "b.remarks AS remarks, ";
-  sql += "b.destinationType AS destinationType, ";
-  sql += "b.destination AS destination, ";
-  sql += "DATE_FORMAT(b.date_time,'%M %d, %Y @ %h:%i:%s %p ') AS date_time, ";
-  sql += "c.name AS name, ";
+  sql += "SELECT e.document_id AS trans_id, e.remarks AS remarks, e.destinationType AS destinationType, ";
+  sql += "e.destination AS destination, ";
+  sql += "DATE_FORMAT(e.date_time,'%M %d, %Y @ %h:%i:%s %p ') AS date_time, c.name AS name,  ";
   sql += "d.status AS status ";
-  sql += "FROM documents a ";
+  sql += "FROM documents a  ";
+  sql += "JOIN (SELECT MAX(trans_id) as trans, document_id FROM documentLogs GROUP BY document_id) b ON a.documentID = b.document_id ";
+  sql += "JOIN documentLogs e ON b.document_id = e.document_id  ";
+  sql += "JOIN users c ON e.user_id = c.user_id ";
   sql +=
-    "JOIN (SELECT MAX(trans_id) as trans, document_id, remarks, destinationType, destination, date_time, user_id,status ";
+    "JOIN documentStatus d ON e.status = d.statid  ";
   sql +=
-    "FROM documentLogs GROUP BY document_id) b ON a.documentID = b.document_id ";
-  sql += "JOIN users c ";
-  sql += "ON b.user_id = c.user_id ";
-  sql += "JOIN documentStatus d ";
-  sql += "ON b.status = d.statid ";
-  sql += "ORDER BY b.date_time DESC ";
+    "ORDER BY date_time DESC ";
 
   connection.query(sql, (err, rows, fields) => {
     if (err) {
@@ -484,14 +479,15 @@ const assignTrackingNum = () => {
 
     if (rows.length > 0) {
       const sql1 =
-        "SELECT documentID+1 as documentID FROM documents ORDER BY documentID DESC LIMIT 1";
+        "SELECT documentID as documentID FROM documents ORDER BY documentID DESC LIMIT 1";
       connection.query(sql1, function (err, rows, fields) {
         if (err) {
           console.log(err);
           throw err;
         }
-
-        io.emit("documentId", rows[0]);
+        let str = rows[0].split("-", 1);
+        let convert = parseInt(str);
+        io.emit("documentId", convert);
       });
     } else {
       console.log(rows);
@@ -502,7 +498,7 @@ const assignTrackingNum = () => {
 };
 
 //Inserting new document
-const insertDocument = (
+const insertDocument =  async (
   documentID,
   creator,
   subject,
@@ -611,14 +607,14 @@ const insertDocument = (
             const sql3 =
               "INSERT INTO documentLogs (document_id, user_id, remarks, destinationType, destination, status, notification, date_time) VALUES ?";
 
-            connection.query(sql3, [destination], function (err, result) {
+            connection.query(sql3, [destination],  async function (err, result) {
               if (err) {
                 console.log(err);
               }
 
-              getDocLogs();
-              assignTrackingNum();
-              fetchProcessedDoc(creator, callback);
+              await getDocLogs();
+              await assignTrackingNum();
+              await fetchProcessedDoc(creator, callback);
               return callback("success");
             });
           });
