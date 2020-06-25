@@ -488,7 +488,7 @@ const assignTrackingNum = () => {
 
         let str = rows[0].documentID.split("-", 1);
         let convert = parseInt(str);
-        io.emit("documentId", convert+1);
+        io.emit("documentId", {documentID: convert+1});
       });
     } else {
       console.log(rows);
