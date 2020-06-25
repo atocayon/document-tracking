@@ -499,7 +499,7 @@ const assignTrackingNum = () => {
 };
 
 //Inserting new document
-const insertDocument =  async (
+const insertDocument =   (
   documentID,
   creator,
   subject,
@@ -608,14 +608,14 @@ const insertDocument =  async (
             const sql3 =
               "INSERT INTO documentLogs (document_id, user_id, remarks, destinationType, destination, status, notification, date_time) VALUES ?";
 
-            connection.query(sql3, [destination],  async function (err, result) {
+            connection.query(sql3, [destination],   function (err, result) {
               if (err) {
                 console.log(err);
               }
 
-              await getDocLogs();
-              await assignTrackingNum();
-              await fetchProcessedDoc(creator, callback);
+               getDocLogs();
+               assignTrackingNum();
+               // fetchProcessedDoc(creator, callback);
               return callback("success");
             });
           });
@@ -661,7 +661,7 @@ const insertDocument =  async (
 
               getDocLogs();
               assignTrackingNum();
-              fetchProcessedDoc(creator, callback);
+              // fetchProcessedDoc(creator, callback);
               return callback("success");
             });
           });
