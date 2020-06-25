@@ -165,7 +165,7 @@ io.on("connection", (socket) => {
 
   //Fetch Document Category
   socket.on("fetchDocumentCategory", (token, callback) => {
-    fetchDocumentCategory(token, callback);
+    fetchDocumentCategory(token, callback, socket);
   });
 
   //Update Doc Category
@@ -249,7 +249,7 @@ const updateDocumentCategory = (data, token, callback) => {
 };
 
 //Fetch Document Category
-const fetchDocumentCategory = (token, callback) => {
+const fetchDocumentCategory = (token, callback, socket) => {
   const fetchSection = "SELECT a.section FROM users a WHERE a.user_id = ?";
   connection.query(fetchSection, [token], function (err, rows, fields) {
     if (err) {
@@ -269,7 +269,7 @@ const fetchDocumentCategory = (token, callback) => {
         return callback("server error");
       }
       console.log(rows);
-      io.emit("sectionDocCategory", rows);
+      socket.emit("sectionDocCategory", rows);
     });
   });
 };
