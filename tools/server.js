@@ -124,7 +124,8 @@ io.on("connection", (socket) => {
         action_req,
         documentLogs,
         category,
-        callback
+        callback,
+        socket
       );
     }
   );
@@ -160,7 +161,7 @@ io.on("connection", (socket) => {
 
   //Add New Document Category
   socket.on("addNewDocumentCategory", (token, category, callback) => {
-    addNewDocCategory(token, category, callback);
+    addNewDocCategory(token, category, callback, socket);
   });
 
   //Fetch Document Category
@@ -170,12 +171,12 @@ io.on("connection", (socket) => {
 
   //Update Doc Category
   socket.on("updateDocumentCategory", (data, token, callback) => {
-    updateDocumentCategory(data, token, callback);
+    updateDocumentCategory(data, token, callback, socket);
   });
 
   //Delete Doc Category
   socket.on("deleteDocCategory", (id, token, callback) => {
-    deleteDocCategory(id, token, callback);
+    deleteDocCategory(id, token, callback, socket);
   });
 
   //Fetch Processed doc
@@ -219,20 +220,20 @@ const fetchProcessedDoc = (token, callback, socket) => {
 };
 
 //Delete Doc Category
-const deleteDocCategory = (id, token, callback) => {
+const deleteDocCategory = (id, token, callback, socket) => {
   const sql = "DELETE FROM doc_category WHERE id = ?";
   connection.query(sql, [parseInt(id)], function (err, result) {
     if (err) {
       return callback(err);
     }
 
-    fetchDocumentCategory(token, callback);
+    fetchDocumentCategory(token, callback, socket);
     return callback("success");
   });
 };
 
 //Update Document Category
-const updateDocumentCategory = (data, token, callback) => {
+const updateDocumentCategory = (data, token, callback, socket) => {
   for (let i = 0; i < data.length; i++) {
     const sql = "UPDATE doc_category SET category = ? WHERE id = ?";
     connection.query(sql, [data[i].category, parseInt(data[i].id)], function (
@@ -242,7 +243,7 @@ const updateDocumentCategory = (data, token, callback) => {
       if (err) {
         return callback(err);
       }
-      fetchDocumentCategory(token, callback);
+      fetchDocumentCategory(token, callback, socket);
       return callback("success");
     });
   }
@@ -275,7 +276,7 @@ const fetchDocumentCategory = (token, callback, socket) => {
 };
 
 //Add New Document Category
-const addNewDocCategory = (token, category, callback) => {
+const addNewDocCategory = (token, category, callback, socket) => {
   const fetchSection = "SELECT a.section FROM users a WHERE a.user_id = ?";
   connection.query(fetchSection, [token], function (err, rows, fields) {
     if (err) {
@@ -290,7 +291,7 @@ const addNewDocCategory = (token, category, callback) => {
         console.log(err);
         return callback("server error");
       }
-      fetchDocumentCategory(token, callback);
+      fetchDocumentCategory(token, callback, socket);
       return callback("inserted");
     });
   });
@@ -418,18 +419,19 @@ const Users = () => {
 //Fetch Document Logs Query
 const getDocLogs = (socket) => {
   let sql = "";
-  sql += "SELECT e.document_id AS trans_id, e.remarks AS remarks, e.destinationType AS destinationType, ";
+  sql +=
+    "SELECT e.document_id AS trans_id, e.remarks AS remarks, e.destinationType AS destinationType, ";
   sql += "e.destination AS destination, ";
-  sql += "DATE_FORMAT(e.date_time,'%M %d, %Y @ %h:%i:%s %p ') AS date_time, c.name AS name,  ";
+  sql +=
+    "DATE_FORMAT(e.date_time,'%M %d, %Y @ %h:%i:%s %p ') AS date_time, c.name AS name,  ";
   sql += "d.status AS status ";
   sql += "FROM documents a  ";
-  sql += "JOIN (SELECT MAX(trans_id) as trans, document_id FROM documentLogs GROUP BY document_id) b ON a.documentID = b.document_id ";
+  sql +=
+    "JOIN (SELECT MAX(trans_id) as trans, document_id FROM documentLogs GROUP BY document_id) b ON a.documentID = b.document_id ";
   sql += "JOIN documentLogs e ON b.document_id = e.document_id  ";
   sql += "JOIN users c ON e.user_id = c.user_id ";
-  sql +=
-    "JOIN documentStatus d ON e.status = d.statid  ";
-  sql +=
-    "ORDER BY date_time DESC ";
+  sql += "JOIN documentStatus d ON e.status = d.statid  ";
+  sql += "ORDER BY date_time DESC ";
 
   connection.query(sql, (err, rows, fields) => {
     if (err) {
@@ -488,7 +490,7 @@ const assignTrackingNum = () => {
 
         let str = rows[0].documentID.split("-", 1);
         let convert = parseInt(str);
-        io.emit("documentId", {documentID: convert+1});
+        io.emit("documentId", { documentID: convert + 1 });
       });
     } else {
       console.log(rows);
@@ -499,7 +501,7 @@ const assignTrackingNum = () => {
 };
 
 //Inserting new document
-const insertDocument =   (
+const insertDocument = (
   documentID,
   creator,
   subject,
@@ -508,7 +510,8 @@ const insertDocument =   (
   action_req,
   documentLogs,
   category,
-  callback
+  callback,
+  socket
 ) => {
   let today = new Date();
   let date =
@@ -608,14 +611,14 @@ const insertDocument =   (
             const sql3 =
               "INSERT INTO documentLogs (document_id, user_id, remarks, destinationType, destination, status, notification, date_time) VALUES ?";
 
-            connection.query(sql3, [destination],   function (err, result) {
+            connection.query(sql3, [destination], function (err, result) {
               if (err) {
                 console.log(err);
               }
 
-               getDocLogs();
-               assignTrackingNum();
-               // fetchProcessedDoc(creator, callback);
+              getDocLogs();
+              assignTrackingNum();
+              fetchProcessedDoc(creator, callback, socket);
               return callback("success");
             });
           });
@@ -661,7 +664,7 @@ const insertDocument =   (
 
               getDocLogs();
               assignTrackingNum();
-              // fetchProcessedDoc(creator, callback);
+              fetchProcessedDoc(creator, callback, socket);
               return callback("success");
             });
           });
@@ -732,7 +735,7 @@ const receiveDocument = (
             }
             countPending(user_id, socket);
             trackDocument(documentTracking);
-            fetchProcessedDoc(user_id, callback);
+            fetchProcessedDoc(user_id, callback, socket);
             return callback("success");
           });
           break;
@@ -787,7 +790,7 @@ const receiveDocument = (
 
                 countPending(user_id, socket);
                 trackDocument(documentTracking);
-                fetchProcessedDoc(user_id, callback);
+                fetchProcessedDoc(user_id, callback, socket);
                 return callback("success");
               }
             );
@@ -906,7 +909,11 @@ const login = (emailOrPassword, password, callback) => {
   sql += "ON a.role = b.role_id ";
   sql += "WHERE email = ? OR username = ?";
 
-  connection.query(sql, [emailOrPassword, emailOrPassword], function (err, rows, fields) {
+  connection.query(sql, [emailOrPassword, emailOrPassword], function (
+    err,
+    rows,
+    fields
+  ) {
     if (err) {
       console.log(err);
       return callback("server error");
