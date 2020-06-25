@@ -19,7 +19,7 @@ import UserList from "../../common/userList/UserList";
 import { connect } from "react-redux";
 import { fetchSectionUsers } from "../../../redux/actions/fetchSectionUsers";
 import {fetchSectionsList} from "../../../redux/actions/fetchSectionsList";
-
+import server_ip from "../../endPoint";
 function UserManagement(props) {
   const [user, setUser] = useState({});
   const [sectionUsers, setSectionUsers] = useState([]);
@@ -73,7 +73,7 @@ function UserManagement(props) {
 
   const handleAccountRole = (val) => {
     axios
-      .post("http://10.10.10.16:4000/dts/updateRole", {
+      .post(server_ip.SERVER_IP_ADDRESS+"updateRole", {
         role: val.status,
         id: val.id,
       })
@@ -133,7 +133,7 @@ function UserManagement(props) {
     });
 
     axios
-      .post("http://10.10.10.16:4000/dts/transferOffice", {
+      .post(server_ip.SERVER_IP_ADDRESS+"transferOffice", {
         id: transferOfficeDialog.id,
         section: transfer.section,
       })
@@ -194,7 +194,7 @@ function UserManagement(props) {
 
   const handleConfirm = () => {
     axios
-      .post("http://10.10.10.16:4000/dts/updateStatus", {
+      .post(server_ip.SERVER_IP_ADDRESS+"updateStatus", {
         status: openDialog.status,
         id: openDialog.id,
       })

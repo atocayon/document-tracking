@@ -1,7 +1,7 @@
 import actionTypes from "./actionTypes";
 import Reactotron from "reactotron-react-js";
 import axios from "axios";
-import server_ip from "../server_ip";
+import server_ip from "../../component/endPoint";
 
 export function receiveDoc(data, user_id, secshort, socket) {
   return async function (dispatch) {

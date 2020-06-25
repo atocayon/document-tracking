@@ -1,6 +1,6 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-import server_ip from "../server_ip";
+import server_ip from "../../component/endPoint";
 
 export function deleteDocumentType(id) {
   return function (dispatch) {

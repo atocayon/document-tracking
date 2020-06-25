@@ -1,7 +1,7 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
-import server_ip from "../server_ip";
+import server_ip from "../../component/endPoint";
 
 export function addNewSection(data) {
   const _data = {
