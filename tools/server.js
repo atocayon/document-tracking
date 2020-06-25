@@ -151,7 +151,7 @@ io.on("connection", (socket) => {
 
   //Track Document
   socket.on("tracking", (data) => {
-    trackDocument(data);
+    trackDocument(data, socket);
   });
 
   //Count Pending
@@ -734,7 +734,7 @@ const receiveDocument = (
               return callback("server error");
             }
             countPending(user_id, socket);
-            trackDocument(documentTracking);
+            trackDocument(documentTracking, socket);
             fetchProcessedDoc(user_id, callback, socket);
             return callback("success");
           });
@@ -789,7 +789,7 @@ const receiveDocument = (
                 }
 
                 countPending(user_id, socket);
-                trackDocument(documentTracking);
+                trackDocument(documentTracking, socket);
                 fetchProcessedDoc(user_id, callback, socket);
                 return callback("success");
               }
@@ -817,7 +817,7 @@ const countPending = (user_id, socket) => {
 };
 
 //Track Document
-const trackDocument = (data) => {
+const trackDocument = (data, socket) => {
   let sql = "";
   sql += "SELECT ";
   sql += "a.documentID AS document_id, ";
@@ -839,7 +839,7 @@ const trackDocument = (data) => {
       throw err;
     }
 
-    io.emit("track", rows);
+    socket.emit("track", rows);
   });
 };
 
