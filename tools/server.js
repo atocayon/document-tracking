@@ -180,7 +180,7 @@ io.on("connection", (socket) => {
 
   //Fetch Processed doc
   socket.on("fetchProcessedDoc", (token, callback) => {
-    fetchProcessedDoc(token, callback);
+    fetchProcessedDoc(token, callback, socket);
   });
 
   socket.on("disconnect", () => {
@@ -195,7 +195,7 @@ io.on("connection", (socket) => {
 //------------------------------------------------------------------------------------------------------------------
 
 //Fetch Processed Doc
-const fetchProcessedDoc = (token, callback) => {
+const fetchProcessedDoc = (token, callback, socket) => {
   let sql = "";
   sql += "SELECT DISTINCT a.document_id AS document_id, ";
   sql += "DATE_FORMAT(a.date_time, '%M %d, %Y @ %h:%i:%s %p ') AS date_time, ";
@@ -214,7 +214,7 @@ const fetchProcessedDoc = (token, callback) => {
       return callback(err);
     }
 
-    io.emit("processedDocument", rows);
+    socket.emit("processedDocument", rows);
   });
 };
 
