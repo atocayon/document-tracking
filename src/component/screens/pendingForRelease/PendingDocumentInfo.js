@@ -179,8 +179,8 @@ function PendingDocumentInfo(props) {
                     <ReactToPrint
                       content={() => componentRef.current}
                       trigger={() => (
-                        <a href={"#"} className={"btn"} title={"Print"}>
-                          <PrintIcon /> &nbsp;Print
+                        <a href={"#"} className={"btn"} title={"Print"} style={{color: "##17A2B8"}}>
+                          <PrintIcon />&nbsp;Print
                         </a>
                       )}
                     />
