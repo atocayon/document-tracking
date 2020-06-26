@@ -126,25 +126,4 @@
         background: #fff !important;
     }
 
-    .barcode{
-        display: block !important;
-    }
-
-    .barcodeContainer{
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: wrap;
-        margin-left: 30px !important;
-    }
-
-    .office{
-        margin-top: 10px !important;
-        margin-bottom: -2px !important;
-        font-size: 18px !important;
-    }
-
-
-
-
-
 }

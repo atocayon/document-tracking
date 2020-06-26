@@ -5,12 +5,12 @@
         margin: 0 !important;
     }
 
-    #barcode{
+    .barcode{
         display: block !important;
         width: 30px !important;
     }
 
-    #barcodeLabel{
+    .barcodeLabel{
         font-size: 10px !important;
     }
 

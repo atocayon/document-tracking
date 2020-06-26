@@ -84,7 +84,7 @@ function DocumentInfo(props) {
             <div className={"col-md-8"}>
               <div className={"row"}>
                 <div className={"col-md-6"}>
-                  <div id={"barcode"} ref={barcodeRef} style={{display: "none"}}>
+                  <div className={"barcode"} ref={barcodeRef} style={{display: "none"}}>
                       {props.documentInfo.barcode.length > 0 && props.documentInfo.barcode.map(barcode => (
                           <div key={barcode.documentID}>
                               <ReactToPrint
@@ -94,7 +94,7 @@ function DocumentInfo(props) {
                                           className={"btn"}
                                           title={"Print this barcode"}
                                       >
-                                        <span id={"barcodeLabel"}>{barcode.destination}</span><br/>
+                                        <span className={"barcodeLabel"}>{barcode.destination}</span><br/>
                                           <BarcodeComponent
                                               trackingNumber={barcode.documentID}
                                           />

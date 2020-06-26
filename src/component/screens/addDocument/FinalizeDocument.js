@@ -12,6 +12,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import ReactToPrint from "react-to-print";
 import BarcodeComponent from "../../common/barcode/BarcodeComponent";
 import "../../../styles/style.css";
+import "../../../styles/barcode.css";
 import Chip from "@material-ui/core/Chip";
 import Avatar from "@material-ui/core/Avatar";
 import BusinessIcon from "@material-ui/icons/Business";
@@ -147,34 +148,33 @@ class FinalizeDocument extends Component {
             className={"barcode"}
             style={{ display: "none" }}
           >
-            <div className={"barcodeContainer"}>
+            <div>
               {this.props.data.destination.length > 1 ? (
                 this.props.data.destination.map((data, index) => {
                   return (
-                    <div
-                      style={{ textAlign: "center" }}
-                      className={"multiBarcode"}
-                    >
-                      <p className={"office"}>
-                        <small>{data[4]}</small>
-                      </p>
-                      <BarcodeComponent
-                        trackingNumber={
-                          this.props.trackingNumber + "-" + ++index
-                        }
-                      />
-                    </div>
+                      <a
+                          href={"#"}
+                          className={"btn"}
+                          title={"Print this barcode"}
+                      >
+                        <span className={"barcodeLabel"}>{data[4]}</span><br/>
+                        <BarcodeComponent
+                            trackingNumber={this.props.trackingNumber + "-" + ++index}
+                        />
+                      </a>
                   );
                 })
               ) : this.props.data.destination.map((data, index) => (
-                  <div style={{ textAlign: "center" }} className={"singleBarcode"}>
-                    <p className={"office"}>
-                      <small>{data[4]}</small>
-                    </p>
+                  <a
+                      href={"#"}
+                      className={"btn"}
+                      title={"Print this barcode"}
+                  >
+                    <span className={"barcodeLabel"}>{data[4]}</span><br/>
                     <BarcodeComponent
                         trackingNumber={this.props.trackingNumber}
                     />
-                  </div>
+                  </a>
                   )
               )}
             </div>
