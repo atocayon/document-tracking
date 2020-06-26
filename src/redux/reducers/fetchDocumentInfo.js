@@ -11,6 +11,7 @@ const defaultState = {
   note: "",
   action_req: [],
   destination: [],
+  barcode: [],
 };
 
 export default function fetchDocumentInfo(state = defaultState, action) {
@@ -33,6 +34,11 @@ export default function fetchDocumentInfo(state = defaultState, action) {
       return Object.assign({}, state, {
         destination: [...action.data],
       });
+
+    case actionTypes.FETCH_DOCUMENTS_BARCODES:
+      return Object.assign({}, state, {barcode: [...action.data]});
+    case actionTypes.FETCH_DOCUMENTS_BARCODE:
+      return Object.assign({}, state, {barcode: [...action.data]});
 
     default:
       return state;

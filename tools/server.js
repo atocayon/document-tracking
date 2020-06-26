@@ -1850,6 +1850,48 @@ router.route("/fetchActionTaken").post(function (req, res) {
   });
 });
 
+//Fetch Document Barcodes
+router.route("/fetchDocumentBarcodes/:doc_id").get(function (req, res) {
+  const documentID = req.params.doc_id;
+  let sql = " ";
+  sql += "SELECT ";
+  sql += "a.documentID, ";
+  sql += "b.destination ";
+  sql += "FROM documents a ";
+  sql += "JOIN documentLogs b ON a.documentID = b.document_id ";
+  sql += "WHERE a.ref = ? ";
+  connection.query(sql, [documentID], function (err, rows, fields) {
+    if(err){
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    res.status(200).send(rows);
+  });
+});
+
+
+//Fetch Document Barcode
+router.route("/fetchDocumentBarcode/:doc_id").get(function (req, res) {
+  const documentID = req.params.doc_id;
+  let sql = "";
+  sql += "SELECT ";
+  sql += "a.documentID, ";
+  sql += "b.destination ";
+  sql += "FROM documents a ";
+  sql += "JOIN documentLogs b ON a.documentID = b.document_id ";
+  sql += "WHERE a.documentID = ? ";
+
+  connection.query(sql , [documentID], function (err, rows, fields) {
+    if(err){
+      console.log(err);
+      res.status(500).send(err);
+    }
+
+    res.status(200).send(rows);
+  });
+})
+
 //Fetch Pending Documents
 router.route("/fetchPendingDocument/:user_id").get(function (req, res) {
   let sql = "";

@@ -1,0 +1,12 @@
+
+@media print {
+    @page {
+        size: 1in .47in !important;
+        margin: 0 !important;
+    }
+
+    #barcode{
+        display: block !important;
+    }
+}
+

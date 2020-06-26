@@ -15,7 +15,7 @@ import { fetchDocumentInfo } from "../../../redux/actions/fetchDocumentInfo";
 import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import Content from "./Content";
 import UserList from "../../common/userList/UserList";
-
+import "../../../styles/barcode.css";
 function DocumentInfo(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
@@ -84,27 +84,38 @@ function DocumentInfo(props) {
             <div className={"col-md-8"}>
               <div className={"row"}>
                 <div className={"col-md-6"}>
-                  <div id={"barcode"}>
-                    <ReactToPrint
-                      trigger={() => (
-                        <a
-                          href={"#"}
-                          className={"btn"}
-                          title={"Print this barcode"}
-                        >
-                          {" "}
-                          <BarcodeComponent
-                            ref={barcodeRef}
-                            trackingNumber={props.match.params.doc_id}
-                          />
-                        </a>
-                      )}
-                      content={() => barcodeRef.current}
-                    />
+                  <div id={"barcode"} ref={barcodeRef} style={{display: "none"}}>
+                      {props.documentInfo.barcode.length > 0 && props.documentInfo.barcode.map(barcode => (
+                          <div key={barcode.documentID}>
+                              <ReactToPrint
+                                  trigger={() => (
+                                      <a
+                                          href={"#"}
+                                          className={"btn"}
+                                          title={"Print this barcode"}
+                                      >
+                                          {barcode.destination}<br/>
+                                          <BarcodeComponent
+                                              trackingNumber={barcode.documentID}
+                                          />
+                                      </a>
+                                  )}
+                                  content={() => barcodeRef.current}
+                              />
+                          </div>
+                      ))}
                   </div>
                 </div>
                 <div className={"col-md-6"}>
                   <div style={{ float: "right" }}>
+                      <ReactToPrint
+                          trigger={() => (
+                              <button className={"btn btn-outline-info"}><PrintIcon />&nbsp;Barcode</button>
+                          )}
+                          content={() => barcodeRef.current}
+                      />
+
+                    &nbsp;&nbsp;&nbsp;
                     <ReactToPrint
                   
                       content={() => componentRef.current}
@@ -114,7 +125,7 @@ function DocumentInfo(props) {
                           className={"btn btn-info"}
                           title={"Print"}
                         >
-                          <PrintIcon /> &nbsp;Print
+                          <PrintIcon /> &nbsp;Routing Slip
                         </a>
                       )}
                     />

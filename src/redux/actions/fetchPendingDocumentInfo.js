@@ -17,11 +17,28 @@ export function fetchPendingDocumentInfo(doc_id) {
       server_ip.SERVER_IP_ADDRESS + "fetchDocumentDestination/" + str.toString()
     );
 
+    let fetchDocumentBarcodes = await axios.get(
+        server_ip.SERVER_IP_ADDRESS + "fetchDocumentBarcodes/" + str
+    );
+    let fetchDocumentBarcode = await axios.get(
+        server_ip.SERVER_IP_ADDRESS + "fetchDocumentBarcode/" + str
+    );
+
     let fetchDocumentRouteType = await axios.get(
       server_ip.SERVER_IP_ADDRESS + "fetchDocumentRouteType/" + str.toString()
     );
 
-    Reactotron.log(fetchDocumentRouteType);
+    if (fetchDocumentBarcodes.data.length > 1) {
+      dispatch({
+        type: actionTypes.FETCH_PENDING_DOCUMENTS_BARCODES,
+        data: fetchDocumentBarcodes.data,
+      });
+    } else {
+      dispatch({
+        type: actionTypes.FETCH_PENDING_DOCUMENTS_BARCODE,
+        data: fetchDocumentBarcode.data,
+      });
+    }
 
     dispatch({
       type: actionTypes.FETCH_DOC_ROUTE_TYPE,

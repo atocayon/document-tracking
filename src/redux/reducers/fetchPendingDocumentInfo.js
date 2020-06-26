@@ -11,7 +11,8 @@ const defaultState = {
   note: "",
   action_req: [],
   destination: [],
-  doc_route_type: []
+  barcode: [],
+  doc_route_type: [],
 };
 
 export default function fetchPendingDocumentInfo(state = defaultState, action) {
@@ -45,8 +46,12 @@ export default function fetchPendingDocumentInfo(state = defaultState, action) {
 
     case actionTypes.FETCH_DOC_ROUTE_TYPE:
       return Object.assign({}, state, {
-        doc_route_type: [...action.data]
+        doc_route_type: [...action.data],
       });
+    case actionTypes.FETCH_PENDING_DOCUMENTS_BARCODES:
+      return Object.assign({}, state, { barcode: [...action.data] });
+    case actionTypes.FETCH_PENDING_DOCUMENTS_BARCODE:
+      return Object.assign({}, state, { barcode: [...action.data] });
     default:
       return state;
   }
