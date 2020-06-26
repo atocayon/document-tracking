@@ -1876,13 +1876,11 @@ router.route("/fetchDocumentBarcode/:doc_id").get(function (req, res) {
   const documentID = req.params.doc_id;
   let sql = "";
   sql += "SELECT ";
-  sql += "a.documentID, ";
-  sql += "b.destination ";
+  sql += "a.documentID ";
   sql += "FROM documents a ";
-  sql += "JOIN documentLogs b ON a.documentID = b.document_id ";
-  sql += "WHERE a.documentID = ? AND b.status = ? ";
+  sql += "WHERE a.documentID = ? ";
 
-  connection.query(sql , [documentID, "2"], function (err, rows, fields) {
+  connection.query(sql , [documentID], function (err, rows, fields) {
     if(err){
       console.log(err);
       res.status(500).send(err);

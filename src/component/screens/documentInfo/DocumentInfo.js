@@ -94,9 +94,16 @@ function DocumentInfo(props) {
                                           className={"btn"}
                                           title={"Print this barcode"}
                                       >
-                                        <span className={"barcodeLabel"}>{barcode.destination}</span><br/>
+                                          {barcode.destination && (
+                                              <>
+                                                  <span className={"barcodeLabel"}>{barcode.destination}</span><br/>
+                                              </>
+
+                                          )}
+
                                           <BarcodeComponent
                                               trackingNumber={barcode.documentID}
+                                              margin={5}
                                           />
                                       </a>
                                   )}

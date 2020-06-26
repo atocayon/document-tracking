@@ -170,9 +170,9 @@ class FinalizeDocument extends Component {
                       className={"btn"}
                       title={"Print this barcode"}
                   >
-                    <span className={"barcodeLabel"}>{data[4]}</span><br/>
                     <BarcodeComponent
                         trackingNumber={this.props.trackingNumber}
+                        margin={5}
                     />
                   </a>
                   )
