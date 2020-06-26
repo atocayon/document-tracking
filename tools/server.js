@@ -1859,8 +1859,8 @@ router.route("/fetchDocumentBarcodes/:doc_id").get(function (req, res) {
   sql += "b.destination ";
   sql += "FROM documents a ";
   sql += "JOIN documentLogs b ON a.documentID = b.document_id ";
-  sql += "WHERE a.ref = ? AND (b.status = ? OR b.status = ?) ";
-  connection.query(sql, [documentID, "1", "4"], function (err, rows, fields) {
+  sql += "WHERE a.ref = ? AND b.status = ? ";
+  connection.query(sql, [documentID, "2"], function (err, rows, fields) {
     if(err){
       console.log(err);
       res.status(500).send(err);
@@ -1880,9 +1880,9 @@ router.route("/fetchDocumentBarcode/:doc_id").get(function (req, res) {
   sql += "b.destination ";
   sql += "FROM documents a ";
   sql += "JOIN documentLogs b ON a.documentID = b.document_id ";
-  sql += "WHERE a.documentID = ? AND (b.status = ? OR b.status = ?)";
+  sql += "WHERE a.documentID = ? AND b.status = ? ";
 
-  connection.query(sql , [documentID, "1", "4"], function (err, rows, fields) {
+  connection.query(sql , [documentID, "2"], function (err, rows, fields) {
     if(err){
       console.log(err);
       res.status(500).send(err);
