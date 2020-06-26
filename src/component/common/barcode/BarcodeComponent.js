@@ -11,8 +11,8 @@ export default class BarcodeComponent extends Component {
         format="CODE128"
         value={this.props.trackingNumber}
         height={20}
-        width={this.props.margin ? 1.2 : 1}
-        margin={this.props.margin ? this.props.margin : 0}
+        width={this.props.width}
+        margin={this.props.margin}
         fontSize={10}
       />
     );

@@ -103,7 +103,8 @@ function DocumentInfo(props) {
 
                                           <BarcodeComponent
                                               trackingNumber={barcode.documentID}
-                                              margin={5}
+                                              margin={barcode.destination ? 0 : 5}
+                                              width={barcode.destination ? 1 : 1.2}
                                           />
                                       </a>
                                   )}

@@ -1888,7 +1888,7 @@ router.route("/fetchDocumentBarcode/:doc_id").get(function (req, res) {
 
     res.status(200).send(rows);
   });
-})
+});
 
 //Fetch Pending Documents
 router.route("/fetchPendingDocument/:user_id").get(function (req, res) {
