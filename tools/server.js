@@ -1859,7 +1859,7 @@ router.route("/fetchDocumentBarcodes/:doc_id").get(function (req, res) {
   sql += "b.destination ";
   sql += "FROM documents a ";
   sql += "JOIN documentLogs b ON a.documentID = b.document_id ";
-  sql += "WHERE a.ref = ? ";
+  sql += "WHERE a.ref = ? GROUP BY b.document_id ";
   connection.query(sql, [documentID], function (err, rows, fields) {
     if(err){
       console.log(err);
