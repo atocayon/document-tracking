@@ -44,6 +44,7 @@ import deleteDocCategory from "./deleteDocCategory";
 import listSectionDocCategory from "./listSectionDocCategory";
 import fetchProcessedDocument from "./fetchProcessedDocument";
 import fetchSectionUsers from "./fetchSectionUsers";
+import trackOrSearchOnly from "./trackOrSearchOnly";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -89,7 +90,8 @@ const rootReducer = combineReducers({
   deleteDocCategory: deleteDocCategory,
   listSectionDocCategory: listSectionDocCategory,
   fetchProcessedDocument:fetchProcessedDocument,
-  fetchSectionUsers: fetchSectionUsers
+  fetchSectionUsers: fetchSectionUsers,
+  trackOrSearchOnly: trackOrSearchOnly
 });
 
 export default rootReducer;

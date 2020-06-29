@@ -33,61 +33,62 @@ import io from "socket.io-client";
 import endPoint from "../../endPoint";
 import UserList from "../../common/userList/UserList";
 import ReactJoyride from "react-joyride";
+import { trackOrSearchOnly } from "../../../redux/actions/trackOrSearchOnly";
+import SearchIcon from "@material-ui/icons/Search";
 const _onClick = new UIFx(onClick);
 const _onScan = new UIFx(onScan);
 let socket;
 function Dashboard(props) {
   const [open, setOpen] = useState(true);
-  const [trackOrSearchOnly, setTrackOrSearchOnly] = useState(false);
   const [startGuide, setStartGuide] = useState(false);
   const [tutorial, setTutorial] = useState([
     {
       target: ".start",
       disableBeacon: true,
-      content: "These is the current users indicator",
+      content: "This is the current users indicator",
     },
     {
       target: ".mainPage",
       content:
-        "These is the indicator where you can scan a document barcode using a barcode scanner to receive an incoming document.",
+        "This is the indicator where you can scan a document barcode using a barcode scanner to receive an incoming document.",
     },
     {
       target: ".optionTrackOnly",
       content:
-        "Optionally you can just click here if you want to scan and track only the document.",
+        "Also you can just click here if you want to scan and track only the document.",
     },
     {
       target: ".trackingInput",
       content:
-        "These is where the document tracking number will appear after you scan the barcode, or (optionally) you can just type the barcode number manually and press enter if barcode scanner is not available.",
+        "This is where the document tracking number will appear after you scan the barcode, or (optionally) you can just type the barcode number manually and press enter if barcode scanner is not available.",
     },
     {
       target: ".sidebar",
-      content: "These is your system navigation control",
+      content: "This is your system navigation control",
       placement: "right",
     },
     {
       target: ".sidebarNew",
       content:
-        "This is where you can create a document to be routed internally or externally.",
+        "This is where you can create a document to be routed/send internally or externally.",
       placement: "right",
     },
     {
       target: ".sidebarPending",
       content:
-        "And this is where you can view the document that you've recently received.",
+        "This is where you can view the document that you've recently received.",
       placement: "right",
     },
     {
       target: ".sidebarSectionDoc",
       content:
-        "And this is where you can view all the documents made/routed by your respective office/section.",
+        "This is where you can view all the documents made/routed by your respective office/section.",
       placement: "right",
     },
     {
       target: ".sidebarProcessedDoc",
       content:
-        "And this is where you can view all the documents received and released by your respective office/section.",
+        "This is where you can view all the documents received and released by your respective office/section.",
       placement: "right",
     },
     {
@@ -99,13 +100,13 @@ function Dashboard(props) {
     {
       target: ".sidebarUserManage",
       content:
-        "Lastly, this is where you can manage the users allowed in your respective office/section",
+        "This is where you can manage the users allowed in your respective office/section",
       placement: "right",
     },
     {
       target: ".settings",
       content:
-          "Click this icon to navigate to your profile, system guide or if you just want to logout.",
+        "You can click this icon to navigate to your profile, system guide or if you just want to logout.",
     },
   ]);
   useEffect(() => {
@@ -135,7 +136,7 @@ function Dashboard(props) {
         );
       }
     }
-  }, [props.receive]);
+  }, [props, props.receive]);
 
   const handleClick = () => {
     setOpen(!open);
@@ -147,7 +148,7 @@ function Dashboard(props) {
 
   const handleManual = async (e) => {
     e.preventDefault();
-    if (!trackOrSearchOnly) {
+    if (!props._trackOrSearchOnly) {
       await props.receiveDoc(
         props.trackingNum.documentTrackingNumber,
         props.user.user_id,
@@ -157,14 +158,14 @@ function Dashboard(props) {
       _onScan.play();
     }
 
-    if (trackOrSearchOnly) {
+    if (props._trackOrSearchOnly) {
       await props.trackDoc(props.trackingNum.documentTrackingNumber, socket);
       _onScan.play();
     }
   };
 
   const handleScanning = async (data) => {
-    if (!trackOrSearchOnly) {
+    if (!props._trackOrSearchOnly) {
       Reactotron.log("Track and Receive");
       await props.receiveDoc(
         data,
@@ -175,14 +176,14 @@ function Dashboard(props) {
       _onScan.play();
     }
 
-    if (trackOrSearchOnly) {
+    if (props._trackOrSearchOnly) {
       await props.trackDoc(data, socket);
       _onScan.play();
     }
   };
 
   const handleTrackOrSearchOnly = async () => {
-    setTrackOrSearchOnly(!trackOrSearchOnly);
+    await props.trackOrSearchOnly(!props._trackOrSearchOnly);
     _onClick.play();
   };
 
@@ -195,6 +196,11 @@ function Dashboard(props) {
     setStartGuide(true);
   };
 
+  const onViewProgress = async (val) => {
+    Reactotron.log(val);
+    await props.trackDoc(val, socket);
+  };
+
   return (
     <Grid container>
       <ReactJoyride
@@ -205,7 +211,7 @@ function Dashboard(props) {
         continuous={true}
         disableOverlayClose={true}
         // disableOverlay
-          styles={{options: {primaryColor: "#2196F3"}}}
+        styles={{ options: { primaryColor: "#2196F3" } }}
       />
       <BarcodeReader onError={handleError} onScan={handleScanning} />
       <PrimarySearchAppBar handleStartGuide={handleStartGuide} />
@@ -248,7 +254,9 @@ function Dashboard(props) {
                     <form onSubmit={handleManual}>
                       <FormControl fullWidth>
                         <InputLabel htmlFor="outlined-adornment-amount">
-                          Document Tracking Number
+                          {props._trackOrSearchOnly
+                            ? "Type the subject or scan the barcode"
+                            : "Document Tracking Number"}
                         </InputLabel>
                         <Input
                           className={"trackingInput"}
@@ -261,7 +269,7 @@ function Dashboard(props) {
                           value={props.trackingNum.documentTrackingNumber}
                           type={"text"}
                           endAdornment={
-                            props.receive !== "" || props.track.length > 0 ? (
+                            props.receive !== "" || props.track.length > 0  || props.search.length > 0 ? (
                               <InputAdornment position="end">
                                 <IconButton
                                   title={"clear"}
@@ -282,28 +290,28 @@ function Dashboard(props) {
                     </form>
                   </div>
                   <div className={"col-md-2"}>
-                    {/*{trackOrSearchOnly && (*/}
-                    {/*  <button*/}
-                    {/*    className={"btn btn-lg btn-info"}*/}
-                    {/*    onClick={handleSearch}*/}
-                    {/*  >*/}
-                    {/*    Search*/}
-                    {/*  </button>*/}
-                    {/*)}*/}
+                    {props._trackOrSearchOnly && (
+                      <button
+                        title={"Search"}
+                        className={"btn btn-lg btn-info"}
+                        onClick={handleSearch}
+                      >
+                        <SearchIcon />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
 
               <div className={"row"}>
                 <div className={"col-md-12"}>
-                  {!trackOrSearchOnly &&
+                  {!props._trackOrSearchOnly &&
                   props.receive === "" &&
                   props.track.length === 0 &&
                   props.search.length === 0 ? (
                     <div style={{ textAlign: "center", marginTop: "25vh" }}>
                       <h6 style={{ color: "#9E9E9E" }} className={"mainPage"}>
-                        Scan the barcode to receive document and the document
-                        track will show here
+                        Scan the barcode to receive document
                       </h6>
 
                       <br />
@@ -320,13 +328,14 @@ function Dashboard(props) {
                     </div>
                   ) : null}
 
-                  {trackOrSearchOnly &&
+                  {props._trackOrSearchOnly &&
                   props.receive === "" &&
                   props.track.length === 0 &&
                   props.search.length === 0 ? (
                     <div style={{ textAlign: "center", marginTop: "25vh" }}>
                       <h6 style={{ color: "#9E9E9E" }}>
-                        Scan the barcode to track the document
+                        Scan the barcode to track only the document or type the
+                        subject and click the search button
                       </h6>
                       <br />
                       <button
@@ -335,12 +344,12 @@ function Dashboard(props) {
                         style={{ color: "#2196F3" }}
                         onClick={handleTrackOrSearchOnly}
                       >
-                        Click here to track and receive a document
+                        Click here to receive a document
                       </button>
                     </div>
                   ) : null}
 
-                  {trackOrSearchOnly &&
+                  {props._trackOrSearchOnly &&
                   props.receive === "" &&
                   props.track.length === 0 &&
                   props.search.length > 0 ? (
@@ -351,20 +360,32 @@ function Dashboard(props) {
                           className={"col-md-8"}
                           style={{ paddingBottom: 200 }}
                         >
-                          <List></List>
-                          {props.search.map((data, index) => (
-                            <ListItem key={index}>
-                              <ListItemAvatar>
-                                <Avatar>
-                                  <DescriptionIcon />
-                                </Avatar>
-                              </ListItemAvatar>
-                              <ListItemText
-                                primary={data.subject}
-                                secondary={data.creator}
-                              />
-                            </ListItem>
-                          ))}
+                          <table className={"table"}>
+                            <tbody>
+                              {props.search.map((data, index) => (
+                                <tr>
+                                  <td>
+                                    <button className={"btn"} onClick={onViewProgress.bind(null, data.documentId)}>
+                                      <List>
+                                        <ListItem key={index}>
+                                          <ListItemAvatar>
+                                            <Avatar>
+                                              <DescriptionIcon />
+                                            </Avatar>
+                                          </ListItemAvatar>
+                                          <ListItemText
+                                              primary={data.subject}
+                                              secondary={data.creatorSection+" - "+data.creator+" ("+data.creatorPosition+")"}
+                                          />
+                                        </ListItem>
+                                      </List>
+                                    </button>
+
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
                         </div>
 
                         <div className={"col-md-2"}></div>
@@ -397,6 +418,7 @@ function mapStateToProps(state) {
     receive: state.receiveDocument,
     track: state.trackDocument,
     search: state.searchBySubj,
+    _trackOrSearchOnly: state.trackOrSearchOnly,
   };
 }
 
@@ -407,6 +429,7 @@ const mapDispatchToProps = {
   resetTrackOrReceive,
   trackDoc,
   searchBySubj,
+  trackOrSearchOnly,
 };
 
 export default connect(

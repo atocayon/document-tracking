@@ -2148,7 +2148,7 @@ router.route("/searchBySubject/:subj").get(function (req, res) {
   sql += "SELECT a.documentId AS documentId, a.subject AS subject, ";
   sql += "b.name AS creator, ";
   sql += "b.position AS creatorPosition, ";
-  sql += "d.section AS creatorSection ";
+  sql += "d.secshort AS creatorSection ";
   sql += "FROM documents a ";
   sql += "JOIN users b ";
   sql += "ON a.creator = b.user_id ";

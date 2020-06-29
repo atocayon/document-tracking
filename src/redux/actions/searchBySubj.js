@@ -3,7 +3,6 @@ import axios from "axios";
 import Reactotron from "reactotron-react-js";
 import server_ip from "../../component/endPoint";
 export function searchBySubj(subj) {
-    Reactotron.log(subj);
   return function (dispatch) {
     return axios
       .get(server_ip.SERVER_IP_ADDRESS+"searchBySubject/" + subj)
