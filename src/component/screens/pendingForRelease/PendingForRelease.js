@@ -17,18 +17,25 @@ import ListItemText from "@material-ui/core/ListItemText";
 import UserList from "../../common/userList/UserList";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
+import Reactotron from "reactotron-react-js";
+import moment from 'moment';
+
 let socket;
+
+
 function PendingForRelease(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
 
   useEffect(() => {
+
     const obj = getFromStorage("documentTracking");
     socket = io(endPoint.ADDRESS);
     if (obj && obj.token) {
       async function fetch() {
         await props.fetchPendingDocuments(obj.token);
         await props.fetchUserById(obj.token);
+
       }
 
       fetch().catch((err) => {
@@ -103,6 +110,7 @@ function PendingForRelease(props) {
                     to={"/pending_doc/" + document.documentId}
                     style={{ textDecoration: "none" }}
                   >
+                      {}
                     <ListItem>
                       <ListItemAvatar>
                         <Avatar>
@@ -112,7 +120,7 @@ function PendingForRelease(props) {
                       <ListItemText
                         primary={document.subject}
                         secondary={
-                          document.doc_type + " by " + document.creator
+                          document.doc_type + " by " + document.creator +" ("+moment(document.date_time_created, "YYYYMMDD").fromNow()+")"
                         }
                       />
                     </ListItem>

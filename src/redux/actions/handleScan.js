@@ -12,9 +12,7 @@ export function receiveDoc(data, user_id, secshort, socket) {
       data,
       user_id,
       secshort,
-       (message) => {
-        Reactotron.log("Na receive");
-        Reactotron.log(message);
+      async (message) => {
         if (message === "server error") {
           dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "failed" });
         }

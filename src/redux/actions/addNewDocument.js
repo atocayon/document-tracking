@@ -1,5 +1,6 @@
 import actionTypes from "./actionTypes";
-
+import axios from "axios";
+import server_ip from "../../component/endPoint";
 export function addNewDocument(
   documentID,
   user_id,
@@ -22,10 +23,14 @@ export function addNewDocument(
       action_req,
       destination,
       category,
-      (message) => {
+      async (message) => {
         if (message !== "success") {
           return dispatch({ type: actionTypes.ADD_DOCUMENT, data: "failed" });
         } else {
+          await axios.post(
+            server_ip.SERVER_IP_ADDRESS + "sendEmail",
+            { type: "send",sender: user_id, subject, destination }
+          );
           return dispatch({ type: actionTypes.ADD_DOCUMENT, data: "success" });
         }
       }

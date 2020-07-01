@@ -12,9 +12,21 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const mysql = require("mysql");
 const router = express.Router();
+const nodemailer = require("nodemailer");
 
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: "587",
+  service: "gmail",
+  auth: {
+    user: "nationalmaritimepolytechnic@gmail.com",
+    pass: "xgedzrlgfrelllhl",
+  },
+});
+
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -747,8 +759,6 @@ const receiveDocument = (
           rows[i].status === "2" &&
           rows[i].notification === "0"
         ) {
-          let currentDocLevel = rows[i].level;
-          let ref = rows[i].trans_id;
           let insertInternal = "";
           insertInternal += "INSERT INTO documentLogs ";
           insertInternal += "(document_id, ";
@@ -777,21 +787,80 @@ const receiveDocument = (
               return callback("server error");
             }
 
-            const update =
-              "UPDATE documentLogs SET notification =  ? WHERE status = ? AND destination = ? AND document_id = ?";
+            const selectForwarderAndReceiver =
+              "SELECT b.secshort FROM users a JOIN sections b ON a.section = b.secid WHERE a.user_id = ?";
             connection.query(
-              update,
-              ["1", "2", user_section, documentTracking],
-              function (err, result) {
+              selectForwarderAndReceiver,
+              [parseInt(rows[i].user_id)],
+              function (err, res_ForwarderAndReceiver, fields) {
                 if (err) {
                   console.log(err);
                   return callback("server error");
                 }
 
-                countPending(user_id, socket);
-                trackDocument(documentTracking, socket);
-                fetchProcessedDoc(user_id, callback, socket);
-                return callback("success");
+                const selectEmailDestination =
+                  "SELECT a.email FROM users a JOIN sections b ON a.section = b.secid WHERE b.secshort = ?";
+                connection.query(
+                  selectEmailDestination,
+                  [res_ForwarderAndReceiver[0].secshort],
+                  function (err, res_emailDes, fields) {
+                    if (err) {
+                      console.log(err);
+                      return callback("server error");
+                    }
+
+                    connection.query(
+                      selectForwarderAndReceiver,
+                      [parseInt(user_id)],
+                      function (err, res_receiver, fields) {
+                        if (err) {
+                          console.log(err);
+                          return callback("server error");
+                        }
+
+                        for (let x = 0; x < res_emailDes.length; x++) {
+                          let mailOptions = {
+                            from: "nationalmaritimepolytechnic@gmail.com",
+                            to: res_emailDes[x].email,
+                            subject: "NMP|DTS Notification",
+                            text:
+                              res_receiver[0].secshort +
+                              " receive a document from your office with a subject ",
+                          };
+
+                          transporter.sendMail(mailOptions, function (
+                            error,
+                            info
+                          ) {
+                            if (error) {
+                              console.log(error);
+                            } else {
+                              console.log("Email sent: " + info.response);
+
+                              const update =
+                                "UPDATE documentLogs SET notification =  ? WHERE status = ? AND destination = ? AND document_id = ?";
+                              connection.query(
+                                update,
+                                ["1", "2", user_section, documentTracking],
+                                function (err, result) {
+                                  if (err) {
+                                    console.log(err);
+                                    return callback("server error");
+                                  }
+
+                                  countPending(user_id, socket);
+                                  trackDocument(documentTracking, socket);
+                                  fetchProcessedDoc(user_id, callback, socket);
+                                  return callback("success");
+                                }
+                              );
+                            }
+                          });
+                        }
+                      }
+                    );
+                  }
+                );
               }
             );
           });
@@ -1861,7 +1930,7 @@ router.route("/fetchDocumentBarcodes/:doc_id").get(function (req, res) {
   sql += "JOIN documentLogs b ON a.documentID = b.document_id ";
   sql += "WHERE a.ref = ? AND b.status = ? ";
   connection.query(sql, [documentID, "2"], function (err, rows, fields) {
-    if(err){
+    if (err) {
       console.log(err);
       res.status(500).send(err);
     }
@@ -1869,7 +1938,6 @@ router.route("/fetchDocumentBarcodes/:doc_id").get(function (req, res) {
     res.status(200).send(rows);
   });
 });
-
 
 //Fetch Document Barcode
 router.route("/fetchDocumentBarcode/:doc_id").get(function (req, res) {
@@ -1880,8 +1948,8 @@ router.route("/fetchDocumentBarcode/:doc_id").get(function (req, res) {
   sql += "FROM documents a ";
   sql += "WHERE a.documentID = ? ";
 
-  connection.query(sql , [documentID], function (err, rows, fields) {
-    if(err){
+  connection.query(sql, [documentID], function (err, rows, fields) {
+    if (err) {
       console.log(err);
       res.status(500).send(err);
     }
@@ -1901,7 +1969,8 @@ router.route("/fetchPendingDocument/:user_id").get(function (req, res) {
   sql += "b.note AS note, ";
   sql += "a.remarks AS remarks, ";
   sql += "a.destinationType AS destinationType, ";
-  sql += "a.document_id AS documentId ";
+  sql += "a.document_id AS documentId, ";
+  sql += "DATE_FORMAT(b.date_time_created, '%Y%m%d') AS date_time_created ";
   sql += "FROM documentLogs a ";
   sql += "JOIN documents b ";
   sql += "ON a.document_id = b.documentID ";
@@ -2172,3 +2241,65 @@ router.route("/searchBySubject/:subj").get(function (req, res) {
 // End Document Data Control
 //===========================================================================================
 //===========================================================================================
+
+//Email Sending
+router.route("/sendEmail").post(function (req, res) {
+  const { type, sender, subject, destination } = req.body;
+  if (type === "send") {
+    let selectSender = "";
+    selectSender += "SELECT ";
+    selectSender += "a.name ";
+    selectSender += "FROM users a";
+    selectSender += "WHERE a.user_id = ? ";
+    connection.query(selectSender, [parseInt(sender)], function (
+      err,
+      res_sender,
+      fields
+    ) {
+      if (err) {
+        console.log(err);
+        res.status(500).send(err);
+      }
+
+      let selectDestination = "";
+      selectDestination += "SELECT ";
+      selectDestination += "a.email ";
+      selectDestination += "FROM users a ";
+      selectDestination += "JOIN sections b ON a.section = b.secid ";
+      selectDestination += "WHERE b.secshort = ? ";
+
+      connection.query(selectDestination, [destination], function (
+        err,
+        res_destination,
+        fields
+      ) {
+        if (err) {
+          console.log(err);
+          res.status(500).send(err);
+        }
+
+        for (let i = 0; i < res_destination.length; i++) {
+          let mailOptions = {
+            from: "nationalmaritimepolytechnic@gmail.com",
+            to: res_destination[i].email,
+            subject: "NMP|DTS Notification",
+            text:
+              res_sender[0].name +
+              " forwarded a document to your office with a subject " +
+              subject,
+          };
+
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log(error);
+              res.status(500).send(error);
+            } else {
+              console.log("Email sent: " + info.response);
+              res.status(200).send(info.response);
+            }
+          });
+        }
+      });
+    });
+  }
+});
