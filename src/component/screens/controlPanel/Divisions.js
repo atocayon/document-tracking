@@ -57,7 +57,6 @@ function Division(props) {
               <TableCell style={{color: "#fff" }}>#</TableCell>
               <TableCell style={{color: "#fff" }}>Department</TableCell>
               <TableCell style={{color: "#fff" }}>Acronym</TableCell>
-              <TableCell style={{color: "#fff" }}>Payroll name</TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableHead>
@@ -69,7 +68,6 @@ function Division(props) {
                   <TableCell>{++index}</TableCell>
                   <TableCell>{division.department}</TableCell>
                   <TableCell>{division.depshort}</TableCell>
-                  <TableCell>{division.payrollshort}</TableCell>
                   <TableCell>
                     <button
                       className={"btn btn-sm "}

@@ -24,29 +24,51 @@ export default function ListOfUsers(props) {
           return (
             <tr key={user.user_id}>
               <td>
-                <Link
-                  to={"/user/" + user.user_id}
-                  style={{ textDecoration: "none" }}
-                >
-                  <List>
-                    <ListItem>
-                      <ListItemAvatar>
-                        <Avatar
-                          alt={user.name}
-                          src="/static/images/avatar/1.jpg"
-                        />
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={
-                          user.user_id === parseInt(props.token)
-                            ? user.name + " (Me) "
-                            : user.name
-                        }
-                        secondary={user.position + " - " + role}
-                      />
-                    </ListItem>
-                  </List>
-                </Link>
+                  {props.userRole === "admin" ? (
+                      <Link
+                          to={"/user/" + user.user_id}
+                          style={{ textDecoration: "none" }}
+                      >
+                          <List>
+                              <ListItem>
+                                  <ListItemAvatar>
+                                      <Avatar
+                                          alt={user.name}
+                                          src="/static/images/avatar/1.jpg"
+                                      />
+                                  </ListItemAvatar>
+                                  <ListItemText
+                                      primary={
+                                          user.user_id === parseInt(props.token)
+                                              ? user.name + " (Me) "
+                                              : user.name
+                                      }
+                                      secondary={user.position + " - " + role}
+                                  />
+                              </ListItem>
+                          </List>
+                      </Link>
+                  ):(
+                      <List>
+                          <ListItem>
+                              <ListItemAvatar>
+                                  <Avatar
+                                      alt={user.name}
+                                      src="/static/images/avatar/1.jpg"
+                                  />
+                              </ListItemAvatar>
+                              <ListItemText
+                                  primary={
+                                      user.user_id === parseInt(props.token)
+                                          ? user.name + " (Me) "
+                                          : user.name
+                                  }
+                                  secondary={user.position + " - " + role}
+                              />
+                          </ListItem>
+                      </List>
+                  )}
+
               </td>
               <td>
                 <ButtonGroup
@@ -88,7 +110,7 @@ export default function ListOfUsers(props) {
                   >
                     Transfer Office
                   </Button>
-                  {props.userRole === "1" && (
+                  {props.userRole === "admin" && (
                     <Button
                       style={{ color: "#FF9800" }}
                       onClick={props.handleAccountStatus.bind(null, {
@@ -101,7 +123,7 @@ export default function ListOfUsers(props) {
                     </Button>
                   )}
 
-                  {props.userRole === "1" && (
+                  {props.userRole === "admin" && (
                     <Button
                       color={"secondary"}
                       onClick={props.handleAccountDeletion.bind(null, {
