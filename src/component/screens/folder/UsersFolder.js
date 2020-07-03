@@ -18,6 +18,8 @@ import DescriptionIcon from "@material-ui/icons/Description";
 import TablePagination from "@material-ui/core/TablePagination";
 import UserList from "../../common/userList/UserList";
 import InputField from "../../common/textField/InputField";
+import {handleSearchSectionDocuments} from "../../../redux/actions/handleSearchSectionDocuments";
+
 function UserFolder(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
@@ -81,6 +83,7 @@ function UserFolder(props) {
                   <InputField
                     name={"search"}
                     label={"Search"}
+                    onChange={props.handleSearchSectionDocuments}
                   />
               </div>
               <div className={"col-md-6"}></div>
@@ -162,7 +165,8 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = {
   fetchSectionDocuments,
-  fetchUserById
+  fetchUserById,
+  handleSearchSectionDocuments
 };
 
 export default connect(
