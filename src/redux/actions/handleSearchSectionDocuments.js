@@ -1,19 +1,24 @@
 import actionTypes from "./actionTypes";
-import axios from "axios";
-import server_ip from "../../component/endPoint";
 
-export function handleSearchSectionDocuments(value) {
-  return function (dispatch) {
-    return axios
-      .get(server_ip.SERVER_IP_ADDRESS+"searchUserDocument/" + value)
-      .then((res) => {
-        dispatch({
-          type: actionTypes.HANDLE_SEARCH_SECTION_DOCUMENT,
-          data: res.data,
-        });
-      })
-      .catch((err) => {
-        throw err;
-      });
+export function handleSearchSectionDocuments({target}) {
+  return async function (dispatch) {
+
+      if (target.value !== ""){
+          await dispatch({
+              type: actionTypes.HANDLE_SEARCH_SECTION_DOCUMENT,
+              data: target.value
+          });
+      }else{
+          window.location.reload(true);
+      }
+
+    // return axios
+    //   .get(server_ip.SERVER_IP_ADDRESS+"searchUserDocument/" + target.value)
+    //   .then((res) => {
+    //
+    //   })
+    //   .catch((err) => {
+    //     throw err;
+    //   });
   };
 }
