@@ -17,6 +17,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import DescriptionIcon from "@material-ui/icons/Description";
 import TablePagination from "@material-ui/core/TablePagination";
 import UserList from "../../common/userList/UserList";
+import InputField from "../../common/textField/InputField";
 function UserFolder(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
@@ -76,44 +77,59 @@ function UserFolder(props) {
         >
           <div className={"jumbotron"} style={{ padding: 50 }}>
             <div className={"row"}>
-              <div className={"col-md-6"}></div>
+              <div className={"col-md-4"}>
+                  <InputField
+                    name={"search"}
+                    label={"Search"}
+                  />
+              </div>
               <div className={"col-md-6"}></div>
             </div>
           </div>
 
           <div className={"row"}>
             <div className={"col-md-10"} style={{ marginLeft: 20 }}>
-              <List>
-                {props.document.length > 0 &&
-                  props.document
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((document) => {
-                      let secondaryText =
-                        document.creatorID === userID
-                          ? "You"
-                          : document.creator;
-                      return (
-                        <Link
-                          to={"/doc/" + document.documentID}
-                          style={{ textDecoration: "none" }}
-                        >
-                          <ListItem>
-                            <ListItemAvatar>
-                              <Avatar>
-                                <DescriptionIcon />
-                              </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                              primary={document.subject}
-                              secondary={
-                                document.docType + " by " + secondaryText
-                              }
-                            />
-                          </ListItem>
-                        </Link>
-                      );
-                    })}
-              </List>
+              <table className={"table table-borderless"}>
+                <tbody>
+                    <List>
+                      {props.document.length > 0 &&
+                      props.document
+                          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                          .map((document) => {
+                            let secondaryText =
+                                document.creatorID === userID
+                                    ? "You"
+                                    : document.creator;
+                            return (
+                                <tr>
+                                  <td>
+                                <Link
+                                    to={"/doc/" + document.documentID}
+                                    style={{ textDecoration: "none" }}
+                                >
+                                  <ListItem>
+                                    <ListItemAvatar>
+                                      <Avatar>
+                                        <DescriptionIcon />
+                                      </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={document.subject}
+                                        secondary={
+                                          document.docType + " by " + secondaryText
+                                        }
+                                    />
+                                  </ListItem>
+                                </Link>
+                                  </td>
+                                </tr>
+                            );
+                          })}
+                    </List>
+
+                </tbody>
+              </table>
+
               <div style={{ position: "fixed", bottom: 0, marginBottom: 20 }}>
                 <TablePagination
                   rowsPerPageOptions={[5, 10, 25, 30, 50, 100, 200, 500, 1000]}
