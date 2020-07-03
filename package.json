@@ -22,7 +22,7 @@
     "mdbreact": "4.27.0",
     "moment": "^2.27.0",
     "mysql": "2.18.1",
-    "nodemailer": "6.4.10",
+    "nodemailer": "^6.4.10",
     "notistack": "0.9.17",
     "prop-types": "15.7.2",
     "react": "16.13.1",
