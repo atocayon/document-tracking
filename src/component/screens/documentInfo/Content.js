@@ -3,8 +3,6 @@ import InputField from "../../common/textField/InputField";
 import FeedbackIcon from "@material-ui/icons/Feedback";
 import { FormGroup } from "@material-ui/core";
 import CheckBox from "../../common/checkbox/CheckBox";
-import ReactToPrint from "react-to-print";
-import BarcodeComponent from "../../common/barcode/BarcodeComponent";
 import "../../../styles/style.css";
 export default class Content extends Component {
   render() {
@@ -30,7 +28,9 @@ export default class Content extends Component {
               </div>
             </div>
             <div className={"col-md-4"}>
-              <div style={{ textAlign: "center" }} className={"routingTitleContainer"}>
+              <div
+                style={{ textAlign: "center" }}
+              >
                 <br />
                 <h5
                   className={"routingTitle"}
@@ -95,27 +95,28 @@ export default class Content extends Component {
               &nbsp;Action Required:
             </h6>
             <br />
-            <FormGroup row className={"checkbox"}>
-              {this.props.documentInfo.action_req.map((action) => (
-                <CheckBox
-                  checked={true}
-                  key={action.document_action_req_id}
-                  label={action.action_req}
-                  value={action.action_req}
-                  name={"action_req"}
-              
-                />
-              ))}
-            </FormGroup>
+            <div>
+              <FormGroup row className={"checkbox"}>
+                {this.props.documentInfo.action_req.map((action) => (
+                    <CheckBox
+                        checked={true}
+                        key={action.document_action_req_id}
+                        label={action.action_req}
+                        value={action.action_req}
+                        name={"action_req"}
+                    />
+                ))}
+              </FormGroup>
+            </div>
+
 
             <br />
             <br />
             <p className={"note3"} style={{ display: "none" }}>
-              (To be filled-up by receiving action unit/person and to be
-              signed by the head before forwarding to other offices/s)
+              (To be filled-up by receiving action unit/person and to be signed
+              by the head before forwarding to other offices/s)
             </p>
             <div className={"tableContainer"}>
-
 
               <table
                 className={"table table-bordered"}

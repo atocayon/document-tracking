@@ -94,6 +94,7 @@ export default class Content extends Component {
                 &nbsp;Action Required:
               </h6>
               <br />
+              
               <FormGroup row className={"checkbox"}>
                 {this.props.pendingDocumentInfo.action_req.map((action) => (
                     <CheckBox
@@ -108,12 +109,12 @@ export default class Content extends Component {
 
               <br />
               <br />
-
+              <p className={"note3"} style={{ display: "none" }}>
+                (To be filled-up by receiving action unit/person and to be
+                signed by the head before forwarding to other offices/s)
+              </p>
               <div className={"tableContainer"}>
-                <p className={"note3"} style={{ display: "none" }}>
-                  (To be filled-up by receiving action unit/person and to be
-                  signed by the head before forwarding to other offices/s)
-                </p>
+
                 <table
                     className={"table table-bordered"}
                     style={{ fontSize: 14 }}

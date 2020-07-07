@@ -30,7 +30,6 @@ export function receiveDoc(data, user_id, secshort, socket) {
               arr.push({ root: _data[i], subProcess: sub, branch: fetch });
             }
 
-            Reactotron.log(arr);
             dispatch({
               type: actionTypes.TRACK_DOCUMENT,
               data: arr,
@@ -61,7 +60,6 @@ export function trackDoc(data, socket) {
         arr.push({ root: _data[i], subProcess: sub, branch: fetch });
       }
 
-      Reactotron.log(arr);
       dispatch({
         type: actionTypes.TRACK_DOCUMENT,
         data: arr,
