@@ -825,7 +825,7 @@ const receiveDocument = (
                             subject: "NMP|DTS Notification",
                             text:
                               res_receiver[0].secshort +
-                              " receive a document from your office with a subject ",
+                              " received a document from your office/unit/section with a Document Tracking Number : "+documentTracking,
                           };
 
                           transporter.sendMail(mailOptions, function (
@@ -2244,11 +2244,13 @@ router.route("/searchBySubject/:subj").get(function (req, res) {
 
 //Email Sending
 router.route("/sendEmail").post(function (req, res) {
-  const { type, sender, subject, destination } = req.body;
+  const {sender, subject, destination } = req.body;
     let selectSender = "";
     selectSender += "SELECT ";
-    selectSender += "a.name ";
+    selectSender += "a.name, ";
+    selectSender += "b.secshort ";
     selectSender += "FROM users a ";
+    selectSender += "JOIN sections b ON a.section = b.secid ";
     selectSender += "WHERE a.user_id = ? ";
     connection.query(selectSender, [parseInt(sender)], function (
       err,
@@ -2280,27 +2282,32 @@ router.route("/sendEmail").post(function (req, res) {
               res.status(500).send(err);
             }
             console.log(res_destination);
-            // for (let i = 0; i < res_destination.length; i++) {
-            //   let mailOptions = {
-            //     from: "nationalmaritimepolytechnic@gmail.com",
-            //     to: res_destination[i].email,
-            //     subject: "NMP|DTS Notification",
-            //     text:
-            //         res_sender[0].name +
-            //         " forwarded a document to your office with a subject " +
-            //         subject,
-            //   };
-            //
-            //   transporter.sendMail(mailOptions, function (error, info) {
-            //     if (error) {
-            //       console.log(error);
-            //       res.status(500).send(error);
-            //     } else {
-            //       console.log("Email sent: " + info.response);
-            //       res.status(200).send(info.response);
-            //     }
-            //   });
-            // }
+
+            if (res_destination.length > 0){
+
+              for (let emailDes = 0; emailDes < res_destination.length; emailDes++){
+                let mailOptions = {
+                  from: "nationalmaritimepolytechnic@gmail.com",
+                  to: res_destination[emailDes].email,
+                  subject: "NMP|DTS Notification",
+                  text:
+                      res_sender[0].secshort +
+                      " forwarded a document to your office/unit/section with a subject " +
+                      subject,
+                };
+
+                transporter.sendMail(mailOptions, function (error, info) {
+                  if (error) {
+                    console.log(error);
+                    res.status(500).send(error);
+                  } else {
+                    console.log("Email sent: " + info.response);
+                    res.status(200).send(info.response);
+                  }
+                });
+              }
+
+            }
           });
         }
       }
@@ -2325,8 +2332,8 @@ router.route("/sendEmail").post(function (req, res) {
               to: rows[0].email,
               subject: "NMP|DTS Notification",
               text:
-                  res_sender[0].name +
-                  " forwarded a document to your office with a subject " +
+                  res_sender[0].secshort +
+                  " forwarded a document to your office/unit/section with a subject " +
                   subject,
             };
 
