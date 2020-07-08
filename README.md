@@ -45,7 +45,7 @@
 
 ![Alt Text](https://github.com/atocayon/document-tracking/blob/master/src/img/scrn_shot/11.PNG)
 
-#### Instruction
+#### Instructions:
 1. Install to your local machine:
   1. GIT
   1. NPM
