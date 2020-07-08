@@ -3,4 +3,4 @@
 
 ### Login
 
-![Alt Text](http://github.com/atocayon/document-tracking/src/img/scrn_shot/1.PNG?raw=true)
+![Alt Text](https://github.com/atocayon/document-tracking/blob/master/src/img/scrn_shot/1.PNG)
