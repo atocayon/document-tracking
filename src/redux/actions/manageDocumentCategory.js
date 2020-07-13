@@ -1,9 +1,8 @@
 import actionTypes from "./actionTypes";
-import axios from "axios";
-import Reactotron from "reactotron-react-js";
+
 export function addNewDocCategory(token, category, socket) {
   return async function (dispatch) {
-    Reactotron.log(socket);
+
     await socket.emit("addNewDocumentCategory", token, category, (response) => {
       if (response) {
         if (response === "server error") {
@@ -37,10 +36,13 @@ export function fetchDocCategory(token, socket) {
         data,
       });
       let arr = [];
-      for (let i = 0 ; i < data.length; i++){
-        arr.push({id: data[i].id, type: data[i].category});
+      for (let i = 0; i < data.length; i++) {
+        arr.push({ id: data[i].id, type: data[i].category });
       }
-      dispatch({type: actionTypes.FETCH_LIST_SECTION_DOC_CATEGORY, data: arr});
+      dispatch({
+        type: actionTypes.FETCH_LIST_SECTION_DOC_CATEGORY,
+        data: arr,
+      });
     });
   };
 }

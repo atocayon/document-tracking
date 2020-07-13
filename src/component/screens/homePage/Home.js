@@ -7,19 +7,21 @@ import { connect } from "react-redux";
 import { verifyToken } from "../../../redux/actions/verifyToken";
 import { fetchCurrentSystemUser } from "../../../redux/actions/fetchCurrentSystemUser";
 import { fetchSectionsList } from "../../../redux/actions/fetchSectionsList";
-
+import io from "socket.io-client";
+import endPoint from "../../endPoint";
+let socket;
 function Home(props) {
   const [endSession, setEndSession] = useState(false);
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
-
+    socket = io(endPoint.ADDRESS);
     if (obj && obj.token) {
       const { token } = obj;
 
       async function callback() {
-        await props.verifyToken(token);
-        await props.fetchCurrentSystemUser(token);
-        await props.fetchSectionsList();
+        await props.verifyToken(token, socket);
+        await props.fetchCurrentSystemUser(token, socket);
+        await props.fetchSectionsList(socket);
       }
 
       callback().catch((err) => {

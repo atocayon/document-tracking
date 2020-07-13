@@ -19,7 +19,9 @@ import TablePagination from "@material-ui/core/TablePagination";
 import UserList from "../../common/userList/UserList";
 import InputField from "../../common/textField/InputField";
 import {handleSearchSectionDocuments} from "../../../redux/actions/handleSearchSectionDocuments";
-
+import io from "socket.io-client";
+import endPoint from "../../endPoint";
+let socket;
 function UserFolder(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
@@ -27,13 +29,14 @@ function UserFolder(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [userID, setUserID] = useState("");
   useEffect(() => {
+    socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
       setUserID(token);
       async function fetch() {
-        await props.fetchSectionDocuments(token, props.match.params.folder);
-        await props.fetchUserById(token);
+        await props.fetchSectionDocuments(token, props.match.params.folder, socket);
+        await props.fetchUserById(token, socket);
       }
 
       fetch().catch((err) => {

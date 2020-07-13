@@ -1,30 +1,18 @@
 import actionTypes from "./actionTypes";
-import axios from "axios";
-import Reactotron from "reactotron-react-js";
-import server_ip from "../../component/endPoint";
 
-
-export function addNewDivision(data) {
-  Reactotron.log(data);
+export function addNewDivision(data, socket) {
   const _data = {
     department: data.department,
     depshort: data.depshort,
     payrollshort: data.payroll,
   };
-  return function (dispatch) {
-    return axios
-      .post(server_ip.SERVER_IP_ADDRESS+"addDivision", {
-        department: data.department,
-        depshort: data.depshort,
-        payrollshort: data.payroll,
-      })
-      .then((res) => {
-        if (res.status === 200) {
+  return async function (dispatch) {
+    await socket.emit("addDivision", data, (res) => {
+      if (res) {
+        if (res !== "server error") {
           dispatch({ type: actionTypes.ADD_DIVISION, _data });
         }
-      })
-      .catch((err) => {
-        alert(err);
-      });
+      }
+    });
   };
 }

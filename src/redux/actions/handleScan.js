@@ -1,7 +1,4 @@
 import actionTypes from "./actionTypes";
-import Reactotron from "reactotron-react-js";
-import axios from "axios";
-import server_ip from "../../component/endPoint";
 
 export function receiveDoc(data, user_id, secshort, socket) {
   return async function (dispatch) {
@@ -53,10 +50,9 @@ export function trackDoc(data, socket) {
 
     await socket.on("track", async (_data) => {
       let arr = [];
-
       for (let i = 0; i < _data.length; i++) {
-        let fetch = await get_branches(_data[i].document_id);
-        let sub = await getSubProcess(_data[i].document_id);
+        let fetch = await get_branches(_data[i].document_id, socket);
+        let sub = await getSubProcess(_data[i].document_id, socket);
         arr.push({ root: _data[i], subProcess: sub, branch: fetch });
       }
 
@@ -68,45 +64,46 @@ export function trackDoc(data, socket) {
   };
 }
 
-async function getSubProcess(tracking) {
+async function getSubProcess(tracking, socket) {
   let arr = [];
-  let subProcess = await axios.post(
-    server_ip.SERVER_IP_ADDRESS + "fetchSubProcess",
-    { tracking }
-  );
-  if (subProcess.data.length > 0) {
-    for (let i = 0; i < subProcess.data.length; i++) {
-      arr.push({
-        root: subProcess.data[i],
-      });
+  await socket.emit("fetchSubProcess", tracking, (res) => {
+    if (res) {
+      if (res !== "server error") {
+        if (res.length > 0) {
+          for (let i = 0; i < res.length; i++) {
+            arr.push({
+              root: res[i],
+            });
+          }
+          return arr;
+        } else {
+          return arr;
+        }
+      }
     }
-    return arr;
-  } else {
-    return arr;
-  }
+  });
 }
 
-async function get_branches(tracking) {
+async function get_branches(tracking, socket) {
   let arr = [];
-  let data_branches = await axios.post(
-    server_ip.SERVER_IP_ADDRESS + "fetchSubDocument",
-    {
-      tracking,
+  await socket.emit("fetchSubDocument", tracking, async (res) => {
+    if (res) {
+      if (res !== "server error") {
+        if (res.length > 0) {
+          for (let i = 0; i < res.length; i++) {
+            let fetch = await get_branches(res[i].document_id);
+            let sub = await getSubProcess(res[i].document_id);
+            arr.push({
+              root: res[i],
+              subProcess: sub,
+              branch: fetch,
+            });
+          }
+          return arr;
+        } else {
+          return arr;
+        }
+      }
     }
-  );
-
-  if (data_branches.data.length > 0) {
-    for (let i = 0; i < data_branches.data.length; i++) {
-      let fetch = await get_branches(data_branches.data[i].document_id);
-      let sub = await getSubProcess(data_branches.data[i].document_id);
-      arr.push({
-        root: data_branches.data[i],
-        subProcess: sub,
-        branch: fetch,
-      });
-    }
-    return arr;
-  } else {
-    return arr;
-  }
+  });
 }

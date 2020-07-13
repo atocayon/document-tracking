@@ -1,19 +1,18 @@
-import axios from "axios";
 import actionTypes from "./actionTypes";
-import server_ip from "../../component/endPoint";
 
-export function fetchSectionsList() {
-  return function (dispatch) {
-    return axios
-      .get(server_ip.SERVER_IP_ADDRESS+"sections")
-      .then((_sections) => {
-        dispatch({
-          type: actionTypes.FETCH_SECTIONS_LIST,
-          data: _sections.data,
-        });
-      })
-      .catch((err) => {
-        alert(err);
+export function fetchSectionsList(socket) {
+  return async function (dispatch) {
+    await socket.emit("sections", (res) => {
+      if (res) {
+        alert(res);
+      }
+    });
+
+    await socket.on("sectionList", async (data) => {
+      await dispatch({
+        type: actionTypes.FETCH_SECTIONS_LIST,
+        data,
       });
+    });
   };
 }

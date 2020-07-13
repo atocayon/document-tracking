@@ -31,7 +31,7 @@ function SectionDocuments(props) {
       const { token } = obj;
       async function fetch() {
         await props.fetchDocCategory(token, socket);
-        await props.fetchUserById(token);
+        await props.fetchUserById(token, socket);
       }
 
       fetch().catch((err) => {

@@ -1,90 +1,126 @@
 import actionTypes from "./actionTypes";
-import axios from "axios";
-import server_ip from "../../component/endPoint";
-import Reactotron from "reactotron-react-js";
-export function fetchPendingDocumentInfo(doc_id) {
+
+export function fetchPendingDocumentInfo(doc_id, socket) {
   return async function (dispatch) {
     let str = doc_id.split("-", 1);
-    let fetchDocument = await axios.get(
-      server_ip.SERVER_IP_ADDRESS + "fetchDocument/" + str.toString()
-    );
 
-    let fetchActionReq = await axios.get(
-      server_ip.SERVER_IP_ADDRESS + "fetchActionReq/" + str.toString()
-    );
-
-    let fetchDocumentDestination = await axios.get(
-      server_ip.SERVER_IP_ADDRESS + "fetchDocumentDestination/" + str.toString()
-    );
-
-    let fetchDocumentBarcodes = await axios.get(
-        server_ip.SERVER_IP_ADDRESS + "fetchDocumentBarcodes/" + str
-    );
-    let fetchDocumentBarcode = await axios.get(
-        server_ip.SERVER_IP_ADDRESS + "fetchDocumentBarcode/" + str
-    );
-
-    let fetchDocumentRouteType = await axios.get(
-      server_ip.SERVER_IP_ADDRESS + "fetchDocumentRouteType/" + str.toString()
-    );
-
-    if (fetchDocumentBarcodes.data.length > 1) {
-      dispatch({
-        type: actionTypes.FETCH_PENDING_DOCUMENTS_BARCODES,
-        data: fetchDocumentBarcodes.data,
-      });
-    } else {
-      dispatch({
-        type: actionTypes.FETCH_PENDING_DOCUMENTS_BARCODE,
-        data: fetchDocumentBarcode.data,
-      });
-    }
-
-    dispatch({
-      type: actionTypes.FETCH_DOC_ROUTE_TYPE,
-      data: fetchDocumentRouteType.data,
-    });
-    dispatch({
-      type: actionTypes.FETCH_PENDING_DOCUMENT_INFO,
-      data: fetchDocument.data,
-    });
-
-    dispatch({
-      type: actionTypes.FETCH_ACTION_REQUIRED_PENDING_DOCUMENT,
-      data: fetchActionReq.data,
-    });
-
-    let arr = [];
-
-    for (let i = 0; i < fetchDocumentDestination.data.length; i++) {
-      let fetchActionTaken = await axios.post(
-        server_ip.SERVER_IP_ADDRESS + "fetchActionTaken",
-        {
-          user_id: fetchDocumentDestination.data[i].receiver_id,
-          document_id: fetchDocumentDestination.data[i].document_id,
+    await socket.emit("fetchDocument", str, async (res) => {
+      if (res) {
+        if (res !== "server error") {
+          await dispatch({
+            type: actionTypes.FETCH_PENDING_DOCUMENT_INFO,
+            data: res,
+          });
         }
-      );
-
-      let fetchDateTimeRelease = await axios.post(
-        server_ip.SERVER_IP_ADDRESS + "fetchDateTimeReleased",
-        {
-          user_id: fetchDocumentDestination.data[i].receiver_id,
-          document_id: fetchDocumentDestination.data[i].document_id,
-        }
-      );
-
-      arr.push({
-        office: fetchDocumentDestination.data[i].section,
-        date_time_receive: fetchDocumentDestination.data[i].date_time_receive,
-        action_taken: fetchActionTaken.data,
-        date_time_released: fetchDateTimeRelease.data,
-        initial: fetchDocumentDestination.data[i].receiver,
-      });
-    }
-
-    dispatch({
-      type: actionTypes.FETCH_DESTINATION_PENDING_DOCUMENT,
-      data: arr,
+      }
     });
+
+    await socket.emit("fetchActionReq", str, async (res) => {
+      if (res) {
+        if (res !== "server error") {
+          await dispatch({
+            type: actionTypes.FETCH_ACTION_REQUIRED_PENDING_DOCUMENT,
+            data: res,
+          });
+        }
+      }
+    });
+
+    await socket.emit(
+      "fetchDocumentDestination",
+      str,
+      async (fetchDocumentDestination) => {
+        if (fetchDocumentDestination) {
+          if (fetchDocumentDestination !== "server error") {
+            let arr = [];
+            for (let i = 0; i < fetchDocumentDestination.length; i++) {
+              await socket.emit(
+                "fetchDateTimeReleased",
+                fetchDocumentDestination[i].receiver_id,
+                fetchDocumentDestination[i].document_id,
+                async (fetchDateTimeRelease) => {
+                  if (fetchDateTimeRelease) {
+                    if (fetchDateTimeRelease !== "server error") {
+                      await socket.emit(
+                        "fetchActionTaken",
+                        fetchDocumentDestination[i].receiver_id,
+                        fetchDocumentDestination[i].document_id,
+                        async (fetchActionTaken) => {
+                          if (fetchActionTaken) {
+                            if (fetchActionTaken !== "server error") {
+                              arr.push({
+                                office: fetchDocumentDestination[i].section,
+                                date_time_receive:
+                                  fetchDocumentDestination[i].date_time_receive,
+                                action_taken: fetchActionTaken,
+                                date_time_released: fetchDateTimeRelease,
+                                initial: fetchDocumentDestination[i].receiver,
+                              });
+
+                              await dispatch({
+                                type:
+                                  actionTypes.FETCH_DESTINATION_PENDING_DOCUMENT,
+                                data: arr,
+                              });
+                            }
+                          }
+                        }
+                      );
+                    }
+                  }
+                }
+              );
+            }
+          }
+        }
+      }
+    );
+
+    await socket.emit(
+      "fetchDocumentBarcodes",
+      str,
+      async (fetchDocumentBarcodes) => {
+        if (fetchDocumentBarcodes) {
+          if (fetchDocumentBarcodes !== "server error") {
+            if (fetchDocumentBarcodes.length > 1) {
+              await dispatch({
+                type: actionTypes.FETCH_PENDING_DOCUMENTS_BARCODES,
+                data: fetchDocumentBarcodes,
+              });
+            } else {
+              socket.emit(
+                "fetchDocumentBarcode",
+                str,
+                async (fetchDocumentBarcode) => {
+                  if (fetchDocumentBarcode) {
+                    if (fetchDocumentBarcode !== "server error") {
+                      await dispatch({
+                        type: actionTypes.FETCH_PENDING_DOCUMENTS_BARCODE,
+                        data: fetchDocumentBarcode,
+                      });
+                    }
+                  }
+                }
+              );
+            }
+          }
+        }
+      }
+    );
+
+    await socket.emit(
+      "fetchDocumentRouteType",
+      str.toString(),
+      async (fetchDocumentRouteType) => {
+        if (fetchDocumentRouteType) {
+          if (fetchDocumentRouteType !== "server error") {
+            await dispatch({
+              type: actionTypes.FETCH_DOC_ROUTE_TYPE,
+              data: fetchDocumentRouteType,
+            });
+          }
+        }
+      }
+    );
   };
 }

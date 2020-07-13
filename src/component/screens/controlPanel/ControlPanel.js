@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { withSnackbar } from "notistack";
-import PropTypes, { func } from "prop-types";
+import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
@@ -14,7 +14,6 @@ import EqualizerIcon from "@material-ui/icons/Equalizer";
 import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
 import { getFromStorage } from "../../storage";
 import { Redirect } from "react-router-dom";
-import axios from "axios";
 import Users from "./Users";
 import { connect } from "react-redux";
 import { userRegistration } from "../../../redux/actions/userRegistration";
@@ -40,7 +39,6 @@ import { deleteSection } from "../../../redux/actions/deleteSection";
 import { deleteDocumentType } from "../../../redux/actions/deleteDocumentType";
 import { inputChange } from "../../../redux/actions/inputChange";
 import { logout } from "../../../redux/actions/logout";
-import Reactotron from "reactotron-react-js";
 import Divisions from "./Divisions";
 import Sections from "./Sections";
 import DocumentTypes from "./DocumentTypes";
@@ -142,10 +140,10 @@ function ControlPanel(props) {
 
       async function fetch() {
         await props.fetchAllUsers(socket);
-        await props.fetchAllSections();
-        await props.fetchDivisions();
-        await props.fetchSectionsList();
-        await props.fetchDocumentTypes();
+        await props.fetchAllSections(socket);
+        await props.fetchDivisions(socket);
+        await props.fetchSectionsList(socket);
+        await props.fetchDocumentTypes(socket);
       }
 
       fetch().catch((err) => {
@@ -330,7 +328,7 @@ function ControlPanel(props) {
       return;
     }
 
-    await props.addNewDivision(division);
+    await props.addNewDivision(division, socket);
     const variant = "info";
     props.enqueueSnackbar("Added Successfully", { variant });
     setOpenAddNewDivision(false);
@@ -350,7 +348,7 @@ function ControlPanel(props) {
       return;
     }
 
-    await props.addNewSection(section);
+    await props.addNewSection(section, socket);
     const variant = "info";
     props.enqueueSnackbar("Added Successfully", { variant });
     setOpenAddNewSection(false);
@@ -370,7 +368,7 @@ function ControlPanel(props) {
       return;
     }
 
-    await props.addNewDocumentType(docType);
+    await props.addNewDocumentType(docType, socket);
     const variant = "info";
     props.enqueueSnackbar("Added Successfully", { variant });
     setAddNewDocumentType(false);
@@ -380,12 +378,12 @@ function ControlPanel(props) {
   const handleEditUser = async (val) => {
     let id = await val;
     setOpenEditUser(true);
-    await props.fetchUserById(id);
+    await props.fetchUserById(id, socket);
   };
 
   const handleSaveEditUser = async (e) => {
     e.preventDefault();
-    await props.updateUserProfile(props.fetch_user);
+    await props.updateUserProfile(props.fetch_user, socket);
     const variant = "info";
     props.enqueueSnackbar("Update Success", { variant });
     setOpenEditUser(false);
@@ -394,7 +392,8 @@ function ControlPanel(props) {
   const handleDeleteUser = async (val) => {
     let id = val.id;
     let name = val.name;
-    await props.deleteUser(id);
+    let secid = val.secid;
+    await props.deleteUser(id, secid, socket);
     const variant = "warning";
     props.enqueueSnackbar(name + " Deleted", { variant });
   };
@@ -402,12 +401,12 @@ function ControlPanel(props) {
   const handleEditDivision = async (val) => {
     let id = val.depid;
     setOpenEditDivision(true);
-    await props.fetchDivisionById(id);
+    await props.fetchDivisionById(id, socket);
   };
 
   const handleSaveEditDivision = async (e) => {
     e.preventDefault();
-    await props.updateDivision(props.fetch_division);
+    await props.updateDivision(props.fetch_division, socket);
     const variant = "info";
     props.enqueueSnackbar("Update Success", { variant });
     setOpenEditDivision(false);
@@ -416,7 +415,7 @@ function ControlPanel(props) {
   const handleDeleteDivision = async (val) => {
     let id = val.depid;
     let depshort = val.depshort;
-    await props.deleteDivision(id);
+    await props.deleteDivision(id, socket);
     const variant = "warning";
     props.enqueueSnackbar(depshort + " Deleted", { variant });
   };
@@ -424,12 +423,12 @@ function ControlPanel(props) {
   const handleEditSection = async (val) => {
     let id = val;
     setOpenEditSection(true);
-    await props.fetchSectionById(id);
+    await props.fetchSectionById(id, socket);
   };
 
   const handleSaveEditSection = async (e) => {
     e.preventDefault();
-    await props.updateSection(props.fetch_section);
+    await props.updateSection(props.fetch_section, socket);
     const variant = "info";
     props.enqueueSnackbar("Update Success", { variant });
     setOpenEditSection(false);
@@ -438,20 +437,20 @@ function ControlPanel(props) {
   const handleDeleteSection = async (val) => {
     let id = await val.id;
     let section = await val.section;
-    await props.deleteSection(id);
+    await props.deleteSection(id, socket);
     const variant = "warning";
     props.enqueueSnackbar(section + " Deleted", { variant });
   };
 
   const handleEditDocumentType = async (val) => {
     let id = await val;
-    await props.fetchDocumentTypeById(id);
+    await props.fetchDocumentTypeById(id, socket);
     setEditDocumentType(true);
   };
 
   const handleSaveEditDocumentType = async (e) => {
     e.preventDefault();
-    await props.updateDocumentType(props.fetch_documentType);
+    await props.updateDocumentType(props.fetch_documentType, socket);
     const variant = "info";
     props.enqueueSnackbar("Update Success", { variant });
     setEditDocumentType(false);
@@ -461,7 +460,7 @@ function ControlPanel(props) {
     let id = await val.id;
     let type = await val.type;
 
-    await props.deleteDocumentType(id);
+    await props.deleteDocumentType(id, socket);
     const variant = "warning";
     props.enqueueSnackbar(type + " Deleted", { variant });
   };

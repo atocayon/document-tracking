@@ -1,17 +1,13 @@
 import actionTypes from "./actionTypes";
-import axios from "axios";
-import Reactotron from "reactotron-react-js";
-import server_ip from "../../component/endPoint";
-export function searchBySubj(subj) {
-  return function (dispatch) {
-    return axios
-      .get(server_ip.SERVER_IP_ADDRESS+"searchBySubject/" + subj)
-      .then((res) => {
-          Reactotron.log(res);
-        dispatch({ type: actionTypes.SEARCH_BY_SUBJ, data: res.data });
-      })
-      .catch((err) => {
-        throw err;
-      });
+
+export function searchBySubj(subj, socket) {
+  return async function (dispatch) {
+    await socket.emit("searchBySubject", subj, async (res) => {
+      if (res) {
+        if (res !== "server error") {
+          dispatch({ type: actionTypes.SEARCH_BY_SUBJ, data: res });
+        }
+      }
+    });
   };
 }

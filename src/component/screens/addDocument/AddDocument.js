@@ -40,7 +40,7 @@ import { removeDestination } from "../../../redux/actions/clearAddNewDocumentInp
 import { addNewDocument } from "../../../redux/actions/addNewDocument";
 import { logDocumentCreator } from "../../../redux/actions/addDocumentDestination";
 import { clearAddNewDocumentState } from "../../../redux/actions/clearAddNewDocumentInput";
-import { addNewDocumentDraft } from "../../../redux/actions/addNewDocumentDraft";
+// import { addNewDocumentDraft } from "../../../redux/actions/addNewDocumentDraft";
 import { notification } from "../../../redux/actions/notification";
 import { removeFirstIndexOnEditAddDocument } from "../../../redux/actions/addDocumentDestination";
 import { clearAddDocumentMessage } from "../../../redux/actions/addNewDocument";
@@ -76,8 +76,8 @@ function AddDocument({
   removeDestination,
   addNewDocument,
   submit_new_document,
-  addNewDocumentDraft,
-  submit_new_document_draft,
+  // addNewDocumentDraft,
+  // submit_new_document_draft,
   clearAddDocumentMessage,
   clearDraftsMessage,
   logout,
@@ -165,13 +165,13 @@ function AddDocument({
       const { token } = obj;
 
       async function fetch() {
-        await fetchUserById(token);
-        await fetchDocumentTypes();
+        await fetchUserById(token, socket);
+        await fetchDocumentTypes(socket);
         await fetchAllSections();
         await fetchDocCategory(token, socket);
         if (match.params.id) {
-          await fetchDocumentById(match.params.id);
-          await fetchDocumentActionRequired(match.params.id);
+          await fetchDocumentById(match.params.id, socket);
+          await fetchDocumentActionRequired(match.params.id, socket);
         }
 
         if (!match.params.id) {
@@ -205,24 +205,24 @@ function AddDocument({
       }
     }
 
-    if (submit_new_document_draft !== "") {
-      if (submit_new_document_draft === "success") {
-        setFinalize(false);
-        setDestination("");
-        const variant = "info";
-        enqueueSnackbar("Document saved as draft success...", {
-          variant,
-        });
-        clearDraftsMessage();
-      }
-      if (submit_new_document_draft === "failed") {
-        const variant = "error";
-        enqueueSnackbar("Document saving as draft failed...", {
-          variant,
-        });
-        clearDraftsMessage();
-      }
-    }
+    // if (submit_new_document_draft !== "") {
+    //   if (submit_new_document_draft === "success") {
+    //     setFinalize(false);
+    //     setDestination("");
+    //     const variant = "info";
+    //     enqueueSnackbar("Document saved as draft success...", {
+    //       variant,
+    //     });
+    //     clearDraftsMessage();
+    //   }
+    //   if (submit_new_document_draft === "failed") {
+    //     const variant = "error";
+    //     enqueueSnackbar("Document saving as draft failed...", {
+    //       variant,
+    //     });
+    //     clearDraftsMessage();
+    //   }
+    // }
 
     if (_logout !== null) {
       if (_logout === "false") {
@@ -243,7 +243,7 @@ function AddDocument({
   }, [
     match.params.id,
     submit_new_document,
-    submit_new_document_draft,
+    // submit_new_document_draft,
     _logout,
   ]);
 
@@ -381,14 +381,14 @@ function AddDocument({
       return;
     }
 
-    await addNewDocumentDraft(
-      documentId.documentID,
-      user.user_id,
-      addDocument.subject,
-      addDocument.documentType,
-      addDocument.note,
-      addDocument.action_req
-    );
+    // await addNewDocumentDraft(
+    //   documentId.documentID,
+    //   user.user_id,
+    //   addDocument.subject,
+    //   addDocument.documentType,
+    //   addDocument.note,
+    //   addDocument.action_req
+    // );
   };
 
   const createCheckbox = (label) => {
@@ -777,7 +777,7 @@ function mapStateToProps(state) {
     sections: state.fetchInternalDestination,
     addDocument: state.newDocumentCreation,
     submit_new_document: state.addNewDocument,
-    submit_new_document_draft: state.addNewDocumentDraft,
+    // submit_new_document_draft: state.addNewDocumentDraft,
     _notification: state.notification,
     _logout: state.logout,
     doc_category: state.listSectionDocCategory,
@@ -802,7 +802,7 @@ const mapDispatchToProps = {
   addNewDocument,
   logDocumentCreator,
   clearAddNewDocumentState,
-  addNewDocumentDraft,
+  // addNewDocumentDraft,
   notification,
   removeFirstIndexOnEditAddDocument,
   clearAddDocumentMessage,

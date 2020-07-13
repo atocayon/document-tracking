@@ -61,70 +61,76 @@ function Users(props) {
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow style={{ background: "#2196F3"}}>
-              <TableCell style={{color: "#fff" }}>#</TableCell>
-              <TableCell style={{color: "#fff" }}>Employee ID</TableCell>
-              <TableCell style={{color: "#fff" }}>Name</TableCell>
-              <TableCell style={{color: "#fff" }}>Section</TableCell>
-              <TableCell style={{color: "#fff" }}>Position</TableCell>
-              <TableCell style={{color: "#fff" }}>Role</TableCell>
-              <TableCell style={{color: "#fff" }}>Status</TableCell>
+            <TableRow style={{ background: "#2196F3" }}>
+              <TableCell style={{ color: "#fff" }}>#</TableCell>
+              <TableCell style={{ color: "#fff" }}>Employee ID</TableCell>
+              <TableCell style={{ color: "#fff" }}>Name</TableCell>
+              <TableCell style={{ color: "#fff" }}>Section</TableCell>
+              <TableCell style={{ color: "#fff" }}>Position</TableCell>
+              <TableCell style={{ color: "#fff" }}>Role</TableCell>
+              <TableCell style={{ color: "#fff" }}>Status</TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user, index) => {
-              const sec = props.sections.filter(
-                (sec) => sec.id === parseInt(user.secid)
-              );
-              return (
-                <TableRow key={index}>
-                  <TableCell>{++index}</TableCell>
-                  <TableCell>{user.employeeId}</TableCell>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>
-                    {sec.map((_sec) => (
-                      <>{_sec.type}</>
-                    ))}
-                  </TableCell>
-                  <TableCell>{user.position}</TableCell>
-                  <TableCell>
-                    {user.role_id === "1"
-                      ? "Admin"
-                      : user.role_id === "2"
-                      ? "Member"
-                      : "Super Admin"}
-                  </TableCell>
-                  <TableCell>
-                    {user.accnt_status === "deleted" ? (
-                      <span style={{ color: "red" }}>Deleted</span>
-                    ) : user.accnt_status === "deactivated" ? (
-                      <span style={{ color: "orange" }}>Deactivated</span>
-                    ) : (
-                      <span style={{ color: "green" }}>Active</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <button
-                        className={"btn btn-sm "}
-                        onClick={props.handleEditUser.bind(null, user.user_id)}
-                      >
-                        <EditIcon />
-                      </button>
-                      <button className={"btn btn-sm "}>
-                        <DeleteOutlineIcon
-                          onClick={props.handleDeleteUser.bind(null, {
-                            id: user.user_id,
-                            name: user.name,
-                          })}
-                        />
-                      </button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+            {users
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((user, index) => {
+                const sec = props.sections.filter(
+                  (sec) => sec.id === parseInt(user.secid)
+                );
+                return (
+                  <TableRow key={index}>
+                    <TableCell>{++index}</TableCell>
+                    <TableCell>{user.employeeId}</TableCell>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>
+                      {sec.map((_sec) => (
+                        <>{_sec.type}</>
+                      ))}
+                    </TableCell>
+                    <TableCell>{user.position}</TableCell>
+                    <TableCell>
+                      {user.role_id === "1"
+                        ? "Admin"
+                        : user.role_id === "2"
+                        ? "Member"
+                        : "Super Admin"}
+                    </TableCell>
+                    <TableCell>
+                      {user.accnt_status === "deleted" ? (
+                        <span style={{ color: "red" }}>Deleted</span>
+                      ) : user.accnt_status === "deactivated" ? (
+                        <span style={{ color: "orange" }}>Deactivated</span>
+                      ) : (
+                        <span style={{ color: "green" }}>Active</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <button
+                          className={"btn btn-sm "}
+                          onClick={props.handleEditUser.bind(
+                            null,
+                            user.user_id
+                          )}
+                        >
+                          <EditIcon />
+                        </button>
+                        <button className={"btn btn-sm "}>
+                          <DeleteOutlineIcon
+                            onClick={props.handleDeleteUser.bind(null, {
+                              id: user.user_id,
+                              name: user.name,
+                              secid: user.secid,
+                            })}
+                          />
+                        </button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </Table>
         <TablePagination

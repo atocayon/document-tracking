@@ -18,24 +18,23 @@ import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import UserList from "../../common/userList/UserList";
 import { connect } from "react-redux";
 import { fetchSectionUsers } from "../../../redux/actions/fetchSectionUsers";
-import {fetchSectionsList} from "../../../redux/actions/fetchSectionsList";
+import { fetchSectionsList } from "../../../redux/actions/fetchSectionsList";
 import server_ip from "../../endPoint";
+import io from "socket.io-client";
+let socket;
 function UserManagement(props) {
-  const [user, setUser] = useState({});
-  const [sectionUsers, setSectionUsers] = useState([]);
   const [token, setToken] = useState("");
-  const [userRole, setUserRole] = useState("");
   const [endSesion, setEndSession] = useState(false);
   const [openDialog, setOpenDialog] = React.useState({
     open: false,
     status: "",
     name: "",
+    secid: "",
     id: null,
     content: "",
   });
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const [sections, setSections] = useState([]);
   const [transferOfficeDialog, setTransderOfficeDialog] = useState({
     open: false,
     secid: "",
@@ -54,38 +53,36 @@ function UserManagement(props) {
 
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
-
+    socket = io(server_ip.ADDRESS);
     if (obj && obj.token) {
       const { token } = obj;
       setToken(token);
 
-      async function fetch(){
-        await props.fetchSectionUsers(token);
+      async function fetch() {
+        await props.fetchSectionUsers(token, socket);
+        await props.fetchSectionsList(socket);
       }
 
-      fetch().catch(err => {
-        throw err
+      fetch().catch((err) => {
+        throw err;
       });
     }
 
     setEndSession(!(obj && obj.token));
   }, []);
 
-  const handleAccountRole = (val) => {
-    axios
-      .post(server_ip.SERVER_IP_ADDRESS+"updateRole", {
-        role: val.status,
-        id: val.id,
-      })
-      .then((res) => {
-        const variant = "info";
-        props.enqueueSnackbar(val.name + " role updated...", { variant });
-        window.location.reload();
-      })
-      .catch((err) => {
-        const variant = "error";
-        props.enqueueSnackbar(err, { variant });
-      });
+  const handleAccountRole = async (val) => {
+    await socket.emit("updateRole", val.status, val.id, val.secid, (res) => {
+      if (res) {
+        if (res !== "server error") {
+          const variant = "info";
+          props.enqueueSnackbar(val.name + " role updated...", { variant });
+        } else {
+          const variant = "error";
+          props.enqueueSnackbar(res, { variant });
+        }
+      }
+    });
   };
 
   const handleTransferOffice = (val) => {
@@ -118,7 +115,7 @@ function UserManagement(props) {
     return Object.keys(_error).length === 0;
   };
 
-  const handleConfirmTransferOffice = (event) => {
+  const handleConfirmTransferOffice = async (event) => {
     event.preventDefault();
 
     if (!validateTransferOffice()) {
@@ -132,20 +129,22 @@ function UserManagement(props) {
       open: false,
     });
 
-    axios
-      .post(server_ip.SERVER_IP_ADDRESS+"transferOffice", {
-        id: transferOfficeDialog.id,
-        section: transfer.section,
-      })
-      .then((res) => {
-        const variant = "success";
-        props.enqueueSnackbar("Office Transfer Success...", { variant });
-        window.location.reload();
-      })
-      .catch((err) => {
-        const variant = "error";
-        props.enqueueSnackbar(err, { variant });
-      });
+    await socket.emit(
+      "transferOffice",
+      transfer.section,
+      transferOfficeDialog.id,
+      (res) => {
+        if (res) {
+          if (res !== "server error") {
+            const variant = "info";
+            props.enqueueSnackbar("Office Transfer Success...", { variant });
+          } else {
+            const variant = "error";
+            props.enqueueSnackbar(res, { variant });
+          }
+        }
+      }
+    );
   };
 
   const handleAccountStatus = (val) => {
@@ -155,6 +154,7 @@ function UserManagement(props) {
       open: true,
       status: val.status,
       name: m + " " + val.name + "?",
+      secid: val.secid,
       id: val.id,
       content:
         "When you deactivate someone's account he/she will not be able to use this system. " +
@@ -186,27 +186,59 @@ function UserManagement(props) {
       open: true,
       status: val.status,
       name: "Delete " + val.name + " ?",
+      secid: val.secid,
       id: val.id,
-      content:
-        "If this action is unintended, you can still retrieve this account in Deleted Accounts section in left drawer.",
+      content: "Warning, this action cannot be undone!",
     });
   };
 
-  const handleConfirm = () => {
-    axios
-      .post(server_ip.SERVER_IP_ADDRESS+"updateStatus", {
-        status: openDialog.status,
-        id: openDialog.id,
-      })
-      .then((res) => {
-        const variant = "warning";
-        props.enqueueSnackbar(openDialog.name + " " + res, { variant });
-        window.location.reload();
-      })
-      .catch((err) => {
-        const variant = "error";
-        props.enqueueSnackbar(err, { variant });
-      });
+  const handleConfirm = async () => {
+    if (openDialog.status !== "3") {
+      await socket.emit(
+        "updateStatus",
+        openDialog.status,
+        openDialog.id,
+        openDialog.secid,
+        (res) => {
+          if (res) {
+            if (res !== "server error") {
+              const variant = "info";
+              props.enqueueSnackbar(openDialog.name + " " + res, { variant });
+            } else {
+              const variant = "error";
+              props.enqueueSnackbar(res, { variant });
+            }
+          }
+        }
+      );
+    } else {
+      await socket.emit(
+        "deleteUser",
+        openDialog.id,
+        openDialog.secid,
+        (res) => {
+          if (res) {
+            if (res !== "server error") {
+              const variant = "info";
+              props.enqueueSnackbar(openDialog.name + " " + res, { variant });
+            } else {
+              const variant = "error";
+              props.enqueueSnackbar(res, { variant });
+            }
+          }
+        }
+      );
+    }
+
+    setOpenDialog({
+      ...openDialog,
+      open: false,
+      status: "",
+      name: "",
+      secid: "",
+      id: null,
+      content: "",
+    });
   };
 
   const handleClick = () => {
@@ -333,13 +365,13 @@ function UserManagement(props) {
 function mapStateToProps(state) {
   return {
     data: state.fetchSectionUsers,
-    sections: state.fetchSectionsList
+    sections: state.fetchSectionsList,
   };
 }
 
 const mapDispatchToProps = {
   fetchSectionUsers,
-  fetchSectionsList
+  fetchSectionsList,
 };
 
 export default connect(

@@ -11,20 +11,25 @@ import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation"
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import { connect } from "react-redux";
 import { fetchUserById } from "../../../redux/actions/fetchUserById";
+import { fetchCurrentSystemUser } from "../../../redux/actions/fetchCurrentSystemUser";
 import { withSnackbar } from "notistack";
 import UserList from "../../common/userList/UserList";
-
-function Profile({ match, user, fetchUserById }) {
+import io from "socket.io-client";
+import endPoint from "../../endPoint";
+let socket;
+function Profile({ match, user, fetchUserById, currentUser, fetchCurrentSystemUser }) {
   const [endSession, setEndSession] = useState(false);
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
+    socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
       let params = match.params.id ? match.params.id : token;
       async function fetch() {
-        await fetchUserById(params);
+        await fetchUserById(params, socket);
+        await fetchCurrentSystemUser(obj.token, socket);
       }
 
       fetch().catch((err) => {
@@ -45,7 +50,7 @@ function Profile({ match, user, fetchUserById }) {
       <Grid item xs={2}>
         <SideBarNavigation
           open={open}
-          user={user}
+          user={currentUser}
           setOpen={setOpen}
           handleClick={handleClick}
         />
@@ -125,11 +130,15 @@ function Profile({ match, user, fetchUserById }) {
 }
 
 function mapStateToProps(state) {
-  return { user: state.fetchUserById };
+  return {
+    user: state.fetchUserById,
+    currentUser: state.fetchCurrentSystemUser,
+  };
 }
 
 const mapDispatchToProps = {
   fetchUserById,
+  fetchCurrentSystemUser,
 };
 
 export default connect(

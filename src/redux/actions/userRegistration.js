@@ -1,5 +1,4 @@
 import actionTypes from "./actionTypes";
-import axios from "axios";
 
 export function userRegistration(
   section,

@@ -1,7 +1,5 @@
 import actionTypes from "./actionTypes";
-import axios from "axios";
-import server_ip from "../../component/endPoint";
-import Reactotron from "reactotron-react-js";
+
 export function addNewDocument(
   documentID,
   user_id,
@@ -30,11 +28,20 @@ export function addNewDocument(
         }
         if (message === "success") {
           await dispatch({ type: actionTypes.ADD_DOCUMENT, data: "success" });
-          await axios.post(server_ip.SERVER_IP_ADDRESS + "sendEmail", {
-            sender: user_id,
+
+          await socket.emit(
+            "sendEmail",
+            user_id,
             subject,
             destination,
-          });
+            async (res) => {
+              if (res) {
+                if (res === "server error") {
+                  alert(res);
+                }
+              }
+            }
+          );
         }
       }
     );

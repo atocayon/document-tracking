@@ -41,7 +41,7 @@ function RegistrationForm(props) {
     if (obj && obj.token) {
       const { token } = obj;
       async function fetch() {
-        await props.fetchCurrentSystemUser(token);
+        await props.fetchCurrentSystemUser(token, socket);
       }
 
       fetch().catch((err) => {

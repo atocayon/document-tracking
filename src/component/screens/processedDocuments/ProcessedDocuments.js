@@ -43,7 +43,7 @@ function ProcessedDocuments(props) {
     if (obj && obj.token) {
       async function fetch() {
         await props.fetchProcessedDocument(obj.token, socket);
-        await props.fetchUserById(obj.token);
+        await props.fetchUserById(obj.token, socket);
       }
 
       fetch().catch((err) => {

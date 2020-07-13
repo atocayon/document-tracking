@@ -9,7 +9,7 @@ import { withSnackbar } from "notistack";
 import { receiveDoc } from "../../../redux/actions/handleScan";
 import BarcodeReader from "react-barcode-reader";
 import Reactotron from "reactotron-react-js";
-import { trackDocument } from "../../../redux/actions/trackDocument";
+
 import DocumentTrack from "./DocumentTrack";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -188,7 +188,7 @@ function Dashboard(props) {
   };
 
   const handleSearch = async () => {
-    await props.searchBySubj(props.trackingNum.documentTrackingNumber);
+    await props.searchBySubj(props.trackingNum.documentTrackingNumber, socket);
   };
 
   const handleStartGuide = (e) => {
@@ -416,7 +416,6 @@ function mapStateToProps(state) {
   return {
     trackingNum: state.documentTrackingNumber,
     receive: state.receiveDocument,
-    track: state.trackDocument,
     search: state.searchBySubj,
     _trackOrSearchOnly: state.trackOrSearchOnly,
   };
@@ -425,7 +424,6 @@ function mapStateToProps(state) {
 const mapDispatchToProps = {
   documentTrackingNumber,
   receiveDoc,
-  trackDocument,
   resetTrackOrReceive,
   trackDoc,
   searchBySubj,

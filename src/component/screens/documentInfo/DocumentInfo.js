@@ -16,17 +16,21 @@ import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import Content from "./Content";
 import UserList from "../../common/userList/UserList";
 import "../../../styles/barcode.css";
+import io from "socket.io-client";
+import endPoint from "../../endPoint";
+let socket;
 function DocumentInfo(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
   const componentRef = useRef();
   const barcodeRef = useRef();
   useEffect(() => {
+      socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       async function fetch() {
-        await props.fetchDocumentInfo(props.match.params.doc_id);
-        await props.fetchUserById(obj.token);
+        await props.fetchDocumentInfo(props.match.params.doc_id, socket);
+        await props.fetchUserById(obj.token, socket);
       }
 
       fetch().catch((err) => {

@@ -1,8 +1,6 @@
 import actionTypes from "./actionTypes";
-import axios from "axios";
-import server_ip from "../../component/endPoint";
 
-export function updateDivision(data) {
+export function updateDivision(data, socket) {
   const _data = {
     depid: parseInt(data.depid),
     department: data.department,
@@ -10,23 +8,13 @@ export function updateDivision(data) {
     payrollshort: data.payrollshort,
   };
 
-  return function (dispatch) {
-    return axios
-      .post(
-          server_ip.SERVER_IP_ADDRESS+"updateDivision/" + parseInt(data.depid),
-        {
-          department: data.department,
-          depshort: data.depshort,
-          payrollshort: data.payrollshort,
-        }
-      )
-      .then((res) => {
-        if (res.status === 200) {
+  return async function (dispatch) {
+    await socket.emit("updateDivision", data, (res) => {
+      if (res) {
+        if (res !== "server error") {
           dispatch({ type: actionTypes.UPDATE_DIVISION, data: _data });
         }
-      })
-      .catch((err) => {
-        alert(err);
-      });
+      }
+    });
   };
 }

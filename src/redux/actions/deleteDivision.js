@@ -1,21 +1,16 @@
 import actionTypes from "./actionTypes";
-import axios from "axios";
-import server_ip from "../../component/endPoint";
 
-export function deleteDivision(id) {
-  return function (dispatch) {
-    return axios
-      .post(server_ip.SERVER_IP_ADDRESS+"deleteDivision/" + id)
-      .then((res) => {
-        if (res.status === 200) {
-          dispatch({
+export function deleteDivision(id, socket) {
+  return async function (dispatch) {
+    await socket.emit("deleteDivision", id, async (res) => {
+      if (res) {
+        if (res !== "server error") {
+          await dispatch({
             type: actionTypes.DELETE_DIVISION,
             data: id,
           });
         }
-      })
-      .catch((err) => {
-        alert(err);
-      });
+      }
+    });
   };
 }

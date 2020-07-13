@@ -33,8 +33,8 @@ function PendingForRelease(props) {
     socket = io(endPoint.ADDRESS);
     if (obj && obj.token) {
       async function fetch() {
-        await props.fetchPendingDocuments(obj.token);
-        await props.fetchUserById(obj.token);
+        await props.fetchPendingDocuments(obj.token, socket);
+        await props.fetchUserById(obj.token, socket);
 
       }
 

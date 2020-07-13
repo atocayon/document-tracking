@@ -1,39 +1,36 @@
 import actionTypes from "./actionTypes";
-import axios from "axios";
-import server_ip from "../../component/endPoint";
 
+export function fetchAllSections(socket) {
+  return async function (dispatch) {
+    await socket.emit("sections", (res) => {
+      if (res) {
+        if (res !== "server error") {
+          const section = [];
+          const internalDestination = [];
 
-export function fetchAllSections() {
-  return function (dispatch) {
-    return axios
-      .get(server_ip.SERVER_IP_ADDRESS+"sections")
-      .then((_sections) => {
-        const section = [];
-        const internalDestination = [];
-        for (let i = 0; i < _sections.data.length; i++) {
-          section.push({
-            id: _sections.data[i].secid,
-            type: _sections.data[i].section,
+          for (let i = 0; i < res.length; i++) {
+            section.push({
+              id: res[i].secid,
+              type: res[i].section,
+            });
+
+            internalDestination.push({
+              id: res[i].secshort,
+              type: res[i].section,
+            });
+          }
+
+          dispatch({
+            type: actionTypes.FETCH_ALL_SECTIONS,
+            data: section,
           });
 
-          internalDestination.push({
-            id: _sections.data[i].secshort,
-            type: _sections.data[i].section,
+          dispatch({
+            type: actionTypes.FETCH_INTERNAL_DESTINATION,
+            data: internalDestination,
           });
         }
-
-        dispatch({
-          type: actionTypes.FETCH_ALL_SECTIONS,
-          data: section,
-        });
-
-        dispatch({
-          type: actionTypes.FETCH_INTERNAL_DESTINATION,
-          data: internalDestination,
-        });
-      })
-      .catch((err) => {
-        alert(err);
-      });
+      }
+    });
   };
 }

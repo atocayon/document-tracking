@@ -48,7 +48,7 @@ function ManageDocCategory(props) {
       setToken(token);
       async function fetch() {
         await props.fetchDocCategory(token, socket);
-        await props.fetchUserById(token);
+        await props.fetchUserById(token, socket);
       }
       fetch().catch((err) => {
         throw err;
