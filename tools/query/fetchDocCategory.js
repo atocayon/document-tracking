@@ -1,7 +1,6 @@
-const connection = require("../dbConnection/connection");
 
 //Fetch Document Category
-const fetchDocumentCategory = (token, callback, socket) => {
+const fetchDocumentCategory = (token, callback, socket, connection) => {
   const fetchSection = "SELECT a.section FROM users a WHERE a.user_id = ?";
   connection.query(fetchSection, [token], function (err, rows, fields) {
     if (err) {
@@ -27,7 +26,7 @@ const fetchDocumentCategory = (token, callback, socket) => {
 };
 
 //Add New Document Category
-const addNewDocCategory = (token, category, callback, socket) => {
+const addNewDocCategory = (token, category, callback, socket, connection) => {
   const fetchSection = "SELECT a.section FROM users a WHERE a.user_id = ?";
   connection.query(fetchSection, [token], function (err, rows, fields) {
     if (err) {
@@ -48,7 +47,7 @@ const addNewDocCategory = (token, category, callback, socket) => {
   });
 };
 
-const updateDocumentCategory = (data, token, callback, socket) => {
+const updateDocumentCategory = (data, token, callback, socket, connection) => {
   for (let i = 0; i < data.length; i++) {
     const sql = "UPDATE doc_category SET category = ? WHERE id = ?";
     connection.query(sql, [data[i].category, parseInt(data[i].id)], function (
@@ -65,7 +64,7 @@ const updateDocumentCategory = (data, token, callback, socket) => {
 };
 
 //Delete Doc Category
-const deleteDocCategory = (id, token, callback, socket) => {
+const deleteDocCategory = (id, token, callback, socket, connection) => {
   const sql = "DELETE FROM doc_category WHERE id = ?";
   connection.query(sql, [parseInt(id)], function (err, result) {
     if (err) {

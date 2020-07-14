@@ -1,7 +1,6 @@
-const connection = require("../dbConnection/connection");
 
 //Track Document
-const trackDocument = (data, socket) => {
+const trackDocument = (data, socket, connection) => {
   let sql = "";
   sql += "SELECT ";
   sql += "a.documentID AS document_id, ";

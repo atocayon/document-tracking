@@ -1,6 +1,5 @@
-const connection = require("../dbConnection/connection");
 
-const fetchSubProcess = (tracking, callback) => {
+const fetchSubProcess = (tracking, callback, connection) => {
   let sql = "";
   sql += "SELECT ";
   sql += "a.trans_id AS trans_id, ";

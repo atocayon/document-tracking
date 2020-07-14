@@ -1,6 +1,4 @@
-const connection = require("../dbConnection/connection");
 const track = require("./trackDocument");
-const transporter = require("../emailConfig/emailConfig");
 const pending = require("./countPendingDoc");
 const processedDoc = require("./fetchProcessedDoc");
 
@@ -9,7 +7,9 @@ const receiveDocument = (
   user_id,
   user_section,
   callback,
-  socket
+  socket,
+  connection,
+  transporter
 ) => {
   let today = new Date();
   let date =

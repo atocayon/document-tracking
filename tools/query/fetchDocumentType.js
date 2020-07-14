@@ -1,4 +1,3 @@
-const connection = require("../dbConnection/connection");
 const http = require("http");
 const express = require("express");
 const app = express();
@@ -6,7 +5,7 @@ const server = http.createServer(app);
 const socketio = require("socket.io");
 const io = socketio(server);
 
-const fetchDocumentType = (callback) => {
+const fetchDocumentType = (callback, connection) => {
   const sql = "SELECT * FROM document_type";
   connection.query(sql, function (err, rows, fields) {
     if (err) {
@@ -18,7 +17,7 @@ const fetchDocumentType = (callback) => {
   });
 };
 
-const fetchDocumentTypeById = (docTypeId, callback) => {
+const fetchDocumentTypeById = (docTypeId, callback, connection) => {
   const sql = "SELECT * FROM document_type WHERE id = ?";
   connection.query(sql, [parseInt(docTypeId)], function (err, rows, fields) {
     if (err) {
@@ -30,7 +29,7 @@ const fetchDocumentTypeById = (docTypeId, callback) => {
   });
 };
 
-const addNewDocumentType = (type, callback) => {
+const addNewDocumentType = (type, callback, connection) => {
     const sql = "INSERT INTO document_type (type) VALUES ?";
     const values = [[type]];
     connection.query(sql, [values], function (err, result) {
@@ -44,7 +43,7 @@ const addNewDocumentType = (type, callback) => {
     });
 };
 
-const updateDocumentType = (data, callback) => {
+const updateDocumentType = (data, callback, connection) => {
     const { id, type } = data;
     const sql = "UPDATE document_type SET type = ? WHERE id = ?";
     connection.query(sql, [type, parseInt(id)], function (err, result) {
@@ -58,7 +57,7 @@ const updateDocumentType = (data, callback) => {
     });
 };
 
-const deleteDocumentType = (docTypeId, callback) => {
+const deleteDocumentType = (docTypeId, callback, connection) => {
   const sql = "DELETE FROM document_type WHERE id = ?";
   connection.query(sql, [parseInt(docTypeId)], function (err, result) {
     if (err) {

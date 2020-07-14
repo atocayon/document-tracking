@@ -1,6 +1,5 @@
-const connection = require("../dbConnection/connection");
 
-const expandDogLogs = (doc_id, status, socket) => {
+const expandDogLogs = (doc_id, status, socket, connection) => {
   let sql = "";
   sql += "SELECT a.document_id AS trans_id, ";
   sql += "c.name AS name, ";

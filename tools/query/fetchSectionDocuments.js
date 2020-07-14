@@ -1,6 +1,5 @@
-const connection = require("../dbConnection/connection");
 
-const fetchSectionDocuments = (userId, folder, callback) => {
+const fetchSectionDocuments = (userId, folder, callback, connection) => {
   const fetchUser = "SELECT * FROM users WHERE user_id = ?";
   connection.query(fetchUser, [parseInt(userId)], function (
     err,

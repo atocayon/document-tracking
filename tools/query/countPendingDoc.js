@@ -1,7 +1,6 @@
-const connection = require("../dbConnection/connection");
 
 //Count Pending
-const countPending = (user_id, socket) => {
+const countPending = (user_id, socket, connection) => {
   const sql =
     "SELECT * FROM documentLogs WHERE user_id = ? AND status = ? AND notification = ?";
   connection.query(sql, [user_id, "1", "0"], function (err, rows, fields) {
