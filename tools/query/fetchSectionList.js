@@ -1,3 +1,4 @@
+const connection = require("../dbConnection/connection");
 const http = require("http");
 const express = require("express");
 const app = express();
@@ -5,7 +6,7 @@ const server = http.createServer(app);
 const socketio = require("socket.io");
 const io = socketio(server);
 
-const fetchSectionList = (callback, connection) => {
+const fetchSectionList = (callback) => {
   let sql = "";
   sql += "SELECT a.divid AS divid, ";
   sql += "a.secid AS secid, ";
@@ -29,7 +30,7 @@ const fetchSectionList = (callback, connection) => {
   });
 };
 
-const fetchSectionById = (secid, callback, connection) => {
+const fetchSectionById = (secid, callback) => {
   let sql = "";
   sql += "SELECT a.secid AS secid, ";
   sql += "a.divid AS divid, ";
@@ -51,7 +52,7 @@ const fetchSectionById = (secid, callback, connection) => {
   });
 };
 
-const addNewSection = (division, section, secshort, callback, connection) => {
+const addNewSection = (division, section, secshort, callback) => {
   const sql =
     "INSERT INTO sections (divid, section, secshort, active) VALUES ?";
   const values = [[division, section, secshort, 1]];
@@ -66,7 +67,7 @@ const addNewSection = (division, section, secshort, callback, connection) => {
   });
 };
 
-const updateSection = (data, callback, connection) => {
+const updateSection = (data, callback) => {
   const { secid, divid, section, secshort } = data;
   const sql =
     "UPDATE sections SET divid = ?, section = ?, secshort = ?, active = ? WHERE secid = ?";
@@ -86,7 +87,7 @@ const updateSection = (data, callback, connection) => {
   );
 };
 
-const deleteSection = (secid, callback, connection) => {
+const deleteSection = (secid, callback) => {
   const sql = "DELETE FROM sections WHERE secid = ?";
   connection.query(sql, [parseInt(secid)], function (err, result) {
     if (err) {

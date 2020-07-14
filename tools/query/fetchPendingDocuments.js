@@ -1,5 +1,6 @@
+const connection = require("../dbConnection/connection");
 
-const fetchPendingDocument = (userId, callback, connection) => {
+const fetchPendingDocument = (userId, callback) => {
   let sql = "";
   sql += "SELECT d.name AS creator, ";
   sql += "e.section AS creatorSection, ";

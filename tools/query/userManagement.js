@@ -1,6 +1,7 @@
+const connection = require("../dbConnection/connection");
 const sectionUser = require("./fetchSectionUsers");
 
-const updateUser = (data, callback, connection) => {
+const updateUser = (data, callback) => {
   const sql = "SELECT * FROM users WHERE user_id = ?";
   connection.query(sql, [parseInt(data.user_id)], function (err, rows, fields) {
     if (err) {
@@ -46,7 +47,7 @@ const updateUser = (data, callback, connection) => {
   });
 };
 
-const updateRole = (role, id, secid, callback, connection) => {
+const updateRole = (role, id, secid, callback) => {
   const sql = "UPDATE users SET role = ? WHERE user_id = ?";
   connection.query(sql, [role, parseInt(id)], function (err, result) {
     if (err) {
@@ -57,7 +58,7 @@ const updateRole = (role, id, secid, callback, connection) => {
   });
 };
 
-const updateStatus = (status, id, secid, callback, connection) => {
+const updateStatus = (status, id, secid, callback) => {
   const sql = "UPDATE users SET status = ? WHERE user_id = ?";
   connection.query(sql, [status, parseInt(id)], function (err, result) {
     if (err) {
@@ -69,7 +70,7 @@ const updateStatus = (status, id, secid, callback, connection) => {
   });
 };
 
-const transferOffice = (secid, id, callback, connection) => {
+const transferOffice = (secid, id, callback) => {
   const sql = "UPDATE users SET section = ? WHERE user_id = ?";
   connection.query(sql, [secid, parseInt(id)], function (err, result) {
     if (err) {
@@ -83,7 +84,7 @@ const transferOffice = (secid, id, callback, connection) => {
   });
 };
 
-const accntDeletion = (id, secid, callback, connection) => {
+const accntDeletion = (id, secid, callback) => {
   const sql = "DELETE FROM users WHERE user_id = ?";
   connection.query(sql, [id], function (err, result) {
     if (err) {

@@ -1,5 +1,6 @@
+const connection = require("../dbConnection/connection");
 
-const search = (subj, callback, connection) => {
+const search = (subj, callback) => {
   let sql = "";
   sql += "SELECT a.documentId AS documentId, a.subject AS subject, ";
   sql += "b.name AS creator, ";

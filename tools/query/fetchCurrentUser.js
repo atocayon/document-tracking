@@ -1,5 +1,6 @@
+const connection = require("../dbConnection/connection");
 
-const fetchCurrentUser = (token, callback, connection) => {
+const fetchCurrentUser = (token, callback) => {
   let sql = "";
   sql += "SELECT a.user_id AS user_id, ";
   sql += "a.employeeId AS employeeId, ";

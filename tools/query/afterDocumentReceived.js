@@ -1,3 +1,4 @@
+const connection = require("../dbConnection/connection");
 
 const afterDocumentReceive = (
   documentId,
@@ -6,8 +7,7 @@ const afterDocumentReceive = (
   destinationType,
   destination,
   status,
-  callback,
-  connection
+  callback
 ) => {
   let today = new Date();
   let date =

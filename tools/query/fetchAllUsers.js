@@ -1,4 +1,4 @@
-
+const connection = require("../dbConnection/connection");
 const http = require("http");
 const express = require("express");
 const app = express();
@@ -7,7 +7,7 @@ const socketio = require("socket.io");
 const io = socketio(server);
 
 //Fetch All Users
-const Users = (connection) => {
+const Users = () => {
   let sql = "";
   sql += "SELECT a.user_id AS user_id, ";
   sql += "a.employeeId AS employeeId, ";

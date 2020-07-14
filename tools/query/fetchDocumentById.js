@@ -1,5 +1,6 @@
+const connection = require("../dbConnection/connection");
 
-const fetchDocument = (docId, callback, connection) => {
+const fetchDocument = (docId, callback) => {
   let sql = "";
   sql += "SELECT a.subject as subject, ";
   sql += "a.note, ";
@@ -28,7 +29,7 @@ const fetchDocument = (docId, callback, connection) => {
   });
 };
 
-const fetchActionReq = (docId, callback, connection) => {
+const fetchActionReq = (docId, callback) => {
   const sql = "SELECT * FROM document_action_req WHERE documentID = ?";
   connection.query(sql, [docId], function (err, rows, fields) {
     if (err) {
@@ -40,7 +41,7 @@ const fetchActionReq = (docId, callback, connection) => {
   });
 };
 
-const fetchDocumentDestination = (docId, callback, connection) => {
+const fetchDocumentDestination = (docId, callback) => {
   let sql = "";
   sql += "SELECT a.remarks AS remarks, a.document_id AS document_id, ";
   sql += "DATE_FORMAT(a.date_time, '%c/%d/%y %h:%i %p') AS date_time_receive, ";
@@ -65,7 +66,7 @@ const fetchDocumentDestination = (docId, callback, connection) => {
   });
 };
 
-const fetchDateTimeReleased = (receiver_id, docId, callback, connection) => {
+const fetchDateTimeReleased = (receiver_id, docId, callback) => {
   let sql = "";
   sql +=
     "SELECT DATE_FORMAT(date_time, '%c/%d/%y %h:%i %p') AS date_time_released ";
@@ -85,7 +86,7 @@ const fetchDateTimeReleased = (receiver_id, docId, callback, connection) => {
   });
 };
 
-const fetchActionTaken = (receiver_id, docId, callback, connection) => {
+const fetchActionTaken = (receiver_id, docId, callback) => {
   const sql =
     "SELECT remarks FROM documentLogs WHERE user_id = ? AND document_id = ? AND (status = ? || status = ?)";
   connection.query(sql, [receiver_id, docId, "2", "4"], function (
@@ -101,7 +102,7 @@ const fetchActionTaken = (receiver_id, docId, callback, connection) => {
   });
 };
 
-const fetchDocumentBarcodes = (docId, callback, connection) => {
+const fetchDocumentBarcodes = (docId, callback) => {
   let sql = " ";
   sql += "SELECT ";
   sql += "a.documentID, ";
@@ -119,7 +120,7 @@ const fetchDocumentBarcodes = (docId, callback, connection) => {
   });
 };
 
-const fetchDocumentBarcode = (docId, callback, connection) => {
+const fetchDocumentBarcode = (docId, callback) => {
   let sql = "";
   sql += "SELECT ";
   sql += "a.documentID ";
@@ -136,7 +137,7 @@ const fetchDocumentBarcode = (docId, callback, connection) => {
   });
 };
 
-const fetchDocumentRouteType = (docId, callback, connection) => {
+const fetchDocumentRouteType = (docId, callback) => {
   let sql = "";
   sql +=
       "SELECT a.creator AS creator, a.subject AS subject, a.doc_type AS doc_type, a.note AS note ";

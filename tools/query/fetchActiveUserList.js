@@ -1,4 +1,4 @@
-
+const connection = require("../dbConnection/connection");
 const http = require("http");
 const express = require("express");
 const app = express();
@@ -6,11 +6,8 @@ const server = http.createServer(app);
 const socketio = require("socket.io");
 const io = socketio(server);
 
-
 //Active user list
-const fetchUserActiveList = (connection) => {
-
-  console.log(connection);
+const fetchUserActiveList = () => {
   let sql = "";
   sql += "SELECT  ";
   sql += "a.timeStamp AS timeStamp, ";

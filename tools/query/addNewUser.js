@@ -1,4 +1,4 @@
-
+const connection = require("../dbConnection/connection");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const fetchSystemUsers = require("./fetchAllUsers");
@@ -13,8 +13,7 @@ const addUser = (
   email,
   section,
   position,
-  callback,
-  connection
+  callback
 ) => {
   email = email.toLowerCase();
   email = email.trim();

@@ -1,5 +1,6 @@
-
-const sendEmail = (user_id, subject, destination, callback, connection, transporter) => {
+const connection = require("../dbConnection/connection");
+const transporter = require("../emailConfig/emailConfig");
+const sendEmail = (user_id, subject, destination, callback) => {
   let selectSender = "";
   selectSender += "SELECT ";
   selectSender += "a.name, ";

@@ -1,5 +1,6 @@
+const connection = require("../dbConnection/connection");
 
-const fetchSubDocument = (tracking, callback, connection) => {
+const fetchSubDocument = (tracking, callback) => {
   let sql = "";
   sql += "SELECT ";
   sql += "a.documentID AS document_id, ";

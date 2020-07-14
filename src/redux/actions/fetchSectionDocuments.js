@@ -5,7 +5,7 @@ export function fetchSectionDocuments(token, folder, socket) {
     await socket.emit("fetchSectionDocuments", token, folder, async (res) => {
       if (res) {
         if (res !== "server error") {
-          await dispatch({ type: actionTypes.FETCH_SECTION_DOCUMENTS, data: res });
+          await dispatch({ type: actionTypes.FETCH_SECTION_DOCUMENTS, data });
         }
       }
     });
