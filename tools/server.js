@@ -49,41 +49,6 @@ const searchBySubj = require("./query/searchBySubject");
 const email = require("./query/sendEmail");
 //EndQueries
 
-<<<<<<< Updated upstream
-app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-app.use("/dts", router);
-
-<<<<<<< Updated upstream
-<<<<<<< HEAD
-const connection = mysql.createConnection({
-  user: "jarydd",
-  password: "Zilong123@098",
-  database: "documenttracking",
-  host: "localhost",
-  port: "3306",
-});
-
-connection.connect(function (err) {
-  if (err) {
-    console.log(err);
-  }
-  console.log("MySQL database connection established successfully!!!");
-});
-=======
-// app.use(cors());
-// app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(bodyParser.json());
-//
-// app.use("/dts", router);
->>>>>>> Stashed changes
-
-=======
->>>>>>> parent of 84936c2... applied socket.io migration
-=======
->>>>>>> Stashed changes
 server.listen(PORT, () => {
   console.log("========================================================");
   console.log("SERVER IS RUNNING ON PORT: " + PORT);
