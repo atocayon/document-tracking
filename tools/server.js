@@ -58,6 +58,7 @@ app.use(bodyParser.json());
 
 app.use("/dts", router);
 
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 const connection = mysql.createConnection({
   user: "jarydd",
@@ -76,6 +77,8 @@ connection.connect(function (err) {
 
 =======
 >>>>>>> parent of 84936c2... applied socket.io migration
+=======
+>>>>>>> Stashed changes
 server.listen(PORT, () => {
   console.log("========================================================");
   console.log("SERVER IS RUNNING ON PORT: " + PORT);
