@@ -1,4 +1,3 @@
-const connection = require("../dbConnection/connection");
 const sectionUser = require("./fetchSectionUsers");
 const mysql = require("mysql");
 const db = require("./dbVariable");

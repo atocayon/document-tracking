@@ -1,6 +1,4 @@
-const connection = require("../dbConnection/connection");
 const track = require("./trackDocument");
-const transporter = require("../emailConfig/emailConfig");
 const pending = require("./countPendingDoc");
 const processedDoc = require("./fetchProcessedDoc");
 const mysql = require("mysql");

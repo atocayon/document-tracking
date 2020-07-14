@@ -1,4 +1,3 @@
-const connection = require("../dbConnection/connection");
 const fetchDocLogs = require("./fetchDocLogs");
 const docNumber = require("./assignTrackingNum");
 const processedDoc = require("./fetchProcessedDoc");

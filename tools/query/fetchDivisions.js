@@ -1,4 +1,3 @@
-const connection = require("../dbConnection/connection");
 const http = require("http");
 const express = require("express");
 const app = express();
