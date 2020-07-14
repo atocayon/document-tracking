@@ -1,4 +1,4 @@
-const connection = require("../dbConnection/connection");
+
 const http = require("http");
 const express = require("express");
 const app = express();
@@ -7,7 +7,7 @@ const socketio = require("socket.io");
 const io = socketio(server);
 
 //Fetch Document Logs Query
-const getDocLogs = (socket) => {
+const getDocLogs = (connection) => {
     let sql = "";
     sql +=
         "SELECT e.document_id AS trans_id, e.remarks AS remarks, e.destinationType AS destinationType, ";

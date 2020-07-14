@@ -1,4 +1,3 @@
-const connection = require("../dbConnection/connection");
 const http = require("http");
 const express = require("express");
 const app = express();
@@ -6,7 +5,7 @@ const server = http.createServer(app);
 const socketio = require("socket.io");
 const io = socketio(server);
 
-const fetchDivisions = (callback) => {
+const fetchDivisions = (callback, connection) => {
   const sql = "SELECT * FROM divisions";
   connection.query(sql, function (err, rows, fields) {
     if (err) {
@@ -18,7 +17,7 @@ const fetchDivisions = (callback) => {
   });
 };
 
-const byId = (divid, callback) => {
+const byId = (divid, callback, connection) => {
   const sql = "SELECT * FROM divisions WHERE depid= ?";
   connection.query(sql, [parseInt(divid)], function (err, rows, fields) {
     if (err) {
@@ -30,7 +29,7 @@ const byId = (divid, callback) => {
   });
 };
 
-const addNewDivision = (data, callback) => {
+const addNewDivision = (data, callback, connection) => {
   const { department, depshort, payrollshort } = data;
   const sql =
     "INSERT INTO divisions (department, depshort, payrollshort) VALUES ?";
@@ -46,7 +45,7 @@ const addNewDivision = (data, callback) => {
   });
 };
 
-const updateDivision = (data, callback) => {
+const updateDivision = (data, callback, connection) => {
   const { depid, department, depshort, payrollshort } = data;
   const sql =
     "UPDATE divisions SET department = ?, depshort = ?, payrollshort = ? WHERE depid = ?";
@@ -65,7 +64,7 @@ const updateDivision = (data, callback) => {
   );
 };
 
-const deleteDivision = (divid, callback) => {
+const deleteDivision = (divid, callback, connection) => {
   const sql = "DELETE FROM divisions WHERE depid = ?";
   connection.query(sql, [parseInt(divid)], function (err, result) {
     if (err) {

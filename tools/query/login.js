@@ -1,8 +1,8 @@
-const connection = require("../dbConnection/connection");
+
 const bcrypt = require("bcrypt");
 const activeList = require("./fetchActiveUserList");
-const login = (emailOrPassword, password, callback) => {
-    console.log(emailOrPassword);
+const login = (emailOrPassword, password, callback, connection) => {
+    console.log(connection);
     let sql = "";
     sql += "SELECT ";
     sql += "a.user_id AS user_id, ";

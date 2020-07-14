@@ -1,4 +1,3 @@
-const connection = require("../dbConnection/connection");
 const fetchDocLogs = require("./fetchDocLogs");
 const docNumber = require("./assignTrackingNum");
 const processedDoc = require("./fetchProcessedDoc");
@@ -13,7 +12,8 @@ const insertDocument = (
   documentLogs,
   category,
   callback,
-  socket
+  socket,
+  connection
 ) => {
   let today = new Date();
   let date =

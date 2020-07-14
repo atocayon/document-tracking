@@ -1,4 +1,3 @@
-const connection = require("../dbConnection/connection");
 const http = require("http");
 const express = require("express");
 const app = express();
@@ -6,7 +5,7 @@ const server = http.createServer(app);
 const socketio = require("socket.io");
 const io = socketio(server);
 
-const fetchSectionUsers = (secid, callback) => {
+const fetchSectionUsers = (secid, callback, connection) => {
   let sql = "";
   sql += "SELECT a.user_id AS user_id, ";
   sql += "a.employeeId AS employeeId, ";

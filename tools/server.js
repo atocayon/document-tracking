@@ -1,7 +1,9 @@
+const nodemailer = require("nodemailer");
+const mysql = require("mysql");
 const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
-const PORT = process.env.PORT || 4000;
+const PORT = 4000;
 
 const app = express();
 const server = http.createServer(app);
@@ -10,8 +12,6 @@ const io = socketio(server);
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const router = express.Router();
-const connection = require("./dbConnection/connection");
-const transporter = require("./emailConfig/emailConfig");
 
 //Queries
 const user_login = require("./query/login");
@@ -58,11 +58,38 @@ app.use(bodyParser.json());
 
 app.use("/dts", router);
 
+const connection = mysql.createConnection({
+  user: "root",
+  password: "",
+  database: "documentTracking",
+  host: "localhost",
+  port: "3306",
+});
+
+connection.connect(function (err) {
+  if (err) {
+    console.log(err);
+  }
+  console.log("MySQL database connection established successfully!!!");
+});
+
 server.listen(PORT, () => {
   console.log("========================================================");
   console.log("SERVER IS RUNNING ON PORT: " + PORT);
   console.log("========================================================");
 });
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: "587",
+  service: "gmail",
+  auth: {
+    user: "nationalmaritimepolytechnic@gmail.com",
+    pass: "xgedzrlgfrelllhl",
+  },
+});
+
+
 
 // ==========================================================================================
 // ==========================================================================================
@@ -73,16 +100,16 @@ server.listen(PORT, () => {
 io.on("connection", (socket) => {
   //Login
   socket.on("login", (emailOrPassword, password, callback) => {
-    user_login.login(emailOrPassword, password, callback);
+    user_login.login(emailOrPassword, password, callback, connection);
   });
 
   //Logout
   socket.on("logout", (id, callback) => {
-    user_logout.logout(id, callback);
+    user_logout.logout(id, callback, connection);
   });
 
   //active users list
-  socket.on("active_users", active_user_list.fetchUserActiveList());
+  socket.on("active_users", () => {active_user_list.fetchUserActiveList(connection)});
 
   //Add User
   socket.on(
@@ -109,19 +136,20 @@ io.on("connection", (socket) => {
         email,
         section,
         position,
-        callback
+        callback,
+          connection
       );
     }
   );
 
   //Fetch All Users
-  socket.on("getAllUsers", fetchSystemUsers.Users());
+  socket.on("getAllUsers", () => {fetchSystemUsers.Users(connection)});
 
   //Fetch document Logs
-  socket.on("getDocumentLogs", fetchDocLogs.getDocLogs());
+  socket.on("getDocumentLogs", () => {fetchDocLogs.getDocLogs(connection)});
 
   //Assign Document tracking number
-  socket.on("assignTrackingNum", docNumber.assignTrackingNumber());
+  socket.on("assignTrackingNum", () => {docNumber.assignTrackingNumber(connection)});
 
   //Insert Document
   socket.on(
@@ -147,14 +175,15 @@ io.on("connection", (socket) => {
         documentLogs,
         category,
         callback,
-        socket
+        socket,
+          connection
       );
     }
   );
 
   //Expand/dropdown in doc logs
   socket.on("expandDocLogs", (doc_id, status) => {
-    expandLogs.expandDocLogs(doc_id, status, socket);
+    expandLogs.expandDocLogs(doc_id, status, socket, connection);
   });
 
   //Receive Documents
@@ -166,218 +195,220 @@ io.on("connection", (socket) => {
         user_id,
         user_section,
         callback,
-        socket
+        socket,
+          connection,
+          transporter
       );
     }
   );
 
   //Track Document
   socket.on("tracking", (data) => {
-    track.trackDocument(data, socket);
+    track.trackDocument(data, socket, connection);
   });
 
   //Count Pending
   socket.on("countPending", (user_id) => {
-    pending.countPending(user_id, socket);
+    pending.countPending(user_id, socket, connection);
   });
 
   //Fetch Document Category
   socket.on("fetchDocumentCategory", (token, callback) => {
-    docCategory.fetchDocumentCategory(token, callback, socket);
+    docCategory.fetchDocumentCategory(token, callback, socket, connection);
   });
 
   //Add New Document Category
   socket.on("addNewDocumentCategory", (token, category, callback) => {
-    docCategory.addNewDocCategory(token, category, callback, socket);
+    docCategory.addNewDocCategory(token, category, callback, socket, connection);
   });
 
   //Update Doc Category
   socket.on("updateDocumentCategory", (data, token, callback) => {
-    docCategory.updateDocumentCategory(data, token, callback, socket);
+    docCategory.updateDocumentCategory(data, token, callback, socket, connection);
   });
 
   //Delete Doc Category
   socket.on("deleteDocCategory", (id, token, callback) => {
-    docCategory.deleteDocCategory(id, token, callback, socket);
+    docCategory.deleteDocCategory(id, token, callback, socket, connection);
   });
 
   //Fetch Processed doc
   socket.on("fetchProcessedDoc", (token, callback) => {
-    processedDoc.fetchProcessedDoc(token, callback, socket);
+    processedDoc.fetchProcessedDoc(token, callback, socket, connection);
   });
 
   //Fetch SubProcess
   socket.on("fetchSubProcess", (tracking, callback) => {
-    docSubProcess.fetchSubProcess(tracking, callback);
+    docSubProcess.fetchSubProcess(tracking, callback, connection);
   });
 
   //Fetch Sub Document
   socket.on("fetchSubDocument", (tracking, callback) => {
-    docSubDocument.fetchSubDocument(tracking, callback);
+    docSubDocument.fetchSubDocument(tracking, callback, connection);
   });
 
   //Verify User Token
   socket.on("verifyToken", (token, callback) => {
-    userToken.verifyToken(token, callback);
+    userToken.verifyToken(token, callback, connection);
   });
 
   //Fetch user
   socket.on("user", (token, callback) => {
-    currentUser.fetchCurrentUser(token, callback);
+    currentUser.fetchCurrentUser(token, callback, connection);
   });
 
   //Fetch Section Users
   socket.on("sectionUser", (secid, callback) => {
-    sectionUser.fetchSectionUsers(secid, callback);
+    sectionUser.fetchSectionUsers(secid, callback, connection);
   });
 
   //Update User
   socket.on("updateUser", (data, callback) => {
-    userManagement.updateUser(data, callback);
+    userManagement.updateUser(data, callback, connection);
   });
 
   //Update User Role
   socket.on("updateRole", (role, id, secid, callback) => {
-    userManagement.updateRole(role, id, secid, callback);
+    userManagement.updateRole(role, id, secid, callback, connection);
   });
 
   //Update Status
   socket.on("updateStatus", (status, id, secid, callback) => {
-    userManagement.updateStatus(status, id, secid, callback);
+    userManagement.updateStatus(status, id, secid, callback, connection);
   });
 
   //user Transfer office
   socket.on("transferOffice", (secid, id, callback) => {
-    userManagement.transferOffice(secid, id, callback);
+    userManagement.transferOffice(secid, id, callback, connection);
   });
 
   //User accnt deletion
   socket.on("deleteUser", (id, secid, callback) => {
-    userManagement.accntDeletion(id, secid, callback);
+    userManagement.accntDeletion(id, secid, callback, connection);
   });
 
   //Fetch Sections List
   socket.on("sections", (callback) => {
-    sections.fetchSectionList(callback);
+    sections.fetchSectionList(callback, connection);
   });
 
   //Fetch Section By ID
   socket.on("section", (secid, callback) => {
-    sections.fetchSectionById(secid, callback);
+    sections.fetchSectionById(secid, callback, connection);
   });
 
   //Add new section
   socket.on("addNewSection", (division, section, secshort, callback) => {
-    sections.addNewSection(division, section, secshort, callback);
+    sections.addNewSection(division, section, secshort, callback, connection);
   });
 
   //Update Section
   socket.on("updateSection", (data, callback) => {
-    sections.updateSection(data, callback);
+    sections.updateSection(data, callback, connection);
   });
 
   //Delete Section
   socket.on("deleteSection", (secid, callback) => {
-    sections.deleteSection(secid, callback);
+    sections.deleteSection(secid, callback, connection);
   });
 
   //Fetch Division
   socket.on("fetchDivisions", (callback) => {
-    divisions.fetchDivisions(callback);
+    divisions.fetchDivisions(callback, connection);
   });
 
   //Fetch division by id
   socket.on("fetchDivisionById", (divid, callback) => {
-    divisions.byId(divid, callback);
+    divisions.byId(divid, callback, connection);
   });
 
   //Add New Division
   socket.on("addDivision", (data, callback) => {
-    divisions.addNewDivision(data, callback);
+    divisions.addNewDivision(data, callback, connection);
   });
 
   //Update Division
   socket.on("updateDivision", (data, callback) => {
-    divisions.updateDivision(data, callback);
+    divisions.updateDivision(data, callback, connection);
   });
 
   //Delete Division
   socket.on("deleteDivision", (divid, callback) => {
-    divisions.deleteDivision(divid, callback);
+    divisions.deleteDivision(divid, callback, connection);
   });
 
   //fetch document Type
   socket.on("documentType", (callback) => {
-    docType.fetchDocumentType(callback);
+    docType.fetchDocumentType(callback, connection);
   });
 
   //fetch document type by id
   socket.on("fetchDocumentType", (docTypeId, callback) => {
-    docType.fetchDocumentTypeById(docTypeId, callback);
+    docType.fetchDocumentTypeById(docTypeId, callback, connection);
   });
 
   //add new document type
   socket.on("addDocumentType", (type, callback) => {
-    docType.addNewDocumentType(type, callback);
+    docType.addNewDocumentType(type, callback, connection);
   });
 
   //update document type
   socket.on("updateDocumentType", (data, callback) => {
-    docType.updateDocumentType(data, callback);
+    docType.updateDocumentType(data, callback, connection);
   });
 
   //delete document type
   socket.on("deleteDocumentType", (docTypeId, callback) => {
-    docType.deleteDocumentType(docTypeId, callback);
+    docType.deleteDocumentType(docTypeId, callback, connection);
   });
 
   //fetch document by id
   socket.on("fetchDocument", (docId, callback) => {
-    fetchDocument.fetchDocument(docId, callback);
+    fetchDocument.fetchDocument(docId, callback, connection);
   });
 
   //fetch action required
   socket.on("fetchActionReq", (docId, callback) => {
-    fetchDocument.fetchActionReq(docId, callback);
+    fetchDocument.fetchActionReq(docId, callback, connection);
   });
 
   //fetch document destination
   socket.on("fetchDocumentDestination", (docId, callback) => {
-    fetchDocument.fetchDocumentDestination(docId, callback);
+    fetchDocument.fetchDocumentDestination(docId, callback, connection);
   });
 
   //fetch document DateTimeReleased
   socket.on("fetchDateTimeReleased", (receiver_id, docId, callback) => {
-    fetchDocument.fetchDateTimeReleased(receiver_id, docId, callback);
+    fetchDocument.fetchDateTimeReleased(receiver_id, docId, callback, connection);
   });
 
   //fetch document ActionTaken
   socket.on("fetchActionTaken", (receiver_id, docId, callback) => {
-    fetchDocument.fetchActionTaken(receiver_id, docId, callback);
+    fetchDocument.fetchActionTaken(receiver_id, docId, callback, connection);
   });
 
   //fetch fetchDocumentBarcodes
   socket.on("fetchDocumentBarcodes", (docId, callback) => {
-    fetchDocument.fetchDocumentBarcodes(docId, callback);
+    fetchDocument.fetchDocumentBarcodes(docId, callback, connection);
   });
 
   //fetch fetchDocumentBarcode
   socket.on("fetchDocumentBarcode", (docId, callback) => {
-    fetchDocument.fetchDocumentBarcode(docId, callback);
+    fetchDocument.fetchDocumentBarcode(docId, callback, connection);
   });
 
   socket.on("fetchDocumentRouteType", (docId, callback) => {
-    fetchDocument.fetchDocumentRouteType(docId, callback);
+    fetchDocument.fetchDocumentRouteType(docId, callback, connection);
   });
 
   //fetch section documents
   socket.on("fetchSectionDocuments", (token, folder, callback) => {
-    fetchSectionDocuments.fetchSectionDocuments(token, folder, callback);
+    fetchSectionDocuments.fetchSectionDocuments(token, folder, callback, connection);
   });
 
   //fetch pending documents
   socket.on("fetchPendingDocuments", (userId, callback) => {
-    fetchPendingDocuments.fetchPendingDocument(userId, callback);
+    fetchPendingDocuments.fetchPendingDocument(userId, callback, connection);
   });
 
   //after document received
@@ -399,19 +430,20 @@ io.on("connection", (socket) => {
         destinationType,
         destination,
         status,
-        callback
+        callback,
+          connection
       );
     }
   );
 
   //Search by subject
   socket.on("searchBySubject", (subj, callback) => {
-    searchBySubj.search(subj, callback);
+    searchBySubj.search(subj, callback, connection);
   });
 
   //send email notification on add document
   socket.on("sendEmail", (user_id, subject, destination, callback) => {
-    email.sendEmail(user_id, subject, destination, callback);
+    email.sendEmail(user_id, subject, destination, callback, connection, transporter);
   });
 
   socket.on("disconnect", () => {

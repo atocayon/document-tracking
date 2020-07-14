@@ -1,7 +1,6 @@
-const connection = require("../dbConnection/connection");
 
 //Fetch Processed Doc
-const fetchProcessedDoc = (token, callback, socket) => {
+const fetchProcessedDoc = (token, callback, socket, connection) => {
     let sql = "";
     sql += "SELECT DISTINCT a.document_id AS document_id, ";
     sql += "DATE_FORMAT(a.date_time, '%M %d, %Y @ %h:%i:%s %p ') AS date_time, ";

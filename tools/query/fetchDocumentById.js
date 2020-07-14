@@ -1,6 +1,5 @@
-const connection = require("../dbConnection/connection");
 
-const fetchDocument = (docId, callback) => {
+const fetchDocument = (docId, callback, connection) => {
   let sql = "";
   sql += "SELECT a.subject as subject, ";
   sql += "a.note, ";
@@ -29,7 +28,7 @@ const fetchDocument = (docId, callback) => {
   });
 };
 
-const fetchActionReq = (docId, callback) => {
+const fetchActionReq = (docId, callback, connection) => {
   const sql = "SELECT * FROM document_action_req WHERE documentID = ?";
   connection.query(sql, [docId], function (err, rows, fields) {
     if (err) {
@@ -41,7 +40,7 @@ const fetchActionReq = (docId, callback) => {
   });
 };
 
-const fetchDocumentDestination = (docId, callback) => {
+const fetchDocumentDestination = (docId, callback, connection) => {
   let sql = "";
   sql += "SELECT a.remarks AS remarks, a.document_id AS document_id, ";
   sql += "DATE_FORMAT(a.date_time, '%c/%d/%y %h:%i %p') AS date_time_receive, ";
@@ -66,7 +65,7 @@ const fetchDocumentDestination = (docId, callback) => {
   });
 };
 
-const fetchDateTimeReleased = (receiver_id, docId, callback) => {
+const fetchDateTimeReleased = (receiver_id, docId, callback, connection) => {
   let sql = "";
   sql +=
     "SELECT DATE_FORMAT(date_time, '%c/%d/%y %h:%i %p') AS date_time_released ";
@@ -86,7 +85,7 @@ const fetchDateTimeReleased = (receiver_id, docId, callback) => {
   });
 };
 
-const fetchActionTaken = (receiver_id, docId, callback) => {
+const fetchActionTaken = (receiver_id, docId, callback, connection) => {
   const sql =
     "SELECT remarks FROM documentLogs WHERE user_id = ? AND document_id = ? AND (status = ? || status = ?)";
   connection.query(sql, [receiver_id, docId, "2", "4"], function (
@@ -102,7 +101,7 @@ const fetchActionTaken = (receiver_id, docId, callback) => {
   });
 };
 
-const fetchDocumentBarcodes = (docId, callback) => {
+const fetchDocumentBarcodes = (docId, callback, connection) => {
   let sql = " ";
   sql += "SELECT ";
   sql += "a.documentID, ";
@@ -120,7 +119,7 @@ const fetchDocumentBarcodes = (docId, callback) => {
   });
 };
 
-const fetchDocumentBarcode = (docId, callback) => {
+const fetchDocumentBarcode = (docId, callback, connection) => {
   let sql = "";
   sql += "SELECT ";
   sql += "a.documentID ";
@@ -137,7 +136,7 @@ const fetchDocumentBarcode = (docId, callback) => {
   });
 };
 
-const fetchDocumentRouteType = (docId, callback) => {
+const fetchDocumentRouteType = (docId, callback, connection) => {
   let sql = "";
   sql +=
       "SELECT a.creator AS creator, a.subject AS subject, a.doc_type AS doc_type, a.note AS note ";

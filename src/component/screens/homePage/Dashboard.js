@@ -166,7 +166,6 @@ function Dashboard(props) {
 
   const handleScanning = async (data) => {
     if (!props._trackOrSearchOnly) {
-      Reactotron.log("Track and Receive");
       await props.receiveDoc(
         data,
         props.user.user_id,
@@ -269,7 +268,7 @@ function Dashboard(props) {
                           value={props.trackingNum.documentTrackingNumber}
                           type={"text"}
                           endAdornment={
-                            props.receive !== "" || props.track.length > 0  || props.search.length > 0 ? (
+                            props.receive !== "" ||  props.track.length > 0  ||  props.search.length > 0 ? (
                               <InputAdornment position="end">
                                 <IconButton
                                   title={"clear"}
@@ -417,6 +416,7 @@ function mapStateToProps(state) {
     trackingNum: state.documentTrackingNumber,
     receive: state.receiveDocument,
     search: state.searchBySubj,
+    track: state.trackDocument,
     _trackOrSearchOnly: state.trackOrSearchOnly,
   };
 }
