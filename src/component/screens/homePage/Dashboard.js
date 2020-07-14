@@ -416,7 +416,7 @@ function mapStateToProps(state) {
   return {
     trackingNum: state.documentTrackingNumber,
     receive: state.receiveDocument,
-    track: state.trackDoc,
+    track: state.trackDocument,
     search: state.searchBySubj,
     _trackOrSearchOnly: state.trackOrSearchOnly,
   };
