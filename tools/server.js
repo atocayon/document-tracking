@@ -1,3 +1,5 @@
+const nodemailer = require("nodemailer");
+
 const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
@@ -7,11 +9,6 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const router = express.Router();
-const connection = require("./dbConnection/connection");
-const transporter = require("./emailConfig/emailConfig");
 
 //Queries
 const user_login = require("./query/login");
@@ -52,6 +49,7 @@ const searchBySubj = require("./query/searchBySubject");
 const email = require("./query/sendEmail");
 //EndQueries
 
+<<<<<<< Updated upstream
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -74,6 +72,13 @@ connection.connect(function (err) {
   }
   console.log("MySQL database connection established successfully!!!");
 });
+=======
+// app.use(cors());
+// app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.json());
+//
+// app.use("/dts", router);
+>>>>>>> Stashed changes
 
 =======
 >>>>>>> parent of 84936c2... applied socket.io migration
@@ -83,6 +88,16 @@ server.listen(PORT, () => {
   console.log("========================================================");
   console.log("SERVER IS RUNNING ON PORT: " + PORT);
   console.log("========================================================");
+});
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: "587",
+  service: "gmail",
+  auth: {
+    user: "nationalmaritimepolytechnic@gmail.com",
+    pass: "xgedzrlgfrelllhl",
+  },
 });
 
 // ==========================================================================================
@@ -103,7 +118,9 @@ io.on("connection", (socket) => {
   });
 
   //active users list
-  socket.on("active_users", active_user_list.fetchUserActiveList());
+  socket.on("active_users", () => {
+    active_user_list.fetchUserActiveList();
+  });
 
   //Add User
   socket.on(
@@ -136,13 +153,19 @@ io.on("connection", (socket) => {
   );
 
   //Fetch All Users
-  socket.on("getAllUsers", fetchSystemUsers.Users());
+  socket.on("getAllUsers", () => {
+    fetchSystemUsers.Users();
+  });
 
   //Fetch document Logs
-  socket.on("getDocumentLogs", fetchDocLogs.getDocLogs());
+  socket.on("getDocumentLogs", () => {
+    fetchDocLogs.getDocLogs();
+  });
 
   //Assign Document tracking number
-  socket.on("assignTrackingNum", docNumber.assignTrackingNumber());
+  socket.on("assignTrackingNum", () => {
+    docNumber.assignTrackingNumber();
+  });
 
   //Insert Document
   socket.on(
@@ -187,7 +210,8 @@ io.on("connection", (socket) => {
         user_id,
         user_section,
         callback,
-        socket
+        socket,
+        transporter
       );
     }
   );
@@ -209,12 +233,22 @@ io.on("connection", (socket) => {
 
   //Add New Document Category
   socket.on("addNewDocumentCategory", (token, category, callback) => {
-    docCategory.addNewDocCategory(token, category, callback, socket);
+    docCategory.addNewDocCategory(
+      token,
+      category,
+      callback,
+      socket
+    );
   });
 
   //Update Doc Category
   socket.on("updateDocumentCategory", (data, token, callback) => {
-    docCategory.updateDocumentCategory(data, token, callback, socket);
+    docCategory.updateDocumentCategory(
+      data,
+      token,
+      callback,
+      socket
+    );
   });
 
   //Delete Doc Category
@@ -369,7 +403,11 @@ io.on("connection", (socket) => {
 
   //fetch document DateTimeReleased
   socket.on("fetchDateTimeReleased", (receiver_id, docId, callback) => {
-    fetchDocument.fetchDateTimeReleased(receiver_id, docId, callback);
+    fetchDocument.fetchDateTimeReleased(
+      receiver_id,
+      docId,
+      callback
+    );
   });
 
   //fetch document ActionTaken
@@ -393,7 +431,11 @@ io.on("connection", (socket) => {
 
   //fetch section documents
   socket.on("fetchSectionDocuments", (token, folder, callback) => {
-    fetchSectionDocuments.fetchSectionDocuments(token, folder, callback);
+    fetchSectionDocuments.fetchSectionDocuments(
+      token,
+      folder,
+      callback
+    );
   });
 
   //fetch pending documents
@@ -432,7 +474,13 @@ io.on("connection", (socket) => {
 
   //send email notification on add document
   socket.on("sendEmail", (user_id, subject, destination, callback) => {
-    email.sendEmail(user_id, subject, destination, callback);
+    email.sendEmail(
+      user_id,
+      subject,
+      destination,
+      callback,
+      transporter
+    );
   });
 
   socket.on("disconnect", () => {

@@ -1,5 +1,18 @@
-const connection = require("../dbConnection/connection");
+const mysql = require("mysql");
+const db = require("./dbVariable");
+const connection = mysql.createConnection({
+  user: db.user,
+  password: db.password,
+  database: db.database,
+  host: db.host,
+  port: db.port,
+});
 
+connection.connect(function (err) {
+  if (err) {
+    console.log(err);
+  }
+});
 const fetchSectionDocuments = (userId, folder, callback) => {
   const fetchUser = "SELECT * FROM users WHERE user_id = ?";
   connection.query(fetchUser, [parseInt(userId)], function (

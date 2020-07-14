@@ -5,7 +5,21 @@ const app = express();
 const server = http.createServer(app);
 const socketio = require("socket.io");
 const io = socketio(server);
+const mysql = require("mysql");
+const db = require("./dbVariable");
+const connection = mysql.createConnection({
+    user: db.user,
+    password: db.password,
+    database: db.database,
+    host: db.host,
+    port: db.port,
+});
 
+connection.connect(function (err) {
+    if (err) {
+        console.log(err);
+    }
+});
 const fetchDocumentType = (callback) => {
   const sql = "SELECT * FROM document_type";
   connection.query(sql, function (err, rows, fields) {

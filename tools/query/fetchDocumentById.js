@@ -1,5 +1,18 @@
-const connection = require("../dbConnection/connection");
+const mysql = require("mysql");
+const db = require("./dbVariable");
+const connection = mysql.createConnection({
+  user: db.user,
+  password: db.password,
+  database: db.database,
+  host: db.host,
+  port: db.port,
+});
 
+connection.connect(function (err) {
+  if (err) {
+    console.log(err);
+  }
+});
 const fetchDocument = (docId, callback) => {
   let sql = "";
   sql += "SELECT a.subject as subject, ";
@@ -140,7 +153,7 @@ const fetchDocumentBarcode = (docId, callback) => {
 const fetchDocumentRouteType = (docId, callback) => {
   let sql = "";
   sql +=
-      "SELECT a.creator AS creator, a.subject AS subject, a.doc_type AS doc_type, a.note AS note ";
+    "SELECT a.creator AS creator, a.subject AS subject, a.doc_type AS doc_type, a.note AS note ";
   sql += "FROM documents a WHERE a.ref = ? ";
   connection.query(sql, [docId], function (err, rows, fields) {
     if (err) {

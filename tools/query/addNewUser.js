@@ -1,7 +1,21 @@
-const connection = require("../dbConnection/connection");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const fetchSystemUsers = require("./fetchAllUsers");
+const mysql = require("mysql");
+const db = require("./dbVariable");
+const connection = mysql.createConnection({
+  user: db.user,
+  password: db.password,
+  database: db.database,
+  host: db.host,
+  port: db.port,
+});
+
+connection.connect(function (err) {
+  if (err) {
+    console.log(err);
+  }
+});
 //Add User
 const addUser = (
   role,

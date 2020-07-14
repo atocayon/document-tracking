@@ -1,6 +1,20 @@
 const connection = require("../dbConnection/connection");
 const sectionUser = require("./fetchSectionUsers");
+const mysql = require("mysql");
+const db = require("./dbVariable");
+const connection = mysql.createConnection({
+  user: db.user,
+  password: db.password,
+  database: db.database,
+  host: db.host,
+  port: db.port,
+});
 
+connection.connect(function (err) {
+  if (err) {
+    console.log(err);
+  }
+});
 const updateUser = (data, callback) => {
   const sql = "SELECT * FROM users WHERE user_id = ?";
   connection.query(sql, [parseInt(data.user_id)], function (err, rows, fields) {

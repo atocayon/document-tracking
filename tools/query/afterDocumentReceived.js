@@ -1,5 +1,18 @@
-const connection = require("../dbConnection/connection");
+const mysql = require("mysql");
+const db = require("./dbVariable");
+const connection = mysql.createConnection({
+  user: db.user,
+  password: db.password,
+  database: db.database,
+  host: db.host,
+  port: db.port,
+});
 
+connection.connect(function (err) {
+  if (err) {
+    console.log(err);
+  }
+});
 const afterDocumentReceive = (
   documentId,
   user_id,

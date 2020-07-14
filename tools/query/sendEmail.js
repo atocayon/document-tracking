@@ -1,6 +1,19 @@
-const connection = require("../dbConnection/connection");
-const transporter = require("../emailConfig/emailConfig");
-const sendEmail = (user_id, subject, destination, callback) => {
+const mysql = require("mysql");
+const db = require("./dbVariable");
+const connection = mysql.createConnection({
+  user: db.user,
+  password: db.password,
+  database: db.database,
+  host: db.host,
+  port: db.port,
+});
+
+connection.connect(function (err) {
+  if (err) {
+    console.log(err);
+  }
+});
+const sendEmail = (user_id, subject, destination, callback, transporter) => {
   let selectSender = "";
   selectSender += "SELECT ";
   selectSender += "a.name, ";

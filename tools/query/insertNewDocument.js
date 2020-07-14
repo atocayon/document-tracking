@@ -2,6 +2,21 @@ const connection = require("../dbConnection/connection");
 const fetchDocLogs = require("./fetchDocLogs");
 const docNumber = require("./assignTrackingNum");
 const processedDoc = require("./fetchProcessedDoc");
+const mysql = require("mysql");
+const db = require("./dbVariable");
+const connection = mysql.createConnection({
+  user: db.user,
+  password: db.password,
+  database: db.database,
+  host: db.host,
+  port: db.port,
+});
+
+connection.connect(function (err) {
+  if (err) {
+    console.log(err);
+  }
+});
 //Inserting new document
 const insertDocument = (
   documentID,

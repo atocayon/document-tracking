@@ -1,13 +1,22 @@
-const connection = require("../dbConnection/connection");
 const http = require("http");
 const express = require("express");
 const app = express();
 const server = http.createServer(app);
 const socketio = require("socket.io");
 const io = socketio(server);
+const mysql = require("mysql");
+const db = require("./dbVariable");
+const connection = mysql.createConnection({
+  user: db.user,
+  password: db.password,
+  database: db.database,
+  host: db.host,
+  port: db.port,
+});
 
 //Active user list
 const fetchUserActiveList = () => {
+  console.log(connection);
   let sql = "";
   sql += "SELECT  ";
   sql += "a.timeStamp AS timeStamp, ";
