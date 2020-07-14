@@ -59,9 +59,9 @@ app.use(bodyParser.json());
 app.use("/dts", router);
 
 const connection = mysql.createConnection({
-  user: "root",
-  password: "",
-  database: "documentTracking",
+  user: "jarydd",
+  password: "Zilong123@098",
+  database: "documenttracking",
   host: "localhost",
   port: "3306",
 });
