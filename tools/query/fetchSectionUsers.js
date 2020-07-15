@@ -1,9 +1,3 @@
-const http = require("http");
-const express = require("express");
-const app = express();
-const server = http.createServer(app);
-const socketio = require("socket.io");
-const io = socketio(server);
 const mysql = require("mysql");
 const db = require("./dbVariable");
 const connection = mysql.createConnection({
@@ -49,7 +43,7 @@ const fetchSectionUsers = (secid, callback) => {
     }
 
     // console.log(rows);
-    io.emit("usersOnSection", rows);
+    return callback(rows);
     // return callback(rows);
   });
 };
