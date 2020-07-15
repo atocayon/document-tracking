@@ -285,10 +285,11 @@ function UserManagement(props) {
         <Paper
           elevation={3}
           style={{
-            marginBottom: 0,
+            paddingBottom: 100,
             bottom: 0,
             height: "100vh",
             marginTop: 70,
+            overflow: "auto"
           }}
         >
           <div className={"jumbotron"} style={{ padding: 50 }}>
@@ -311,7 +312,7 @@ function UserManagement(props) {
 
           <div className={"row"}>
             <div className={"col-md-1"}></div>
-            <div className={"col-md-10"}>
+            <div className={"col-md-10"} >
               <div style={{ marginBottom: 20 }}>
                 <div className={"row"}>
                   <div className={"col-md-6"}>

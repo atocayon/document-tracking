@@ -5,17 +5,15 @@ export function fetchSectionUsers(token, socket) {
       if (res) {
         if (res !== "server error") {
           await dispatch({ type: actionTypes.FETCH_CURRENT_USER, data: res });
-          await socket.emit("sectionUser", res.secid.toString(), (res) => {
+          await socket.emit("sectionUser", res.secid, (res) => {
             if (res) {
-              alert(res);
+              if (res !== "server error") {
+                dispatch({
+                  type: actionTypes.FETCH_SECTION_USERS,
+                  data: res,
+                });
+              }
             }
-          });
-
-          await socket.on("usersOnSection", async (data) => {
-            await dispatch({
-              type: actionTypes.FETCH_SECTION_USERS,
-              data,
-            });
           });
         }
       }
