@@ -8,11 +8,14 @@ export function fetchDocumentTypes(socket) {
       }
     });
 
-    await socket.on("documentTypeList", async (data) => {
-      await dispatch({
-        type: actionTypes.FETCH_DOCUMENT_TYPES,
-        data,
-      });
+    await socket.on("documentTypeList", (data) => {
+      if (data.length > 0){
+        dispatch({
+          type: actionTypes.FETCH_DOCUMENT_TYPES,
+          data,
+        });
+      }
+
     });
   };
 }

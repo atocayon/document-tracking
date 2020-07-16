@@ -1,9 +1,3 @@
-const http = require("http");
-const express = require("express");
-const app = express();
-const server = http.createServer(app);
-const socketio = require("socket.io");
-const io = socketio(server);
 const mysql = require("mysql");
 const db = require("./dbVariable");
 const connection = mysql.createConnection({
@@ -20,7 +14,7 @@ connection.connect(function (err) {
   }
 });
 //Assign Document Tracking ID
-const assignTrackingNum = () => {
+const assignTrackingNum = (io) => {
   const sql = "SELECT * FROM documents";
   connection.query(sql, function (err, rows, fields) {
     if (err) {

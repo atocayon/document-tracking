@@ -1,9 +1,3 @@
-const http = require("http");
-const express = require("express");
-const app = express();
-const server = http.createServer(app);
-const socketio = require("socket.io");
-const io = socketio(server);
 const mysql = require("mysql");
 const db = require("./dbVariable");
 const connection = mysql.createConnection({
@@ -20,7 +14,7 @@ connection.connect(function (err) {
   }
 });
 //Fetch All Users
-const Users = () => {
+const Users = (io) => {
   let sql = "";
   sql += "SELECT a.user_id AS user_id, ";
   sql += "a.employeeId AS employeeId, ";
@@ -52,6 +46,7 @@ const Users = () => {
       console.log(err);
       throw err;
     }
+    console.log(rows);
     io.emit("users", rows);
   });
 };

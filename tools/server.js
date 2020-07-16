@@ -9,7 +9,6 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-
 //Queries
 const user_login = require("./query/login");
 const user_logout = require("./query/logout");
@@ -74,17 +73,17 @@ const transporter = nodemailer.createTransport({
 io.on("connection", (socket) => {
   //Login
   socket.on("login", (emailOrPassword, password, callback) => {
-    user_login.login(emailOrPassword, password, callback);
+    user_login.login(emailOrPassword, password, callback, io);
   });
 
   //Logout
   socket.on("logout", (id, callback) => {
-    user_logout.logout(id, callback);
+    user_logout.logout(id, callback, io);
   });
 
   //active users list
   socket.on("active_users", () => {
-    active_user_list.fetchUserActiveList();
+    active_user_list.fetchUserActiveList(io);
   });
 
   //Add User
@@ -112,24 +111,25 @@ io.on("connection", (socket) => {
         email,
         section,
         position,
-        callback
+        callback,
+        io
       );
     }
   );
 
   //Fetch All Users
   socket.on("getAllUsers", () => {
-    fetchSystemUsers.Users();
+    fetchSystemUsers.Users(io);
   });
 
   //Fetch document Logs
   socket.on("getDocumentLogs", () => {
-    fetchDocLogs.getDocLogs();
+    fetchDocLogs.getDocLogs(io);
   });
 
   //Assign Document tracking number
   socket.on("assignTrackingNum", () => {
-    docNumber.assignTrackingNumber();
+    docNumber.assignTrackingNumber(io);
   });
 
   //Insert Document
@@ -198,22 +198,12 @@ io.on("connection", (socket) => {
 
   //Add New Document Category
   socket.on("addNewDocumentCategory", (token, category, callback) => {
-    docCategory.addNewDocCategory(
-      token,
-      category,
-      callback,
-      socket
-    );
+    docCategory.addNewDocCategory(token, category, callback, socket);
   });
 
   //Update Doc Category
   socket.on("updateDocumentCategory", (data, token, callback) => {
-    docCategory.updateDocumentCategory(
-      data,
-      token,
-      callback,
-      socket
-    );
+    docCategory.updateDocumentCategory(data, token, callback, socket);
   });
 
   //Delete Doc Category
@@ -278,7 +268,7 @@ io.on("connection", (socket) => {
 
   //Fetch Sections List
   socket.on("sections", (callback) => {
-    sections.fetchSectionList(callback);
+    sections.fetchSectionList(callback, io);
   });
 
   //Fetch Section By ID
@@ -303,7 +293,7 @@ io.on("connection", (socket) => {
 
   //Fetch Division
   socket.on("fetchDivisions", (callback) => {
-    divisions.fetchDivisions(callback);
+    divisions.fetchDivisions(callback, io);
   });
 
   //Fetch division by id
@@ -328,7 +318,7 @@ io.on("connection", (socket) => {
 
   //fetch document Type
   socket.on("documentType", (callback) => {
-    docType.fetchDocumentType(callback);
+    docType.fetchDocumentType(callback, io);
   });
 
   //fetch document type by id
@@ -368,11 +358,7 @@ io.on("connection", (socket) => {
 
   //fetch document DateTimeReleased
   socket.on("fetchDateTimeReleased", (receiver_id, docId, callback) => {
-    fetchDocument.fetchDateTimeReleased(
-      receiver_id,
-      docId,
-      callback
-    );
+    fetchDocument.fetchDateTimeReleased(receiver_id, docId, callback);
   });
 
   //fetch document ActionTaken
@@ -396,11 +382,7 @@ io.on("connection", (socket) => {
 
   //fetch section documents
   socket.on("fetchSectionDocuments", (token, folder, callback) => {
-    fetchSectionDocuments.fetchSectionDocuments(
-      token,
-      folder,
-      callback
-    );
+    fetchSectionDocuments.fetchSectionDocuments(token, folder, callback);
   });
 
   //fetch pending documents
@@ -439,13 +421,7 @@ io.on("connection", (socket) => {
 
   //send email notification on add document
   socket.on("sendEmail", (user_id, subject, destination, callback) => {
-    email.sendEmail(
-      user_id,
-      subject,
-      destination,
-      callback,
-      transporter
-    );
+    email.sendEmail(user_id, subject, destination, callback, transporter);
   });
 
   socket.on("disconnect", () => {

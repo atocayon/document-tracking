@@ -1,9 +1,3 @@
-const http = require("http");
-const express = require("express");
-const app = express();
-const server = http.createServer(app);
-const socketio = require("socket.io");
-const io = socketio(server);
 const mysql = require("mysql");
 const db = require("./dbVariable");
 const connection = mysql.createConnection({
@@ -19,7 +13,7 @@ connection.connect(function (err) {
     console.log(err);
   }
 });
-const fetchSectionList = (callback) => {
+const fetchSectionList = (callback, io) => {
   let sql = "";
   sql += "SELECT a.divid AS divid, ";
   sql += "a.secid AS secid, ";
@@ -38,7 +32,7 @@ const fetchSectionList = (callback) => {
       return callback(err);
     }
 
-    console.log(rows);
+    // console.log(rows);
     io.emit("sectionList", rows);
   });
 };

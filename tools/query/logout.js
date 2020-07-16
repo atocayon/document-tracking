@@ -14,7 +14,7 @@ connection.connect(function (err) {
     console.log(err);
   }
 });
-const logout = (id, callback) => {
+const logout = (id, callback, io) => {
   const sql = "UPDATE users_session SET isDeleted = ? WHERE userId = ?";
   connection.query(sql, ["1", id], async function (err, result) {
     if (err) {
@@ -23,7 +23,7 @@ const logout = (id, callback) => {
     }
 
     if (result) {
-      await activeList.fetchUserActiveList();
+      await activeList.fetchUserActiveList(io);
       return callback("logout");
     }
   });

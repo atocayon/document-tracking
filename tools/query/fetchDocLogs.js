@@ -1,9 +1,3 @@
-const http = require("http");
-const express = require("express");
-const app = express();
-const server = http.createServer(app);
-const socketio = require("socket.io");
-const io = socketio(server);
 const mysql = require("mysql");
 const db = require("./dbVariable");
 const connection = mysql.createConnection({
@@ -20,7 +14,7 @@ connection.connect(function (err) {
   }
 });
 //Fetch Document Logs Query
-const getDocLogs = () => {
+const getDocLogs = (io) => {
   let sql = "";
   sql +=
     "SELECT e.document_id AS trans_id, e.remarks AS remarks, e.destinationType AS destinationType, ";
