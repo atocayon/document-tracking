@@ -1,9 +1,3 @@
-const http = require("http");
-const express = require("express");
-const app = express();
-const server = http.createServer(app);
-const socketio = require("socket.io");
-const io = socketio(server);
 const mysql = require("mysql");
 const db = require("./dbVariable");
 const connection = mysql.createConnection({
@@ -14,9 +8,14 @@ const connection = mysql.createConnection({
   port: db.port,
 });
 
+connection.connect(function (err) {
+  if (err) {
+    console.log(err);
+  }
+});
+
 //Active user list
-const fetchUserActiveList = () => {
-  console.log(connection);
+const fetchUserActiveList = (io) => {
   let sql = "";
   sql += "SELECT  ";
   sql += "a.timeStamp AS timeStamp, ";
@@ -34,6 +33,7 @@ const fetchUserActiveList = () => {
       console.log(err);
     }
 
+    console.log(rows);
     io.emit("activeUsers", rows);
   });
 };

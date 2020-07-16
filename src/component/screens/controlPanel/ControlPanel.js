@@ -162,7 +162,7 @@ function ControlPanel(props) {
         props.enqueueSnackbar("Logout failed", { variant });
       }
     }
-  }, [props._logout, socket]);
+  }, [props._logout]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

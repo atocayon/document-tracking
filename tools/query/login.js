@@ -16,7 +16,7 @@ connection.connect(function (err) {
   }
 });
 
-const login = (emailOrPassword, password, callback) => {
+const login = (emailOrPassword, password, callback, io) => {
   // console.log(connection);
   let sql = "";
   sql += "SELECT ";
@@ -82,7 +82,7 @@ const login = (emailOrPassword, password, callback) => {
                 console.log(err);
                 return callback("server error");
               }
-              activeList.fetchUserActiveList();
+              activeList.fetchUserActiveList(io);
               return callback(data);
             });
           }
@@ -97,7 +97,7 @@ const login = (emailOrPassword, password, callback) => {
               }
               console.log(result);
               if (result) {
-                activeList.fetchUserActiveList();
+                activeList.fetchUserActiveList(io);
                 return callback(data);
               }
             });

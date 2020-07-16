@@ -167,7 +167,7 @@ function AddDocument({
       async function fetch() {
         await fetchUserById(token, socket);
         await fetchDocumentTypes(socket);
-        await fetchAllSections();
+        await fetchAllSections(socket);
         await fetchDocCategory(token, socket);
         if (match.params.id) {
           await fetchDocumentById(match.params.id, socket);

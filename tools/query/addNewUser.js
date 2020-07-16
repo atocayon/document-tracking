@@ -27,7 +27,7 @@ const addUser = (
   email,
   section,
   position,
-  callback
+  callback, io
 ) => {
   email = email.toLowerCase();
   email = email.trim();
@@ -88,7 +88,7 @@ const addUser = (
               }
               console.log(result);
               // res.status(200).send({ success: "success" });
-              fetchSystemUsers.Users();
+              fetchSystemUsers.Users(io);
               return callback("success");
             });
           });
