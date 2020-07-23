@@ -19,6 +19,7 @@ import endPoint from "../../endPoint";
 import error from "../../sounds/glitch-in-the-matrix.mp3";
 import loginSuccess from "../../sounds/quite-impressed.mp3";
 import onClick from "../../sounds/pull-out.mp3";
+import "../../../styles/login.css";
 const errorSound = new UIfx(error);
 const _visible = new UIfx(onClick);
 const _loginSuccess = new UIfx(loginSuccess);
@@ -113,21 +114,21 @@ function Login(props) {
         <div className={"container"}>
           <div className={"row"}>
             <div className={"col-md-2"}></div>
-            <div className={"col-md-8"}>
-              <Paper style={{ marginTop: 100, borderTop: "2px solid grey" }}>
-                <div className={"row"}>
+            <div className={"col-md-8"} >
+              <Paper className={"paper-container"}>
+                <div className={"row flex"}>
                   <div className={"col-md-1"}>
-                    <div style={{ marginLeft: 10, marginTop: 10 }}>
-                      <img src={logo} alt={"nmp_logo"} style={{ width: 40 }} />
+                    <div className={"logo-container"}>
+                      <img src={logo} alt={"nmp_logo"} className={"logo"} />
                     </div>
                   </div>
                   <div className={"col-md-11"}>
-                    <div style={{ marginTop: 12 }}>
-                      <h6>Login with your DTS Account</h6>
+                    <div className={"login-title-container"}>
+                      <h6 className={"title"}>Login with your DTS Account</h6>
                     </div>
                   </div>
                 </div>
-                <hr />
+                <hr className={"hr"} />
                 <br />
                 <div className={"row"}>
                   <div className={"col-md-12"}>
@@ -139,8 +140,8 @@ function Login(props) {
                       }}
                     >
                       <form onSubmit={onSubmit}>
-                        <h5>
-                          <span style={{ fontWeight: "bold" }}>Login</span>
+                        <h5 className={"login-header"}>
+                          <span className={"login-text"}>Login</span>
                           <br />
                           <small>
                             to continue using the{" "}
@@ -159,8 +160,9 @@ function Login(props) {
                         <br />
                         <br />
                         <FormControl fullWidth>
-                          <InputLabel>Password</InputLabel>
+                          <InputLabel style={error.password && {color: "red"}}>Password</InputLabel>
                           <Input
+                              className={"password-input"}
                             id={"password"}
                             name={"password"}
                             onChange={onChange}
@@ -202,8 +204,8 @@ function Login(props) {
 
                         <br />
                         <br />
-                        <div style={{ textAlign: "right", marginTop: 50 }}>
-                          <button className={"btn btn-primary"} type={"submit"}>
+                        <div className={"login-btn-container"}>
+                          <button className={"btn btn-primary login-btn"} type={"submit"}>
                             Login
                           </button>
                         </div>

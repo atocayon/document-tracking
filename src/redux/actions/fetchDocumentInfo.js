@@ -107,5 +107,16 @@ export function fetchDocumentInfo(doc_id, socket) {
         }
       }
     );
+
+    await socket.emit("fetchDocCurrentStatus", doc_id, (res) => {
+      if (res){
+        if (res !== "server error"){
+          dispatch({
+            type: actionTypes.FETCH_DOC_CURRENT_STATUS,
+            data: res,
+          });
+        }
+      }
+    });
   };
 }

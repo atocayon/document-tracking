@@ -91,8 +91,8 @@ async function get_branches(tracking, socket) {
       if (res !== "server error") {
         if (res.length > 0) {
           for (let i = 0; i < res.length; i++) {
-            let fetch = await get_branches(res[i].document_id);
-            let sub = await getSubProcess(res[i].document_id);
+            let fetch = await get_branches(res[i].document_id, socket);
+            let sub = await getSubProcess(res[i].document_id, socket);
             arr.push({
               root: res[i],
               subProcess: sub,

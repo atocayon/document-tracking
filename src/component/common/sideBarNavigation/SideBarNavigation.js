@@ -81,7 +81,7 @@ export default function SideBarNavigation(props) {
         setPending(data);
       });
     }
-  }, [pending, socket]);
+  }, [pending]);
 
   return (
     <div className={"sidebar"}>

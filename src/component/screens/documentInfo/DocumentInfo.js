@@ -13,24 +13,38 @@ import PrintIcon from "@material-ui/icons/Print";
 import { connect } from "react-redux";
 import { fetchDocumentInfo } from "../../../redux/actions/fetchDocumentInfo";
 import { fetchUserById } from "../../../redux/actions/fetchUserById";
+import { fetchAllSections } from "../../../redux/actions/fetchAllSections";
+import {fetchSectionsList} from "../../../redux/actions/fetchSectionsList";
 import Content from "./Content";
 import UserList from "../../common/userList/UserList";
+import SendIcon from "@material-ui/icons/Send";
 import "../../../styles/barcode.css";
 import io from "socket.io-client";
 import endPoint from "../../endPoint";
+import Forward from "./Forward";
+import {
+  addForwardDestination,
+  changeDocumentDestination,
+  onChangeForwardDocument,
+  removeForwardDestination,
+} from "../../../redux/actions/onChangForwardDocument";
+
 let socket;
 function DocumentInfo(props) {
   const [open, setOpen] = useState(true);
+  const [disseminate, setDisseminate] = useState(false);
   const [endSession, setEndSession] = useState(false);
+  const [selectedValue, setSelectedValue] = useState("");
   const componentRef = useRef();
   const barcodeRef = useRef();
   useEffect(() => {
-      socket = io(endPoint.ADDRESS);
+    socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       async function fetch() {
         await props.fetchDocumentInfo(props.match.params.doc_id, socket);
         await props.fetchUserById(obj.token, socket);
+        await props.fetchSectionsList(socket);
       }
 
       fetch().catch((err) => {
@@ -44,13 +58,20 @@ function DocumentInfo(props) {
     setOpen(!open);
   };
 
-  const handleDownload = () => {
-    if (canvas("#barcode", props.match.params.doc_id)) {
-      const variant = "info";
-      props.enqueueSnackbar("Barcode successfully downloaded...", {
-        variant,
-      });
-    }
+  const handleClickDisseminate = () => {
+    setDisseminate(!disseminate);
+    props.changeDocumentDestination();
+      setSelectedValue("");
+  };
+
+  const handleChange = async (event) => {
+    setSelectedValue(event.target.value);
+    await props.changeDocumentDestination();
+  };
+
+  const _addForwardDestination = async (e) => {
+    e.preventDefault();
+    await props.addForwardDestination(props.forwardDocument.destination);
   };
   return (
     <Grid container>
@@ -74,62 +95,94 @@ function DocumentInfo(props) {
             paddingBottom: 150,
           }}
         >
+          <Forward
+            open={disseminate}
+            handleClickDisseminate={handleClickDisseminate}
+            sections={props.sections}
+            handleChange={handleChange}
+            addForwardDestination={_addForwardDestination}
+            removeForwardDestination={props.removeForwardDestination}
+            value={props.forwardDocument}
+            onChangeDestination={props.onChangeForwardDocument}
+            selectedValue={selectedValue}
+          />
           {endSession && <Redirect to={"/"} />}
-          <div >
-              <Content
-                  ref={componentRef}
-                  documentInfo={props.documentInfo}
-                  doc_id={props.match.params.doc_id}
-              />
+          <div>
+            <Content
+              ref={componentRef}
+              documentInfo={props.documentInfo}
+              doc_id={props.match.params.doc_id}
+            />
           </div>
 
           <div className={"row"}>
             <div className={"col-md-2"}></div>
             <div className={"col-md-8"}>
               <div className={"row"}>
-                <div className={"col-md-6"}>
-                  <div className={"barcode"} ref={barcodeRef} style={{display: "none"}}>
-                      {props.documentInfo.barcode.length > 0 && props.documentInfo.barcode.map(barcode => (
-                          <div key={barcode.documentID}>
-                              <ReactToPrint
-                                  trigger={() => (
-                                      <a
-                                          href={"#"}
-                                          className={"btn"}
-                                          title={"Print this barcode"}
-                                      >
-                                          {barcode.destination && (
-                                              <>
-                                                  <span className={"barcodeLabel"}>{barcode.destination}</span><br/>
-                                              </>
+                <div>
+                  <div
+                    className={"barcode"}
+                    ref={barcodeRef}
+                    style={{ display: "none" }}
+                  >
+                    {props.documentInfo.barcode.length > 0 &&
+                      props.documentInfo.barcode.map((barcode) => (
+                        <div key={barcode.documentID}>
+                          <ReactToPrint
+                            trigger={() => (
+                              <a
+                                href={"#"}
+                                className={"btn"}
+                                title={"Print this barcode"}
+                              >
+                                {barcode.destination && (
+                                  <>
+                                    <span className={"barcodeLabel"}>
+                                      {barcode.destination}
+                                    </span>
+                                    <br />
+                                  </>
+                                )}
 
-                                          )}
-
-                                          <BarcodeComponent
-                                              trackingNumber={barcode.documentID}
-                                              margin={barcode.destination ? 0 : 5}
-                                              width={barcode.destination ? 1 : 1.2}
-                                          />
-                                      </a>
-                                  )}
-                                  content={() => barcodeRef.current}
-                              />
-                          </div>
+                                <BarcodeComponent
+                                  trackingNumber={barcode.documentID}
+                                  margin={barcode.destination ? 0 : 5}
+                                  width={barcode.destination ? 1 : 1.2}
+                                />
+                              </a>
+                            )}
+                            content={() => barcodeRef.current}
+                          />
+                        </div>
                       ))}
                   </div>
                 </div>
+
+                <div className={"col-md-6"}>
+                  {props.documentInfo.currentStatus === "4" && (
+                    <button
+                      onClick={handleClickDisseminate}
+                      className={"btn btn-success"}
+                      title={"Send to many"}
+                    >
+                      <SendIcon />
+                      &nbsp;Disseminate
+                    </button>
+                  )}
+                </div>
                 <div className={"col-md-6"}>
                   <div style={{ float: "right" }}>
-                      <ReactToPrint
-                          trigger={() => (
-                              <button className={"btn btn-outline-info"}><PrintIcon />&nbsp;Barcode</button>
-                          )}
-                          content={() => barcodeRef.current}
-                      />
-
+                    <ReactToPrint
+                      trigger={() => (
+                        <button className={"btn btn-outline-info"}>
+                          <PrintIcon />
+                          &nbsp;Barcode
+                        </button>
+                      )}
+                      content={() => barcodeRef.current}
+                    />
                     &nbsp;&nbsp;&nbsp;
                     <ReactToPrint
-                  
                       content={() => componentRef.current}
                       trigger={() => (
                         <a
@@ -158,14 +211,21 @@ function DocumentInfo(props) {
 
 function mapStateToProps(state) {
   return {
+    sections: state.fetchSectionsList,
     documentInfo: state.fetchDocumentInfo,
     user: state.fetchUserById,
+    forwardDocument: state.forwardDocument,
   };
 }
 
 const mapDispatchToProps = {
   fetchDocumentInfo,
   fetchUserById,
+    fetchSectionsList,
+  onChangeForwardDocument,
+  changeDocumentDestination,
+  addForwardDestination,
+  removeForwardDestination,
 };
 
 export default connect(

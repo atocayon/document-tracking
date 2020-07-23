@@ -27,15 +27,15 @@ export default function Forward(props) {
     <div>
       <Dialog
         open={props.open}
-        onClose={props.handleClose}
+        onClose={props.handleClickDisseminate}
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title" style={{ color: "#2196F3" }}>
-          <SendIcon /> Forward Document
+          <SendIcon /> Disseminate Document
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To forward document, please enter the desired office here.
+            To disseminate document, please enter the desired offices here.
           </DialogContentText>
           <Radio
             checked={props.selectedValue === "Internal"}
@@ -67,17 +67,13 @@ export default function Forward(props) {
                 onChange={props.onChangeDestination}
               />
 
-              {props.doc.doc_route_type.length > 0 && (
-                <>
-                  <br />
-                  <button
-                    className={"btn btn-sm btn-primary"}
-                    onClick={props.addForwardDestination}
-                  >
-                    Add
-                  </button>
-                </>
-              )}
+              <br />
+              <button
+                className={"btn btn-sm btn-primary"}
+                onClick={props.addForwardDestination}
+              >
+                Add
+              </button>
             </>
           )}
           {props.selectedValue === "External" && (
@@ -92,18 +88,14 @@ export default function Forward(props) {
                 value={props.value.destination}
               />
 
-              {props.doc.destination.length > 1 && (
-                <>
-                  <br />
-                  <br />
-                  <button
-                    className={"btn btn-sm btn-primary"}
-                    onClick={props.addForwardDestination}
-                  >
-                    Add
-                  </button>
-                </>
-              )}
+              <br />
+              <br />
+              <button
+                className={"btn btn-sm btn-primary"}
+                onClick={props.addForwardDestination}
+              >
+                Add
+              </button>
             </>
           )}
           {props.value.des.length > 0 &&
@@ -143,7 +135,7 @@ export default function Forward(props) {
           <br />
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.handleClose} color="primary">
+          <Button onClick={props.handleClickDisseminate} color="primary">
             Cancel
           </Button>
           <Button onClick={props.handleForward} color="primary">

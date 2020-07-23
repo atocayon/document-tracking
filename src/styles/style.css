@@ -125,3 +125,10 @@
     background: #fff !important;
   }
 }
+
+@media screen and (max-width: 1024px) {
+  .textInput {
+    font-size: 3vw !important;
+    height: 7vh;
+  }
+}

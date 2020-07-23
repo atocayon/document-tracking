@@ -156,7 +156,8 @@ io.on("connection", (socket) => {
         documentLogs,
         category,
         callback,
-        socket
+        socket,
+          io
       );
     }
   );
@@ -378,6 +379,10 @@ io.on("connection", (socket) => {
 
   socket.on("fetchDocumentRouteType", (docId, callback) => {
     fetchDocument.fetchDocumentRouteType(docId, callback);
+  });
+
+  socket.on("fetchDocCurrentStatus", (docId, callback) => {
+    fetchDocument.fetchDocCurrentStatus(docId,callback);
   });
 
   //fetch section documents

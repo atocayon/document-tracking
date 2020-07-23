@@ -165,6 +165,20 @@ const fetchDocumentRouteType = (docId, callback) => {
   });
 };
 
+const fetchDocCurrentStatus = (docId, callback) => {
+  let sql = "";
+  sql += "SELECT a.status FROM documentLogs a WHERE document_id = ? ORDER BY trans_id DESC LIMIT 1";
+  connection.query(sql, [docId], function (err, rows, fields) {
+    if (err){
+      console.log(err);
+      return callback("server error");
+    }
+
+    return callback(rows[0].status);
+  });
+};
+
+exports.fetchDocCurrentStatus = fetchDocCurrentStatus;
 exports.fetchDocumentRouteType = fetchDocumentRouteType;
 exports.fetchDocumentBarcode = fetchDocumentBarcode;
 exports.fetchDocumentBarcodes = fetchDocumentBarcodes;

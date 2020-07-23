@@ -27,7 +27,8 @@ const insertDocument = (
   documentLogs,
   category,
   callback,
-  socket
+  socket,
+  io
 ) => {
   let today = new Date();
   let date =
@@ -98,7 +99,7 @@ const insertDocument = (
               }
 
               fetchDocLogs.getDocLogs();
-              docNumber.assignTrackingNumber();
+              docNumber.assignTrackingNumber(io);
               processedDoc.fetchProcessedDoc(creator, callback, socket);
               return callback("success");
             });
@@ -144,7 +145,7 @@ const insertDocument = (
               }
 
               fetchDocLogs.getDocLogs();
-              docNumber.assignTrackingNumber();
+              docNumber.assignTrackingNumber(io);
               processedDoc.fetchProcessedDoc(creator, callback, socket);
               return callback("success");
             });

@@ -44,7 +44,7 @@ const fetchPendingDocument = (userId, callback) => {
       console.log(err);
       return callback("server error");
     }
-
+    console.log(rows);
     return callback(rows);
   });
 };

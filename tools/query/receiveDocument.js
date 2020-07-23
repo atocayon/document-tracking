@@ -1,6 +1,7 @@
 const track = require("./trackDocument");
 const pending = require("./countPendingDoc");
 const processedDoc = require("./fetchProcessedDoc");
+const docInfo = require("./fetchDocumentById");
 const mysql = require("mysql");
 const db = require("./dbVariable");
 const connection = mysql.createConnection({
@@ -79,6 +80,7 @@ const receiveDocument = (
             pending.countPending(user_id, socket);
             track.trackDocument(documentTracking, socket);
             processedDoc.fetchProcessedDoc(user_id, callback, socket);
+            docInfo.fetchDocumentDestination(documentTracking, callback);
             return callback("success");
           });
           break;
@@ -182,6 +184,7 @@ const receiveDocument = (
 
                                   pending.countPending(user_id, socket);
                                   track.trackDocument(documentTracking, socket);
+                                  docInfo.fetchDocumentDestination(documentTracking, callback);
                                   processedDoc.fetchProcessedDoc(
                                     user_id,
                                     callback,

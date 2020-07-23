@@ -1,0 +1,98 @@
+
+.paper-container{
+    margin-top: 15vh;
+    border-top: 2px solid grey;
+}
+
+.logo-container{
+    margin-left: 2vw;
+    margin-top: 1vh;
+}
+
+.logo{
+    width: 40px;
+}
+
+.login-title-container{
+    margin-left: 2vw;
+    margin-top: 2vh;
+}
+
+.login-text{
+    font-weight: bold;
+}
+
+.login-btn-container{
+    text-align: right;
+    margin-top: 2vh;
+}
+
+
+@media screen and (max-width: 1024px) {
+    .hr{
+        display: none !important;
+    }
+    .paper-container{
+        margin-top: 5vh;
+        border: 1px solid white;
+        width: 90vw;
+        margin-left: -15vw;
+        box-shadow: 1px 1px 1px white !important;
+    }
+
+    .flex{
+        flex-direction: column !important;
+    }
+
+    .title{
+        font-size: 3vw !important;
+        margin-left: 20vw !important;
+    }
+
+    .logo{
+        width: 20vw;
+        margin-left: 32vw !important;
+    }
+
+    .password-input{
+        font-size: 3vh !important;
+        height: 7vh;
+    }
+
+    .login-header{
+        display: none !important;
+    }
+
+    .login-btn-container{
+        text-align: center;
+        margin-top: 2vh;
+    }
+
+    .login-btn{
+        width: 70vw;
+        height: 7vh;
+        margin-top: 2vh;
+        font-size: 3vw !important;
+        font-weight: bold !important;
+    }
+
+}
+
+@media screen and (max-width: 600px){
+    .paper-container{
+        margin-top: 7vh;
+        margin-left: -3vw;
+    }
+}
+
+@media screen and (max-width: 412px){
+    .paper-container{
+        margin-top: 7vh;
+        margin-left: 1vw;
+    }
+    .login-btn{
+        width: 60vw;
+        height: 7vh;
+        margin-top: 2vh;
+    }
+}

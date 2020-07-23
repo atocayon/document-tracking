@@ -80,6 +80,8 @@ function PendingDocumentInfo(props) {
 
   const handleSetForwardDialog = () => {
     setForwardDialog(!forwardDialog);
+    props.changeDocumentDestination();
+    setSelectedValue("");
   };
 
   const handleSetCompletedDialog = () => {
@@ -197,7 +199,7 @@ function PendingDocumentInfo(props) {
                       className={"btn btn-outline-info btn-sm"}
                       onClick={handleSetCompletedDialog}
                     >
-                      <DoneIcon /> Take Action
+                      <DoneIcon /> Mark as completed
                     </button>
                     &nbsp;&nbsp;&nbsp;
                     <button

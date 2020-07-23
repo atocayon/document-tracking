@@ -35,6 +35,8 @@ import UserList from "../../common/userList/UserList";
 import ReactJoyride from "react-joyride";
 import { trackOrSearchOnly } from "../../../redux/actions/trackOrSearchOnly";
 import SearchIcon from "@material-ui/icons/Search";
+import "../../../styles/dashboard.css";
+import scanner from "../../../img/scanner.png";
 const _onClick = new UIFx(onClick);
 const _onScan = new UIFx(onScan);
 let socket;
@@ -228,11 +230,9 @@ function Dashboard(props) {
       <Grid item xs={8}>
         <Paper
           elevation={3}
+          className={"paper"}
           style={{
-            paddingBottom: "3vh",
-            marginTop: 70,
-            height: "100vh",
-            overflow: "auto",
+
           }}
         >
           <Grid container spacing={3}>
@@ -305,11 +305,20 @@ function Dashboard(props) {
 
               <div className={"row"}>
                 <div className={"col-md-12"}>
+                  <div className={"scanner-img-container"}>
+                    <img src={scanner} alt={"scanner"} className={"scanner-img"}/>
+                  </div>
+                </div>
+              </div>
+
+
+              <div className={"row"}>
+                <div className={"col-md-12"}>
                   {!props._trackOrSearchOnly &&
                   props.receive === "" &&
                   props.track.length === 0 &&
                   props.search.length === 0 ? (
-                    <div style={{ textAlign: "center", marginTop: "25vh" }}>
+                    <div className={"scanReceiveTextIndicator"}>
                       <h6 style={{ color: "#9E9E9E" }} className={"mainPage"}>
                         Scan the barcode to receive document
                       </h6>
@@ -332,7 +341,7 @@ function Dashboard(props) {
                   props.receive === "" &&
                   props.track.length === 0 &&
                   props.search.length === 0 ? (
-                    <div style={{ textAlign: "center", marginTop: "25vh" }}>
+                    <div className={"scanReceiveTextIndicator"}>
                       <h6 style={{ color: "#9E9E9E" }}>
                         Scan the barcode to track only the document or type the
                         subject and click the search button
