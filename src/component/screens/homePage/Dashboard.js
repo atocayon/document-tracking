@@ -312,9 +312,6 @@ function Dashboard(props) {
                     </div>
                   </div>
               ) : ""}
-
-
-
               <div className={"row"}>
                 <div className={"col-md-12"}>
                   {!props._trackOrSearchOnly &&

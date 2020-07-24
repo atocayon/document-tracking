@@ -16,8 +16,8 @@ function Progress(props) {
           StepIconComponent={FiberManualRecordIcon}
           style={{ color: "#2196F3" }}
         >
-          {props.data.root.status} by {props.data.root.name} on{" "}
-          {props.data.root.date_time}
+          <b>{props.data.root.status} by {props.data.root.name} on{" "}
+              {props.data.root.date_time}</b>
         </StepLabel>
         <StepContent last={false}>
           <Typography>
@@ -50,7 +50,7 @@ function StepperComponent(props) {
           StepIconComponent={FiberManualRecordIcon}
           style={{ color: "#2196F3" }}
         >
-          Branch {props.data.root.document_id}
+            <b>Copy {props.data.root.document_id}</b>
         </StepLabel>
         <StepContent last={false}>
           <Typography>
@@ -76,7 +76,7 @@ function RootSubProcess(props) {
         StepIconComponent={FiberManualRecordIcon}
         style={{ color: "#2196F3" }}
       >
-          {props.sub.root.status} by {props.sub.root.name} on {props.sub.root.date_time}
+          <b>{props.sub.root.status} by {props.sub.root.name} on {props.sub.root.date_time}</b>
       </StepLabel>
       <StepContent last={false}>
         <Typography>
@@ -113,7 +113,7 @@ function DocumentTrack(props) {
                     StepIconComponent={FiberManualRecordIcon}
                     style={{ color: "#2196F3" }}
                   >
-                    Created on {data.root.date_time}
+                      <b>Created on {data.root.date_time}</b>
                   </StepLabel>
                   <StepContent last={false}>
                     <Typography>
@@ -141,7 +141,7 @@ function DocumentTrack(props) {
                   StepIconComponent={FiberManualRecordIcon}
                   style={{ color: "#2196F3" }}
                 >
-                  Created on {data.root.date_time}
+                    <b>Created on {data.root.date_time}</b>
                 </StepLabel>
                 <StepContent last={false}>
                   <Typography>
