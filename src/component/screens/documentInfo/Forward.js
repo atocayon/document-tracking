@@ -96,13 +96,15 @@ export default function Forward(props) {
               >
                 Add
               </button>
+
             </>
           )}
+          <br />
+          <br/>
           {props.value.des.length > 0 &&
             props.value.des.map((des, index) => (
               <>
-                <br />
-                <br />
+                &nbsp;&nbsp;
                 <Chip
                   key={index}
                   avatar={
@@ -138,7 +140,7 @@ export default function Forward(props) {
           <Button onClick={props.handleClickDisseminate} color="primary">
             Cancel
           </Button>
-          <Button onClick={props.handleForward} color="primary">
+          <Button onClick={props.handleDisseminate} color="primary">
             Forward
           </Button>
         </DialogActions>

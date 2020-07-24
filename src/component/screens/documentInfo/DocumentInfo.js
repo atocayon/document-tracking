@@ -14,7 +14,9 @@ import { connect } from "react-redux";
 import { fetchDocumentInfo } from "../../../redux/actions/fetchDocumentInfo";
 import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import { fetchAllSections } from "../../../redux/actions/fetchAllSections";
-import {fetchSectionsList} from "../../../redux/actions/fetchSectionsList";
+import { fetchSectionsList } from "../../../redux/actions/fetchSectionsList";
+import { handleDocDissemination } from "../../../redux/actions/handleDocDissemination";
+import { clearDisseminationMessage } from "../../../redux/actions/handleDocDissemination";
 import Content from "./Content";
 import UserList from "../../common/userList/UserList";
 import SendIcon from "@material-ui/icons/Send";
@@ -52,7 +54,20 @@ function DocumentInfo(props) {
       });
     }
     setEndSession(!(obj && obj.token));
-  }, []);
+
+    if (props.res_dissemination !== "") {
+      if (props.res_dissemination === "success") {
+        setDisseminate(!disseminate);
+        props.changeDocumentDestination();
+        setSelectedValue("");
+        const variant = "info";
+        props.enqueueSnackbar("Document successfully completed...", {
+          variant,
+        });
+        props.clearDisseminationMessage();
+      }
+    }
+  }, [props.res_dissemination]);
 
   const handleClick = () => {
     setOpen(!open);
@@ -61,7 +76,7 @@ function DocumentInfo(props) {
   const handleClickDisseminate = () => {
     setDisseminate(!disseminate);
     props.changeDocumentDestination();
-      setSelectedValue("");
+    setSelectedValue("");
   };
 
   const handleChange = async (event) => {
@@ -72,6 +87,18 @@ function DocumentInfo(props) {
   const _addForwardDestination = async (e) => {
     e.preventDefault();
     await props.addForwardDestination(props.forwardDocument.destination);
+  };
+
+  const handleDisseminate = async (e) => {
+    e.preventDefault();
+    await props.handleDocDissemination(
+      props.user.user_id,
+      props.match.params.doc_id,
+
+      props.documentInfo,
+      props.forwardDocument,
+      socket
+    );
   };
   return (
     <Grid container>
@@ -105,6 +132,7 @@ function DocumentInfo(props) {
             value={props.forwardDocument}
             onChangeDestination={props.onChangeForwardDocument}
             selectedValue={selectedValue}
+            handleDisseminate={handleDisseminate}
           />
           {endSession && <Redirect to={"/"} />}
           <div>
@@ -215,17 +243,20 @@ function mapStateToProps(state) {
     documentInfo: state.fetchDocumentInfo,
     user: state.fetchUserById,
     forwardDocument: state.forwardDocument,
+    res_dissemination: state.handleDocDissemination,
   };
 }
 
 const mapDispatchToProps = {
   fetchDocumentInfo,
   fetchUserById,
-    fetchSectionsList,
+  fetchSectionsList,
   onChangeForwardDocument,
   changeDocumentDestination,
   addForwardDestination,
   removeForwardDestination,
+  handleDocDissemination,
+  clearDisseminationMessage,
 };
 
 export default connect(

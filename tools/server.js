@@ -46,6 +46,8 @@ const fetchPendingDocuments = require("./query/fetchPendingDocuments");
 const afterDocumentReceive = require("./query/afterDocumentReceived");
 const searchBySubj = require("./query/searchBySubject");
 const email = require("./query/sendEmail");
+
+const docDissemination = require("./query/handleDocDissemination");
 //EndQueries
 
 server.listen(PORT, () => {
@@ -157,7 +159,7 @@ io.on("connection", (socket) => {
         category,
         callback,
         socket,
-          io
+        io
       );
     }
   );
@@ -382,7 +384,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("fetchDocCurrentStatus", (docId, callback) => {
-    fetchDocument.fetchDocCurrentStatus(docId,callback);
+    fetchDocument.fetchDocCurrentStatus(docId, callback);
   });
 
   //fetch section documents
@@ -428,6 +430,20 @@ io.on("connection", (socket) => {
   socket.on("sendEmail", (user_id, subject, destination, callback) => {
     email.sendEmail(user_id, subject, destination, callback, transporter);
   });
+
+  //Document dissemination
+  socket.on(
+    "docDissemination",
+    (userId, doc_id, docInfo, destination, callback) => {
+      docDissemination.dissemination(
+        userId,
+        doc_id,
+        docInfo,
+        destination,
+        callback
+      );
+    }
+  );
 
   socket.on("disconnect", () => {
     console.log("Waiting for socket data connection...");

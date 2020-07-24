@@ -106,11 +106,12 @@ export default function Forward(props) {
               )}
             </>
           )}
+          <br />
+          <br />
           {props.value.des.length > 0 &&
             props.value.des.map((des, index) => (
               <>
-                <br />
-                <br />
+                &nbsp;&nbsp;
                 <Chip
                   key={index}
                   avatar={

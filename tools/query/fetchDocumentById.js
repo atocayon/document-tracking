@@ -17,6 +17,9 @@ const fetchDocument = (docId, callback) => {
   let sql = "";
   sql += "SELECT a.subject as subject, ";
   sql += "a.note, ";
+  sql += "a.category, ";
+  sql += "a.creator AS creator_id, ";
+  sql += "a.doc_type AS docTypeId, ";
   sql +=
     "DATE_FORMAT(a.date_time_created, '%M %d, %Y @ %h:%i %p') AS date_time_created, ";
   sql += "b.id as docType_id, ";

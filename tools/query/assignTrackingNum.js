@@ -24,7 +24,7 @@ const assignTrackingNum = (io) => {
 
     if (rows.length > 0) {
       const sql1 =
-        "SELECT documentID as documentID FROM documents ORDER BY documentID DESC LIMIT 1";
+        "SELECT DISTINCT documentID as documentID FROM documents ORDER BY documentID DESC LIMIT 1";
       connection.query(sql1, function (err, rows, fields) {
         if (err) {
           console.log(err);
