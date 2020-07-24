@@ -303,13 +303,16 @@ function Dashboard(props) {
                 </div>
               </div>
 
-              <div className={"row"}>
-                <div className={"col-md-12"}>
-                  <div className={"scanner-img-container"}>
-                    <img src={scanner} alt={"scanner"} className={"scanner-img"}/>
+              {props.track.length === 0 && props.search.length === 0 ? (
+                  <div className={"row"}>
+                    <div className={"col-md-12"}>
+                      <div className={"scanner-img-container"}>
+                        <img src={scanner} alt={"scanner"} className={"scanner-img"}/>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+              ) : ""}
+
 
 
               <div className={"row"}>

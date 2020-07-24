@@ -9,6 +9,31 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const mysql = require("mysql");
+const router = express.Router();
+
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+app.use("/dts", router);
+
+const db = require("./query/dbVariable");
+const connection = mysql.createConnection({
+  user: db.user,
+  password: db.password,
+  database: db.database,
+  host: db.host,
+  port: db.port,
+});
+
+connection.connect(function (err) {
+  if (err) {
+    console.log(err);
+  }
+});
 //Queries
 const user_login = require("./query/login");
 const user_logout = require("./query/logout");
@@ -219,15 +244,15 @@ io.on("connection", (socket) => {
     processedDoc.fetchProcessedDoc(token, callback, socket);
   });
 
-  //Fetch SubProcess
-  socket.on("fetchSubProcess", (tracking, callback) => {
-    docSubProcess.fetchSubProcess(tracking, callback);
-  });
+  // //Fetch SubProcess
+  // socket.on("fetchSubProcess", (tracking, callback) => {
+  //   docSubProcess.fetchSubProcess(tracking, callback);
+  // });
 
-  //Fetch Sub Document
-  socket.on("fetchSubDocument", (tracking, callback) => {
-    docSubDocument.fetchSubDocument(tracking, callback);
-  });
+  // //Fetch Sub Document
+  // socket.on("fetchSubDocument", (tracking, callback) => {
+  //   docSubDocument.fetchSubDocument(tracking, callback);
+  // });
 
   //Verify User Token
   socket.on("verifyToken", (token, callback) => {
@@ -450,6 +475,59 @@ io.on("connection", (socket) => {
   });
 });
 
+router.route("/getSubProcess").post(function (req, res) {
+
+  const {tracking}= req.body;
+  console.log(tracking);
+  let sql = "";
+  sql += "SELECT ";
+  sql += "a.trans_id AS trans_id, ";
+  sql += "a.remarks AS remarks, ";
+  sql += "a.destinationType AS destinationType, ";
+  sql += "a.destination AS destination, ";
+  sql += "b.name AS name, ";
+  sql += "c.status AS status, ";
+  sql += "DATE_FORMAT(a.date_time, '%M %d, %Y @ %h:%i:%s %p') AS date_time ";
+  sql += "FROM documentLogs a ";
+  sql += "JOIN users b ON  a.user_id = b.user_id ";
+  sql += "JOIN documentStatus c ON a.status = c.statid ";
+  sql += "WHERE a.document_id = ?";
+  connection.query(sql, [tracking], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+    console.log(rows);
+    res.status(200).send(rows);
+  });
+});
+
+router.route("/getBranch").post(function (req, res) {
+  const {tracking} = req.body;
+
+  let sql = "";
+  sql += "SELECT ";
+  sql += "a.documentID AS document_id, ";
+  sql += "a.subject, ";
+  sql += "a.note, ";
+  sql +=
+    "DATE_FORMAT(a.date_time_created, '%M %d, %Y @ %h:%i:%s %p') AS date_time, ";
+  sql += "b.name AS name, ";
+  sql += "c.type AS type ";
+  sql += "FROM documents a ";
+  sql += "JOIN users b ON a.creator = b.user_id ";
+  sql += "JOIN document_type c ON a.doc_type = c.id ";
+  sql += "WHERE a.ref = ?";
+
+  connection.query(sql, [tracking], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+    console.log(rows);
+    res.status(200).send(rows);
+  });
+});
 //------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------

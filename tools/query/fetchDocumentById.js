@@ -34,7 +34,7 @@ const fetchDocument = (docId, callback) => {
   sql += "ON a.creator = c.user_id ";
   sql += "JOIN sections d ";
   sql += "ON c.section = d.secid ";
-  sql += "WHERE a.documentID = ? ";
+  sql += "WHERE a.documentID = ? ORDER BY a.id ASC LIMIT 1";
   connection.query(sql, [docId], function (err, rows, fields) {
     if (err) {
       console.log(err);
