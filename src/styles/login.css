@@ -1,14 +1,8 @@
-.sideImg{
-    height: 100vh !important;
-}
+
 
 .paper-container{
-    margin-top: 10vh;
+    margin-top: 12vh;
     margin-left: -15vw;
-}
-
-.logo-container{
-
 }
 
 .userAvatar{
@@ -20,8 +14,8 @@
 
 .logo{
     width: 20vw;
-    margin-top: 25vh;
-    margin-left: -20vw;
+    margin-top: 30vh;
+    margin-left: -22vw;
 }
 
 .login-title-container{
@@ -54,71 +48,14 @@
 
 
 
-@media screen and (max-width: 1024px) {
-    .hr{
-        display: none !important;
-    }
+@media screen and (max-width: 1600px) {
     .paper-container{
-        margin-top: 5vh;
-        border: 1px solid white;
-        width: 90vw;
-        margin-left: -15vw;
-        box-shadow: 1px 1px 1px white !important;
-    }
-
-    .flex{
-        flex-direction: column !important;
-    }
-
-    .title{
-        font-size: 3vw !important;
-        margin-left: 20vw !important;
+        margin-top: 10vh;
     }
 
     .logo{
         width: 20vw;
-        margin-left: 32vw !important;
-    }
-
-    .password-input{
-        font-size: 3vh !important;
-        height: 7vh;
-    }
-
-    .login-header{
-        display: none !important;
-    }
-
-    .login-btn-container{
-        text-align: center;
-        margin-top: 2vh;
-    }
-
-    .login-btn{
-        width: 70vw;
-        height: 7vh;
-        margin-top: 2vh;
-        font-size: 3vw !important;
-        font-weight: bold !important;
-    }
-
-}
-
-@media screen and (max-width: 600px){
-    .paper-container{
-        margin-top: 7vh;
-        margin-left: -3vw;
-    }
-}
-
-@media screen and (max-width: 412px){
-    .paper-container{
-        margin-top: 7vh;
-        margin-left: 1vw;
-    }
-    .login-btn{
-        width: 60vw;
-        height: 7vh;
-        margin-top: 2vh;
+        margin-top: 23vh;
+        margin-left: -20vw;
     }
 }
