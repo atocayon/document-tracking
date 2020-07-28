@@ -18,6 +18,7 @@ import { withSnackbar } from "notistack";
 import Drafts from "./screens/drafts/Drafts";
 import DocumentInfo from "./screens/documentInfo/DocumentInfo";
 import PendingDocumentInfo from "./screens/pendingForRelease/PendingDocumentInfo";
+import "../../src/styles/login.css";
 function App(props) {
   useEffect(() => {
     const obj = getFromStorage("documentTracking");

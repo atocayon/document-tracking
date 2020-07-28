@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import InputField from "../../common/textField/InputField";
 import { Redirect } from "react-router-dom";
 import { withSnackbar } from "notistack";
-import logo from "../../../img/logo.png";
+import logo from "../../../img/logo.svg";
 import Paper from "@material-ui/core/Paper";
 import { connect } from "react-redux";
 import { login } from "../../../redux/actions/login";
@@ -19,7 +19,9 @@ import endPoint from "../../endPoint";
 import error from "../../sounds/glitch-in-the-matrix.mp3";
 import loginSuccess from "../../sounds/quite-impressed.mp3";
 import onClick from "../../sounds/pull-out.mp3";
-import "../../../styles/login.css";
+import sideImg from "../../../img/Untitled-1.svg";
+import userAvatar from "../../../img/user.svg";
+import { ReactSVG } from 'react-svg'
 const errorSound = new UIfx(error);
 const _visible = new UIfx(onClick);
 const _loginSuccess = new UIfx(loginSuccess);
@@ -111,113 +113,116 @@ function Login(props) {
     <>
       {redirect && <Redirect to={"/"} />}
       {!redirect && (
-        <div className={"container"}>
-          <div className={"row"}>
-            <div className={"col-md-2"}></div>
-            <div className={"col-md-8"} >
-              <Paper className={"paper-container"}>
-                <div className={"row flex"}>
-                  <div className={"col-md-1"}>
-                    <div className={"logo-container"}>
-                      <img src={logo} alt={"nmp_logo"} className={"logo"} />
-                    </div>
-                  </div>
-                  <div className={"col-md-11"}>
-                    <div className={"login-title-container"}>
-                      <h6 className={"title"}>Login with your DTS Account</h6>
-                    </div>
-                  </div>
-                </div>
-                <hr className={"hr"} />
-                <br />
-                <div className={"row"}>
-                  <div className={"col-md-12"}>
-                    <div
-                      style={{
-                        marginLeft: 50,
-                        marginRight: 50,
-                        marginBottom: 50,
-                      }}
-                    >
-                      <form onSubmit={onSubmit}>
-                        <h5 className={"login-header"}>
-                          <span className={"login-text"}>Login</span>
-                          <br />
-                          <small>
-                            to continue using the{" "}
-                            <span style={{ color: "#2196F3" }}>DTS</span>{" "}
-                          </small>
-                        </h5>
-                        <br />
-                        <InputField
-                          id={"email"}
-                          label={"Username or Email"}
-                          name={"emailOrPassword"}
-                          onChange={onChange}
-                          error={error.email}
-                          type={"text"}
-                        />
-                        <br />
-                        <br />
-                        <FormControl fullWidth>
-                          <InputLabel style={error.password && {color: "red"}}>Password</InputLabel>
-                          <Input
-                              className={"password-input"}
-                            id={"password"}
-                            name={"password"}
-                            onChange={onChange}
-                            type={visiblePass ? "text" : "password"}
-                            style={
-                              error.password && {
-                                borderBottom: "1px solid red",
-                                color: "red",
-                              }
-                            }
-                            endAdornment={
-                              <InputAdornment position="end">
-                                <IconButton
-                                  title={"clear"}
-                                  aria-label="toggle password visibility"
-                                  onClick={() => {
-                                    setVisiblePass(!visiblePass);
-                                    _visible.play();
-                                  }}
-                                  onMouseDown={() => {
-                                    setVisiblePass(!visiblePass);
-                                    _visible.play();
-                                  }}
-                                  edge="end"
-                                >
-                                  {visiblePass ? (
-                                    <VisibilityOffIcon />
-                                  ) : (
-                                    <VisibilityIcon />
-                                  )}
-                                </IconButton>
-                              </InputAdornment>
-                            }
-                          />
-                          <small style={{ color: "red" }}>
-                            {error.password}
-                          </small>
-                        </FormControl>
+          <>
+            <div className={"row"}>
+              <div className={"col-md-4"}>
+                <ReactSVG src={sideImg} className={"sideImg"}  beforeInjection={(svg) => {
+                  svg.classList.add('svg-class-name')
+                  svg.setAttribute('style', 'height: 100vh')
+                }} />
+              </div>
+              <div className={"col-md-4"}>
+                <ReactSVG src={logo} alt={"nmp_logo"} className={"logo"} />
+              </div>
+              <div className={"col-md-4"}>
 
-                        <br />
-                        <br />
-                        <div className={"login-btn-container"}>
-                          <button className={"btn btn-primary login-btn"} type={"submit"}>
-                            Login
-                          </button>
+
+                <div className={"row"}>
+
+                  <div className={"col-md-12"} >
+                    <div className={"paper-container"}>
+                      <div className={"row flex"}>
+                        <div className={"col-md-12"}>
+                          <div className={"logo-container"}>
+                              <ReactSVG src={userAvatar} className={"userAvatar"} />
+                          </div>
                         </div>
-                      </form>
+                      </div>
+
+                      <div className={"row"}>
+                        <div className={"col-md-2"}></div>
+                        <div className={"col-md-8"}>
+                          <hr className={"hr"} />
+
+                          <form onSubmit={onSubmit}>
+                            <h5 className={"login-header"}>
+                             WELCOME
+                            </h5>
+                            <br />
+                            <InputField
+                                id={"email"}
+                                label={"Username or Email"}
+                                name={"emailOrPassword"}
+                                onChange={onChange}
+                                error={error.email}
+                                type={"text"}
+                            />
+                            <br />
+                            <br />
+                            <FormControl fullWidth>
+                              <InputLabel style={error.password && {color: "red"}}>Password</InputLabel>
+                              <Input
+                                  className={"password-input"}
+                                  id={"password"}
+                                  name={"password"}
+                                  onChange={onChange}
+                                  type={visiblePass ? "text" : "password"}
+                                  style={
+                                    error.password && {
+                                      borderBottom: "1px solid red",
+                                      color: "red",
+                                    }
+                                  }
+                                  endAdornment={
+                                    <InputAdornment position="end">
+                                      <IconButton
+                                          title={"clear"}
+                                          aria-label="toggle password visibility"
+                                          onClick={() => {
+                                            setVisiblePass(!visiblePass);
+                                            _visible.play();
+                                          }}
+                                          onMouseDown={() => {
+                                            setVisiblePass(!visiblePass);
+                                            _visible.play();
+                                          }}
+                                          edge="end"
+                                      >
+                                        {visiblePass ? (
+                                            <VisibilityOffIcon />
+                                        ) : (
+                                            <VisibilityIcon />
+                                        )}
+                                      </IconButton>
+                                    </InputAdornment>
+                                  }
+                              />
+                              <small style={{ color: "red" }}>
+                                {error.password}
+                              </small>
+                            </FormControl>
+
+                            <br />
+                            <br />
+                            <div className={"login-btn-container"}>
+                              <button className={"btn btn-primary login-btn"} type={"submit"}>
+                                Login
+                              </button>
+                            </div>
+                          </form>
+
+                        </div>
+                        <div className={"col-md-2"}></div>
+
+                      </div>
                     </div>
                   </div>
                 </div>
-              </Paper>
+              </div>
             </div>
-            <div className={"col-md-2"}></div>
-          </div>
-        </div>
+
+          </>
+
       )}
     </>
   );

@@ -1,16 +1,27 @@
+.sideImg{
+    height: 100vh !important;
+}
 
 .paper-container{
-    margin-top: 15vh;
-    border-top: 2px solid grey;
+    margin-top: 10vh;
+    margin-left: -15vw;
 }
 
 .logo-container{
-    margin-left: 2vw;
-    margin-top: 1vh;
+
+}
+
+.userAvatar{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 10vw;
 }
 
 .logo{
-    width: 40px;
+    width: 20vw;
+    margin-top: 25vh;
+    margin-left: -20vw;
 }
 
 .login-title-container{
@@ -22,10 +33,25 @@
     font-weight: bold;
 }
 
+.login-header{
+    text-align: center;
+    font-weight: bold;
+    font-size: 2vw;
+}
+
 .login-btn-container{
-    text-align: right;
+    text-align: center;
     margin-top: 2vh;
 }
+
+.login-btn{
+    background-color: #101e47 !important;
+    height: 8vh !important;
+    width: 100%;
+    border-radius: 30px !important;
+}
+
+
 
 
 @media screen and (max-width: 1024px) {
