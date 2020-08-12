@@ -47,7 +47,7 @@
     "use-sound": "1.0.2"
   },
   "scripts": {
-    "start": "run-p start:dev",
+    "start": "cross-env PORT=3006 run-p start:dev ",
     "start:dev": "react-scripts start",
     "start:api": "nodemon tools/server",
     "build": "react-scripts build",
