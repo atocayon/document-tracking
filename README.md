@@ -3,7 +3,7 @@
 
 ### Login
 
-![Alt Text](https://github.com/atocayon/document-tracking/blob/master/src/img/scrn_shot/1.PNG)
+![Alt Text](https://github.com/atocayon/document-tracking/blob/master/src/img/scrn_shot/new_login.PNG)
 
 ### Users Home Page
 
