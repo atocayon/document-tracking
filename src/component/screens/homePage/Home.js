@@ -7,21 +7,23 @@ import { connect } from "react-redux";
 import { verifyToken } from "../../../redux/actions/verifyToken";
 import { fetchCurrentSystemUser } from "../../../redux/actions/fetchCurrentSystemUser";
 import { fetchSectionsList } from "../../../redux/actions/fetchSectionsList";
-import io from "socket.io-client";
-import endPoint from "../../endPoint";
+import CircularProgressComponent from "../../common/circularProgress/CircularProgressComponent";
+
 let socket;
 function Home(props) {
+  const [loading, setLoading] = useState(true);
   const [endSession, setEndSession] = useState(false);
   useEffect(() => {
+    setLoading(false);
     const obj = getFromStorage("documentTracking");
-    socket = io(endPoint.ADDRESS);
+
     if (obj && obj.token) {
       const { token } = obj;
 
       async function callback() {
-        await props.verifyToken(token, socket);
-        await props.fetchCurrentSystemUser(token, socket);
-        await props.fetchSectionsList(socket);
+        await props.verifyToken(token);
+        await props.fetchCurrentSystemUser(token);
+        await props.fetchSectionsList();
       }
 
       callback().catch((err) => {
@@ -33,6 +35,7 @@ function Home(props) {
 
   return (
     <div>
+      {loading && <CircularProgressComponent />}
       {endSession && <Redirect to={"/login"} />}
       {Object.keys(props.token).length > 0 && (
         <>
@@ -40,13 +43,13 @@ function Home(props) {
             <Redirect to={"/login"} />
           ) : (
             <>
-              {props.user.role === "super_admin" && (
+              {props.user.dts_role === "super_admin" && (
                 <ControlPanel user={props.user} />
               )}
-              {props.user.role === "member" && (
+              {props.user.dts_role === "member" && (
                 <Dashboard user={props.user} sections={props.sections} />
               )}
-              {props.user.role === "admin" && (
+              {props.user.dts_role === "admin" && (
                 <Dashboard user={props.user} sections={props.sections} />
               )}
             </>

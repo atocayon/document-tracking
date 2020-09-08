@@ -1,25 +1,26 @@
 import actionTypes from "./actionTypes";
-
-export function addNewSection(data, socket) {
+import endPoint from "../../component/endPoint";
+import axios from "axios";
+export function addNewSection(data) {
   const _data = {
     divid: data.division,
     section: data.section,
     secshort: data.secshort,
     active: 1,
   };
+  const { division, section, secshort } = data;
   return async function (dispatch) {
-    await socket.emit(
-      "addNewSection",
-      data.division,
-      data.section,
-      data.secshort,
-      (res) => {
-        if (res) {
-          if (res !== "server error") {
-            dispatch({ type: actionTypes.ADD_SECTION, _data });
-          }
-        }
-      }
-    );
+    return axios
+      .post("http://" + endPoint.ADDRESS + "/dts/section/new", {
+        division,
+        section,
+        secshort,
+      })
+      .then((res) => {
+        dispatch({ type: actionTypes.ADD_SECTION, _data });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }

@@ -1,13 +1,15 @@
 import actionTypes from "./actionTypes";
-
-export function verifyToken(token, socket) {
+import endPoint from "../../component/endPoint";
+import axios from "axios";
+export function verifyToken(token) {
   return async function (dispatch) {
-    await socket.emit("verifyToken", token, (res) => {
-      if (res) {
-        if (res !== "server error") {
-          dispatch({ type: actionTypes.VERIFY_TOKEN, data: res });
-        }
-      }
-    });
+    return axios
+      .post("http://" + endPoint.ADDRESS + "/", { token })
+      .then((res) => {
+        dispatch({ type: actionTypes.VERIFY_TOKEN, data: res.data });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }

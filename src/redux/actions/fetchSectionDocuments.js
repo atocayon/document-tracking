@@ -1,13 +1,25 @@
 import actionTypes from "./actionTypes";
-
-export function fetchSectionDocuments(token, folder, socket) {
+import endPoint from "../../component/endPoint";
+import axios from "axios";
+export function fetchSectionDocuments(token, folder) {
   return async function (dispatch) {
-    await socket.emit("fetchSectionDocuments", token, folder, async (res) => {
-      if (res) {
-        if (res !== "server error") {
-          await dispatch({ type: actionTypes.FETCH_SECTION_DOCUMENTS, data: res });
-        }
-      }
-    });
+    return axios
+      .get(
+        "http://" +
+          endPoint.ADDRESS +
+          "/dts/document/section/" +
+          folder +
+          "/" +
+          token
+      )
+      .then((res) => {
+        dispatch({
+          type: actionTypes.FETCH_SECTION_DOCUMENTS,
+          data: res.data,
+        });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }

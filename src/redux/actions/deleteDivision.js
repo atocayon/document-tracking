@@ -1,16 +1,15 @@
 import actionTypes from "./actionTypes";
-
-export function deleteDivision(id, socket) {
+import endPoint from "../../component/endPoint";
+import axios from "axios";
+export function deleteDivision(div_id) {
   return async function (dispatch) {
-    await socket.emit("deleteDivision", id, async (res) => {
-      if (res) {
-        if (res !== "server error") {
-          await dispatch({
-            type: actionTypes.DELETE_DIVISION,
-            data: id,
-          });
-        }
-      }
-    });
+    return axios
+      .post("http://" + endPoint.ADDRESS + "/dts/division/delete", { div_id })
+      .then((res) => {
+        dispatch({ type: actionTypes.DELETE_DIVISION, data: div_id });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }

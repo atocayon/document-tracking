@@ -14,58 +14,49 @@ import FormControl from "@material-ui/core/FormControl";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import UIfx from "uifx";
-import io from "socket.io-client";
-import endPoint from "../../endPoint";
 import error from "../../sounds/glitch-in-the-matrix.mp3";
 import loginSuccess from "../../sounds/quite-impressed.mp3";
 import onClick from "../../sounds/pull-out.mp3";
 import sideImg from "../../../img/Untitled-1.svg";
 import userAvatar from "../../../img/user.svg";
 import { ReactSVG } from "react-svg";
+import CircularProgressComponent from "../../common/circularProgress/CircularProgressComponent";
+
 const errorSound = new UIfx(error);
 const _visible = new UIfx(onClick);
 const _loginSuccess = new UIfx(loginSuccess);
 
-let socket;
 function Login(props) {
+  const [loading, setLoading] = useState(true);
   const [login, setLogin] = useState({
-    emailOrPassword: "",
+    usernameOrEmail: "",
     password: "",
   });
-
   const [visiblePass, setVisiblePass] = useState(false);
-
   const [error, setError] = useState({});
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
-    socket = io(endPoint.ADDRESS);
-
+    setLoading(false);
     if (Object.keys(props._login).length > 0) {
-      if (props._login.success === true) {
+      if (props._login.message === "success") {
         const variant = "info";
-        props.enqueueSnackbar("Hello! " + props._login.message, {
+        props.enqueueSnackbar("Hello! " + props._login.name, {
           variant,
         });
         setRedirect(true);
         _loginSuccess.play();
       } else {
-        if (props._login.message === "server error") {
-          const variant = "error";
-          props.enqueueSnackbar(props._login.message, { variant });
-          errorSound.play();
-        }
-
-        if (props._login.message === "unrecognize email") {
+        if (props._login.message === "unrecognized") {
           const _error = {};
-          _error.email = "Unregistered Username or Email";
+          _error.usernameOrEmail = "Unregistered Username or Email";
           setError(_error);
           const variant = "error";
           props.enqueueSnackbar("Unregistered Username or Email", { variant });
           errorSound.play();
         }
 
-        if (props._login.message === "incorrect password") {
+        if (props._login.message === "incorrect") {
           const _error = {};
           _error.password = "Incorrect Password";
           setError(_error);
@@ -87,7 +78,7 @@ function Login(props) {
   const formValidation = () => {
     const _error = {};
 
-    if (!login.emailOrPassword) _error.email = "Email is required";
+    if (!login.usernameOrEmail) _error.usernameOrEmail = "Email is required";
     if (!login.password) _error.password = "Password is required";
 
     setError(_error);
@@ -106,15 +97,15 @@ function Login(props) {
       return errorSound.play();
     }
 
-    await props.login(login, socket);
+    await props.login(login);
   };
 
   return (
     <>
+      {loading && <CircularProgressComponent />}
       {redirect && <Redirect to={"/"} />}
       {!redirect && (
         <>
-
           <div className={"row"}>
             <div className={"col-md-4"}>
               <ReactSVG
@@ -132,7 +123,6 @@ function Login(props) {
             </div>
             <div className={"col-md-4"}>
               <ReactSVG src={logo} alt={"nmp_logo"} className={"logo"} />
-
             </div>
             <div className={"col-md-4"}>
               <div className={"row"}>
@@ -157,9 +147,9 @@ function Login(props) {
                           <InputField
                             id={"email"}
                             label={"Username or Email"}
-                            name={"emailOrPassword"}
+                            name={"usernameOrEmail"}
                             onChange={onChange}
-                            error={error.email}
+                            error={error.usernameOrEmail}
                             type={"text"}
                           />
                           <br />

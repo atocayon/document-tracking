@@ -1,22 +1,27 @@
 import actionTypes from "./actionTypes";
-export function fetchSectionUsers(token, socket) {
+import endPoint from "../../component/endPoint";
+import axios from "axios";
+export function fetchSectionUsers(token) {
   return async function (dispatch) {
-    await socket.emit("user", token, async (res) => {
-      if (res) {
-        if (res !== "server error") {
-          await dispatch({ type: actionTypes.FETCH_CURRENT_USER, data: res });
-          await socket.emit("sectionUser", res.secid, (res) => {
-            if (res) {
-              if (res !== "server error") {
-                dispatch({
-                  type: actionTypes.FETCH_SECTION_USERS,
-                  data: res,
-                });
-              }
-            }
-          });
-        }
-      }
-    });
+    const user_section = axios.get(
+      "http://" + endPoint.ADDRESS + "/dts/user/" + token
+    );
+
+    return axios
+      .get(
+        "http://" +
+          endPoint.ADDRESS +
+          "/dts/users/section/" +
+          user_section.data.secid
+      )
+      .then((res) => {
+        dispatch({
+          type: actionTypes.FETCH_SECTION_USERS,
+          data: res.data,
+        });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }

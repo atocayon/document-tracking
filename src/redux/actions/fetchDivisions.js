@@ -1,15 +1,15 @@
 import actionTypes from "./actionTypes";
-
-export function fetchDivisions(socket) {
+import axios from "axios";
+import endPoint from "../../component/endPoint";
+export function fetchDivisions() {
   return async function (dispatch) {
-    await socket.emit("fetchDivisions", (res) => {
-      if (res) {
-        alert(res);
-      }
-    });
-
-    await socket.on("divisionsList", async (data) => {
-      dispatch({ type: actionTypes.FETCH_DIVISIONS, data });
-    });
+    return axios
+      .get("http://" + endPoint.ADDRESS + "/dts/divisions")
+      .then((res) => {
+        dispatch({ type: actionTypes.FETCH_DIVISIONS, data: res.data });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }

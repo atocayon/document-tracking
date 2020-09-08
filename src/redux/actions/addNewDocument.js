@@ -1,5 +1,6 @@
 import actionTypes from "./actionTypes";
-
+import endPoint from "../../component/endPoint";
+import axios from "axios";
 export function addNewDocument(
   documentID,
   user_id,
@@ -8,43 +9,26 @@ export function addNewDocument(
   note,
   action_req,
   destination,
-  category,
-  socket
+  category
 ) {
   return async function (dispatch) {
-    await socket.emit(
-      "addDocument",
-      documentID,
-      user_id,
-      subject,
-      documentType,
-      note,
-      action_req,
-      destination,
-      category,
-      async (message) => {
-        if (message !== "success") {
-          return dispatch({ type: actionTypes.ADD_DOCUMENT, data: "failed" });
-        }
-        if (message === "success") {
-          await dispatch({ type: actionTypes.ADD_DOCUMENT, data: "success" });
-
-          await socket.emit(
-            "sendEmail",
-            user_id,
-            subject,
-            destination,
-            async (res) => {
-              if (res) {
-                if (res === "server error") {
-                  alert(res);
-                }
-              }
-            }
-          );
-        }
-      }
-    );
+    return axios
+      .post("http://" + endPoint.ADDRESS + "/dts/document/new", {
+        document_id: documentID,
+        creator: user_id,
+        subject,
+        doc_type: documentType,
+        note,
+        action_req,
+        document_logs: destination,
+        category,
+      })
+      .then((res) => {
+        dispatch({ type: actionTypes.ADD_DOCUMENT, data: res.data });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }
 

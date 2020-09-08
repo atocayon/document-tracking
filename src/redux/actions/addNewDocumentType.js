@@ -1,13 +1,17 @@
 import actionTypes from "./actionTypes";
-
-export function addNewDocumentType(data, socket) {
+import endPoint from "../../component/endPoint";
+import axios from "axios";
+export function addNewDocumentType(doc_type) {
   return async function (dispatch) {
-    await socket.emit("addDocumentType", data, (res) => {
-      if (res) {
-        if (res !== "server error") {
-          dispatch({ type: actionTypes.ADD_DOCUMENT_TYPE, data });
-        }
-      }
-    });
+    return axios
+      .post("http://" + endPoint.ADDRESS + "/dts/document/type/new", {
+        doc_type,
+      })
+      .then((res) => {
+        dispatch({ type: actionTypes.ADD_DOCUMENT_TYPE, data: res.data });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }

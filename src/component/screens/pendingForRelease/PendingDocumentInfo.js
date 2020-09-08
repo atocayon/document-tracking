@@ -7,7 +7,8 @@ import { Redirect } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
 import { withSnackbar } from "notistack";
 import { connect } from "react-redux";
-import { fetchPendingDocumentInfo } from "../../../redux/actions/fetchPendingDocumentInfo";
+import { fetchDocumentInfo } from "../../../redux/actions/fetchDocumentInfo";
+// import { fetchPendingDocumentInfo } from "../../../redux/actions/fetchPendingDocumentInfo";
 import Forward from "./Forward";
 import { fetchSectionsList } from "../../../redux/actions/fetchSectionsList";
 import { fetchUserById } from "../../../redux/actions/fetchUserById";
@@ -38,12 +39,12 @@ function PendingDocumentInfo(props) {
   useEffect(() => {
     socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
-    if (obj && obj.token){
+    if (obj && obj.token) {
       setToken(obj.token);
       async function fetch() {
-        await props.fetchPendingDocumentInfo(props.match.params.doc_id, socket);
-        await props.fetchSectionsList(socket);
-        await props.fetchUserById(obj.token, socket);
+        await props.fetchDocumentInfo(props.match.params.doc_id);
+        await props.fetchSectionsList();
+        await props.fetchUserById(obj.token);
       }
 
       fetch().catch((err) => {
@@ -104,7 +105,7 @@ function PendingDocumentInfo(props) {
         ? props.forwardDocument.des
         : props.forwardDocument.destination,
       "2",
-        socket
+      socket
     );
   };
 
@@ -117,7 +118,7 @@ function PendingDocumentInfo(props) {
       props.pendingDocumentInfo.destinationType,
       "none",
       "4",
-        socket
+      socket
     );
   };
 
@@ -186,8 +187,14 @@ function PendingDocumentInfo(props) {
                     <ReactToPrint
                       content={() => componentRef.current}
                       trigger={() => (
-                        <a href={"#"} className={"btn"} title={"Print"} style={{color: "##17A2B8"}}>
-                          <PrintIcon />&nbsp;Print
+                        <a
+                          href={"#"}
+                          className={"btn"}
+                          title={"Print"}
+                          style={{ color: "##17A2B8" }}
+                        >
+                          <PrintIcon />
+                          &nbsp;Print
                         </a>
                       )}
                     />
@@ -226,7 +233,7 @@ function PendingDocumentInfo(props) {
 function mapDispatchToProps(state) {
   return {
     user: state.fetchUserById,
-    pendingDocumentInfo: state.fetchPendingDocumentInfo,
+    pendingDocumentInfo: state.fetchDocumentInfo,
     sections: state.fetchSectionsList,
     forwardDocument: state.forwardDocument,
     actionForwardOrCompleted: state.afterDocumentReceive,
@@ -234,7 +241,7 @@ function mapDispatchToProps(state) {
 }
 
 const mapStateToProps = {
-  fetchPendingDocumentInfo,
+  fetchDocumentInfo,
   fetchSectionsList,
   onChangeForwardDocument,
   changeDocumentDestination,

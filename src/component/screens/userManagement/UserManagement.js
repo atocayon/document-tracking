@@ -59,7 +59,7 @@ function UserManagement(props) {
       setToken(token);
 
       async function fetch() {
-        await props.fetchSectionUsers(token, socket);
+        await props.fetchSectionUsers(token);
         await props.fetchSectionsList(socket);
       }
 
@@ -289,7 +289,7 @@ function UserManagement(props) {
             bottom: 0,
             height: "100vh",
             marginTop: 70,
-            overflow: "auto"
+            overflow: "auto",
           }}
         >
           <div className={"jumbotron"} style={{ padding: 50 }}>
@@ -312,7 +312,7 @@ function UserManagement(props) {
 
           <div className={"row"}>
             <div className={"col-md-1"}></div>
-            <div className={"col-md-10"} >
+            <div className={"col-md-10"}>
               <div style={{ marginBottom: 20 }}>
                 <div className={"row"}>
                   <div className={"col-md-6"}>

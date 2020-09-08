@@ -1,37 +1,37 @@
 import actionTypes from "./actionTypes";
-
+import endPoint from "../../component/endPoint";
+import axios from "axios";
 export function handleDocDissemination(
   userId,
   doc_id,
   docInfo,
+  remarks,
   destination,
   socket
 ) {
   return async function (dispatch) {
-    await socket.emit(
-      "docDissemination",
-      userId,
-      doc_id,
-      docInfo,
-      destination,
-      (res) => {
-        if (res) {
-          if (res !== "server error") {
-            dispatch({
-              type: actionTypes.HANDLE_DOC_DISSEMINATION,
-              data: "success",
-            });
-          } else {
-            alert("Unexpected error occurred...");
-          }
-        }
-      }
-    );
+    return axios
+      .post("http://" + endPoint.ADDRESS + "/dts/document/dissemination", {
+        user_id: userId,
+        doc_id,
+        doc_info: docInfo,
+        remarks,
+        destination,
+      })
+      .then((res) => {
+        dispatch({
+          type: actionTypes.HANDLE_DOC_DISSEMINATION,
+          data: "success",
+        });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }
 
 export function clearDisseminationMessage() {
   return function (dispatch) {
-    dispatch({type: actionTypes.CLEAR_DISSEMINATION_MESSAGE});
-  }
+    dispatch({ type: actionTypes.CLEAR_DISSEMINATION_MESSAGE });
+  };
 }

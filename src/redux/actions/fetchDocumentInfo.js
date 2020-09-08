@@ -1,122 +1,97 @@
 import actionTypes from "./actionTypes";
+import endPoint from "../../component/endPoint";
+import axios from "axios";
 
-export function fetchDocumentInfo(doc_id, socket) {
+const docBarcode = (doc_id) => {
+  const fetchDocumentBarcodes = axios.get(
+    "http://" + endPoint.ADDRESS + "/dts/document/barcodes/" + doc_id
+  );
+
+  if (fetchDocumentBarcodes.data.length > 1) {
+    return fetchDocumentBarcodes.data;
+  } else {
+    const fetchDocumentBarcode = axios.get(
+      "http://" + endPoint.ADDRESS + "/dts/document/barcode/" + doc_id
+    );
+
+    return fetchDocumentBarcode.data;
+  }
+};
+
+const docDestination = (fetchDocDestination) => {
+  let arr = [];
+
+  for (let i = 0; i < fetchDocDestination.data.length; i++) {
+    const fetchDateTimeReleased = axios.get(
+      "http://" +
+        endPoint.ADDRESS +
+        "/dts/document/sched/" +
+        fetchDocDestination.data[i].document_id +
+        "/" +
+        fetchDocDestination.data[i].receiver_id
+    );
+    const fetchActionTaken = axios.get(
+      "http://" +
+        endPoint.ADDRESS +
+        "/dts/document/action/" +
+        fetchDocDestination.data[i].document_id +
+        "/" +
+        fetchDocDestination.data[i].receiver_id
+    );
+
+    arr.push({
+      office: fetchDocDestination.data[i].section,
+      date_time_receive: fetchDocDestination.data[i].date_time_receive,
+      action_taken: fetchActionTaken.data,
+      date_time_released: fetchDateTimeReleased.data,
+      initial: fetchDocDestination.data[i].receiver,
+    });
+  }
+
+  return arr;
+};
+
+export function fetchDocumentInfo(doc_id) {
   return async function (dispatch) {
     let str = doc_id.split("-", 1);
 
-    await socket.emit("fetchDocument", str, async (res) => {
-      if (res) {
-        if (res !== "server error") {
-          await dispatch({
-            type: actionTypes.FETCH_DOCUMENT_INFO,
-            data: res,
-          });
-        }
-      }
-    });
-
-    await socket.emit("fetchActionReq", str, async (res) => {
-      if (res) {
-        if (res !== "server error") {
-          await dispatch({
-            type: actionTypes.FETCH_ACTION_REQUIRED_DOCUMENT_INFO,
-            data: res,
-          });
-        }
-      }
-    });
-
-    await socket.emit(
-      "fetchDocumentDestination",
-      str,
-      async (fetchDocumentDestination) => {
-        if (fetchDocumentDestination) {
-          if (fetchDocumentDestination !== "server error") {
-            let arr = [];
-            for (let i = 0; i < fetchDocumentDestination.length; i++) {
-              await socket.emit(
-                "fetchDateTimeReleased",
-                fetchDocumentDestination[i].receiver_id,
-                fetchDocumentDestination[i].document_id,
-                async (fetchDateTimeRelease) => {
-                  if (fetchDateTimeRelease) {
-                    if (fetchDateTimeRelease !== "server error") {
-                      await socket.emit(
-                        "fetchActionTaken",
-                        fetchDocumentDestination[i].receiver_id,
-                        fetchDocumentDestination[i].document_id,
-                        async (fetchActionTaken) => {
-                          if (fetchActionTaken) {
-                            if (fetchActionTaken !== "server error") {
-                              arr.push({
-                                office: fetchDocumentDestination[i].section,
-                                date_time_receive:
-                                  fetchDocumentDestination[i].date_time_receive,
-                                action_taken: fetchActionTaken,
-                                date_time_released: fetchDateTimeRelease,
-                                initial: fetchDocumentDestination[i].receiver,
-                              });
-
-                              await dispatch({
-                                type:
-                                  actionTypes.FETCH_DESTINATION_DOCUMENT_INFO,
-                                data: arr,
-                              });
-                            }
-                          }
-                        }
-                      );
-                    }
-                  }
-                }
-              );
-            }
-          }
-        }
-      }
+    const fetchDocInfo = axios.get(
+      "http://" + endPoint.ADDRESS + "/dts/document/" + str
+    );
+    const fetchDocActionReq = axios.get(
+      "http://" + endPoint.ADDRESS + "/dts/document/required/" + str
+    );
+    const fetchDocDestination = axios.get(
+      "http://" + endPoint.ADDRESS + "/dts/document/destination/" + str
     );
 
-    await socket.emit(
-      "fetchDocumentBarcodes",
-      str,
-      async (fetchDocumentBarcodes) => {
-        if (fetchDocumentBarcodes) {
-          if (fetchDocumentBarcodes !== "server error") {
-            if (fetchDocumentBarcodes.length > 1) {
-              await dispatch({
-                type: actionTypes.FETCH_DOCUMENTS_BARCODES,
-                data: fetchDocumentBarcodes,
-              });
-            } else {
-              socket.emit(
-                "fetchDocumentBarcode",
-                str,
-                async (fetchDocumentBarcode) => {
-                  if (fetchDocumentBarcode) {
-                    if (fetchDocumentBarcode !== "server error") {
-                      await dispatch({
-                        type: actionTypes.FETCH_DOCUMENTS_BARCODE,
-                        data: fetchDocumentBarcode,
-                      });
-                    }
-                  }
-                }
-              );
-            }
-          }
-        }
-      }
+    const fetchDocCurrentStatus = axios.get(
+      "http://" + endPoint.ADDRESS + "/dts/document/status/" + str
     );
 
-    await socket.emit("fetchDocCurrentStatus", doc_id, (res) => {
-      if (res){
-        if (res !== "server error"){
-          dispatch({
-            type: actionTypes.FETCH_DOC_CURRENT_STATUS,
-            data: res,
-          });
-        }
-      }
+    await dispatch({
+      type: actionTypes.FETCH_DOCUMENT_INFO,
+      data: fetchDocInfo.data,
+    });
+
+    await dispatch({
+      type: actionTypes.FETCH_ACTION_REQUIRED_DOCUMENT_INFO,
+      data: fetchDocActionReq.data,
+    });
+
+    await dispatch({
+      type: actionTypes.FETCH_DESTINATION_DOCUMENT_INFO,
+      data: docDestination(fetchDocDestination),
+    });
+
+    await dispatch({
+      type: actionTypes.FETCH_DOCUMENTS_BARCODE,
+      data: docBarcode(str),
+    });
+
+    await dispatch({
+      type: actionTypes.FETCH_DOC_CURRENT_STATUS,
+      data: fetchDocCurrentStatus.data,
     });
   };
 }

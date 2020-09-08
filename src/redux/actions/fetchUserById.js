@@ -1,16 +1,18 @@
 import actionTypes from "./actionTypes";
-
-export function fetchUserById(id, socket) {
+import endPoint from "../../component/endPoint";
+import axios from "axios";
+export function fetchUserById(id) {
   return async function (dispatch) {
-    await socket.emit("user", id, (res) => {
-      if (res) {
-        if (res !== "server error") {
-          dispatch({
-            type: actionTypes.FETCH_USER_BY_ID,
-            data: res,
-          });
-        }
-      }
-    });
+    return axios
+      .get("http://" + endPoint.ADDRESS + "/dts/user/" + id)
+      .then((res) => {
+        dispatch({
+          type: actionTypes.FETCH_USER_BY_ID,
+          data: res.data,
+        });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }

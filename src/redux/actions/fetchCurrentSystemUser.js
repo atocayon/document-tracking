@@ -1,16 +1,18 @@
 import actionTypes from "./actionTypes";
-
-export function fetchCurrentSystemUser(token, socket) {
+import endPoint from "../../component/endPoint";
+import axios from "axios";
+export function fetchCurrentSystemUser(token) {
   return async function (dispatch) {
-    await socket.emit("user", token, (res) => {
-      if (res) {
-        if (res !== "server error") {
-          dispatch({
-            type: actionTypes.FETCH_SYSTEM_CURRENT_USER,
-            data: res,
-          });
-        }
-      }
-    });
+    return axios
+      .get("http://" + endPoint.ADDRESS + "/dts/user/" + token)
+      .then((res) => {
+        dispatch({
+          type: actionTypes.FETCH_SYSTEM_CURRENT_USER,
+          data: res.data,
+        });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }

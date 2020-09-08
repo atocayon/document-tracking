@@ -29,7 +29,6 @@ import forwardDocument from "./forwardDocument";
 import afterDocumentReceive from "./afterDocumentReceive";
 import trackDocument from "./trackDocument";
 import fetchPendingDocuments from "./fetchPendingDocuments";
-import fetchPendingDocumentInfo from "./fetchPendingDocumentInfo";
 import searchBySubj from "./searchBySubj";
 import expandDocLogs from "./expandDocLogs";
 import fetchActiveUserList from "./fetchActiveUserList";
@@ -77,10 +76,9 @@ const rootReducer = combineReducers({
   afterDocumentReceive: afterDocumentReceive,
   trackDocument: trackDocument,
   fetchPendingDocuments: fetchPendingDocuments,
-  fetchPendingDocumentInfo: fetchPendingDocumentInfo,
   searchBySubj: searchBySubj,
   expandDocLogs: expandDocLogs,
-  fetchActiveUserList:fetchActiveUserList,
+  fetchActiveUserList: fetchActiveUserList,
   onClickTrackShowMore: onClickTrackShowMore,
   fetchUserDocuments: fetchUserDocuments,
   fetchSectionDocuments: fetchSectionDocuments,
@@ -90,10 +88,10 @@ const rootReducer = combineReducers({
   saveEditDocCategory: saveEditDocCategory,
   deleteDocCategory: deleteDocCategory,
   listSectionDocCategory: listSectionDocCategory,
-  fetchProcessedDocument:fetchProcessedDocument,
+  fetchProcessedDocument: fetchProcessedDocument,
   fetchSectionUsers: fetchSectionUsers,
   trackOrSearchOnly: trackOrSearchOnly,
-  handleDocDissemination: handleDocDissemination
+  handleDocDissemination: handleDocDissemination,
 });
 
 export default rootReducer;

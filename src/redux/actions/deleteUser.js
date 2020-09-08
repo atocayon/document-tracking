@@ -1,17 +1,16 @@
 import actionTypes from "./actionTypes";
-
-export function deleteUser(id, secid, socket) {
+import axios from "axios";
+import endPoint from "../../component/endPoint";
+export function deleteUser(user_id) {
   return async function (dispatch) {
-
-    await socket.on("deleteUser", id, secid, (res) => {
-      if (res){
-        if (res !== "server error"){
-          dispatch({ type: actionTypes.DELETE_USER, res: true });
-          dispatch({ type: actionTypes.POP_USER, data: id });
-        }else{
-          dispatch({ type: actionTypes.DELETE_USER, res: false });
-        }
-      }
-    });
+    return axios
+      .post("http://" + endPoint.ADDRESS + "/dts/user/delete", { user_id })
+      .then(async (res) => {
+        await dispatch({ type: actionTypes.DELETE_USER, res: true });
+        await dispatch({ type: actionTypes.POP_USER, data: user_id });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }

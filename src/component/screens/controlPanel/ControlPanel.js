@@ -149,7 +149,6 @@ function ControlPanel(props) {
       fetch().catch((err) => {
         throw err;
       });
-
     }
 
     if (props._logout !== null) {
@@ -328,7 +327,7 @@ function ControlPanel(props) {
       return;
     }
 
-    await props.addNewDivision(division, socket);
+    await props.addNewDivision(division);
     const variant = "info";
     props.enqueueSnackbar("Added Successfully", { variant });
     setOpenAddNewDivision(false);

@@ -1,42 +1,32 @@
 import actionTypes from "./actionTypes";
-
+import endPoint from "../../component/endPoint";
+import axios from "axios";
 export function afterDocumentReceive(
   documentId,
   user_id,
   remarks,
   destinationType,
   destination,
-  status,
-  socket
+  status
 ) {
   return async function (dispatch) {
-    await socket.emit(
-      "afterDocumentReceive",
-      documentId,
-      user_id,
-      remarks,
-      destinationType,
-      destination,
-      status,
-      async (res) => {
-        if (res) {
-          if (res !== "server error") {
-            if (status === "2") {
-              await dispatch({
-                type: actionTypes.AFTER_DOCUMENT_RECEIVED,
-                data: "forwarded",
-              });
-            }
-
-            if (status === "4") {
-              await dispatch({
-                type: actionTypes.AFTER_DOCUMENT_RECEIVED,
-                data: "completed",
-              });
-            }
-          }
-        }
-      }
-    );
+    return axios
+      .post("http://" + endPoint.ADDRESS + "/dts/document/action", {
+        documentId,
+        user_id,
+        remarks,
+        destinationType,
+        destination,
+        status,
+      })
+      .then((res) => {
+        dispatch({
+          type: actionTypes.AFTER_DOCUMENT_RECEIVED,
+          data: status === "2" ? "forwarded" : "completed",
+        });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }

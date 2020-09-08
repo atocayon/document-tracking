@@ -1,21 +1,18 @@
 import actionTypes from "./actionTypes";
-
-export function fetchDocumentTypes(socket) {
+import endPoint from "../../component/endPoint";
+import axios from "axios";
+export function fetchDocumentTypes() {
   return async function (dispatch) {
-    await socket.emit("documentType", (res) => {
-      if (res) {
-        alert(res);
-      }
-    });
-
-    await socket.on("documentTypeList", (data) => {
-      if (data.length > 0){
+    return axios
+      .get("http://" + endPoint.ADDRESS + "/dts/document/types")
+      .then((res) => {
         dispatch({
           type: actionTypes.FETCH_DOCUMENT_TYPES,
-          data,
+          data: res.data,
         });
-      }
-
-    });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }

@@ -1,13 +1,18 @@
 import actionTypes from "./actionTypes";
-
-export function fetchAllUsers(socket) {
+import endPoint from "../../component/endPoint";
+import axios from "axios";
+export function fetchAllUsers() {
   return async function (dispatch) {
-    await socket.emit("getAllUsers");
-    await socket.on("users", (data) => {
-      dispatch({
-        type: actionTypes.FETCH_ALL_USER,
-        data,
+    return axios
+      .get("http://" + endPoint.ADDRESS + "/dts/users")
+      .then((res) => {
+        dispatch({
+          type: actionTypes.FETCH_ALL_USER,
+          data: res.data,
+        });
+      })
+      .catch((err) => {
+        throw err;
       });
-    });
   };
 }

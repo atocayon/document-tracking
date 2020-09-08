@@ -1,17 +1,29 @@
 import actionTypes from "./actionTypes";
-
-export function expandDocLogs(data, socket) {
-
+import endPoint from "../../component/endPoint";
+import axios from "axios";
+export function expandDocLogs(data) {
+  const { doc_id, status } = data;
   return async function (dispatch) {
-    await socket.emit("expandDocLogs", data.doc_id, data.status);
-    await socket.on("expandedDoc", (data) => {
-      dispatch({ type: actionTypes.EXPAND_DOC_LOGS, data });
-    });
+    return axios
+      .get(
+        "http://" +
+          endPoint.ADDRESS +
+          "/dts/document/expand/" +
+          doc_id +
+          "/" +
+          status
+      )
+      .then((res) => {
+        dispatch({ type: actionTypes.EXPAND_DOC_LOGS, data: res.data });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }
 
-export function clearExpandLogs(){
-  return async function(dispatch){
-      dispatch({type: actionTypes.CLEAR_EXPAND_DOC_LOGS});
-  }
+export function clearExpandLogs() {
+  return async function (dispatch) {
+    dispatch({ type: actionTypes.CLEAR_EXPAND_DOC_LOGS });
+  };
 }

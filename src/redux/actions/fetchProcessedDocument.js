@@ -1,15 +1,18 @@
 import actionTypes from "./actionTypes";
-
-export function fetchProcessedDocument(token, socket) {
+import endPoint from "../../component/endPoint";
+import axios from "axios";
+export function fetchProcessedDocument(token) {
   return async function (dispatch) {
-    await socket.emit("fetchProcessedDoc", token, (err) => {
-      if (err) {
+    return axios
+      .get("http://" + endPoint.ADDRESS + "/dts/document/logs/" + token)
+      .then((res) => {
+        dispatch({
+          type: actionTypes.FETCH_PROCESSED_DOCUMENT,
+          data: res.data,
+        });
+      })
+      .catch((err) => {
         throw err;
-      }
-    });
-
-    await socket.on("processedDocument", (data) => {
-      dispatch({ type: actionTypes.FETCH_PROCESSED_DOCUMENT, data });
-    });
+      });
   };
 }

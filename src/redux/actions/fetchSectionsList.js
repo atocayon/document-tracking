@@ -1,18 +1,15 @@
 import actionTypes from "./actionTypes";
-
-export function fetchSectionsList(socket) {
+import endPoint from "../../component/endPoint";
+import axios from "axios";
+export function fetchSectionsList() {
   return async function (dispatch) {
-    await socket.emit("sections", (res) => {
-      if (res) {
-        alert(res);
-      }
-    });
-
-    await socket.on("sectionList", async (data) => {
-      await dispatch({
-        type: actionTypes.FETCH_SECTIONS_LIST,
-        data,
+    return axios
+      .get("http://" + endPoint.ADDRESS + "/dts/sections")
+      .then((res) => {
+        dispatch({ type: actionTypes.FETCH_SECTIONS_LIST, data: res.data });
+      })
+      .catch((err) => {
+        throw err;
       });
-    });
   };
 }
