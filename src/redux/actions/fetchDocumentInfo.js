@@ -1,17 +1,22 @@
 import actionTypes from "./actionTypes";
-import endPoint from "../../component/endPoint";
 import axios from "axios";
 
 const docBarcode = (doc_id) => {
   const fetchDocumentBarcodes = axios.get(
-    "http://" + endPoint.ADDRESS + "/dts/document/barcodes/" + doc_id
+    "http://" +
+      process.env.REACT_APP_SERVER +
+      "/dts/document/barcodes/" +
+      doc_id
   );
 
   if (fetchDocumentBarcodes.data.length > 1) {
     return fetchDocumentBarcodes.data;
   } else {
     const fetchDocumentBarcode = axios.get(
-      "http://" + endPoint.ADDRESS + "/dts/document/barcode/" + doc_id
+      "http://" +
+        process.env.REACT_APP_SERVER +
+        "/dts/document/barcode/" +
+        doc_id
     );
 
     return fetchDocumentBarcode.data;
@@ -24,7 +29,7 @@ const docDestination = (fetchDocDestination) => {
   for (let i = 0; i < fetchDocDestination.data.length; i++) {
     const fetchDateTimeReleased = axios.get(
       "http://" +
-        endPoint.ADDRESS +
+        process.env.REACT_APP_SERVER +
         "/dts/document/sched/" +
         fetchDocDestination.data[i].document_id +
         "/" +
@@ -32,7 +37,7 @@ const docDestination = (fetchDocDestination) => {
     );
     const fetchActionTaken = axios.get(
       "http://" +
-        endPoint.ADDRESS +
+        process.env.REACT_APP_SERVER +
         "/dts/document/action/" +
         fetchDocDestination.data[i].document_id +
         "/" +
@@ -56,17 +61,20 @@ export function fetchDocumentInfo(doc_id) {
     let str = doc_id.split("-", 1);
 
     const fetchDocInfo = axios.get(
-      "http://" + endPoint.ADDRESS + "/dts/document/" + str
+      "http://" + process.env.REACT_APP_SERVER + "/dts/document/" + str
     );
     const fetchDocActionReq = axios.get(
-      "http://" + endPoint.ADDRESS + "/dts/document/required/" + str
+      "http://" + process.env.REACT_APP_SERVER + "/dts/document/required/" + str
     );
     const fetchDocDestination = axios.get(
-      "http://" + endPoint.ADDRESS + "/dts/document/destination/" + str
+      "http://" +
+        process.env.REACT_APP_SERVER +
+        "/dts/document/destination/" +
+        str
     );
 
     const fetchDocCurrentStatus = axios.get(
-      "http://" + endPoint.ADDRESS + "/dts/document/status/" + str
+      "http://" + process.env.REACT_APP_SERVER + "/dts/document/status/" + str
     );
 
     await dispatch({

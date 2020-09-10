@@ -1,13 +1,12 @@
 import actionTypes from "./actionTypes";
 import { setInStorage } from "../../component/storage";
-import endPoint from "../../component/endPoint";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
 export function login(data) {
   const { usernameOrEmail, password } = data;
   return async function (dispatch) {
     return axios
-      .post("http://" + endPoint.ADDRESS + "/dts/login", {
+      .post("http://" + process.env.REACT_APP_SERVER + "/dts/login", {
         usernameOrEmail,
         password,
       })

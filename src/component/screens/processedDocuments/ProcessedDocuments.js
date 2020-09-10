@@ -3,14 +3,13 @@ import Grid from "@material-ui/core/Grid";
 import { getFromStorage } from "../../storage";
 import { connect } from "react-redux";
 import io from "socket.io-client";
-import endPoint from "../../endPoint";
 import PrimarySearchAppBar from "../../common/navbar/PrimarySearchAppBar";
 import SideBarNavigation from "../../common/sideBarNavigation/SideBarNavigation";
 import { Redirect } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
 import { withSnackbar } from "notistack";
 import { fetchProcessedDocument } from "../../../redux/actions/fetchProcessedDocument";
-import {fetchUserById} from "../../../redux/actions/fetchUserById";
+import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import TableHead from "@material-ui/core/TableHead";
 import Table from "@material-ui/core/Table";
 import TableRow from "@material-ui/core/TableRow";
@@ -20,7 +19,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TablePagination from "@material-ui/core/TablePagination";
 import DescriptionIcon from "@material-ui/icons/Description";
 import UserList from "../../common/userList/UserList";
-let socket;
+
 const columns = [
   "Tracking #",
   "Subject",
@@ -38,12 +37,11 @@ function ProcessedDocuments(props) {
   });
   useEffect(() => {
     const timeID = setInterval(() => tick(), 1000);
-    socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       async function fetch() {
-        await props.fetchProcessedDocument(obj.token, socket);
-        await props.fetchUserById(obj.token, socket);
+        await props.fetchProcessedDocument(obj.token);
+        await props.fetchUserById(obj.token);
       }
 
       fetch().catch((err) => {
@@ -183,13 +181,13 @@ function ProcessedDocuments(props) {
 function mapStateToProps(state) {
   return {
     processedDoc: state.fetchProcessedDocument,
-    user: state.fetchUserById
+    user: state.fetchUserById,
   };
 }
 
 const mapDispatchToProps = {
   fetchProcessedDocument,
-  fetchUserById
+  fetchUserById,
 };
 
 export default connect(

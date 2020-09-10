@@ -1,5 +1,4 @@
 import actionTypes from "./actionTypes";
-import endPoint from "../../component/endPoint";
 import axios from "axios";
 export function afterDocumentReceive(
   documentId,
@@ -11,7 +10,7 @@ export function afterDocumentReceive(
 ) {
   return async function (dispatch) {
     return axios
-      .post("http://" + endPoint.ADDRESS + "/dts/document/action", {
+      .post("http://" + process.env.REACT_APP_SERVER + "/dts/document/action", {
         documentId,
         user_id,
         remarks,

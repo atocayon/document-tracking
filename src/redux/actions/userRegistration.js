@@ -1,5 +1,5 @@
 import actionTypes from "./actionTypes";
-
+import axios from "axios";
 export function userRegistration(
   section,
   user_role,
@@ -10,8 +10,7 @@ export function userRegistration(
   confirmPassword,
   email,
   contact,
-  position,
-  socket
+  position
 ) {
   const _data = {
     secid: section,
@@ -26,26 +25,23 @@ export function userRegistration(
   };
 
   return async function (dispatch) {
-    await socket.emit(
-      "addUser",
-      user_role,
-      employeeId,
-      name,
-      username,
-      password,
-      contact,
-      email,
-      section,
-      position,
-      (res) => {
-        if (res) {
-          if (res !== "error") {
-            dispatch({ type: actionTypes.USER_REGISTRATION, message: res });
-          } else {
-            alert(res);
-          }
-        }
-      }
-    );
+    return axios
+      .post("http://" + process.env.REACT_APP_SERVER + "/dts/registration", {
+        role: user_role,
+        employeeId,
+        name,
+        username,
+        password,
+        contact,
+        email,
+        section,
+        position,
+      })
+      .then((res) => {
+        dispatch({ type: actionTypes.USER_REGISTRATION, message: res.data });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }

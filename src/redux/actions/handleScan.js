@@ -1,13 +1,12 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-import endPoint from "../../component/endPoint";
 import Reactotron from "reactotron-react-js";
 export function receiveDoc(data, user_id, secshort, socket) {
   return async function (dispatch) {
     let str = data.split("-", 1);
     dispatch({ type: actionTypes.HANDLE_SCAN, data });
     await socket.emit(
-      "receiveDocument",
+      "receive_document",
       data,
       user_id,
       secshort,
@@ -44,33 +43,42 @@ export function receiveDoc(data, user_id, secshort, socket) {
   };
 }
 
-export function trackDoc(data, socket) {
+export function trackDoc(data) {
   return async function (dispatch) {
     let str = data.split("-", 1);
-    await dispatch({ type: actionTypes.HANDLE_SCAN, data });
-    await socket.emit("tracking", str.toString());
+    return axios
+      .get(
+        "http://" +
+          process.env.REACT_APP_SERVER +
+          "/dts/document/tracking/" +
+          str.toString()
+      )
+      .then(async (res) => {
+        let arr = [];
+        for (let i = 0; i < res.data.length; i++) {
+          let fetch = await get_branches(res.data[i].document_id);
+          let sub = await getSubProcess(res.data[i].document_id);
+          arr.push({ root: res.data[i], subProcess: sub, branch: fetch });
+        }
 
-    await socket.on("track", async (_data) => {
-      let arr = [];
-      for (let i = 0; i < _data.length; i++) {
-        let fetch = await get_branches(_data[i].document_id);
-        let sub = await getSubProcess(_data[i].document_id);
-        arr.push({ root: _data[i], subProcess: sub, branch: fetch });
-      }
-
-      dispatch({
-        type: actionTypes.TRACK_DOCUMENT,
-        data: arr,
+        dispatch({
+          type: actionTypes.TRACK_DOCUMENT,
+          data: arr,
+        });
+      })
+      .catch((err) => {
+        throw err;
       });
-    });
   };
 }
 
 async function getSubProcess(tracking) {
   let arr = [];
   let res = await axios.post(
-    "http://" + endPoint.ADDRESS + "/dts/getSubProcess",
-    { tracking }
+    "http://" +
+      process.env.REACT_APP_SERVER +
+      "/dts/document/process/" +
+      tracking
   );
   Reactotron.log(res);
   if (res.data.length > 0) {
@@ -87,16 +95,19 @@ async function getSubProcess(tracking) {
 
 async function get_branches(tracking) {
   let arr = [];
-  let res = await axios.post("http://" + endPoint.ADDRESS + "/dts/getBranch", {
-    tracking,
-  });
+  let res = await axios.post(
+    "http://" + process.env.REACT_APP_SERVER + "/dts/document/sub/" + tracking,
+    {
+      tracking,
+    }
+  );
 
   if (res.data.length > 0) {
     for (let i = 0; i < res.data.length; i++) {
       let fetch = await get_branches(res.data[i].document_id);
       let sub = await getSubProcess(res.data[i].document_id);
       arr.push({
-        root: res[i],
+        root: res.data[i],
         subProcess: sub,
         branch: fetch,
       });

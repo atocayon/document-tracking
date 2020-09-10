@@ -15,10 +15,9 @@ import TableCell from "@material-ui/core/TableCell";
 import AddIcon from "@material-ui/icons/Add";
 import InputField from "../../common/textField/InputField";
 import io from "socket.io-client";
-import endPoint from "../../endPoint";
 import { addNewDocCategory } from "../../../redux/actions/manageDocumentCategory";
 import { fetchDocCategory } from "../../../redux/actions/manageDocumentCategory";
-import {fetchUserById} from "../../../redux/actions/fetchUserById";
+import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import { onChangeEditDocCategory } from "../../../redux/actions/manageDocumentCategory";
 import { saveEditDocCategory } from "../../../redux/actions/manageDocumentCategory";
 import { deleteDocCategory } from "../../../redux/actions/manageDocumentCategory";
@@ -29,7 +28,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import DescriptionIcon from "@material-ui/icons/Description";
 import CheckIcon from "@material-ui/icons/Check";
 import UserList from "../../common/userList/UserList";
-let socket;
 const tableHead = ["Document Categories", ""];
 
 function ManageDocCategory(props) {
@@ -41,21 +39,20 @@ function ManageDocCategory(props) {
   const [token, setToken] = useState("");
   const [editDocCategory, setEditDocCategory] = useState({});
   useEffect(() => {
-    socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
       setToken(token);
       async function fetch() {
-        await props.fetchDocCategory(token, socket);
-        await props.fetchUserById(token, socket);
+        await props.fetchDocCategory(token);
+        await props.fetchUserById(token);
       }
       fetch().catch((err) => {
         throw err;
       });
     }
     setEndSession(!(obj && obj.token));
-  }, [socket]);
+  }, []);
 
   const handleClick = () => {
     setOpen(!open);
@@ -67,7 +64,7 @@ function ManageDocCategory(props) {
 
   const handleSubmitNewDocumentCategory = async (e) => {
     e.preventDefault();
-    await props.addNewDocCategory(token, category, socket);
+    await props.addNewDocCategory(token, category);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -85,11 +82,11 @@ function ManageDocCategory(props) {
 
   const handleSave = async () => {
     setEditDocCategory({});
-    await props.saveEditDocCategory(props.doc_category, token, socket);
+    await props.saveEditDocCategory(props.doc_category, token);
   };
 
   const handleDelete = async (val) => {
-    await props.deleteDocCategory(val, token, socket);
+    await props.deleteDocCategory(val, token);
   };
 
   return (
@@ -251,7 +248,7 @@ function mapStateToProps(state) {
   return {
     doc_category: state.manageDocumentCategory,
     insert: state.addNewDocCategory,
-    user: state.fetchUserById
+    user: state.fetchUserById,
   };
 }
 
@@ -261,7 +258,7 @@ const mapDispatchToProps = {
   onChangeEditDocCategory,
   saveEditDocCategory,
   deleteDocCategory,
-  fetchUserById
+  fetchUserById,
 };
 
 export default connect(

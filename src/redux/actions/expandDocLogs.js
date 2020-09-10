@@ -1,5 +1,4 @@
 import actionTypes from "./actionTypes";
-import endPoint from "../../component/endPoint";
 import axios from "axios";
 export function expandDocLogs(data) {
   const { doc_id, status } = data;
@@ -7,7 +6,7 @@ export function expandDocLogs(data) {
     return axios
       .get(
         "http://" +
-          endPoint.ADDRESS +
+          process.env.REACT_APP_SERVER +
           "/dts/document/expand/" +
           doc_id +
           "/" +

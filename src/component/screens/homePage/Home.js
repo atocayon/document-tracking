@@ -9,7 +9,6 @@ import { fetchCurrentSystemUser } from "../../../redux/actions/fetchCurrentSyste
 import { fetchSectionsList } from "../../../redux/actions/fetchSectionsList";
 import CircularProgressComponent from "../../common/circularProgress/CircularProgressComponent";
 
-let socket;
 function Home(props) {
   const [loading, setLoading] = useState(true);
   const [endSession, setEndSession] = useState(false);

@@ -49,8 +49,8 @@ import { logout } from "../../../redux/actions/logout";
 import { fetchDocCategory } from "../../../redux/actions/manageDocumentCategory";
 import ReactJoyride from "react-joyride";
 import io from "socket.io-client";
-import endPoint from "../../endPoint";
 import UserList from "../../common/userList/UserList";
+import CircularProgress from "../../common/circularProgress/CircularProgressComponent";
 let socket;
 
 function AddDocument({
@@ -156,8 +156,10 @@ function AddDocument({
   const [destination, setDestination] = useState("");
   const [open, setOpen] = useState(true);
   const [startGuide, setStartGuide] = useState(false);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
-    socket = io(endPoint.ADDRESS);
+    setLoading(false);
+    socket = io(process.env.REACT_APP_SERVER);
     const timeID = setInterval(() => tick(), 1000);
     const obj = getFromStorage("documentTracking");
 
@@ -165,13 +167,13 @@ function AddDocument({
       const { token } = obj;
 
       async function fetch() {
-        await fetchUserById(token, socket);
-        await fetchDocumentTypes(socket);
-        await fetchAllSections(socket);
-        await fetchDocCategory(token, socket);
+        await fetchUserById(token);
+        await fetchDocumentTypes();
+        await fetchAllSections();
+        await fetchDocCategory(token);
         if (match.params.id) {
-          await fetchDocumentById(match.params.id, socket);
-          await fetchDocumentActionRequired(match.params.id, socket);
+          await fetchDocumentById(match.params.id);
+          await fetchDocumentActionRequired(match.params.id);
         }
 
         if (!match.params.id) {
@@ -323,7 +325,7 @@ function AddDocument({
       _error.documentType = "Document type is required";
     }
 
-    if (!addDocument.documentCategory){
+    if (!addDocument.documentCategory) {
       _error.documentCategory = "Document Category is required";
     }
 
@@ -419,11 +421,11 @@ function AddDocument({
 
   const handleLogOut = async (e) => {
     e.preventDefault();
-    socket = io(endPoint.ADDRESS);
+
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
-      await logout(token, socket);
+      await logout(token);
     }
   };
 
@@ -433,6 +435,7 @@ function AddDocument({
   };
   return (
     <>
+      {loading && <CircularProgress />}
       <Grid container>
         <ReactJoyride
           steps={tutorial}
@@ -444,7 +447,7 @@ function AddDocument({
           // disableOverlay
           styles={{ options: { primaryColor: "#2196F3" } }}
         />
-        <PrimarySearchAppBar  />
+        <PrimarySearchAppBar />
         <Grid item xs={2}>
           <SideBarNavigation
             open={open}
@@ -552,28 +555,27 @@ function AddDocument({
                         <br />
                         <div className={"addDocType"}>
                           <SelectField
-                              id={"documentType"}
-                              name={"documentType"}
-                              label={"Document Type"}
-                              options={documentType}
-                              error={error.documentType}
-                              onChange={addDocumentInputChange}
-                              variant={"outlined"}
-                              value={addDocument.documentType}
+                            id={"documentType"}
+                            name={"documentType"}
+                            label={"Document Type"}
+                            options={documentType}
+                            error={error.documentType}
+                            onChange={addDocumentInputChange}
+                            variant={"outlined"}
+                            value={addDocument.documentType}
                           />
                         </div>
-
                         <br />
                         <div className={"addDocCategory"}>
                           <SelectField
-                              id={"documentCategory"}
-                              name={"documentCategory"}
-                              label={"Document Category"}
-                              options={doc_category}
-                              error={error.documentCategory}
-                              onChange={addDocumentInputChange}
-                              variant={"outlined"}
-                              value={parseInt(addDocument.documentType)}
+                            id={"documentCategory"}
+                            name={"documentCategory"}
+                            label={"Document Category"}
+                            options={doc_category}
+                            error={error.documentCategory}
+                            onChange={addDocumentInputChange}
+                            variant={"outlined"}
+                            value={parseInt(addDocument.documentType)}
                           />
                         </div>
                         <br />
@@ -595,7 +597,6 @@ function AddDocument({
                             </div>
                           </div>
                         </div>
-
                         <br />
                         <br />
                         <h5 style={{ color: "#2196F3" }}>
@@ -604,14 +605,13 @@ function AddDocument({
                         </h5>
                         <div className={"addDocNote"}>
                           <TextArea
-                              placeholder={"Write Your Note Here"}
-                              name={"note"}
-                              onChange={addDocumentInputChange}
-                              error={error.note}
-                              value={addDocument.note}
+                            placeholder={"Write Your Note Here"}
+                            name={"note"}
+                            onChange={addDocumentInputChange}
+                            error={error.note}
+                            value={addDocument.note}
                           />
                         </div>
-
                         <br />
                         <br />
                         <h5 style={{ color: "#2196F3" }}>
@@ -634,34 +634,29 @@ function AddDocument({
                           <div className={"col-md-3"}>
                             <div className={"addDocInternal"}>
                               <Radio
-                                  checked={destination === "Internal"}
-                                  onChange={handleChangeDestination}
-                                  value="Internal"
-                                  name="radio-button-demo"
-                                  inputProps={{ "aria-label": "A" }}
+                                checked={destination === "Internal"}
+                                onChange={handleChangeDestination}
+                                value="Internal"
+                                name="radio-button-demo"
+                                inputProps={{ "aria-label": "A" }}
                               />
                               <label>Internal</label>
                             </div>
-
                           </div>
                           <div className={"col-md-3"}>
                             <div className={"addDocExternal"}>
                               <Radio
-                                  checked={destination === "External"}
-                                  onChange={handleChangeDestination}
-                                  value="External"
-                                  name="radio-button-demo"
-                                  inputProps={{ "aria-label": "B" }}
+                                checked={destination === "External"}
+                                onChange={handleChangeDestination}
+                                value="External"
+                                name="radio-button-demo"
+                                inputProps={{ "aria-label": "B" }}
                               />
                               <label>External</label>
                             </div>
-
                           </div>
                         </div>
-
-
                         &nbsp;&nbsp;&nbsp;
-
                         <br />
                         <br />
                         {destination === "Internal" && (

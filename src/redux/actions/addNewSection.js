@@ -1,5 +1,4 @@
 import actionTypes from "./actionTypes";
-import endPoint from "../../component/endPoint";
 import axios from "axios";
 export function addNewSection(data) {
   const _data = {
@@ -11,7 +10,7 @@ export function addNewSection(data) {
   const { division, section, secshort } = data;
   return async function (dispatch) {
     return axios
-      .post("http://" + endPoint.ADDRESS + "/dts/section/new", {
+      .post("http://" + process.env.REACT_APP_SERVER + "/dts/section/new", {
         division,
         section,
         secshort,

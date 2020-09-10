@@ -24,9 +24,7 @@ import PrintIcon from "@material-ui/icons/Print";
 import { addForwardDestination } from "../../../redux/actions/onChangForwardDocument";
 import { removeForwardDestination } from "../../../redux/actions/onChangForwardDocument";
 import UserList from "../../common/userList/UserList";
-import io from "socket.io-client";
-import endPoint from "../../endPoint";
-let socket;
+
 function PendingDocumentInfo(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
@@ -37,7 +35,6 @@ function PendingDocumentInfo(props) {
   const [redirect, setRedirect] = useState(false);
   const componentRef = useRef();
   useEffect(() => {
-    socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       setToken(obj.token);
@@ -104,8 +101,7 @@ function PendingDocumentInfo(props) {
       props.pendingDocumentInfo.doc_route_type.length > 0
         ? props.forwardDocument.des
         : props.forwardDocument.destination,
-      "2",
-      socket
+      "2"
     );
   };
 
@@ -117,8 +113,7 @@ function PendingDocumentInfo(props) {
       props.forwardDocument.remarks,
       props.pendingDocumentInfo.destinationType,
       "none",
-      "4",
-      socket
+      "4"
     );
   };
 

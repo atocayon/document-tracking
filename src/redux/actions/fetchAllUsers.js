@@ -1,10 +1,9 @@
 import actionTypes from "./actionTypes";
-import endPoint from "../../component/endPoint";
 import axios from "axios";
 export function fetchAllUsers() {
   return async function (dispatch) {
     return axios
-      .get("http://" + endPoint.ADDRESS + "/dts/users")
+      .get("http://" + process.env.REACT_APP_SERVER + "/dts/users")
       .then((res) => {
         dispatch({
           type: actionTypes.FETCH_ALL_USER,

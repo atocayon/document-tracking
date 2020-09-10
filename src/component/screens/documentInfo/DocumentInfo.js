@@ -21,8 +21,6 @@ import Content from "./Content";
 import UserList from "../../common/userList/UserList";
 import SendIcon from "@material-ui/icons/Send";
 import "../../../styles/barcode.css";
-import io from "socket.io-client";
-import endPoint from "../../endPoint";
 import Forward from "./Forward";
 import {
   addForwardDestination,
@@ -40,13 +38,12 @@ function DocumentInfo(props) {
   const componentRef = useRef();
   const barcodeRef = useRef();
   useEffect(() => {
-    socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       async function fetch() {
-        await props.fetchDocumentInfo(props.match.params.doc_id, socket);
-        await props.fetchUserById(obj.token, socket);
-        await props.fetchSectionsList(socket);
+        await props.fetchDocumentInfo(props.match.params.doc_id);
+        await props.fetchUserById(obj.token);
+        await props.fetchSectionsList();
       }
 
       fetch().catch((err) => {

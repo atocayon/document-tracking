@@ -30,17 +30,18 @@ import Avatar from "@material-ui/core/Avatar";
 import ListItemText from "@material-ui/core/ListItemText";
 import DescriptionIcon from "@material-ui/icons/Description";
 import io from "socket.io-client";
-import endPoint from "../../endPoint";
 import UserList from "../../common/userList/UserList";
 import ReactJoyride from "react-joyride";
 import { trackOrSearchOnly } from "../../../redux/actions/trackOrSearchOnly";
 import SearchIcon from "@material-ui/icons/Search";
 import "../../../styles/dashboard.css";
 import scanner from "../../../img/scanner.png";
+import CircularProgress from "../../common/circularProgress/CircularProgressComponent";
 const _onClick = new UIFx(onClick);
 const _onScan = new UIFx(onScan);
 let socket;
 function Dashboard(props) {
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(true);
   const [startGuide, setStartGuide] = useState(false);
   const [tutorial, setTutorial] = useState([
@@ -112,7 +113,8 @@ function Dashboard(props) {
     },
   ]);
   useEffect(() => {
-    socket = io(endPoint.ADDRESS);
+    setLoading(false);
+    socket = io(process.env.REACT_APP_SERVER);
     if (props.receive !== "") {
       if (props.receive === "success") {
         const variant = "info";
@@ -161,7 +163,7 @@ function Dashboard(props) {
     }
 
     if (props._trackOrSearchOnly) {
-      await props.trackDoc(props.trackingNum.documentTrackingNumber, socket);
+      await props.trackDoc(props.trackingNum.documentTrackingNumber);
       _onScan.play();
     }
   };
@@ -179,7 +181,7 @@ function Dashboard(props) {
     }
 
     if (props._trackOrSearchOnly) {
-      await props.trackDoc(data, socket);
+      await props.trackDoc(data);
       _onScan.play();
     }
   };
@@ -190,7 +192,7 @@ function Dashboard(props) {
   };
 
   const handleSearch = async () => {
-    await props.searchBySubj(props.trackingNum.documentTrackingNumber, socket);
+    await props.searchBySubj(props.trackingNum.documentTrackingNumber);
   };
 
   const handleStartGuide = (e) => {
@@ -200,224 +202,241 @@ function Dashboard(props) {
 
   const onViewProgress = async (val) => {
     Reactotron.log(val);
-    await props.trackDoc(val, socket);
+    await props.trackDoc(val);
   };
 
   return (
-    <Grid container>
-      <ReactJoyride
-        steps={tutorial}
-        run={startGuide}
-        showProgress={true}
-        showSkipButton={true}
-        continuous={true}
-        disableOverlayClose={true}
-        // disableOverlay
-        styles={{ options: { primaryColor: "#2196F3" } }}
-      />
-      <BarcodeReader onError={handleError} onScan={handleScanning} />
-      <PrimarySearchAppBar handleStartGuide={handleStartGuide} />
-
-      <Grid item xs={2}>
-        <SideBarNavigation
-          dashboard={true}
-          user={props.user}
-          open={open}
-          setOpen={setOpen}
-          handleClick={handleClick}
+    <>
+      {loading && <CircularProgress />}
+      <Grid container>
+        <ReactJoyride
+          steps={tutorial}
+          run={startGuide}
+          showProgress={true}
+          showSkipButton={true}
+          continuous={true}
+          disableOverlayClose={true}
+          // disableOverlay
+          styles={{ options: { primaryColor: "#2196F3" } }}
         />
-      </Grid>
-      <Grid item xs={8}>
-        <Paper
-          elevation={3}
-          className={"paper"}
-          style={{
+        <BarcodeReader onError={handleError} onScan={handleScanning} />
+        <PrimarySearchAppBar handleStartGuide={handleStartGuide} />
 
-          }}
-        >
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <div
-                className={"jumbotron"}
-                style={{ paddingTop: "3vh", paddingBottom: "2vh" }}
-              >
-                <div className={"row"}>
-                  <div className={"col-md-2"}>
-                    <div className={"row"}>
-                      <div className={"col-md-6"}></div>
-                      <div className={"col-md-6"}>
-                        <div style={{ textAlign: "right" }}></div>
+        <Grid item xs={2}>
+          <SideBarNavigation
+            dashboard={true}
+            user={props.user}
+            open={open}
+            setOpen={setOpen}
+            handleClick={handleClick}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <Paper elevation={3} className={"paper"} style={{}}>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <div
+                  className={"jumbotron"}
+                  style={{ paddingTop: "3vh", paddingBottom: "2vh" }}
+                >
+                  <div className={"row"}>
+                    <div className={"col-md-2"}>
+                      <div className={"row"}>
+                        <div className={"col-md-6"}></div>
+                        <div className={"col-md-6"}>
+                          <div style={{ textAlign: "right" }}></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className={"col-md-8"}>
-                    <form onSubmit={handleManual}>
-                      <FormControl fullWidth>
-                        <InputLabel htmlFor="outlined-adornment-amount">
-                          {props._trackOrSearchOnly
-                            ? "Type the subject or scan the barcode"
-                            : "Document Tracking Number"}
-                        </InputLabel>
-                        <Input
-                          className={"trackingInput"}
-                          title={"Type/scan the Document Tracking Number"}
-                          id={"tackDocument"}
-                          name={"documentTrackingNumber"}
-                          label={"Tracking Number"}
-                          variant={"outlined"}
-                          onChange={props.documentTrackingNumber}
-                          value={props.trackingNum.documentTrackingNumber}
-                          type={"text"}
-                          endAdornment={
-                            props.receive !== "" || props.track.length > 0  || props.search.length > 0 ? (
-                              <InputAdornment position="end">
-                                <IconButton
-                                  title={"clear"}
-                                  aria-label="toggle password visibility"
-                                  onClick={props.resetTrackOrReceive}
-                                  onMouseDown={props.resetTrackOrReceive}
-                                  edge="end"
-                                >
-                                  <HighlightOffRoundedIcon />
-                                </IconButton>
-                              </InputAdornment>
-                            ) : (
-                              ""
-                            )
-                          }
-                        />
-                      </FormControl>
-                    </form>
-                  </div>
-                  <div className={"col-md-2"}>
-                    {props._trackOrSearchOnly && (
-                      <button
-                        title={"Search"}
-                        className={"btn btn-lg btn-info"}
-                        onClick={handleSearch}
-                      >
-                        <SearchIcon />
-                      </button>
-                    )}
+                    <div className={"col-md-8"}>
+                      <form onSubmit={handleManual}>
+                        <FormControl fullWidth>
+                          <InputLabel htmlFor="outlined-adornment-amount">
+                            {props._trackOrSearchOnly
+                              ? "Type the subject or scan the barcode"
+                              : "Document Tracking Number"}
+                          </InputLabel>
+                          <Input
+                            className={"trackingInput"}
+                            title={"Type/scan the Document Tracking Number"}
+                            id={"tackDocument"}
+                            name={"documentTrackingNumber"}
+                            label={"Tracking Number"}
+                            variant={"outlined"}
+                            onChange={props.documentTrackingNumber}
+                            value={props.trackingNum.documentTrackingNumber}
+                            type={"text"}
+                            endAdornment={
+                              props.receive !== "" ||
+                              props.track.length > 0 ||
+                              props.search.length > 0 ? (
+                                <InputAdornment position="end">
+                                  <IconButton
+                                    title={"clear"}
+                                    aria-label="toggle password visibility"
+                                    onClick={props.resetTrackOrReceive}
+                                    onMouseDown={props.resetTrackOrReceive}
+                                    edge="end"
+                                  >
+                                    <HighlightOffRoundedIcon />
+                                  </IconButton>
+                                </InputAdornment>
+                              ) : (
+                                ""
+                              )
+                            }
+                          />
+                        </FormControl>
+                      </form>
+                    </div>
+                    <div className={"col-md-2"}>
+                      {props._trackOrSearchOnly && (
+                        <button
+                          title={"Search"}
+                          className={"btn btn-lg btn-info"}
+                          onClick={handleSearch}
+                        >
+                          <SearchIcon />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {props.track.length === 0 && props.search.length === 0 ? (
+                {props.track.length === 0 && props.search.length === 0 ? (
                   <div className={"row"}>
                     <div className={"col-md-12"}>
                       <div className={"scanner-img-container"}>
-                        <img src={scanner} alt={"scanner"} className={"scanner-img"}/>
+                        <img
+                          src={scanner}
+                          alt={"scanner"}
+                          className={"scanner-img"}
+                        />
                       </div>
                     </div>
                   </div>
-              ) : ""}
-              <div className={"row"}>
-                <div className={"col-md-12"}>
-                  {!props._trackOrSearchOnly &&
-                  props.receive === "" &&
-                  props.track.length === 0 &&
-                  props.search.length === 0 ? (
-                    <div className={"scanReceiveTextIndicator"}>
-                      <h6 style={{ color: "#9E9E9E" }} className={"mainPage"}>
-                        Scan the barcode to receive document
-                      </h6>
+                ) : (
+                  ""
+                )}
+                <div className={"row"}>
+                  <div className={"col-md-12"}>
+                    {!props._trackOrSearchOnly &&
+                    props.receive === "" &&
+                    props.track.length === 0 &&
+                    props.search.length === 0 ? (
+                      <div className={"scanReceiveTextIndicator"}>
+                        <h6 style={{ color: "#9E9E9E" }} className={"mainPage"}>
+                          Scan the barcode to receive document
+                        </h6>
 
-                      <br />
-                      <button
-                        title={
-                          "Click here to track or search only the document"
-                        }
-                        className={"btn btn-sm optionTrackOnly"}
-                        style={{ color: "#2196F3" }}
-                        onClick={handleTrackOrSearchOnly}
-                      >
-                        Click here to track or search only the document
-                      </button>
-                    </div>
-                  ) : null}
-
-                  {props._trackOrSearchOnly &&
-                  props.receive === "" &&
-                  props.track.length === 0 &&
-                  props.search.length === 0 ? (
-                    <div className={"scanReceiveTextIndicator"}>
-                      <h6 style={{ color: "#9E9E9E" }}>
-                        Scan the barcode to track only the document or type the
-                        subject and click the search button
-                      </h6>
-                      <br />
-                      <button
-                        title={"Click to track and receive a document"}
-                        className={"btn btn-sm"}
-                        style={{ color: "#2196F3" }}
-                        onClick={handleTrackOrSearchOnly}
-                      >
-                        Click here to receive a document
-                      </button>
-                    </div>
-                  ) : null}
-
-                  {props._trackOrSearchOnly &&
-                  props.receive === "" &&
-                  props.track.length === 0 &&
-                  props.search.length > 0 ? (
-                    <>
-                      <div className={"row"}>
-                        <div className={"col-md-2"}></div>
-                        <div
-                          className={"col-md-8"}
-                          style={{ paddingBottom: 200 }}
+                        <br />
+                        <button
+                          title={
+                            "Click here to track or search only the document"
+                          }
+                          className={"btn btn-sm optionTrackOnly"}
+                          style={{ color: "#2196F3" }}
+                          onClick={handleTrackOrSearchOnly}
                         >
-                          <table className={"table"}>
-                            <tbody>
-                              {props.search.map((data, index) => (
-                                <tr>
-                                  <td>
-                                    <button className={"btn"} onClick={onViewProgress.bind(null, data.documentId)}>
-                                      <List>
-                                        <ListItem key={index}>
-                                          <ListItemAvatar>
-                                            <Avatar>
-                                              <DescriptionIcon />
-                                            </Avatar>
-                                          </ListItemAvatar>
-                                          <ListItemText
-                                              primary={data.subject}
-                                              secondary={data.creatorSection+" - "+data.creator+" ("+data.creatorPosition+")"}
-                                          />
-                                        </ListItem>
-                                      </List>
-                                    </button>
-
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-
-                        <div className={"col-md-2"}></div>
+                          Click here to track or search only the document
+                        </button>
                       </div>
-                    </>
-                  ) : null}
+                    ) : null}
 
-                  {props.track.length > 0 && props.search.length === 0 ? (
-                    <DocumentTrack
-                      track={props.track}
-                      trackingNum={props.trackingNum.documentTrackingNumber}
-                    />
-                  ) : null}
+                    {props._trackOrSearchOnly &&
+                    props.receive === "" &&
+                    props.track.length === 0 &&
+                    props.search.length === 0 ? (
+                      <div className={"scanReceiveTextIndicator"}>
+                        <h6 style={{ color: "#9E9E9E" }}>
+                          Scan the barcode to track only the document or type
+                          the subject and click the search button
+                        </h6>
+                        <br />
+                        <button
+                          title={"Click to track and receive a document"}
+                          className={"btn btn-sm"}
+                          style={{ color: "#2196F3" }}
+                          onClick={handleTrackOrSearchOnly}
+                        >
+                          Click here to receive a document
+                        </button>
+                      </div>
+                    ) : null}
+
+                    {props._trackOrSearchOnly &&
+                    props.receive === "" &&
+                    props.track.length === 0 &&
+                    props.search.length > 0 ? (
+                      <>
+                        <div className={"row"}>
+                          <div className={"col-md-2"}></div>
+                          <div
+                            className={"col-md-8"}
+                            style={{ paddingBottom: 200 }}
+                          >
+                            <table className={"table"}>
+                              <tbody>
+                                {props.search.map((data, index) => (
+                                  <tr>
+                                    <td>
+                                      <button
+                                        className={"btn"}
+                                        onClick={onViewProgress.bind(
+                                          null,
+                                          data.documentId
+                                        )}
+                                      >
+                                        <List>
+                                          <ListItem key={index}>
+                                            <ListItemAvatar>
+                                              <Avatar>
+                                                <DescriptionIcon />
+                                              </Avatar>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                              primary={data.subject}
+                                              secondary={
+                                                data.creatorSection +
+                                                " - " +
+                                                data.creator +
+                                                " (" +
+                                                data.creatorPosition +
+                                                ")"
+                                              }
+                                            />
+                                          </ListItem>
+                                        </List>
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+
+                          <div className={"col-md-2"}></div>
+                        </div>
+                      </>
+                    ) : null}
+
+                    {props.track.length > 0 && props.search.length === 0 ? (
+                      <DocumentTrack
+                        track={props.track}
+                        trackingNum={props.trackingNum.documentTrackingNumber}
+                      />
+                    ) : null}
+                  </div>
                 </div>
-              </div>
+              </Grid>
             </Grid>
-          </Grid>
-        </Paper>
+          </Paper>
+        </Grid>
+        <Grid item xs={2}>
+          <UserList />
+        </Grid>
       </Grid>
-      <Grid item xs={2}>
-        <UserList />
-      </Grid>
-    </Grid>
+    </>
   );
 }
 

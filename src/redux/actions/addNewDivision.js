@@ -1,5 +1,4 @@
 import actionTypes from "./actionTypes";
-import endPoint from "../../component/endPoint";
 import axios from "axios";
 
 export function addNewDivision(data) {
@@ -11,7 +10,7 @@ export function addNewDivision(data) {
   };
   return async function (dispatch) {
     return axios
-      .post("http://" + endPoint.ADDRESS + "/dts/division/new", {
+      .post("http://" + process.env.REACT_APP_SERVER + "/dts/division/new", {
         department,
         depshort,
         payroll,

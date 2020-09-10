@@ -1,13 +1,28 @@
 import actionTypes from "./actionTypes";
-
-export function updateSection(data, socket) {
+import axios from "axios";
+export function updateSection(data) {
+  const {
+    divid,
+    secid,
+    section,
+    secshort,
+    active,
+    department,
+    depshort,
+  } = data;
   return async function (dispatch) {
-    await socket.emit("updateSection", data, (res) => {
-      if (res) {
-        if (res !== "server error") {
-          dispatch({ type: actionTypes.UPDATE_SECTION, data });
-        }
-      }
-    });
+    return axios
+      .post("http://" + process.env.REACT_APP_SERVER + "/dts/section/update", {
+        sec_id: secid,
+        div_id: divid,
+        section,
+        secshort,
+      })
+      .then((res) => {
+        dispatch({ type: actionTypes.UPDATE_SECTION, data });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }

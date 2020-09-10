@@ -1,10 +1,9 @@
 import actionTypes from "./actionTypes";
-import endPoint from "../../component/endPoint";
 import axios from "axios";
 export function fetchAllSections() {
   return async function (dispatch) {
     return axios
-      .get("http://" + endPoint.ADDRESS + "/dts/sections")
+      .get("http://" + process.env.REACT_APP_SERVER + "/dts/sections")
       .then(async (res) => {
         const section = [];
         const internalDestination = [];

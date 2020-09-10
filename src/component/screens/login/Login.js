@@ -21,7 +21,7 @@ import sideImg from "../../../img/Untitled-1.svg";
 import userAvatar from "../../../img/user.svg";
 import { ReactSVG } from "react-svg";
 import CircularProgressComponent from "../../common/circularProgress/CircularProgressComponent";
-
+import Reactotron from "reactotron-react-js";
 const errorSound = new UIfx(error);
 const _visible = new UIfx(onClick);
 const _loginSuccess = new UIfx(loginSuccess);
@@ -37,6 +37,8 @@ function Login(props) {
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
+    Reactotron.log(process.env.REACT_APP_SERVER);
+
     setLoading(false);
     if (Object.keys(props._login).length > 0) {
       if (props._login.message === "success") {

@@ -1,7 +1,5 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-import server_ip from "../../component/endPoint";
-
 
 export function notification(section) {
   return function (dispatch) {

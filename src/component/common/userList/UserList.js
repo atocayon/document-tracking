@@ -11,7 +11,6 @@ import { withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import { withSnackbar } from "notistack";
 import io from "socket.io-client";
-import endPoint from "../../endPoint";
 import InfoIcon from "@material-ui/icons/Info";
 import { fetchActiveUserList } from "../../../redux/actions/fetchActiveUserList";
 let socket;
@@ -46,7 +45,7 @@ const StyledBadge = withStyles((theme) => ({
 
 function UserList(props) {
   useEffect(() => {
-    socket = io(endPoint.ADDRESS);
+    socket = io(process.env.REACT_APP_SERVER);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
@@ -114,7 +113,9 @@ function UserList(props) {
       )}
 
       {props.userList.length === 0 && (
-        <div style={{ textAlign: "center", marginTop: "40vh", color: "#9E9E9E" }}>
+        <div
+          style={{ textAlign: "center", marginTop: "40vh", color: "#9E9E9E" }}
+        >
           <small>No other active user(s)</small>
         </div>
       )}

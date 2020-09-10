@@ -8,7 +8,7 @@ import { Link, Redirect } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
 import { getFromStorage } from "../../storage";
 import { fetchSectionDocuments } from "../../../redux/actions/fetchSectionDocuments";
-import {fetchUserById} from "../../../redux/actions/fetchUserById";
+import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
@@ -18,10 +18,8 @@ import DescriptionIcon from "@material-ui/icons/Description";
 import TablePagination from "@material-ui/core/TablePagination";
 import UserList from "../../common/userList/UserList";
 import InputField from "../../common/textField/InputField";
-import {handleSearchSectionDocuments} from "../../../redux/actions/handleSearchSectionDocuments";
+import { handleSearchSectionDocuments } from "../../../redux/actions/handleSearchSectionDocuments";
 import io from "socket.io-client";
-import endPoint from "../../endPoint";
-let socket;
 function UserFolder(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
@@ -29,14 +27,13 @@ function UserFolder(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [userID, setUserID] = useState("");
   useEffect(() => {
-    socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
       setUserID(token);
       async function fetch() {
-        await props.fetchSectionDocuments(token, props.match.params.folder, socket);
-        await props.fetchUserById(token, socket);
+        await props.fetchSectionDocuments(token, props.match.params.folder);
+        await props.fetchUserById(token);
       }
 
       fetch().catch((err) => {
@@ -83,11 +80,11 @@ function UserFolder(props) {
           <div className={"jumbotron"} style={{ padding: 50 }}>
             <div className={"row"}>
               <div className={"col-md-4"}>
-                  <InputField
-                    name={"search"}
-                    label={"Search"}
-                    onChange={props.handleSearchSectionDocuments}
-                  />
+                <InputField
+                  name={"search"}
+                  label={"Search"}
+                  onChange={props.handleSearchSectionDocuments}
+                />
               </div>
               <div className={"col-md-6"}></div>
             </div>
@@ -97,21 +94,24 @@ function UserFolder(props) {
             <div className={"col-md-10"} style={{ marginLeft: 20 }}>
               <table className={"table table-borderless"}>
                 <tbody>
-                    <List>
-                      {props.document.length > 0 &&
+                  <List>
+                    {props.document.length > 0 &&
                       props.document
-                          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                          .map((document) => {
-                            let secondaryText =
-                                document.creatorID === userID
-                                    ? "You"
-                                    : document.creator;
-                            return (
-                                <tr>
-                                  <td>
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .map((document) => {
+                          let secondaryText =
+                            document.creatorID === userID
+                              ? "You"
+                              : document.creator;
+                          return (
+                            <tr>
+                              <td>
                                 <Link
-                                    to={"/doc/" + document.documentID}
-                                    style={{ textDecoration: "none" }}
+                                  to={"/doc/" + document.documentID}
+                                  style={{ textDecoration: "none" }}
                                 >
                                   <ListItem>
                                     <ListItemAvatar>
@@ -120,19 +120,20 @@ function UserFolder(props) {
                                       </Avatar>
                                     </ListItemAvatar>
                                     <ListItemText
-                                        primary={document.subject}
-                                        secondary={
-                                          document.docType + " by " + secondaryText
-                                        }
+                                      primary={document.subject}
+                                      secondary={
+                                        document.docType +
+                                        " by " +
+                                        secondaryText
+                                      }
                                     />
                                   </ListItem>
                                 </Link>
-                                  </td>
-                                </tr>
-                            );
-                          })}
-                    </List>
-
+                              </td>
+                            </tr>
+                          );
+                        })}
+                  </List>
                 </tbody>
               </table>
 
@@ -153,7 +154,7 @@ function UserFolder(props) {
         </Paper>
       </Grid>
       <Grid item xs={2}>
-          <UserList />
+        <UserList />
       </Grid>
     </Grid>
   );
@@ -162,14 +163,14 @@ function UserFolder(props) {
 function mapStateToProps(state) {
   return {
     document: state.fetchSectionDocuments,
-    user: state.fetchUserById
+    user: state.fetchUserById,
   };
 }
 
 const mapDispatchToProps = {
   fetchSectionDocuments,
   fetchUserById,
-  handleSearchSectionDocuments
+  handleSearchSectionDocuments,
 };
 
 export default connect(

@@ -44,7 +44,6 @@ import Sections from "./Sections";
 import DocumentTypes from "./DocumentTypes";
 import DocumentLogs from "./DocumentLogs";
 import io from "socket.io-client";
-import endPoint from "../../endPoint";
 let socket;
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -131,7 +130,7 @@ function ControlPanel(props) {
   });
 
   useEffect(() => {
-    socket = io(endPoint.ADDRESS);
+    socket = io(process.env.REACT_APP_SERVER);
 
     const obj = getFromStorage("documentTracking");
     setEndSession(!(obj && obj.token));
@@ -139,11 +138,11 @@ function ControlPanel(props) {
       setToken(obj.token);
 
       async function fetch() {
-        await props.fetchAllUsers(socket);
-        await props.fetchAllSections(socket);
-        await props.fetchDivisions(socket);
-        await props.fetchSectionsList(socket);
-        await props.fetchDocumentTypes(socket);
+        await props.fetchAllUsers();
+        await props.fetchAllSections();
+        await props.fetchDivisions();
+        await props.fetchSectionsList();
+        await props.fetchDocumentTypes();
       }
 
       fetch().catch((err) => {

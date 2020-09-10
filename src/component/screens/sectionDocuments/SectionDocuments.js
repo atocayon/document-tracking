@@ -9,9 +9,7 @@ import { withSnackbar } from "notistack";
 import { connect } from "react-redux";
 import { handleSearchSectionDocuments } from "../../../redux/actions/handleSearchSectionDocuments";
 import { fetchDocCategory } from "../../../redux/actions/manageDocumentCategory";
-import {fetchUserById} from "../../../redux/actions/fetchUserById";
-import io from "socket.io-client";
-import endPoint from "../../endPoint";
+import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import FolderOpenIcon from "@material-ui/icons/FolderOpen";
 import Avatar from "@material-ui/core/Avatar";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
@@ -19,19 +17,17 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import List from "@material-ui/core/List";
 import UserList from "../../common/userList/UserList";
-let socket;
 
 function SectionDocuments(props) {
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
   useEffect(() => {
-    socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
       async function fetch() {
-        await props.fetchDocCategory(token, socket);
-        await props.fetchUserById(token, socket);
+        await props.fetchDocCategory(token);
+        await props.fetchUserById(token);
       }
 
       fetch().catch((err) => {
@@ -68,8 +64,7 @@ function SectionDocuments(props) {
         >
           <div className={"jumbotron"} style={{ padding: 50 }}>
             <div className={"row"}>
-              <div className={"col-md-6"}>
-              </div>
+              <div className={"col-md-6"}></div>
               <div className={"col-md-6"}></div>
             </div>
           </div>
@@ -100,7 +95,6 @@ function SectionDocuments(props) {
                   </div>
                 ))}
             </div>
-
           </div>
         </Paper>
       </Grid>
@@ -114,14 +108,14 @@ function SectionDocuments(props) {
 function mapStateToProps(state) {
   return {
     doc_category: state.manageDocumentCategory,
-    user: state.fetchUserById
+    user: state.fetchUserById,
   };
 }
 
 const mapDispatchToProps = {
   handleSearchSectionDocuments,
   fetchDocCategory,
-  fetchUserById
+  fetchUserById,
 };
 export default connect(
   mapStateToProps,

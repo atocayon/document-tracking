@@ -1,10 +1,10 @@
 import actionTypes from "./actionTypes";
-import endPoint from "../../component/endPoint";
 import axios from "axios";
+import Reactotron from "reactotron-react-js";
 export function verifyToken(token) {
   return async function (dispatch) {
     return axios
-      .post("http://" + endPoint.ADDRESS + "/", { token })
+      .post("http://" + process.env.REACT_APP_SERVER + "/", { token })
       .then((res) => {
         dispatch({ type: actionTypes.VERIFY_TOKEN, data: res.data });
       })

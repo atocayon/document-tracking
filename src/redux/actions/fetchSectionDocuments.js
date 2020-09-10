@@ -1,12 +1,11 @@
 import actionTypes from "./actionTypes";
-import endPoint from "../../component/endPoint";
 import axios from "axios";
 export function fetchSectionDocuments(token, folder) {
   return async function (dispatch) {
     return axios
       .get(
         "http://" +
-          endPoint.ADDRESS +
+          process.env.REACT_APP_SERVER +
           "/dts/document/section/" +
           folder +
           "/" +

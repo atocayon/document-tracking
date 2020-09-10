@@ -19,7 +19,7 @@ import UserList from "../../common/userList/UserList";
 import { connect } from "react-redux";
 import { fetchSectionUsers } from "../../../redux/actions/fetchSectionUsers";
 import { fetchSectionsList } from "../../../redux/actions/fetchSectionsList";
-import server_ip from "../../endPoint";
+import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import io from "socket.io-client";
 let socket;
 function UserManagement(props) {
@@ -53,14 +53,15 @@ function UserManagement(props) {
 
   useEffect(() => {
     const obj = getFromStorage("documentTracking");
-    socket = io(server_ip.ADDRESS);
+    socket = io(process.env.REACT_APP_SERVER);
     if (obj && obj.token) {
       const { token } = obj;
       setToken(token);
 
       async function fetch() {
         await props.fetchSectionUsers(token);
-        await props.fetchSectionsList(socket);
+        await props.fetchSectionsList();
+        await props.fetchUserById(token);
       }
 
       fetch().catch((err) => {
@@ -72,17 +73,18 @@ function UserManagement(props) {
   }, []);
 
   const handleAccountRole = async (val) => {
-    await socket.emit("updateRole", val.status, val.id, val.secid, (res) => {
-      if (res) {
-        if (res !== "server error") {
-          const variant = "info";
-          props.enqueueSnackbar(val.name + " role updated...", { variant });
-        } else {
-          const variant = "error";
-          props.enqueueSnackbar(res, { variant });
-        }
-      }
-    });
+    axios
+      .post(
+        "http://" + process.env.REACT_APP_SERVER + "/dts/user/update/role",
+        { role: val.status, user_id: val.id, sec_id: val.secid }
+      )
+      .then((res) => {
+        const variant = "info";
+        props.enqueueSnackbar(val.name + " role updated...", { variant });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 
   const handleTransferOffice = (val) => {
@@ -129,22 +131,18 @@ function UserManagement(props) {
       open: false,
     });
 
-    await socket.emit(
-      "transferOffice",
-      transfer.section,
-      transferOfficeDialog.id,
-      (res) => {
-        if (res) {
-          if (res !== "server error") {
-            const variant = "info";
-            props.enqueueSnackbar("Office Transfer Success...", { variant });
-          } else {
-            const variant = "error";
-            props.enqueueSnackbar(res, { variant });
-          }
-        }
-      }
-    );
+    axios
+      .post(
+        "http://" + process.env.REACT_APP_SERVER + "/dts/user/transfer/office",
+        { sec_id: transfer.section, user_id: transferOfficeDialog.id }
+      )
+      .then((res) => {
+        const variant = "info";
+        props.enqueueSnackbar("Office Transfer Success...", { variant });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 
   const handleAccountStatus = (val) => {
@@ -194,40 +192,34 @@ function UserManagement(props) {
 
   const handleConfirm = async () => {
     if (openDialog.status !== "3") {
-      await socket.emit(
-        "updateStatus",
-        openDialog.status,
-        openDialog.id,
-        openDialog.secid,
-        (res) => {
-          if (res) {
-            if (res !== "server error") {
-              const variant = "info";
-              props.enqueueSnackbar(openDialog.name + " " + res, { variant });
-            } else {
-              const variant = "error";
-              props.enqueueSnackbar(res, { variant });
-            }
+      axios
+        .post(
+          "http://" + process.env.REACT_APP_SERVER + "/dts/user/update/status",
+          {
+            status: openDialog.status,
+            user_id: openDialog.id,
+            sec_id: openDialog.secid,
           }
-        }
-      );
+        )
+        .then((res) => {
+          const variant = "info";
+          props.enqueueSnackbar(openDialog.name + " " + res.data, { variant });
+        })
+        .catch((err) => {
+          throw err;
+        });
     } else {
-      await socket.emit(
-        "deleteUser",
-        openDialog.id,
-        openDialog.secid,
-        (res) => {
-          if (res) {
-            if (res !== "server error") {
-              const variant = "info";
-              props.enqueueSnackbar(openDialog.name + " " + res, { variant });
-            } else {
-              const variant = "error";
-              props.enqueueSnackbar(res, { variant });
-            }
-          }
-        }
-      );
+      axios
+        .post("http://" + process.env.REACT_APP_SERVER + "/dts/user/delete", {
+          user_id: openDialog.id,
+        })
+        .then((res) => {
+          const variant = "warning";
+          props.enqueueSnackbar(openDialog.name + " " + res.data, { variant });
+        })
+        .catch((err) => {
+          throw err;
+        });
     }
 
     setOpenDialog({
@@ -251,7 +243,7 @@ function UserManagement(props) {
       <Grid item xs={2}>
         <SideBarNavigation
           open={open}
-          user={props.data.currentUser}
+          user={props.currentUser}
           setOpen={setOpen}
           handleClick={handleClick}
         />
@@ -367,12 +359,14 @@ function mapStateToProps(state) {
   return {
     data: state.fetchSectionUsers,
     sections: state.fetchSectionsList,
+    currentUser: state.fetchUserById,
   };
 }
 
 const mapDispatchToProps = {
   fetchSectionUsers,
   fetchSectionsList,
+  fetchUserById,
 };
 
 export default connect(

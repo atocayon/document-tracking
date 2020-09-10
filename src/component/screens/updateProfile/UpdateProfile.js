@@ -22,9 +22,7 @@ import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import { fetchCurrentSystemUser } from "../../../redux/actions/fetchCurrentSystemUser";
 import { inputChange } from "../../../redux/actions/inputChange";
 import UserList from "../../common/userList/UserList";
-import io from "socket.io-client";
-import endPoint from "../../endPoint";
-let socket;
+
 function UpdateProfile(props) {
   const [endSession, setEndSession] = useState(false);
   const [open, setOpen] = useState(true);
@@ -43,13 +41,12 @@ function UpdateProfile(props) {
   });
 
   useEffect(() => {
-    socket = io(endPoint.ADDRESS);
     const id = props.match.params.id;
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       async function fetch() {
-        await props.fetchCurrentSystemUser(obj.token, socket);
-        await props.fetchUserById(id, socket);
+        await props.fetchCurrentSystemUser(obj.token);
+        await props.fetchUserById(id);
       }
 
       fetch().catch((err) => {
@@ -74,7 +71,7 @@ function UpdateProfile(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await props.updateUserProfile(props.user, socket);
+    await props.updateUserProfile(props.user);
 
     setEdit({
       ...edit,

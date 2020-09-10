@@ -1,5 +1,4 @@
 import actionTypes from "./actionTypes";
-import endPoint from "../../component/endPoint";
 import axios from "axios";
 export function addNewDocument(
   documentID,
@@ -13,7 +12,7 @@ export function addNewDocument(
 ) {
   return async function (dispatch) {
     return axios
-      .post("http://" + endPoint.ADDRESS + "/dts/document/new", {
+      .post("http://" + process.env.REACT_APP_SERVER + "/dts/document/new", {
         document_id: documentID,
         creator: user_id,
         subject,

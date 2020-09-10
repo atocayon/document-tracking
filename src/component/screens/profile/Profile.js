@@ -14,22 +14,24 @@ import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import { fetchCurrentSystemUser } from "../../../redux/actions/fetchCurrentSystemUser";
 import { withSnackbar } from "notistack";
 import UserList from "../../common/userList/UserList";
-import io from "socket.io-client";
-import endPoint from "../../endPoint";
-let socket;
-function Profile({ match, user, fetchUserById, currentUser, fetchCurrentSystemUser }) {
+function Profile({
+  match,
+  user,
+  fetchUserById,
+  currentUser,
+  fetchCurrentSystemUser,
+}) {
   const [endSession, setEndSession] = useState(false);
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
-    socket = io(endPoint.ADDRESS);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
       let params = match.params.id ? match.params.id : token;
       async function fetch() {
-        await fetchUserById(params, socket);
-        await fetchCurrentSystemUser(obj.token, socket);
+        await fetchUserById(params);
+        await fetchCurrentSystemUser(obj.token);
       }
 
       fetch().catch((err) => {

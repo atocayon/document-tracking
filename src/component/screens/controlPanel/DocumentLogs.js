@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
-import endPoint from "../../endPoint";
-
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
@@ -104,7 +102,7 @@ function Row(props) {
         <TableCell colSpan={8}>
           <Collapse in={open[row.trans_id]} timeout="auto" unmountOnExit>
             <Box margin={1}>
-              <h5 style={{color: "#2196F3"}}>
+              <h5 style={{ color: "#2196F3" }}>
                 <b>
                   <InfoIcon />
                   &nbsp;Document Track History
@@ -162,7 +160,7 @@ function DocumentLogs(props) {
   };
 
   useEffect(() => {
-    socket = io(endPoint.ADDRESS);
+    socket = io(process.env.REACT_APP_SERVER);
 
     socket.emit("getDocumentLogs");
     socket.on("docLogs", (data) => {
@@ -186,18 +184,19 @@ function DocumentLogs(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {doc.rows.length > 0 && doc.rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, index) => (
-                <Row
-                  index={index}
-                  row={row}
-                  socket={socket}
-                  expandDocLogs={props.expandDocLogs}
-                  expand_info={props.expand_info}
-                  clearExpandLogs={props.clearExpandLogs}
-                />
-              ))}
+            {doc.rows.length > 0 &&
+              doc.rows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => (
+                  <Row
+                    index={index}
+                    row={row}
+                    socket={socket}
+                    expandDocLogs={props.expandDocLogs}
+                    expand_info={props.expand_info}
+                    clearExpandLogs={props.clearExpandLogs}
+                  />
+                ))}
           </TableBody>
         </Table>
       </TableContainer>

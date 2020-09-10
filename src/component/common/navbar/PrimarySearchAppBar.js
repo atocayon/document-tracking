@@ -17,12 +17,9 @@ import MobileMenu from "./RenderMobileMenu";
 import ProfileMenu from "./ProfileMenu";
 import { withSnackbar } from "notistack";
 import SettingsIcon from "@material-ui/icons/Settings";
-import io from "socket.io-client";
-import endPoint from "../../endPoint";
 import { getFromStorage } from "../../storage";
 import { logout } from "../../../redux/actions/logout";
 
-let socket;
 function PrimarySearchAppBar(props) {
   const classes = useStyles(); // css styles
 
@@ -38,7 +35,6 @@ function PrimarySearchAppBar(props) {
   }); //Used for Drawer
 
   useEffect(() => {
-    socket = io(endPoint.ADDRESS);
     if (props._logout !== null) {
       if (props._logout === "false") {
         const variant = "error";
@@ -51,7 +47,7 @@ function PrimarySearchAppBar(props) {
         window.location.reload(true);
       }
     }
-  }, [props._logout, socket]);
+  }, [props._logout]);
 
   const toggleDrawer = (side, open) => (event) => {
     if (
@@ -90,7 +86,7 @@ function PrimarySearchAppBar(props) {
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
-      await props.logout(token, socket);
+      await props.logout(token);
     }
   };
 
@@ -98,7 +94,7 @@ function PrimarySearchAppBar(props) {
 
   const profileMenu = (
     <ProfileMenu
-        handleStartGuide={props.handleStartGuide}
+      handleStartGuide={props.handleStartGuide}
       id={props.id}
       anchorElProfileMenu={anchorEl}
       anchorOriginProfileMenu={{ vertical: "top", horizontal: "right" }}
@@ -153,7 +149,7 @@ function PrimarySearchAppBar(props) {
           //   backgroundColor: "#fafafa",
           //   color: "#263238",
           // }}
-            color={"inherit"}
+          color={"inherit"}
         >
           <Toolbar>
             <div>

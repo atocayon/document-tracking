@@ -17,8 +17,8 @@ import { Link } from "react-router-dom";
 import { getFromStorage } from "../../storage";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import io from "socket.io-client";
-import endPoint from "../../endPoint";
 import Badge from "@material-ui/core/Badge";
+import Reactotron from "reactotron-react-js";
 let socket;
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -73,14 +73,16 @@ export default function SideBarNavigation(props) {
   const classes = useStyles();
   const [pending, setPending] = useState(null);
   useEffect(() => {
-    socket = io(endPoint.ADDRESS);
+    socket = io(process.env.REACT_APP_SERVER);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
-      socket.emit("countPending", obj.token);
-      socket.on("pendings", (data) => {
+      socket.emit("total_pending_doc", obj.token);
+      socket.on("total_pendings", (data) => {
         setPending(data);
       });
     }
+
+    Reactotron.log(socket);
   }, [pending]);
 
   return (
@@ -90,10 +92,10 @@ export default function SideBarNavigation(props) {
           {props.user ? (
             <Link to={"/"} style={{ textDecoration: "none" }}>
               <ListItem
-                  className={"start"}
+                className={"start"}
                 title={"Click to go to home page"}
                 style={{ paddingTop: 70, paddingBottom: 30, color: "#2196F3" }}
-               >
+              >
                 <ListItemAvatar>
                   <StyledBadge
                     overlap="circle"
@@ -151,53 +153,46 @@ export default function SideBarNavigation(props) {
 
           <Collapse in={props.open} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <div className={"sidebarNew"} >
-                <ListItemComponent  primary="New" className={classes.nested} />
+              <div className={"sidebarNew"}>
+                <ListItemComponent primary="New" className={classes.nested} />
               </div>
 
               {/*<ListItemComponent primary="Drafts" className={classes.nested} />*/}
               <div className={"sidebarPending"}>
                 <ListItemComponent
-
-                    primary="Pending"
-                    className={classes.nested}
-                    pending={pending}
+                  primary="Pending"
+                  className={classes.nested}
+                  pending={pending}
                 />
               </div>
 
-
               <div className={"sidebarSectionDoc"}>
                 <ListItemComponent
-
-                    section={props.user.secshort}
-                    primary={props.user.secshort + " Documents"}
-                    className={classes.nested}
+                  section={props.user.secshort}
+                  primary={props.user.secshort + " Documents"}
+                  className={classes.nested}
                 />
               </div>
 
               <div className={"sidebarProcessedDoc"}>
                 <ListItemComponent
-
-                    primary="Received/Released"
-                    className={classes.nested}
+                  primary="Received/Released"
+                  className={classes.nested}
                 />
               </div>
-
             </List>
           </Collapse>
         </List>
         <Divider />
         <List component="nav" aria-label="secondary mailbox folders">
-          <div className={"sidebarManageDocCat"} >
+          <div className={"sidebarManageDocCat"}>
             <ListItemComponent primary="Manage Document Category" />
           </div>
-
         </List>
         <List component="nav" aria-label="secondary mailbox folders">
           <div className={"sidebarUserManage"}>
-            <ListItemComponent primary="User Management"  />
+            <ListItemComponent primary="User Management" />
           </div>
-
         </List>
 
         {/*<List component="nav" aria-label="secondary mailbox folders">*/}

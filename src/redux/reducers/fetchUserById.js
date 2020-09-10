@@ -18,7 +18,7 @@ export default function fetchUserById(state = defaultState, action) {
         section: action.data.section,
         position: action.data.position,
         role: action.data.role,
-        role_id: action.data.role_id.toString(),
+        role_id: action.data.role_id,
         department: action.data.department,
         depshort: action.data.depshort,
       };

@@ -1,16 +1,17 @@
 import actionTypes from "./actionTypes";
-
-export function logout(token, socket) {
+import axios from "axios";
+export function logout(token) {
   return function (dispatch) {
-    socket.emit("logout", token, (data) => {
-      if (data === "server error") {
-        dispatch({ type: actionTypes.LOG_OUT, logout: "false" });
-      }
-
-      if (data === "logout") {
+    return axios
+      .post("http://" + process.env.REACT_APP_SERVER + "/dts/logout", {
+        userId: token,
+      })
+      .then((res) => {
         localStorage.clear();
         dispatch({ type: actionTypes.LOG_OUT, logout: "true" });
-      }
-    });
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 }

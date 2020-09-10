@@ -1,10 +1,9 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-import endPoint from "../../component/endPoint";
 export function fetchDivisions() {
   return async function (dispatch) {
     return axios
-      .get("http://" + endPoint.ADDRESS + "/dts/divisions")
+      .get("http://" + process.env.REACT_APP_SERVER + "/dts/divisions")
       .then((res) => {
         dispatch({ type: actionTypes.FETCH_DIVISIONS, data: res.data });
       })
