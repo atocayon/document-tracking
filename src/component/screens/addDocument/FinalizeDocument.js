@@ -149,34 +149,38 @@ class FinalizeDocument extends Component {
             style={{ display: "none" }}
           >
             <div>
-              {this.props.data.destination.length > 1 ? (
-                this.props.data.destination.map((data, index) => {
-                  return (
+              {this.props.data.destination.length > 1
+                ? this.props.data.destination.map((data, index) => {
+                    return (
                       <a
-                          href={"#"}
-                          className={"btn"}
-                          title={"Print this barcode"}
+                        href={"#"}
+                        className={"btn"}
+                        title={"Print this barcode"}
                       >
-                        <span className={"barcodeLabel"}>{data[4]}</span><br/>
+                        <span className={"barcodeLabel"}>{data[4]}</span>
+                        <br />
                         <BarcodeComponent
-                            trackingNumber={this.props.trackingNumber + "-" + ++index}
+                          trackingNumber={
+                            this.props.trackingNumber + "-" + ++index
+                          }
+                          width={1}
+                          margin={0}
                         />
                       </a>
-                  );
-                })
-              ) : this.props.data.destination.map((data, index) => (
-                  <a
+                    );
+                  })
+                : this.props.data.destination.map((data, index) => (
+                    <a
                       href={"#"}
                       className={"btn"}
                       title={"Print this barcode"}
-                  >
-                    <BarcodeComponent
+                    >
+                      <BarcodeComponent
                         trackingNumber={this.props.trackingNumber}
                         margin={5}
-                    />
-                  </a>
-                  )
-              )}
+                      />
+                    </a>
+                  ))}
             </div>
           </div>
           <br />

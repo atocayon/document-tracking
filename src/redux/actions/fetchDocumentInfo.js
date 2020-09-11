@@ -1,8 +1,67 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
+import Reactotron from "reactotron-react-js";
 
-const docBarcode = (doc_id) => {
-  const fetchDocumentBarcodes = axios.get(
+export function fetchDocumentInfo(doc_id) {
+  return async function (dispatch) {
+    // let str = doc_id.split("-", 1);
+
+    const fetchDocInfo = await axios.get(
+      "http://" + process.env.REACT_APP_SERVER + "/dts/document/" + doc_id
+    );
+    const fetchDocActionReq = await axios.get(
+      "http://" +
+        process.env.REACT_APP_SERVER +
+        "/dts/document/required/" +
+        doc_id
+    );
+    const fetchDocDestination = await axios.get(
+      "http://" +
+        process.env.REACT_APP_SERVER +
+        "/dts/document/destination/" +
+        doc_id
+    );
+
+    const fetchDocCurrentStatus = await axios.get(
+      "http://" +
+        process.env.REACT_APP_SERVER +
+        "/dts/document/status/" +
+        doc_id
+    );
+    // Reactotron.log("saddsadssda");
+    // Reactotron.log(await docDestination(fetchDocDestination));
+
+    await dispatch({
+      type: actionTypes.FETCH_DOCUMENT_INFO,
+      data: fetchDocInfo.data,
+    });
+
+    await dispatch({
+      type: actionTypes.FETCH_ACTION_REQUIRED_DOCUMENT_INFO,
+      data: fetchDocActionReq.data,
+    });
+
+    const _docDestination = await docDestination(fetchDocDestination);
+    const _docBarcode = await docBarcode(doc_id);
+    await dispatch({
+      type: actionTypes.FETCH_DESTINATION_DOCUMENT_INFO,
+      data: _docDestination,
+    });
+
+    await dispatch({
+      type: actionTypes.FETCH_DOCUMENTS_BARCODE,
+      data: _docBarcode,
+    });
+
+    await dispatch({
+      type: actionTypes.FETCH_DOC_CURRENT_STATUS,
+      data: fetchDocCurrentStatus.data,
+    });
+  };
+}
+
+const docBarcode = async (doc_id) => {
+  const fetchDocumentBarcodes = await axios.get(
     "http://" +
       process.env.REACT_APP_SERVER +
       "/dts/document/barcodes/" +
@@ -12,7 +71,7 @@ const docBarcode = (doc_id) => {
   if (fetchDocumentBarcodes.data.length > 1) {
     return fetchDocumentBarcodes.data;
   } else {
-    const fetchDocumentBarcode = axios.get(
+    const fetchDocumentBarcode = await axios.get(
       "http://" +
         process.env.REACT_APP_SERVER +
         "/dts/document/barcode/" +
@@ -23,11 +82,11 @@ const docBarcode = (doc_id) => {
   }
 };
 
-const docDestination = (fetchDocDestination) => {
+const docDestination = async (fetchDocDestination) => {
   let arr = [];
 
   for (let i = 0; i < fetchDocDestination.data.length; i++) {
-    const fetchDateTimeReleased = axios.get(
+    const fetchDateTimeReleased = await axios.get(
       "http://" +
         process.env.REACT_APP_SERVER +
         "/dts/document/sched/" +
@@ -35,7 +94,7 @@ const docDestination = (fetchDocDestination) => {
         "/" +
         fetchDocDestination.data[i].receiver_id
     );
-    const fetchActionTaken = axios.get(
+    const fetchActionTaken = await axios.get(
       "http://" +
         process.env.REACT_APP_SERVER +
         "/dts/document/action/" +
@@ -55,51 +114,3 @@ const docDestination = (fetchDocDestination) => {
 
   return arr;
 };
-
-export function fetchDocumentInfo(doc_id) {
-  return async function (dispatch) {
-    let str = doc_id.split("-", 1);
-
-    const fetchDocInfo = axios.get(
-      "http://" + process.env.REACT_APP_SERVER + "/dts/document/" + str
-    );
-    const fetchDocActionReq = axios.get(
-      "http://" + process.env.REACT_APP_SERVER + "/dts/document/required/" + str
-    );
-    const fetchDocDestination = axios.get(
-      "http://" +
-        process.env.REACT_APP_SERVER +
-        "/dts/document/destination/" +
-        str
-    );
-
-    const fetchDocCurrentStatus = axios.get(
-      "http://" + process.env.REACT_APP_SERVER + "/dts/document/status/" + str
-    );
-
-    await dispatch({
-      type: actionTypes.FETCH_DOCUMENT_INFO,
-      data: fetchDocInfo.data,
-    });
-
-    await dispatch({
-      type: actionTypes.FETCH_ACTION_REQUIRED_DOCUMENT_INFO,
-      data: fetchDocActionReq.data,
-    });
-
-    await dispatch({
-      type: actionTypes.FETCH_DESTINATION_DOCUMENT_INFO,
-      data: docDestination(fetchDocDestination),
-    });
-
-    await dispatch({
-      type: actionTypes.FETCH_DOCUMENTS_BARCODE,
-      data: docBarcode(str),
-    });
-
-    await dispatch({
-      type: actionTypes.FETCH_DOC_CURRENT_STATUS,
-      data: fetchDocCurrentStatus.data,
-    });
-  };
-}

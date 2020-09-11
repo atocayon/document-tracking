@@ -51,6 +51,8 @@ import ReactJoyride from "react-joyride";
 import io from "socket.io-client";
 import UserList from "../../common/userList/UserList";
 import CircularProgress from "../../common/circularProgress/CircularProgressComponent";
+import { animateScroll } from "react-scroll";
+
 let socket;
 
 function AddDocument({
@@ -354,8 +356,14 @@ function AddDocument({
       enqueueSnackbar("Fill out all required fields...", { variant });
       return;
     }
-
+    scrollToTop();
     setFinalize(true);
+  };
+
+  const scrollToTop = () => {
+    animateScroll.scrollToTop({
+      containerId: "paper-container",
+    });
   };
 
   const handleGoBack = async () => {
@@ -459,6 +467,7 @@ function AddDocument({
         <Grid item xs={8}>
           {endSession && <Redirect to={"/"} />}
           <Paper
+            id={"paper-container"}
             elevation={3}
             style={{
               marginTop: 70,

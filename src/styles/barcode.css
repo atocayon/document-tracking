@@ -1,14 +1,10 @@
-
 @media print {
-    .barcode{
-        display: block !important;
-        width: 30px !important;
-    }
+  .barcode {
+    display: block !important;
+    width: 20px !important;
+  }
 
-    .barcodeLabel{
-        font-size: 10px !important;
-    }
-
-
+  .barcodeLabel {
+    font-size: 8px !important;
+  }
 }
-

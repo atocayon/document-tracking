@@ -13,7 +13,7 @@ export default class BarcodeComponent extends Component {
         height={20}
         width={this.props.width}
         margin={this.props.margin}
-        fontSize={10}
+        fontSize={8}
       />
     );
   }
