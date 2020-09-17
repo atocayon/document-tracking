@@ -19,7 +19,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TablePagination from "@material-ui/core/TablePagination";
 import DescriptionIcon from "@material-ui/icons/Description";
 import UserList from "../../common/userList/UserList";
-
+import CircularProgress from "../../common/circularProgress/CircularProgressComponent";
 const columns = [
   "Tracking #",
   "Subject",
@@ -28,6 +28,7 @@ const columns = [
   "Date/Time Processed",
 ];
 function ProcessedDocuments(props) {
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
   const [page, setPage] = React.useState(0);
@@ -36,6 +37,7 @@ function ProcessedDocuments(props) {
     _date: new Date(),
   });
   useEffect(() => {
+    setLoading(false);
     const timeID = setInterval(() => tick(), 1000);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
@@ -73,108 +75,111 @@ function ProcessedDocuments(props) {
     setPage(0);
   };
   return (
-    <Grid container>
-      <PrimarySearchAppBar />
-      <Grid item xs={2}>
-        <SideBarNavigation
-          open={open}
-          user={props.user}
-          setOpen={setOpen}
-          handleClick={handleClick}
-        />
-      </Grid>
-      <Grid item xs={8}>
-        {endSession && <Redirect to={"/"} />}
-        <Paper
-          elevation={3}
-          style={{
-            marginTop: 70,
-            paddingTop: 0,
-            height: "100vh",
-            overflow: "auto",
-          }}
-        >
-          <div className={"jumbotron"} style={{ padding: 50 }}>
-            <div className={"row"}>
-              <div className={"col-md-8"}>
-                <h5>
-                  {" "}
-                  <DescriptionIcon
-                    fontSize={"medium"}
-                    style={{ color: "#2196F3" }}
-                  />{" "}
-                  Received and{" "}
-                  <span style={{ color: "#2196F3" }}>released documents</span>
-                </h5>
-              </div>
-              <div className={"col-md-4"}>
-                <div style={{ textAlign: "right" }}>
-                  <span>
-                    <small>
-                      {date._date.toLocaleDateString() +
-                        " " +
-                        date._date.toLocaleTimeString()}
-                    </small>
-                  </span>
+    <>
+      {loading && <CircularProgress />}
+      <Grid container>
+        <PrimarySearchAppBar />
+        <Grid item xs={2}>
+          <SideBarNavigation
+            open={open}
+            user={props.user}
+            setOpen={setOpen}
+            handleClick={handleClick}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          {endSession && <Redirect to={"/"} />}
+          <Paper
+            elevation={3}
+            style={{
+              marginTop: 70,
+              paddingTop: 0,
+              height: "100vh",
+              overflow: "auto",
+            }}
+          >
+            <div className={"jumbotron"} style={{ padding: 50 }}>
+              <div className={"row"}>
+                <div className={"col-md-8"}>
+                  <h5>
+                    {" "}
+                    <DescriptionIcon
+                      fontSize={"medium"}
+                      style={{ color: "#2196F3" }}
+                    />{" "}
+                    Received and{" "}
+                    <span style={{ color: "#2196F3" }}>released documents</span>
+                  </h5>
+                </div>
+                <div className={"col-md-4"}>
+                  <div style={{ textAlign: "right" }}>
+                    <span>
+                      <small>
+                        {date._date.toLocaleDateString() +
+                          " " +
+                          date._date.toLocaleTimeString()}
+                      </small>
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className={"row"}>
-            <div
-              className={"col-md-12"}
-              style={{ paddingLeft: 50, paddingRight: 50 }}
-            >
-              <TableContainer>
-                <Table aria-label="sticky table">
-                  <TableHead style={{ background: "#2196F3" }}>
-                    <TableRow>
-                      {columns.map((column) => (
-                        <TableCell style={{ color: "#fff" }} key={column}>
-                          {column}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {props.processedDoc.length > 0 &&
-                      props.processedDoc
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        .map((data) => (
-                          <TableRow key={data.document_id}>
-                            <TableCell style={{ color: "#2196F3" }}>
-                              {data.document_id}
-                            </TableCell>
-                            <TableCell>{data.subject}</TableCell>
-                            <TableCell>{data.type}</TableCell>
-                            <TableCell>{data.status}</TableCell>
-                            <TableCell>{data.date_time}</TableCell>
-                          </TableRow>
+            <div className={"row"}>
+              <div
+                className={"col-md-12"}
+                style={{ paddingLeft: 50, paddingRight: 50 }}
+              >
+                <TableContainer>
+                  <Table aria-label="sticky table">
+                    <TableHead style={{ background: "#2196F3" }}>
+                      <TableRow>
+                        {columns.map((column) => (
+                          <TableCell style={{ color: "#fff" }} key={column}>
+                            {column}
+                          </TableCell>
                         ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
-                component="div"
-                count={props.processedDoc.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onChangePage={handleChangePage}
-                onChangeRowsPerPage={handleChangeRowsPerPage}
-              />
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {props.processedDoc.length > 0 &&
+                        props.processedDoc
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .map((data) => (
+                            <TableRow key={data.document_id}>
+                              <TableCell style={{ color: "#2196F3" }}>
+                                {data.document_id}
+                              </TableCell>
+                              <TableCell>{data.subject}</TableCell>
+                              <TableCell>{data.type}</TableCell>
+                              <TableCell>{data.status}</TableCell>
+                              <TableCell>{data.date_time}</TableCell>
+                            </TableRow>
+                          ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[10, 25, 100]}
+                  component="div"
+                  count={props.processedDoc.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onChangePage={handleChangePage}
+                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                />
+              </div>
             </div>
-          </div>
-        </Paper>
+          </Paper>
+        </Grid>
+        <Grid item xs={2}>
+          <UserList />
+        </Grid>
       </Grid>
-      <Grid item xs={2}>
-        <UserList />
-      </Grid>
-    </Grid>
+    </>
   );
 }
 

@@ -17,11 +17,13 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import List from "@material-ui/core/List";
 import UserList from "../../common/userList/UserList";
-
+import CircularProgress from "../../common/circularProgress/CircularProgressComponent";
 function SectionDocuments(props) {
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
   useEffect(() => {
+    setLoading(false);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
@@ -41,67 +43,70 @@ function SectionDocuments(props) {
   };
 
   return (
-    <Grid container>
-      <PrimarySearchAppBar />
-      <Grid item xs={2}>
-        <SideBarNavigation
-          open={open}
-          user={props.user}
-          setOpen={setOpen}
-          handleClick={handleClick}
-        />
-      </Grid>
-      <Grid item xs={8}>
-        {endSession && <Redirect to={"/"} />}
-        <Paper
-          elevation={3}
-          style={{
-            marginTop: 70,
-            paddingTop: 0,
-            height: "100vh",
-            overflow: "auto",
-          }}
-        >
-          <div className={"jumbotron"} style={{ padding: 50 }}>
-            <div className={"row"}>
-              <div className={"col-md-6"}></div>
-              <div className={"col-md-6"}></div>
+    <>
+      {loading && <CircularProgress />}
+      <Grid container>
+        <PrimarySearchAppBar />
+        <Grid item xs={2}>
+          <SideBarNavigation
+            open={open}
+            user={props.user}
+            setOpen={setOpen}
+            handleClick={handleClick}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          {endSession && <Redirect to={"/"} />}
+          <Paper
+            elevation={3}
+            style={{
+              marginTop: 70,
+              paddingTop: 0,
+              height: "100vh",
+              overflow: "auto",
+            }}
+          >
+            <div className={"jumbotron"} style={{ padding: 50 }}>
+              <div className={"row"}>
+                <div className={"col-md-6"}></div>
+                <div className={"col-md-6"}></div>
+              </div>
             </div>
-          </div>
 
-          <div style={{ marginLeft: 50, marginRight: 10 }}>
-            <div className={"row"}>
-              {props.doc_category.length > 0 &&
-                props.doc_category.map((data) => (
-                  <div className={"col-md-3"} style={{ paddingLeft: 20 }}>
-                    <List>
-                      <Link
-                        to={"/folder/" + data.category}
-                        style={{ color: "#000", textDecoration: "none" }}
-                      >
-                        <ListItem>
-                          <ListItemAvatar>
-                            <Avatar variant={"rounded"}>
-                              <FolderOpenIcon fontSize={"large"} />
-                            </Avatar>
-                          </ListItemAvatar>
-                          <ListItemText
-                            primary={data.category}
-                            secondary={"Folder"}
-                          />
-                        </ListItem>
-                      </Link>
-                    </List>
-                  </div>
-                ))}
+            <div style={{ marginLeft: 50, marginRight: 10 }}>
+              <div className={"row"}>
+                {props.doc_category.length > 0 &&
+                  props.doc_category.map((data) => (
+                    <div className={"col-md-3"} style={{ paddingLeft: 20 }}>
+                      <List>
+                        <Link
+                          to={"/folder/" + data.category}
+                          style={{ color: "#000", textDecoration: "none" }}
+                        >
+                          <ListItem>
+                            <ListItemAvatar>
+                              <Avatar variant={"rounded"}>
+                                <FolderOpenIcon fontSize={"large"} />
+                              </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText
+                              primary={data.category}
+                              secondary={"Folder"}
+                            />
+                          </ListItem>
+                        </Link>
+                      </List>
+                    </div>
+                  ))}
+              </div>
             </div>
-          </div>
-        </Paper>
+          </Paper>
+        </Grid>
+        <Grid item xs={2}>
+          <UserList />
+        </Grid>
       </Grid>
-      <Grid item xs={2}>
-        <UserList />
-      </Grid>
-    </Grid>
+    </>
   );
 }
 

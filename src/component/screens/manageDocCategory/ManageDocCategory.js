@@ -28,9 +28,11 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import DescriptionIcon from "@material-ui/icons/Description";
 import CheckIcon from "@material-ui/icons/Check";
 import UserList from "../../common/userList/UserList";
+import CircularProgress from "../../common/circularProgress/CircularProgressComponent";
 const tableHead = ["Document Categories", ""];
 
 function ManageDocCategory(props) {
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
   const [page, setPage] = React.useState(0);
@@ -39,6 +41,7 @@ function ManageDocCategory(props) {
   const [token, setToken] = useState("");
   const [editDocCategory, setEditDocCategory] = useState({});
   useEffect(() => {
+    setLoading(false);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
@@ -90,157 +93,160 @@ function ManageDocCategory(props) {
   };
 
   return (
-    <Grid container>
-      <PrimarySearchAppBar />
-      <Grid item xs={2}>
-        <SideBarNavigation
-          open={open}
-          user={props.user}
-          setOpen={setOpen}
-          handleClick={handleClick}
-        />
-      </Grid>
-      <Grid item xs={8}>
-        {endSession && <Redirect to={"/"} />}
-        <Paper
-          elevation={3}
-          style={{
-            marginTop: 70,
-            paddingTop: 0,
-            height: "100vh",
-            overflow: "auto",
-          }}
-        >
-          <div className={"jumbotron"} style={{ padding: 50 }}>
-            <div className={"row"}>
-              <div className={"col-md-6"}></div>
-              <div className={"col-md-6"}></div>
+    <>
+      {loading && <CircularProgress />}
+      <Grid container>
+        <PrimarySearchAppBar />
+        <Grid item xs={2}>
+          <SideBarNavigation
+            open={open}
+            user={props.user}
+            setOpen={setOpen}
+            handleClick={handleClick}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          {endSession && <Redirect to={"/"} />}
+          <Paper
+            elevation={3}
+            style={{
+              marginTop: 70,
+              paddingTop: 0,
+              height: "100vh",
+              overflow: "auto",
+            }}
+          >
+            <div className={"jumbotron"} style={{ padding: 50 }}>
+              <div className={"row"}>
+                <div className={"col-md-6"}></div>
+                <div className={"col-md-6"}></div>
+              </div>
             </div>
-          </div>
 
-          <div style={{ marginLeft: 50, marginRight: 20 }}>
-            <div className={"row"}>
-              <div className={"col-md-6"}>
-                <div style={{ padding: 20 }}>
-                  <form onSubmit={handleSubmitNewDocumentCategory}>
-                    <h6>
-                      <AddIcon /> New Document Category
-                    </h6>
-                    <br />
-                    <InputField
-                      label={"Document Category"}
-                      variant={"outlined"}
-                      onChange={handleOnChangeAddNewDocCategory}
-                      // error={error.email}
-                      type={"search"}
-                    />
-                    <br />
-                    <br />
-                    <button
-                      type={"submit"}
-                      className={"btn btn-info"}
-                      title={"Click to Save"}
-                    >
-                      Save
-                    </button>
-                  </form>
+            <div style={{ marginLeft: 50, marginRight: 20 }}>
+              <div className={"row"}>
+                <div className={"col-md-6"}>
+                  <div style={{ padding: 20 }}>
+                    <form onSubmit={handleSubmitNewDocumentCategory}>
+                      <h6>
+                        <AddIcon /> New Document Category
+                      </h6>
+                      <br />
+                      <InputField
+                        label={"Document Category"}
+                        variant={"outlined"}
+                        onChange={handleOnChangeAddNewDocCategory}
+                        // error={error.email}
+                        type={"search"}
+                      />
+                      <br />
+                      <br />
+                      <button
+                        type={"submit"}
+                        className={"btn btn-info"}
+                        title={"Click to Save"}
+                      >
+                        Save
+                      </button>
+                    </form>
+                  </div>
+                </div>
+                <div className={"col-md-6"}>
+                  <TableContainer>
+                    <Table stickyHeader aria-label="sticky table">
+                      <TableHead>
+                        <TableRow>
+                          {tableHead.map((column, index) => (
+                            <TableCell
+                              style={{ color: "#2196F3", fontWeight: "bold" }}
+                              key={column}
+                            >
+                              {index === 0 && <DescriptionIcon />} {column}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {props.doc_category.length > 0 &&
+                          props.doc_category
+                            .slice(
+                              page * rowsPerPage,
+                              page * rowsPerPage + rowsPerPage
+                            )
+                            .map((data, index) => (
+                              <TableRow
+                                hover
+                                role="checkbox"
+                                tabIndex={-1}
+                                key={data.id}
+                              >
+                                <TableCell>
+                                  <input
+                                    className={"form-control"}
+                                    type={"text"}
+                                    name={data.id}
+                                    style={{
+                                      border: "1px solid white",
+                                      padding: 10,
+                                      background: "#fff",
+                                    }}
+                                    value={data.category}
+                                    disabled={!editDocCategory[data.id]}
+                                    onChange={props.onChangeEditDocCategory}
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  {!editDocCategory[data.id] && (
+                                    <button
+                                      title={"Click to edit"}
+                                      className={"btn btn-sm"}
+                                      onClick={handleEdit.bind(null, data.id)}
+                                    >
+                                      <EditIcon />
+                                    </button>
+                                  )}
+                                  {editDocCategory[data.id] && (
+                                    <button
+                                      title={"Click to save changes"}
+                                      className={"btn btn-sm"}
+                                      onClick={handleSave}
+                                    >
+                                      <CheckIcon />
+                                    </button>
+                                  )}
+                                  &nbsp;&nbsp;&nbsp;
+                                  <button
+                                    title={"Click to delete"}
+                                    className={"btn btn-sm"}
+                                    onClick={handleDelete.bind(null, data.id)}
+                                  >
+                                    <DeleteIcon />
+                                  </button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <TablePagination
+                    rowsPerPageOptions={[10, 25, 100]}
+                    component="div"
+                    count={props.doc_category.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                  />
                 </div>
               </div>
-              <div className={"col-md-6"}>
-                <TableContainer>
-                  <Table stickyHeader aria-label="sticky table">
-                    <TableHead>
-                      <TableRow>
-                        {tableHead.map((column, index) => (
-                          <TableCell
-                            style={{ color: "#2196F3", fontWeight: "bold" }}
-                            key={column}
-                          >
-                            {index === 0 && <DescriptionIcon />} {column}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {props.doc_category.length > 0 &&
-                        props.doc_category
-                          .slice(
-                            page * rowsPerPage,
-                            page * rowsPerPage + rowsPerPage
-                          )
-                          .map((data, index) => (
-                            <TableRow
-                              hover
-                              role="checkbox"
-                              tabIndex={-1}
-                              key={data.id}
-                            >
-                              <TableCell>
-                                <input
-                                  className={"form-control"}
-                                  type={"text"}
-                                  name={data.id}
-                                  style={{
-                                    border: "1px solid white",
-                                    padding: 10,
-                                    background: "#fff",
-                                  }}
-                                  value={data.category}
-                                  disabled={!editDocCategory[data.id]}
-                                  onChange={props.onChangeEditDocCategory}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                {!editDocCategory[data.id] && (
-                                  <button
-                                    title={"Click to edit"}
-                                    className={"btn btn-sm"}
-                                    onClick={handleEdit.bind(null, data.id)}
-                                  >
-                                    <EditIcon />
-                                  </button>
-                                )}
-                                {editDocCategory[data.id] && (
-                                  <button
-                                    title={"Click to save changes"}
-                                    className={"btn btn-sm"}
-                                    onClick={handleSave}
-                                  >
-                                    <CheckIcon />
-                                  </button>
-                                )}
-                                &nbsp;&nbsp;&nbsp;
-                                <button
-                                  title={"Click to delete"}
-                                  className={"btn btn-sm"}
-                                  onClick={handleDelete.bind(null, data.id)}
-                                >
-                                  <DeleteIcon />
-                                </button>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-                <TablePagination
-                  rowsPerPageOptions={[10, 25, 100]}
-                  component="div"
-                  count={props.doc_category.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
-                />
-              </div>
             </div>
-          </div>
-        </Paper>
+          </Paper>
+        </Grid>
+        <Grid item xs={2}>
+          <UserList />
+        </Grid>
       </Grid>
-      <Grid item xs={2}>
-        <UserList />
-      </Grid>
-    </Grid>
+    </>
   );
 }
 

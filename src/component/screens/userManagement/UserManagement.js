@@ -20,9 +20,11 @@ import { connect } from "react-redux";
 import { fetchSectionUsers } from "../../../redux/actions/fetchSectionUsers";
 import { fetchSectionsList } from "../../../redux/actions/fetchSectionsList";
 import { fetchUserById } from "../../../redux/actions/fetchUserById";
+import CircularProgress from "../../common/circularProgress/CircularProgressComponent";
 import io from "socket.io-client";
 let socket;
 function UserManagement(props) {
+  const [loading, setLoading] = useState(true);
   const [token, setToken] = useState("");
   const [endSesion, setEndSession] = useState(false);
   const [openDialog, setOpenDialog] = React.useState({
@@ -52,6 +54,7 @@ function UserManagement(props) {
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
+    setLoading(false);
     const obj = getFromStorage("documentTracking");
     socket = io(process.env.REACT_APP_SERVER);
     if (obj && obj.token) {
@@ -238,120 +241,126 @@ function UserManagement(props) {
   };
 
   return (
-    <Grid container>
-      <PrimarySearchAppBar />
-      <Grid item xs={2}>
-        <SideBarNavigation
-          open={open}
-          user={props.currentUser}
-          setOpen={setOpen}
-          handleClick={handleClick}
-        />
-      </Grid>
-      <Grid item xs={8}>
-        {openDialog && (
-          <DialogComponent
-            fullscreen={fullScreen}
-            openDialog={openDialog.open}
-            title={openDialog.name}
-            content={openDialog.content}
-            handleClose={handleClose}
-            handleConfirm={handleConfirm}
+    <>
+      {loading && <CircularProgress />}
+
+      <Grid container>
+        <PrimarySearchAppBar />
+        <Grid item xs={2}>
+          <SideBarNavigation
+            open={open}
+            user={props.currentUser}
+            setOpen={setOpen}
+            handleClick={handleClick}
           />
-        )}
-        {transferOfficeDialog && (
-          <TransferOfficeDialog
-            fullscreen={fullScreen}
-            transferOfficeDialog={transferOfficeDialog}
-            sections={props.sections}
-            transfer={transfer}
-            handleClose={handleClose}
-            handleConfirmTransferOffice={handleConfirmTransferOffice}
-            handleSelectOnChangeTransferOffice={
-              handleSelectOnChangeTransferOffice
-            }
-            error={error}
-          />
-        )}
-        {endSesion && <Redirect to={"/"} />}
-        <Paper
-          elevation={3}
-          style={{
-            paddingBottom: 100,
-            bottom: 0,
-            height: "100vh",
-            marginTop: 70,
-            overflow: "auto",
-          }}
-        >
-          <div className={"jumbotron"} style={{ padding: 50 }}>
+        </Grid>
+        <Grid item xs={8}>
+          {openDialog && (
+            <DialogComponent
+              fullscreen={fullScreen}
+              openDialog={openDialog.open}
+              title={openDialog.name}
+              content={openDialog.content}
+              handleClose={handleClose}
+              handleConfirm={handleConfirm}
+            />
+          )}
+          {transferOfficeDialog && (
+            <TransferOfficeDialog
+              fullscreen={fullScreen}
+              transferOfficeDialog={transferOfficeDialog}
+              sections={props.sections}
+              transfer={transfer}
+              handleClose={handleClose}
+              handleConfirmTransferOffice={handleConfirmTransferOffice}
+              handleSelectOnChangeTransferOffice={
+                handleSelectOnChangeTransferOffice
+              }
+              error={error}
+            />
+          )}
+          {endSesion && <Redirect to={"/"} />}
+          <Paper
+            elevation={3}
+            style={{
+              paddingBottom: 100,
+              bottom: 0,
+              height: "100vh",
+              marginTop: 70,
+              overflow: "auto",
+            }}
+          >
+            <div className={"jumbotron"} style={{ padding: 50 }}>
+              <div className={"row"}>
+                <div className={"col-md-2"}>
+                  <div className={"row"}>
+                    <div className={"col-md-6"}>
+                      {/*<Link to={"/"}>*/}
+                      {/*  <ArrowBackIcon style={{ fontSize: "2vw" }} />*/}
+                      {/*</Link>*/}
+                    </div>
+                    <div className={"col-md-6"}>
+                      <div style={{ textAlign: "right" }}></div>
+                    </div>
+                  </div>
+                </div>
+                <div className={"col-md-10"}>
+                  {/*<h5>User Management</h5>*/}
+                </div>
+              </div>
+            </div>
+
             <div className={"row"}>
-              <div className={"col-md-2"}>
-                <div className={"row"}>
-                  <div className={"col-md-6"}>
-                    {/*<Link to={"/"}>*/}
-                    {/*  <ArrowBackIcon style={{ fontSize: "2vw" }} />*/}
-                    {/*</Link>*/}
-                  </div>
-                  <div className={"col-md-6"}>
-                    <div style={{ textAlign: "right" }}></div>
+              <div className={"col-md-1"}></div>
+              <div className={"col-md-10"}>
+                <div style={{ marginBottom: 20 }}>
+                  <div className={"row"}>
+                    <div className={"col-md-6"}>
+                      <Link
+                        to={"/registration"}
+                        className={"btn btn-sm btn-info"}
+                      >
+                        <AddIcon />
+                      </Link>
+                    </div>
+                    <div className={"col-md-6"}>
+                      <Grid container spacing={1} alignItems="flex-end">
+                        <Grid item>
+                          <SearchIcon />
+                        </Grid>
+                        <Grid item>
+                          <InputField
+                            id={"search"}
+                            name={"search"}
+                            label={"Search"}
+                          />
+                        </Grid>
+                      </Grid>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className={"col-md-10"}>{/*<h5>User Management</h5>*/}</div>
-            </div>
-          </div>
 
-          <div className={"row"}>
-            <div className={"col-md-1"}></div>
-            <div className={"col-md-10"}>
-              <div style={{ marginBottom: 20 }}>
-                <div className={"row"}>
-                  <div className={"col-md-6"}>
-                    <Link
-                      to={"/registration"}
-                      className={"btn btn-sm btn-info"}
-                    >
-                      <AddIcon />
-                    </Link>
-                  </div>
-                  <div className={"col-md-6"}>
-                    <Grid container spacing={1} alignItems="flex-end">
-                      <Grid item>
-                        <SearchIcon />
-                      </Grid>
-                      <Grid item>
-                        <InputField
-                          id={"search"}
-                          name={"search"}
-                          label={"Search"}
-                        />
-                      </Grid>
-                    </Grid>
-                  </div>
-                </div>
+                {props.data.sectionUsers.length > 0 && (
+                  <ListOfUsers
+                    sectionUsers={props.data.sectionUsers}
+                    token={token}
+                    userRole={props.data.currentUser.dts_role}
+                    handleAccountRole={handleAccountRole}
+                    handleAccountDeletion={handleAccountDeletion}
+                    handleAccountStatus={handleAccountStatus}
+                    handleTransferOffice={handleTransferOffice}
+                  />
+                )}
               </div>
-
-              {props.data.sectionUsers.length > 0 && (
-                <ListOfUsers
-                  sectionUsers={props.data.sectionUsers}
-                  token={token}
-                  userRole={props.data.currentUser.role}
-                  handleAccountRole={handleAccountRole}
-                  handleAccountDeletion={handleAccountDeletion}
-                  handleAccountStatus={handleAccountStatus}
-                  handleTransferOffice={handleTransferOffice}
-                />
-              )}
+              <div className={"col-md-1"}></div>
             </div>
-            <div className={"col-md-1"}></div>
-          </div>
-        </Paper>
+          </Paper>
+        </Grid>
+        <Grid item xs={2}>
+          <UserList />
+        </Grid>
       </Grid>
-      <Grid item xs={2}>
-        <UserList />
-      </Grid>
-    </Grid>
+    </>
   );
 }
 

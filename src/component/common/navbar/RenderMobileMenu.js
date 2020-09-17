@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
@@ -7,9 +7,7 @@ import MailIcon from "@material-ui/icons/Mail";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 
-export default function RenderMobileMenu (props) {
-
-
+export default function RenderMobileMenu(props) {
   return (
     <Menu
       anchorEl={props.mobileMoreAnchorEl}
@@ -21,23 +19,23 @@ export default function RenderMobileMenu (props) {
       onClose={props.onCloseMobileMenu}
     >
       <MenuItem>
-        <IconButton aria-label="show 4 new mails" color="inherit">
+        {/* <IconButton aria-label="show 4 new mails" color="inherit">
           <Badge badgeContent={4} color="secondary">
             <MailIcon />
           </Badge>
         </IconButton>
-        <p>Messages</p>
+        <p>Messages</p> */}
       </MenuItem>
       <MenuItem>
-        <IconButton aria-label="show 11 new notifications" color="inherit">
+        {/* <IconButton aria-label="show 11 new notifications" color="inherit">
           <Badge badgeContent={11} color="secondary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
-        <p>Notifications</p>
+        <p>Notifications</p> */}
       </MenuItem>
       <MenuItem onClick={props.handleProfileMenuOpenMobileMenu}>
-        <IconButton
+        {/* <IconButton
           aria-label="account of current user"
           aria-controls="primary-search-account-menu"
           aria-haspopup="true"
@@ -45,9 +43,8 @@ export default function RenderMobileMenu (props) {
         >
           <AccountCircle />
         </IconButton>
-        <p>Profile</p>
+        <p>Profile</p> */}
       </MenuItem>
     </Menu>
-
   );
 }

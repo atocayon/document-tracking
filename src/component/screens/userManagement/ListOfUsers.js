@@ -20,7 +20,7 @@ export default function ListOfUsers(props) {
     <table className={"table"}>
       <tbody>
         {filter.map((user) => {
-          const role = user.role === "1" ? "admin" : "member";
+          const role = user.dts_role === "admin" ? "admin" : "member";
           return (
             <tr key={user.user_id}>
               <td>
@@ -121,7 +121,7 @@ export default function ListOfUsers(props) {
                         status: user.status === "1" ? "2" : "1",
                         id: user.user_id,
                         name: user.name,
-                          secid: user.secid,
+                        secid: user.secid,
                       })}
                     >
                       {user.status === "1" ? "Deactivate" : "Activate"}
@@ -135,7 +135,7 @@ export default function ListOfUsers(props) {
                         status: "3",
                         id: user.user_id,
                         name: user.name,
-                          secid: user.secid
+                        secid: user.secid,
                       })}
                     >
                       Delete

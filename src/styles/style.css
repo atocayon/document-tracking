@@ -132,3 +132,10 @@
     height: 7vh;
   }
 }
+
+::-webkit-scrollbar {
+  width: 0px !important;
+  /* Remove scrollbar space */
+  background: transparent !important;
+  /* Optional: just make scrollbar invisible */
+}

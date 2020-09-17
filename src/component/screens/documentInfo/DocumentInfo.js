@@ -20,6 +20,7 @@ import { clearDisseminationMessage } from "../../../redux/actions/handleDocDisse
 import Content from "./Content";
 import UserList from "../../common/userList/UserList";
 import SendIcon from "@material-ui/icons/Send";
+import CircularProgress from "../../common/circularProgress/CircularProgressComponent";
 import "../../../styles/barcode.css";
 import Forward from "./Forward";
 import {
@@ -31,6 +32,7 @@ import {
 
 let socket;
 function DocumentInfo(props) {
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(true);
   const [disseminate, setDisseminate] = useState(false);
   const [endSession, setEndSession] = useState(false);
@@ -38,6 +40,7 @@ function DocumentInfo(props) {
   const componentRef = useRef();
   const barcodeRef = useRef();
   useEffect(() => {
+    setLoading(false);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       async function fetch() {
@@ -98,139 +101,145 @@ function DocumentInfo(props) {
     );
   };
   return (
-    <Grid container>
-      <PrimarySearchAppBar />
-      <Grid item xs={2}>
-        <SideBarNavigation
-          open={open}
-          user={props.user}
-          setOpen={setOpen}
-          handleClick={handleClick}
-        />
-      </Grid>
-      <Grid item xs={8}>
-        <Paper
-          elevation={3}
-          style={{
-            marginTop: 70,
-            paddingTop: 0,
-            height: "100vh",
-            overflow: "auto",
-            paddingBottom: 150,
-          }}
-        >
-          <Forward
-            open={disseminate}
-            handleClickDisseminate={handleClickDisseminate}
-            sections={props.sections}
-            handleChange={handleChange}
-            addForwardDestination={_addForwardDestination}
-            removeForwardDestination={props.removeForwardDestination}
-            value={props.forwardDocument}
-            onChangeDestination={props.onChangeForwardDocument}
-            selectedValue={selectedValue}
-            handleDisseminate={handleDisseminate}
-          />
-          {endSession && <Redirect to={"/"} />}
-          <div>
-            <Content
-              ref={componentRef}
-              documentInfo={props.documentInfo}
-              doc_id={props.match.params.doc_id}
+    <>
+      {loading ? (
+        <CircularProgress />
+      ) : (
+        <Grid container>
+          <PrimarySearchAppBar />
+          <Grid item xs={2}>
+            <SideBarNavigation
+              open={open}
+              user={props.user}
+              setOpen={setOpen}
+              handleClick={handleClick}
             />
-          </div>
+          </Grid>
+          <Grid item xs={8}>
+            <Paper
+              elevation={3}
+              style={{
+                marginTop: 70,
+                paddingTop: 0,
+                height: "100vh",
+                overflow: "auto",
+                paddingBottom: 150,
+              }}
+            >
+              <Forward
+                open={disseminate}
+                handleClickDisseminate={handleClickDisseminate}
+                sections={props.sections}
+                handleChange={handleChange}
+                addForwardDestination={_addForwardDestination}
+                removeForwardDestination={props.removeForwardDestination}
+                value={props.forwardDocument}
+                onChangeDestination={props.onChangeForwardDocument}
+                selectedValue={selectedValue}
+                handleDisseminate={handleDisseminate}
+              />
+              {endSession && <Redirect to={"/"} />}
+              <div>
+                <Content
+                  ref={componentRef}
+                  documentInfo={props.documentInfo}
+                  doc_id={props.match.params.doc_id}
+                />
+              </div>
 
-          <div className={"row"}>
-            <div className={"col-md-2"}></div>
-            <div className={"col-md-8"}>
               <div className={"row"}>
-                <div>
-                  <div
-                    className={"barcode"}
-                    ref={barcodeRef}
-                    style={{ display: "none" }}
-                  >
-                    {props.documentInfo.barcode.length > 0 &&
-                      props.documentInfo.barcode.map((barcode) => (
-                        <div key={barcode.documentID}>
-                          <ReactToPrint
-                            trigger={() => (
-                              <a
-                                href={"#"}
-                                className={"btn"}
-                                title={"Print this barcode"}
-                              >
-                                {barcode.destination && (
-                                  <>
-                                    <span className={"barcodeLabel"}>
-                                      {barcode.destination}
-                                    </span>
-                                    <br />
-                                  </>
+                <div className={"col-md-2"}></div>
+                <div className={"col-md-8"}>
+                  <div className={"row"}>
+                    <div>
+                      <div
+                        className={"barcode"}
+                        ref={barcodeRef}
+                        style={{ display: "none" }}
+                      >
+                        {props.documentInfo.barcode.length > 0 &&
+                          props.documentInfo.barcode.map((barcode) => (
+                            <div key={barcode.documentID}>
+                              <ReactToPrint
+                                trigger={() => (
+                                  <a
+                                    href={"#"}
+                                    className={"btn"}
+                                    title={"Print this barcode"}
+                                  >
+                                    {barcode.destination && (
+                                      <>
+                                        <span className={"barcodeLabel"}>
+                                          {barcode.destination}
+                                        </span>
+                                        <br />
+                                      </>
+                                    )}
+
+                                    <BarcodeComponent
+                                      trackingNumber={barcode.documentID}
+                                      margin={barcode.destination ? 0 : 5}
+                                      width={barcode.destination ? 1 : 1.2}
+                                    />
+                                  </a>
                                 )}
+                                content={() => barcodeRef.current}
+                              />
+                            </div>
+                          ))}
+                      </div>
+                    </div>
 
-                                <BarcodeComponent
-                                  trackingNumber={barcode.documentID}
-                                  margin={barcode.destination ? 0 : 5}
-                                  width={barcode.destination ? 1 : 1.2}
-                                />
-                              </a>
-                            )}
-                            content={() => barcodeRef.current}
-                          />
-                        </div>
-                      ))}
-                  </div>
-                </div>
-
-                <div className={"col-md-6"}>
-                  {props.documentInfo.currentStatus === "4" && (
-                    <button
-                      onClick={handleClickDisseminate}
-                      className={"btn btn-success"}
-                      title={"Send to many"}
-                    >
-                      <SendIcon />
-                      &nbsp;Disseminate
-                    </button>
-                  )}
-                </div>
-                <div className={"col-md-6"}>
-                  <div style={{ float: "right" }}>
-                    <ReactToPrint
-                      trigger={() => (
-                        <button className={"btn btn-outline-info"}>
-                          <PrintIcon />
-                          &nbsp;Barcode
+                    <div className={"col-md-6"}>
+                      {props.documentInfo.currentStatus === "4" && (
+                        <button
+                          onClick={handleClickDisseminate}
+                          className={"btn btn-success"}
+                          title={"Send to many"}
+                        >
+                          <SendIcon />
+                          &nbsp;Disseminate
                         </button>
                       )}
-                      content={() => barcodeRef.current}
-                    />
-                    &nbsp;&nbsp;&nbsp;
-                    <ReactToPrint
-                      content={() => componentRef.current}
-                      trigger={() => (
-                        <a
-                          href={"#"}
-                          className={"btn btn-info"}
-                          title={"Print"}
-                        >
-                          <PrintIcon /> &nbsp;Routing Slip
-                        </a>
-                      )}
-                    />
+                    </div>
+                    <div className={"col-md-6"}>
+                      <div style={{ float: "right" }}>
+                        <ReactToPrint
+                          trigger={() => (
+                            <button className={"btn btn-outline-info"}>
+                              <PrintIcon />
+                              &nbsp;Barcode
+                            </button>
+                          )}
+                          content={() => barcodeRef.current}
+                        />
+                        &nbsp;&nbsp;&nbsp;
+                        <ReactToPrint
+                          content={() => componentRef.current}
+                          trigger={() => (
+                            <a
+                              href={"#"}
+                              className={"btn btn-info"}
+                              title={"Print"}
+                            >
+                              <PrintIcon /> &nbsp;Routing Slip
+                            </a>
+                          )}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
+                <div className={"col-md-2"}></div>
               </div>
-            </div>
-            <div className={"col-md-2"}></div>
-          </div>
-        </Paper>
-      </Grid>
-      <Grid item xs={2}>
-        <UserList />
-      </Grid>
-    </Grid>
+            </Paper>
+          </Grid>
+          <Grid item xs={2}>
+            <UserList />
+          </Grid>
+        </Grid>
+      )}
+    </>
   );
 }
 

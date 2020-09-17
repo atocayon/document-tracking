@@ -19,14 +19,17 @@ import TablePagination from "@material-ui/core/TablePagination";
 import UserList from "../../common/userList/UserList";
 import InputField from "../../common/textField/InputField";
 import { handleSearchSectionDocuments } from "../../../redux/actions/handleSearchSectionDocuments";
+import CircularProgress from "../../common/circularProgress/CircularProgressComponent";
 import io from "socket.io-client";
 function UserFolder(props) {
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(true);
   const [endSession, setEndSession] = useState(false);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [userID, setUserID] = useState("");
   useEffect(() => {
+    setLoading(false);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
       const { token } = obj;
@@ -56,107 +59,120 @@ function UserFolder(props) {
     setPage(0);
   };
   return (
-    <Grid container>
-      <PrimarySearchAppBar />
-      <Grid item xs={2}>
-        <SideBarNavigation
-          open={open}
-          user={props.user}
-          setOpen={setOpen}
-          handleClick={handleClick}
-        />
-      </Grid>
-      <Grid item xs={8}>
-        {endSession && <Redirect to={"/"} />}
-        <Paper
-          elevation={3}
-          style={{
-            marginTop: 70,
-            paddingTop: 0,
-            height: "100vh",
-            overflow: "auto",
-          }}
-        >
-          <div className={"jumbotron"} style={{ padding: 50 }}>
+    <>
+      {loading && <CircularProgress />}
+      <Grid container>
+        <PrimarySearchAppBar />
+        <Grid item xs={2}>
+          <SideBarNavigation
+            open={open}
+            user={props.user}
+            setOpen={setOpen}
+            handleClick={handleClick}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          {endSession && <Redirect to={"/"} />}
+          <Paper
+            elevation={3}
+            style={{
+              marginTop: 70,
+              paddingTop: 0,
+              height: "100vh",
+              overflow: "auto",
+            }}
+          >
+            <div className={"jumbotron"} style={{ padding: 50 }}>
+              <div className={"row"}>
+                <div className={"col-md-4"}>
+                  <InputField
+                    name={"search"}
+                    label={"Search"}
+                    onChange={props.handleSearchSectionDocuments}
+                  />
+                </div>
+                <div className={"col-md-6"}></div>
+              </div>
+            </div>
+
             <div className={"row"}>
-              <div className={"col-md-4"}>
-                <InputField
-                  name={"search"}
-                  label={"Search"}
-                  onChange={props.handleSearchSectionDocuments}
-                />
-              </div>
-              <div className={"col-md-6"}></div>
-            </div>
-          </div>
+              <div className={"col-md-10"} style={{ marginLeft: 20 }}>
+                <table className={"table table-borderless"}>
+                  <tbody>
+                    <List>
+                      {props.document.length > 0 &&
+                        props.document
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .map((document) => {
+                            let secondaryText =
+                              document.creatorID === userID
+                                ? "You"
+                                : document.creator;
+                            return (
+                              <tr>
+                                <td>
+                                  <Link
+                                    to={"/doc/" + document.documentID}
+                                    style={{ textDecoration: "none" }}
+                                  >
+                                    <ListItem>
+                                      <ListItemAvatar>
+                                        <Avatar>
+                                          <DescriptionIcon />
+                                        </Avatar>
+                                      </ListItemAvatar>
+                                      <ListItemText
+                                        primary={document.subject}
+                                        secondary={
+                                          document.docType +
+                                          " by " +
+                                          secondaryText
+                                        }
+                                      />
+                                    </ListItem>
+                                  </Link>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                    </List>
+                  </tbody>
+                </table>
 
-          <div className={"row"}>
-            <div className={"col-md-10"} style={{ marginLeft: 20 }}>
-              <table className={"table table-borderless"}>
-                <tbody>
-                  <List>
-                    {props.document.length > 0 &&
-                      props.document
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        .map((document) => {
-                          let secondaryText =
-                            document.creatorID === userID
-                              ? "You"
-                              : document.creator;
-                          return (
-                            <tr>
-                              <td>
-                                <Link
-                                  to={"/doc/" + document.documentID}
-                                  style={{ textDecoration: "none" }}
-                                >
-                                  <ListItem>
-                                    <ListItemAvatar>
-                                      <Avatar>
-                                        <DescriptionIcon />
-                                      </Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                      primary={document.subject}
-                                      secondary={
-                                        document.docType +
-                                        " by " +
-                                        secondaryText
-                                      }
-                                    />
-                                  </ListItem>
-                                </Link>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                  </List>
-                </tbody>
-              </table>
-
-              <div style={{ position: "fixed", bottom: 0, marginBottom: 20 }}>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, 30, 50, 100, 200, 500, 1000]}
-                  component="div"
-                  count={props.document.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
-                />
+                <div style={{ position: "fixed", bottom: 0, marginBottom: 20 }}>
+                  <TablePagination
+                    rowsPerPageOptions={[
+                      5,
+                      10,
+                      25,
+                      30,
+                      50,
+                      100,
+                      200,
+                      500,
+                      1000,
+                    ]}
+                    component="div"
+                    count={props.document.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                  />
+                </div>
               </div>
+              <div className={"col-md-2"}></div>
             </div>
-            <div className={"col-md-2"}></div>
-          </div>
-        </Paper>
+          </Paper>
+        </Grid>
+        <Grid item xs={2}>
+          <UserList />
+        </Grid>
       </Grid>
-      <Grid item xs={2}>
-        <UserList />
-      </Grid>
-    </Grid>
+    </>
   );
 }
 
