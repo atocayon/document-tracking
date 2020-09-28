@@ -244,17 +244,17 @@ function UserManagement(props) {
     <>
       {loading && <CircularProgress />}
 
-      <Grid container>
+      <div className={"row"}>
         <PrimarySearchAppBar />
-        <Grid item xs={2}>
+        <div className={"col-md-2"}>
           <SideBarNavigation
             open={open}
             user={props.currentUser}
             setOpen={setOpen}
             handleClick={handleClick}
           />
-        </Grid>
-        <Grid item xs={8}>
+        </div>
+        <div className={"col-md-8"}>
           {openDialog && (
             <DialogComponent
               fullscreen={fullScreen}
@@ -355,11 +355,11 @@ function UserManagement(props) {
               <div className={"col-md-1"}></div>
             </div>
           </Paper>
-        </Grid>
-        <Grid item xs={2}>
+        </div>
+        <div className={"col-md-2"}>
           <UserList />
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </>
   );
 }

@@ -7,6 +7,10 @@ export function fetchSectionUsers(token) {
       .get("http://" + process.env.REACT_APP_SERVER + "/dts/user/" + token)
       .then((res) => {
         Reactotron.log(res.data.secid);
+        dispatch({
+          type: actionTypes.FETCH_CURRENT_USER,
+          data: res.data,
+        });
         axios
           .get(
             "http://" +

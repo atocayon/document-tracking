@@ -16,7 +16,7 @@ export function addNewDivision(data) {
         payroll,
       })
       .then((res) => {
-        dispatch({ type: actionTypes.ADD_DIVISION, _data });
+        dispatch({ type: actionTypes.ADD_DIVISION, data: "success" });
       })
       .catch((err) => {
         throw err;

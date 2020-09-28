@@ -1,12 +1,12 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
 export function updateDivision(data) {
-  const _data = {
-    depid: parseInt(data.depid),
-    department: data.department,
-    depshort: data.depshort,
-    payrollshort: data.payrollshort,
-  };
+  // const _data = {
+  //   depid: parseInt(data.depid),
+  //   department: data.department,
+  //   depshort: data.depshort,
+  //   payrollshort: data.payrollshort,
+  // };
 
   const { depid, department, depshort, payrollshort } = data;
 
@@ -19,7 +19,7 @@ export function updateDivision(data) {
         payrollshort,
       })
       .then((res) => {
-        dispatch({ type: actionTypes.UPDATE_DIVISION, data: _data });
+        dispatch({ type: actionTypes.UPDATE_DIVISION, data: "success" });
       })
 
       .catch((err) => {

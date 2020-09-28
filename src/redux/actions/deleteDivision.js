@@ -7,7 +7,7 @@ export function deleteDivision(div_id) {
         div_id,
       })
       .then((res) => {
-        dispatch({ type: actionTypes.DELETE_DIVISION, data: div_id });
+        dispatch({ type: actionTypes.DELETE_DIVISION, data: "success" });
       })
       .catch((err) => {
         throw err;

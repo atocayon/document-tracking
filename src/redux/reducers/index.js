@@ -45,6 +45,15 @@ import fetchProcessedDocument from "./fetchProcessedDocument";
 import fetchSectionUsers from "./fetchSectionUsers";
 import trackOrSearchOnly from "./trackOrSearchOnly";
 import handleDocDissemination from "./handleDocDissemination";
+import addNewDivision from "./addNewDivision";
+import updateDivision from "./updateDivision";
+import deleteDivision from "./deleteDivision";
+import addNewSection from "./addNewSection";
+import updateSection from "./updateSection";
+import deleteSection from "./deleteSection";
+import addNewDocumentType from "./addNewDocumentType";
+import updateDocumentType from "./updateDocumentType";
+import deleteDocumentType from "./deleteDocumentType";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -92,6 +101,15 @@ const rootReducer = combineReducers({
   fetchSectionUsers: fetchSectionUsers,
   trackOrSearchOnly: trackOrSearchOnly,
   handleDocDissemination: handleDocDissemination,
+  addNewDivision: addNewDivision,
+  updateDivision: updateDivision,
+  deleteDivision: deleteDivision,
+  addNewSection: addNewSection,
+  deleteSection: deleteSection,
+  updateSection: updateSection,
+  addNewDocumentType: addNewDocumentType,
+  updateDocumentType: updateDocumentType,
+  deleteDocumentType: deleteDocumentType,
 });
 
 export default rootReducer;

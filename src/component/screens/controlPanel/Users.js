@@ -62,7 +62,6 @@ function Users(props) {
         <Table>
           <TableHead>
             <TableRow style={{ background: "#2196F3" }}>
-              <TableCell style={{ color: "#fff" }}>#</TableCell>
               <TableCell style={{ color: "#fff" }}>Employee ID</TableCell>
               <TableCell style={{ color: "#fff" }}>Name</TableCell>
               <TableCell style={{ color: "#fff" }}>Section</TableCell>
@@ -80,23 +79,16 @@ function Users(props) {
                   (sec) => sec.id === parseInt(user.secid)
                 );
                 return (
-                  <TableRow key={index}>
-                    <TableCell>{++index}</TableCell>
+                  <TableRow key={user.user_id}>
                     <TableCell>{user.employeeId}</TableCell>
                     <TableCell>{user.name}</TableCell>
                     <TableCell>
                       {sec.map((_sec) => (
-                        <>{_sec.type}</>
+                        <span key={_sec.type}>{_sec.type}</span>
                       ))}
                     </TableCell>
                     <TableCell>{user.position}</TableCell>
-                    <TableCell>
-                      {user.role_id === "1"
-                        ? "Admin"
-                        : user.role_id === "2"
-                        ? "Member"
-                        : "Super Admin"}
-                    </TableCell>
+                    <TableCell>{user.dts_role}</TableCell>
                     <TableCell>
                       {user.accnt_status === "deleted" ? (
                         <span style={{ color: "red" }}>Deleted</span>

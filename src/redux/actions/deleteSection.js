@@ -7,7 +7,7 @@ export function deleteSection(sec_id) {
         sec_id,
       })
       .then((res) => {
-        dispatch({ type: actionTypes.DELETE_SECTION, data: sec_id });
+        dispatch({ type: actionTypes.DELETE_SECTION, data: "success" });
       })
       .catch((err) => {
         throw err;

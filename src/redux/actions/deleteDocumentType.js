@@ -10,7 +10,7 @@ export function deleteDocumentType(doc_type_id) {
         }
       )
       .then((res) => {
-        dispatch({ type: actionTypes.DELETE_DOCUMENT_TYPE, data: doc_type_id });
+        dispatch({ type: actionTypes.DELETE_DOCUMENT_TYPE, data: "success" });
       })
       .catch((err) => {
         throw err;

@@ -32,9 +32,9 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 let user_role = [
-  { id: "1", type: "Admin" },
-  { id: "2", type: "Member" },
-  { id: "3", type: "Super Admin" },
+  { id: "admin", type: "Admin" },
+  { id: "member", type: "Member" },
+  { id: "super_admin", type: "Super Admin" },
 ];
 
 function EditUser(props) {
@@ -94,18 +94,12 @@ function EditUser(props) {
 
                   <SelectField
                     id={"cPanel_edit_user_role"}
-                    name={"role"}
+                    name={"dts_role"}
                     onChange={props.handleOnChangeEditUser}
-                    label={
-                      props.userInfo.role_id === "1"
-                        ? "Admin"
-                        : props.userInfo.role_id === "2"
-                        ? "Member"
-                        : "Super Admin"
-                    }
+                    label={props.userInfo.dts_role}
                     options={user_role}
                     variant={"outlined"}
-                    value={props.userInfo.role}
+                    value={props.userInfo.dts_role}
                     // error={props.error.user_role}
                   />
                 </div>

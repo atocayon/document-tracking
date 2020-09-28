@@ -95,16 +95,16 @@ function UpdateProfile(props) {
   };
 
   return (
-    <Grid container>
+    <div className={"row"}>
       <PrimarySearchAppBar />
-      <Grid item xs={2}>
+      <div className={"col-md-2"}>
         <SideBarNavigation
           user={props.currentUser}
           open={open}
           handleClick={handleClickSidebar}
         />
-      </Grid>
-      <Grid item xs={8}>
+      </div>
+      <div className={"col-md-8"}>
         <div style={{ marginTop: 70 }}>
           {endSession && <Redirect to={"/"} />}
           {Object.keys(props.user).length === 0 && (
@@ -153,7 +153,7 @@ function UpdateProfile(props) {
                 </div>
               </div>
               <Grid container spacing={3}>
-                <Grid item xs={12}>
+                <div item xs={12}>
                   <div className={"row"}>
                     <div className={"col-md-2"}></div>
                     <div className={"col-md-8"}>
@@ -343,16 +343,16 @@ function UpdateProfile(props) {
                     </div>
                     <div className={"col-md-2"}></div>
                   </div>
-                </Grid>
+                </div>
               </Grid>
             </Paper>
           )}
         </div>
-      </Grid>
-      <Grid item xs={2}>
+      </div>
+      <div className={"col-md-2"}>
         <UserList />
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   );
 }
 

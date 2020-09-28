@@ -47,17 +47,17 @@ function Profile({
   };
 
   return (
-    <Grid container>
+    <div className={"row"}>
       <PrimarySearchAppBar />
-      <Grid item xs={2}>
+      <div className={"col-md-2"}>
         <SideBarNavigation
           open={open}
           user={currentUser}
           setOpen={setOpen}
           handleClick={handleClick}
         />
-      </Grid>
-      <Grid item xs={8}>
+      </div>
+      <div className={"col-md-8"}>
         {endSession && <Redirect to={"/"} />}
         {Object.keys(user).length === 0 ? (
           <CircularProgressComponent />
@@ -73,7 +73,7 @@ function Profile({
             }}
           >
             <div className={"jumbotron"}></div>
-            <Grid
+            <div
               container
               spacing={3}
               style={{
@@ -97,7 +97,7 @@ function Profile({
                   <ContactInformation user={user} />
                 </div>
               </Grid>
-              <Grid item xs={9}>
+              <div item xs={9}>
                 <h3
                   style={{
                     textAlign: "left",
@@ -119,15 +119,15 @@ function Profile({
                 </Link>{" "}
                 <br />
                 <hr />
-              </Grid>
-            </Grid>
+              </div>
+            </div>
           </Paper>
         )}
-      </Grid>
-      <Grid item xs={2}>
+      </div>
+      <div className={"col-md-2"}>
         <UserList />
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   );
 }
 

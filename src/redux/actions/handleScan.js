@@ -17,7 +17,7 @@ export function receiveDoc(data, user_id, secshort, socket) {
 
         if (message === "success") {
           dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "success" });
-          socket.emit("tracking", str.toString());
+          socket.emit("tracking", str);
 
           socket.on("track", async (_data) => {
             let arr = [];
@@ -44,6 +44,7 @@ export function receiveDoc(data, user_id, secshort, socket) {
 }
 
 export function trackDoc(data) {
+  Reactotron.log("nadara ");
   return async function (dispatch) {
     let str = data.split("-", 1);
     return axios
@@ -56,6 +57,7 @@ export function trackDoc(data) {
       .then(async (res) => {
         let arr = [];
         for (let i = 0; i < res.data.length; i++) {
+          // Reactotron.log(res.data[i].document_id);
           let fetch = await get_branches(res.data[i].document_id);
           let sub = await getSubProcess(res.data[i].document_id);
           arr.push({ root: res.data[i], subProcess: sub, branch: fetch });
@@ -73,14 +75,15 @@ export function trackDoc(data) {
 }
 
 async function getSubProcess(tracking) {
+  // Reactotron.log(tracking);
   let arr = [];
-  let res = await axios.post(
+  let res = await axios.get(
     "http://" +
       process.env.REACT_APP_SERVER +
       "/dts/document/process/" +
       tracking
   );
-  Reactotron.log(res);
+  // Reactotron.log(res);
   if (res.data.length > 0) {
     for (let i = 0; i < res.data.length; i++) {
       arr.push({
@@ -95,11 +98,8 @@ async function getSubProcess(tracking) {
 
 async function get_branches(tracking) {
   let arr = [];
-  let res = await axios.post(
-    "http://" + process.env.REACT_APP_SERVER + "/dts/document/sub/" + tracking,
-    {
-      tracking,
-    }
+  let res = await axios.get(
+    "http://" + process.env.REACT_APP_SERVER + "/dts/document/sub/" + tracking
   );
 
   if (res.data.length > 0) {

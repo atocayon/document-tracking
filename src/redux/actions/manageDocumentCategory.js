@@ -12,7 +12,7 @@ export function addNewDocCategory(token, category) {
       .then((res) => {
         dispatch({
           type: actionTypes.ADD_NEW_DOCUMENT_CATEGORY,
-          data: category,
+          data: "success",
         });
       })
       .catch((err) => {
@@ -71,7 +71,7 @@ export function saveEditDocCategory(data, token) {
       .then((res) => {
         dispatch({
           type: actionTypes.SAVE_EDIT_DOC_CATEGORY,
-          data,
+          data: "success",
         });
       })
       .catch((err) => {
@@ -81,6 +81,7 @@ export function saveEditDocCategory(data, token) {
 }
 
 export function deleteDocCategory(id) {
+  console.log(id);
   return async function (dispatch) {
     return axios
       .post(
@@ -90,7 +91,7 @@ export function deleteDocCategory(id) {
         { doc_category_id: id }
       )
       .then((res) => {
-        dispatch({ type: actionTypes.DELETE_DOC_CATEGORY, data: id });
+        dispatch({ type: actionTypes.DELETE_DOC_CATEGORY, data: "success" });
       })
       .catch((err) => {
         throw err;

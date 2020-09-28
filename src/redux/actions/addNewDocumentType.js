@@ -10,7 +10,7 @@ export function addNewDocumentType(doc_type) {
         }
       )
       .then((res) => {
-        dispatch({ type: actionTypes.ADD_DOCUMENT_TYPE, data: res.data });
+        dispatch({ type: actionTypes.ADD_DOCUMENT_TYPE, data: "success" });
       })
       .catch((err) => {
         throw err;

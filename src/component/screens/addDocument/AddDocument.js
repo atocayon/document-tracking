@@ -444,7 +444,7 @@ function AddDocument({
   return (
     <>
       {loading && <CircularProgress />}
-      <Grid container>
+      <div className={"row"}>
         <ReactJoyride
           steps={tutorial}
           run={startGuide}
@@ -456,15 +456,15 @@ function AddDocument({
           styles={{ options: { primaryColor: "#2196F3" } }}
         />
         <PrimarySearchAppBar />
-        <Grid item xs={2}>
+        <div className={"col-md-2"}>
           <SideBarNavigation
             open={open}
             user={user}
             setOpen={setOpen}
             handleClick={handleClick}
           />
-        </Grid>
-        <Grid item xs={8}>
+        </div>
+        <div className={"col-md-8"}>
           {endSession && <Redirect to={"/"} />}
           <Paper
             id={"paper-container"}
@@ -762,11 +762,11 @@ function AddDocument({
               <Grid item xs={12} style={{ paddingRight: "2vw" }}></Grid>
             </Grid>
           </Paper>
-        </Grid>
-        <Grid item xs={2}>
+        </div>
+        <div className={"col-md-2"}>
           <UserList />
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </>
   );
 }

@@ -9,18 +9,18 @@ import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import ApartmentIcon from '@material-ui/icons/Apartment';
+import ApartmentIcon from "@material-ui/icons/Apartment";
 import InputField from "../../common/textField/InputField";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   appBar: {
     position: "relative",
-    background: "#2196F3"
+    background: "#2196F3",
   },
   title: {
     marginLeft: theme.spacing(2),
-    flex: 1
-  }
+    flex: 1,
+  },
 }));
 
 const Transition = React.forwardRef(function Transition(props, ref) {

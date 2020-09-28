@@ -19,15 +19,15 @@ import InputField from "../../common/textField/InputField";
 import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
 import WorkIcon from "@material-ui/icons/Work";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   appBar: {
     position: "relative",
-    background: "#2196F3"
+    background: "#2196F3",
   },
   title: {
     marginLeft: theme.spacing(2),
-    flex: 1
-  }
+    flex: 1,
+  },
 }));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -35,9 +35,9 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 let user_role = [
-  { id: "1", type: "Admin" },
-  { id: "2", type: "Member" },
-  { id: "3", type: "Super Admin" }
+  { id: "admin", type: "Admin" },
+  { id: "member", type: "Member" },
+  { id: "super_admin", type: "Super Admin" },
 ];
 
 function AddNewUser(props) {
@@ -67,7 +67,11 @@ function AddNewUser(props) {
           >
             User Registration
           </Typography>
-          <Button autoFocus color="inherit" onClick={props.handleSubmitUserRegistration}>
+          <Button
+            autoFocus
+            color="inherit"
+            onClick={props.handleSubmitUserRegistration}
+          >
             save
           </Button>
         </Toolbar>
@@ -191,7 +195,7 @@ function AddNewUser(props) {
                 type={"text"}
               />
               <br />
-              <br/>
+              <br />
               <h5 style={{ textAlign: "left", color: "#2196F3" }}>
                 <WorkIcon />
                 &nbsp;Work Position

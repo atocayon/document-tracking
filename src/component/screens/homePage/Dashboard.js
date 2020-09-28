@@ -208,7 +208,7 @@ function Dashboard(props) {
   return (
     <>
       {loading && <CircularProgress />}
-      <Grid container>
+      <div className={"row"}>
         <ReactJoyride
           steps={tutorial}
           run={startGuide}
@@ -222,7 +222,7 @@ function Dashboard(props) {
         <BarcodeReader onError={handleError} onScan={handleScanning} />
         <PrimarySearchAppBar handleStartGuide={handleStartGuide} />
 
-        <Grid item xs={2}>
+        <div className={"col-md-2"}>
           <SideBarNavigation
             dashboard={true}
             user={props.user}
@@ -230,8 +230,8 @@ function Dashboard(props) {
             setOpen={setOpen}
             handleClick={handleClick}
           />
-        </Grid>
-        <Grid item xs={8}>
+        </div>
+        <div className={"col-md-8"}>
           <Paper elevation={3} className={"paper"} style={{}}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
@@ -431,11 +431,11 @@ function Dashboard(props) {
               </Grid>
             </Grid>
           </Paper>
-        </Grid>
-        <Grid item xs={2}>
+        </div>
+        <div className={"col-md-2"}>
           <UserList />
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </>
   );
 }

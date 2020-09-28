@@ -2,7 +2,6 @@ import actionTypes from "./actionTypes";
 import axios from "axios";
 import Reactotron from "reactotron-react-js";
 export function fetchDocumentTypes() {
-  Reactotron.log("nadara adi dd ");
   return async function (dispatch) {
     return axios
       .get(

@@ -1,12 +1,12 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
 export function addNewSection(data) {
-  const _data = {
-    divid: data.division,
-    section: data.section,
-    secshort: data.secshort,
-    active: 1,
-  };
+  // const _data = {
+  //   divid: data.division,
+  //   section: data.section,
+  //   secshort: data.secshort,
+  //   active: 1,
+  // };
   const { division, section, secshort } = data;
   return async function (dispatch) {
     return axios
@@ -16,7 +16,7 @@ export function addNewSection(data) {
         secshort,
       })
       .then((res) => {
-        dispatch({ type: actionTypes.ADD_SECTION, _data });
+        dispatch({ type: actionTypes.ADD_SECTION, data: "success" });
       })
       .catch((err) => {
         throw err;

@@ -77,17 +77,17 @@ function ProcessedDocuments(props) {
   return (
     <>
       {loading && <CircularProgress />}
-      <Grid container>
+      <div className={"row"}>
         <PrimarySearchAppBar />
-        <Grid item xs={2}>
+        <div className={"col-md-2"}>
           <SideBarNavigation
             open={open}
             user={props.user}
             setOpen={setOpen}
             handleClick={handleClick}
           />
-        </Grid>
-        <Grid item xs={8}>
+        </div>
+        <div className={"col-md-8"}>
           {endSession && <Redirect to={"/"} />}
           <Paper
             elevation={3}
@@ -174,11 +174,11 @@ function ProcessedDocuments(props) {
               </div>
             </div>
           </Paper>
-        </Grid>
-        <Grid item xs={2}>
+        </div>
+        <div className={"col-md-2"}>
           <UserList />
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </>
   );
 }

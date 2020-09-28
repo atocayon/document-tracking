@@ -9,7 +9,7 @@ export function updateDocumentType(data) {
         { doc_type_id: id, doc_type: type }
       )
       .then((res) => {
-        dispatch({ type: actionTypes.UPDATE_DOCUMENT_TYPE, data });
+        dispatch({ type: actionTypes.UPDATE_DOCUMENT_TYPE, data: "success" });
       })
       .catch((err) => {
         throw err;

@@ -160,7 +160,21 @@ function ControlPanel(props) {
         props.enqueueSnackbar("Logout failed", { variant });
       }
     }
-  }, [props._logout]);
+  }, [
+    props._logout,
+    props._userRegistration,
+    props._addNewDivision,
+    props.delete_user,
+    props.update_user,
+    props._updateDivision,
+    props._deleteDivision,
+    props._addNewSection,
+    props._updateSection,
+    props._deleteSection,
+    props._addNewDocumentType,
+    props._updateDocumentType,
+    props._deleteDocumentType,
+  ]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -376,12 +390,12 @@ function ControlPanel(props) {
   const handleEditUser = async (val) => {
     let id = await val;
     setOpenEditUser(true);
-    await props.fetchUserById(id, socket);
+    await props.fetchUserById(id);
   };
 
   const handleSaveEditUser = async (e) => {
     e.preventDefault();
-    await props.updateUserProfile(props.fetch_user, socket);
+    await props.updateUserProfile(props.fetch_user);
     const variant = "info";
     props.enqueueSnackbar("Update Success", { variant });
     setOpenEditUser(false);
@@ -391,7 +405,7 @@ function ControlPanel(props) {
     let id = val.id;
     let name = val.name;
     let secid = val.secid;
-    await props.deleteUser(id, secid, socket);
+    await props.deleteUser(id, secid);
     const variant = "warning";
     props.enqueueSnackbar(name + " Deleted", { variant });
   };
@@ -399,12 +413,12 @@ function ControlPanel(props) {
   const handleEditDivision = async (val) => {
     let id = val.depid;
     setOpenEditDivision(true);
-    await props.fetchDivisionById(id, socket);
+    await props.fetchDivisionById(id);
   };
 
   const handleSaveEditDivision = async (e) => {
     e.preventDefault();
-    await props.updateDivision(props.fetch_division, socket);
+    await props.updateDivision(props.fetch_division);
     const variant = "info";
     props.enqueueSnackbar("Update Success", { variant });
     setOpenEditDivision(false);
@@ -413,7 +427,7 @@ function ControlPanel(props) {
   const handleDeleteDivision = async (val) => {
     let id = val.depid;
     let depshort = val.depshort;
-    await props.deleteDivision(id, socket);
+    await props.deleteDivision(id);
     const variant = "warning";
     props.enqueueSnackbar(depshort + " Deleted", { variant });
   };
@@ -421,12 +435,12 @@ function ControlPanel(props) {
   const handleEditSection = async (val) => {
     let id = val;
     setOpenEditSection(true);
-    await props.fetchSectionById(id, socket);
+    await props.fetchSectionById(id);
   };
 
   const handleSaveEditSection = async (e) => {
     e.preventDefault();
-    await props.updateSection(props.fetch_section, socket);
+    await props.updateSection(props.fetch_section);
     const variant = "info";
     props.enqueueSnackbar("Update Success", { variant });
     setOpenEditSection(false);
@@ -435,20 +449,20 @@ function ControlPanel(props) {
   const handleDeleteSection = async (val) => {
     let id = await val.id;
     let section = await val.section;
-    await props.deleteSection(id, socket);
+    await props.deleteSection(id);
     const variant = "warning";
     props.enqueueSnackbar(section + " Deleted", { variant });
   };
 
   const handleEditDocumentType = async (val) => {
     let id = await val;
-    await props.fetchDocumentTypeById(id, socket);
+    await props.fetchDocumentTypeById(id);
     setEditDocumentType(true);
   };
 
   const handleSaveEditDocumentType = async (e) => {
     e.preventDefault();
-    await props.updateDocumentType(props.fetch_documentType, socket);
+    await props.updateDocumentType(props.fetch_documentType);
     const variant = "info";
     props.enqueueSnackbar("Update Success", { variant });
     setEditDocumentType(false);
@@ -458,7 +472,7 @@ function ControlPanel(props) {
     let id = await val.id;
     let type = await val.type;
 
-    await props.deleteDocumentType(id, socket);
+    await props.deleteDocumentType(id);
     const variant = "warning";
     props.enqueueSnackbar(type + " Deleted", { variant });
   };
@@ -495,11 +509,11 @@ function ControlPanel(props) {
                 icon={<EqualizerIcon />}
                 {...a11yProps(5)}
               />
-              <Tab
+              {/* <Tab
                 label="Users Logs"
                 icon={<EqualizerIcon />}
                 {...a11yProps(6)}
-              />
+              /> */}
               <Tab
                 label={props.user.username}
                 icon={<PowerSettingsNewIcon />}
@@ -586,9 +600,9 @@ function ControlPanel(props) {
           <TabPanel value={value} index={4}>
             <DocumentLogs />
           </TabPanel>
-          <TabPanel value={value} index={5}>
+          {/* <TabPanel value={value} index={5}>
             Item Seven
-          </TabPanel>
+          </TabPanel> */}
         </div>
       </div>
       <div className={"col-md-2"}></div>
@@ -607,9 +621,19 @@ function mapStateToProps(state) {
     fetch_all_divisions: state.fetchDivisions,
     fetch_documentTypes: state.fetchDocumentTypes,
     fetch_documentType: state.fetchDocumentTypeById,
-    update_user: state.updateUserProfile,
+    update_user: state.update,
     delete_user: state.deleteUser,
     _logout: state.logout,
+    _userRegistration: state.userRegistration,
+    _addNewDivision: state.addNewDivision,
+    _updateDivision: state.updateDivision,
+    _deleteDivision: state.deleteDivision,
+    _addNewSection: state.addNewSection,
+    _updateSection: state.updateSection,
+    _deleteSection: state.deleteSection,
+    _addNewDocumentType: state.addNewDocumentType,
+    _updateDocumentType: state.updateDocumentType,
+    _deleteDocumentType: state.deleteDocumentType,
   };
 }
 

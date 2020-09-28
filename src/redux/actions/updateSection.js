@@ -19,7 +19,7 @@ export function updateSection(data) {
         secshort,
       })
       .then((res) => {
-        dispatch({ type: actionTypes.UPDATE_SECTION, data });
+        dispatch({ type: actionTypes.UPDATE_SECTION, data: "success" });
       })
       .catch((err) => {
         throw err;
