@@ -71,7 +71,7 @@ const StyledBadge = withStyles((theme) => ({
 
 export default function SideBarNavigation(props) {
   const classes = useStyles();
-  const [pending, setPending] = useState(null);
+  const [pending, setPending] = useState(props.pending);
   useEffect(() => {
     socket = io(process.env.REACT_APP_SERVER);
     const obj = getFromStorage("documentTracking");
@@ -81,9 +81,13 @@ export default function SideBarNavigation(props) {
         setPending(data);
       });
     }
+    Reactotron.log(pending);
+    Reactotron.log("pending");
 
-    Reactotron.log(socket);
-  }, [pending]);
+    if (props.pending !== null) {
+      setPending(props.pending);
+    }
+  }, []);
 
   return (
     <div className={"sidebar"}>

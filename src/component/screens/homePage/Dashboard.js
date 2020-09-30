@@ -20,6 +20,9 @@ import IconButton from "@material-ui/core/IconButton";
 import { resetTrackOrReceive } from "../../../redux/actions/resetTrackOrReceive";
 import { trackDoc } from "../../../redux/actions/handleScan";
 import { searchBySubj } from "../../../redux/actions/searchBySubj";
+import { clear_message } from "../../../redux/actions/clear_message";
+import { getFromStorage } from "../../storage";
+
 import UIFx from "uifx";
 import onClick from "../../sounds/pull-out.mp3";
 import onScan from "../../sounds/bubbling-up.mp3";
@@ -44,6 +47,8 @@ function Dashboard(props) {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(true);
   const [startGuide, setStartGuide] = useState(false);
+  const [pending, setPending] = useState(null);
+
   const [tutorial, setTutorial] = useState([
     {
       target: ".start",
@@ -114,6 +119,8 @@ function Dashboard(props) {
   ]);
   useEffect(() => {
     setLoading(false);
+    const obj = getFromStorage("documentTracking");
+
     socket = io(process.env.REACT_APP_SERVER);
     if (props.receive !== "") {
       if (props.receive === "success") {
@@ -121,6 +128,12 @@ function Dashboard(props) {
         props.enqueueSnackbar("NMP| Document received successfully...", {
           variant,
         });
+
+        socket.emit("total_pending_doc", obj.token);
+        socket.on("total_pendings", (data) => {
+          setPending(data);
+        });
+        props.clear_message();
       }
 
       if (props.receive === "failed") {
@@ -128,6 +141,7 @@ function Dashboard(props) {
         props.enqueueSnackbar("There's an error receiving the document", {
           variant,
         });
+        props.clear_message();
       }
 
       if (props.receive === "pending") {
@@ -138,6 +152,7 @@ function Dashboard(props) {
             variant,
           }
         );
+        props.clear_message();
       }
     }
   }, [props, props.receive]);
@@ -159,6 +174,7 @@ function Dashboard(props) {
         props.user.secshort,
         socket
       );
+      await props.trackDoc(props.trackingNum.documentTrackingNumber);
       _onScan.play();
     }
 
@@ -170,13 +186,14 @@ function Dashboard(props) {
 
   const handleScanning = async (data) => {
     if (!props._trackOrSearchOnly) {
-      Reactotron.log("Track and Receive");
       await props.receiveDoc(
         data,
         props.user.user_id,
         props.user.secshort,
         socket
       );
+
+      await props.trackDoc(data);
       _onScan.play();
     }
 
@@ -229,6 +246,7 @@ function Dashboard(props) {
             open={open}
             setOpen={setOpen}
             handleClick={handleClick}
+            pending={pending}
           />
         </div>
         <div className={"col-md-8"}>
@@ -457,6 +475,7 @@ const mapDispatchToProps = {
   trackDoc,
   searchBySubj,
   trackOrSearchOnly,
+  clear_message,
 };
 
 export default connect(

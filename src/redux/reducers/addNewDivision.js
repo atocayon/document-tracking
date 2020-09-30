@@ -4,6 +4,8 @@ const addNewDivision = (state = "", action) => {
   switch (action.type) {
     case actionTypes.ADD_DIVISION:
       return (state = action.data);
+    case actionTypes.CLEAR_MESSAGE:
+      return (state = "");
     default:
       return state;
   }

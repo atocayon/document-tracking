@@ -39,6 +39,7 @@ import { deleteSection } from "../../../redux/actions/deleteSection";
 import { deleteDocumentType } from "../../../redux/actions/deleteDocumentType";
 import { inputChange } from "../../../redux/actions/inputChange";
 import { logout } from "../../../redux/actions/logout";
+import { clear_message } from "../../../redux/actions/clear_message";
 import Divisions from "./Divisions";
 import Sections from "./Sections";
 import DocumentTypes from "./DocumentTypes";
@@ -158,6 +159,38 @@ function ControlPanel(props) {
       if (props._logout === "false") {
         const variant = "error";
         props.enqueueSnackbar("Logout failed", { variant });
+      }
+    }
+
+    if (
+      props._userRegistration !== "" ||
+      props._addNewDivision !== "" ||
+      props.delete_user !== "" ||
+      props.update_user !== "" ||
+      props._updateDivision !== "" ||
+      props._deleteDivision !== "" ||
+      props._addNewSection !== "" ||
+      props._updateSection !== "" ||
+      props._deleteSection !== "" ||
+      props._addNewDocumentType !== "" ||
+      props._updateDocumentType !== "" ||
+      props._deleteDocumentType !== ""
+    ) {
+      if (
+        props._userRegistration === "success" ||
+        props._addNewDivision === "success" ||
+        props.delete_user === "success" ||
+        props.update_user === "success" ||
+        props._updateDivision === "success" ||
+        props._deleteDivision === "success" ||
+        props._addNewSection === "success" ||
+        props._updateSection === "success" ||
+        props._deleteSection === "success" ||
+        props._addNewDocumentType === "success" ||
+        props._updateDocumentType === "success" ||
+        props._deleteDocumentType === "success"
+      ) {
+        props.clear_message();
       }
     }
   }, [
@@ -661,6 +694,7 @@ const mapDispatchToProps = {
   deleteDocumentType,
   inputChange,
   logout,
+  clear_message,
 };
 
 export default connect(

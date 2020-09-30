@@ -29,7 +29,7 @@ export default function ListItemComponent(props) {
       return <DescriptionIcon />;
     }
 
-    if (props.primary === props.section+" Documents") {
+    if (props.primary === props.section + " Documents") {
       return <FolderSharedIcon />;
     }
 
@@ -70,7 +70,7 @@ export default function ListItemComponent(props) {
       return "/doc_category";
     }
 
-    if (props.primary === props.section+" Documents") {
+    if (props.primary === props.section + " Documents") {
       return "/sectionDocuments";
     }
 
@@ -111,18 +111,22 @@ export default function ListItemComponent(props) {
       exact
       style={{ textDecoration: "none", color: "#000" }}
     >
-      <ListItem button className={props.className} title={"Click to explore " +props.primary}>
+      <ListItem
+        button
+        className={props.className}
+        title={"Click to explore " + props.primary}
+      >
         <ListItemIcon>{icon()}</ListItemIcon>
         <ListItemText
           primary={
             props.primary === "Pending" ? (
               <>
-                {props.pending > 0 && (
+                {parseInt(props.pending) > 0 && (
                   <Badge badgeContent={props.pending} color="secondary">
                     {props.primary}
                   </Badge>
                 )}
-                {props.pending === 0 && props.primary}
+                {parseInt(props.pending) === 0 && props.primary}
               </>
             ) : (
               props.primary

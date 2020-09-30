@@ -5,7 +5,8 @@ const addNewDocumentType = (state = "", action) => {
   switch (action.type) {
     case actionTypes.ADD_DOCUMENT_TYPE:
       return (state = action.data);
-
+    case actionTypes.CLEAR_MESSAGE:
+      return (state = "");
     default:
       return state;
   }

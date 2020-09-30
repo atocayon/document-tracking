@@ -195,14 +195,14 @@ function AddDocument({
         setFinalize(false);
         setDestination("");
         const variant = "info";
-        enqueueSnackbar("Document release successfully...", {
+        enqueueSnackbar("Document released successfully...", {
           variant,
         });
         clearAddDocumentMessage();
       }
       if (submit_new_document === "failed") {
         const variant = "error";
-        enqueueSnackbar("Document releasing failed...", {
+        enqueueSnackbar("Document released failed...", {
           variant,
         });
         clearAddDocumentMessage();

@@ -1,6 +1,5 @@
 import actionTypes from "./actionTypes";
 import axios from "axios";
-import Reactotron from "reactotron-react-js";
 export function receiveDoc(data, user_id, secshort, socket) {
   return async function (dispatch) {
     let str = data.split("-", 1);
@@ -17,22 +16,6 @@ export function receiveDoc(data, user_id, secshort, socket) {
 
         if (message === "success") {
           dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "success" });
-          socket.emit("tracking", str);
-
-          socket.on("track", async (_data) => {
-            let arr = [];
-
-            for (let i = 0; i < _data.length; i++) {
-              let fetch = await get_branches(_data[i].document_id);
-              let sub = await getSubProcess(_data[i].document_id);
-              arr.push({ root: _data[i], subProcess: sub, branch: fetch });
-            }
-
-            dispatch({
-              type: actionTypes.TRACK_DOCUMENT,
-              data: arr,
-            });
-          });
         }
 
         if (message === "failed") {
@@ -44,7 +27,6 @@ export function receiveDoc(data, user_id, secshort, socket) {
 }
 
 export function trackDoc(data) {
-  Reactotron.log("nadara ");
   return async function (dispatch) {
     let str = data.split("-", 1);
     return axios

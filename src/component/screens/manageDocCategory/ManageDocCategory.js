@@ -21,6 +21,7 @@ import { fetchUserById } from "../../../redux/actions/fetchUserById";
 import { onChangeEditDocCategory } from "../../../redux/actions/manageDocumentCategory";
 import { saveEditDocCategory } from "../../../redux/actions/manageDocumentCategory";
 import { deleteDocCategory } from "../../../redux/actions/manageDocumentCategory";
+import { clear_message } from "../../../redux/actions/clear_message";
 import TableBody from "@material-ui/core/TableBody";
 import TablePagination from "@material-ui/core/TablePagination";
 import EditIcon from "@material-ui/icons/Edit";
@@ -29,6 +30,7 @@ import DescriptionIcon from "@material-ui/icons/Description";
 import CheckIcon from "@material-ui/icons/Check";
 import UserList from "../../common/userList/UserList";
 import CircularProgress from "../../common/circularProgress/CircularProgressComponent";
+
 const tableHead = ["Document Categories", ""];
 
 function ManageDocCategory(props) {
@@ -54,6 +56,25 @@ function ManageDocCategory(props) {
         throw err;
       });
     }
+
+    if (props.insert !== "") {
+      if (props.insert === "success") {
+        setCategory("");
+        props.clear_message();
+      }
+    }
+
+    if (props.delete !== "") {
+      if (props.delete === "success") {
+        props.clear_message();
+      }
+    }
+
+    if (props.edit !== "") {
+      if (props.edit === "success") {
+        props.clear_message();
+      }
+    }
     setEndSession(!(obj && obj.token));
   }, [props.insert, props.edit, props.delete]);
 
@@ -67,7 +88,9 @@ function ManageDocCategory(props) {
 
   const handleSubmitNewDocumentCategory = async (e) => {
     e.preventDefault();
-    await props.addNewDocCategory(token, category);
+    if (category !== "") {
+      await props.addNewDocCategory(token, category);
+    }
   };
 
   const handleChangePage = (event, newPage) => {
@@ -136,6 +159,7 @@ function ManageDocCategory(props) {
                         label={"Document Category"}
                         variant={"outlined"}
                         onChange={handleOnChangeAddNewDocCategory}
+                        value={category}
                         // error={error.email}
                         type={"search"}
                       />
@@ -267,6 +291,7 @@ const mapDispatchToProps = {
   saveEditDocCategory,
   deleteDocCategory,
   fetchUserById,
+  clear_message,
 };
 
 export default connect(

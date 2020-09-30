@@ -4,7 +4,8 @@ const deleteDocumentType = (state = "", action) => {
   switch (action.type) {
     case actionTypes.DELETE_DOCUMENT_TYPE:
       return (state = action.data);
-
+    case actionTypes.CLEAR_MESSAGE:
+      return (state = "");
     default:
       return state;
   }
