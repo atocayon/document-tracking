@@ -54,6 +54,7 @@ import deleteSection from "./deleteSection";
 import addNewDocumentType from "./addNewDocumentType";
 import updateDocumentType from "./updateDocumentType";
 import deleteDocumentType from "./deleteDocumentType";
+import count_pending from "./count_pending";
 const rootReducer = combineReducers({
   update: update,
   fetchUserById: fetchUserById,
@@ -110,6 +111,7 @@ const rootReducer = combineReducers({
   addNewDocumentType: addNewDocumentType,
   updateDocumentType: updateDocumentType,
   deleteDocumentType: deleteDocumentType,
+  count_pending: count_pending,
 });
 
 export default rootReducer;

@@ -21,6 +21,7 @@ import { resetTrackOrReceive } from "../../../redux/actions/resetTrackOrReceive"
 import { trackDoc } from "../../../redux/actions/handleScan";
 import { searchBySubj } from "../../../redux/actions/searchBySubj";
 import { clear_message } from "../../../redux/actions/clear_message";
+import { count_pending } from "../../../redux/actions/count_pending";
 import { getFromStorage } from "../../storage";
 
 import UIFx from "uifx";
@@ -47,7 +48,7 @@ function Dashboard(props) {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(true);
   const [startGuide, setStartGuide] = useState(false);
-  const [pending, setPending] = useState(null);
+  // const [pending, setPending] = useState(null);
 
   const [tutorial, setTutorial] = useState([
     {
@@ -128,11 +129,7 @@ function Dashboard(props) {
         props.enqueueSnackbar("NMP| Document received successfully...", {
           variant,
         });
-
-        socket.emit("total_pending_doc", obj.token);
-        socket.on("total_pendings", (data) => {
-          setPending(data);
-        });
+        props.count_pending(obj.token, socket);
         props.clear_message();
       }
 
@@ -246,7 +243,7 @@ function Dashboard(props) {
             open={open}
             setOpen={setOpen}
             handleClick={handleClick}
-            pending={pending}
+            pending={props._count_pending}
           />
         </div>
         <div className={"col-md-8"}>
@@ -465,6 +462,7 @@ function mapStateToProps(state) {
     track: state.trackDocument,
     search: state.searchBySubj,
     _trackOrSearchOnly: state.trackOrSearchOnly,
+    _count_pending: state.count_pending,
   };
 }
 
@@ -476,6 +474,7 @@ const mapDispatchToProps = {
   searchBySubj,
   trackOrSearchOnly,
   clear_message,
+  count_pending,
 };
 
 export default connect(

@@ -13,7 +13,7 @@ import SelectField from "../../common/selectField/SelectField";
 import Chip from "@material-ui/core/Chip";
 import Avatar from "@material-ui/core/Avatar";
 import BusinessIcon from "@material-ui/icons/Business";
-import SendIcon from '@material-ui/icons/Send';
+import SendIcon from "@material-ui/icons/Send";
 export default function Forward(props) {
   const options = [];
   for (let i = 0; i < props.sections.length; i++) {
@@ -67,7 +67,7 @@ export default function Forward(props) {
                 onChange={props.onChangeDestination}
               />
 
-              {props.doc.doc_route_type.length > 0 && (
+              {props.doc.destination.length > 1 && (
                 <>
                   <br />
                   <button

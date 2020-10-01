@@ -15,6 +15,8 @@ import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
 import { getFromStorage } from "../../storage";
+import { count_pending } from "../../../redux/actions/count_pending";
+import { connect } from "react-redux";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import io from "socket.io-client";
 import Badge from "@material-ui/core/Badge";
@@ -69,25 +71,18 @@ const StyledBadge = withStyles((theme) => ({
   },
 }))(Badge);
 
-export default function SideBarNavigation(props) {
+function SideBarNavigation(props) {
   const classes = useStyles();
-  const [pending, setPending] = useState(props.pending);
+  const [pending, setPending] = useState(
+    props.pending !== null ? props.pending : 0
+  );
   useEffect(() => {
     socket = io(process.env.REACT_APP_SERVER);
     const obj = getFromStorage("documentTracking");
     if (obj && obj.token) {
-      socket.emit("total_pending_doc", obj.token);
-      socket.on("total_pendings", (data) => {
-        setPending(data);
-      });
+      props.count_pending(obj.token, socket);
     }
-    Reactotron.log(pending);
-    Reactotron.log("pending");
-
-    if (props.pending !== null) {
-      setPending(props.pending);
-    }
-  }, []);
+  }, [props._count_pending]);
 
   return (
     <div className={"sidebar"}>
@@ -166,7 +161,7 @@ export default function SideBarNavigation(props) {
                 <ListItemComponent
                   primary="Pending"
                   className={classes.nested}
-                  pending={pending}
+                  pending={props._count_pending}
                 />
               </div>
 
@@ -210,3 +205,15 @@ export default function SideBarNavigation(props) {
     </div>
   );
 }
+
+function mapStateToProps(state) {
+  return {
+    _count_pending: state.count_pending,
+  };
+}
+
+const mapDispatchToProps = {
+  count_pending,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SideBarNavigation);
