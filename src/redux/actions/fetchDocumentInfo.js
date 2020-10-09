@@ -90,17 +90,13 @@ const docDestination = async (fetchDocDestination) => {
       "http://" +
         process.env.REACT_APP_SERVER +
         "/dts/document/sched/" +
-        fetchDocDestination.data[i].document_id +
-        "/" +
-        fetchDocDestination.data[i].receiver_id
+        fetchDocDestination.data[i].document_id
     );
     const fetchActionTaken = await axios.get(
       "http://" +
         process.env.REACT_APP_SERVER +
         "/dts/document/action/" +
-        fetchDocDestination.data[i].document_id +
-        "/" +
-        fetchDocDestination.data[i].receiver_id
+        fetchDocDestination.data[i].document_id
     );
 
     arr.push({

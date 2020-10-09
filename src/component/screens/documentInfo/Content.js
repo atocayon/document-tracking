@@ -28,9 +28,7 @@ export default class Content extends Component {
               </div>
             </div>
             <div className={"col-md-4"}>
-              <div
-                style={{ textAlign: "center" }}
-              >
+              <div style={{ textAlign: "center" }}>
                 <br />
                 <h5
                   className={"routingTitle"}
@@ -98,17 +96,16 @@ export default class Content extends Component {
             <div>
               <FormGroup row className={"checkbox"}>
                 {this.props.documentInfo.action_req.map((action) => (
-                    <CheckBox
-                        checked={true}
-                        key={action.document_action_req_id}
-                        label={action.action_req}
-                        value={action.action_req}
-                        name={"action_req"}
-                    />
+                  <CheckBox
+                    checked={true}
+                    key={action.document_action_req_id}
+                    label={action.action_req}
+                    value={action.action_req}
+                    name={"action_req"}
+                  />
                 ))}
               </FormGroup>
             </div>
-
 
             <br />
             <br />
@@ -117,7 +114,6 @@ export default class Content extends Component {
               by the head before forwarding to other offices/s)
             </p>
             <div className={"tableContainer"}>
-
               <table
                 className={"table table-bordered"}
                 style={{ fontSize: 14 }}
@@ -152,15 +148,21 @@ export default class Content extends Component {
                       {this.props.documentInfo.note}
                     </td>
                   </tr>
-                  {this.props.documentInfo.destination.map((data, index) => (
-                    <tr>
-                      <td>{data.office}</td>
-                      <td>{data.date_time_receive}</td>
-                      <td>{data.action_taken.remarks}</td>
-                      <td>{data.date_time_released.date_time_released}</td>
-                      <td></td>
-                    </tr>
-                  ))}
+                  {this.props.documentInfo.destination
+                    .filter((item, index) => index !== 0)
+                    .map((data, index) => {
+                      let i = ++index;
+                      return (
+                        <tr key={index}>
+                          <td>{data.office}</td>
+                          <td>{data.date_time_receive}</td>
+                          <td>{data.action_taken[i].remarks}</td>
+                          <td>
+                            {data.date_time_released[i].date_time_released}
+                          </td>
+                        </tr>
+                      );
+                    })}
                 </tbody>
               </table>
             </div>
