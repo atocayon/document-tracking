@@ -84,7 +84,11 @@ function EditUser(props) {
                     id={"cPanel_edit_section"}
                     name={"secid"}
                     onChange={props.handleOnChangeEditUser}
-                    label={props.userInfo.section}
+                    label={
+                      props.userInfo.section !== null
+                        ? props.userInfo.section
+                        : "Section"
+                    }
                     options={props.sections}
                     variant={"outlined"}
                     value={props.userInfo.secid}
@@ -96,10 +100,17 @@ function EditUser(props) {
                     id={"cPanel_edit_user_role"}
                     name={"dts_role"}
                     onChange={props.handleOnChangeEditUser}
-                    label={props.userInfo.dts_role}
+                    label={
+                      props.userInfo.dts_role !== null
+                        ? props.userInfo.dts_role
+                        : "Role"
+                    }
                     options={user_role}
                     variant={"outlined"}
-                    value={props.userInfo.dts_role}
+                    value={
+                      props.userInfo.dts_role !== null &&
+                      props.userInfo.dts_role
+                    }
                     // error={props.error.user_role}
                   />
                 </div>

@@ -120,6 +120,7 @@ function UpdateProfile(props) {
             <Paper
               elevation={3}
               style={{
+                marginTop: "7vh",
                 color: "#263238",
                 paddingBottom: 100,
                 height: "100vh",

@@ -1,22 +1,22 @@
-.paper{
-    padding-bottom: 3vh;
-    margin-top: 8vh;
-    height: 100vh;
-    overflow: auto;
+.paper {
+  padding-bottom: 3vh;
+  margin-top: 7vh;
+  height: 100vh;
+  overflow: auto;
 }
 
-.scanner-img-container{
-    margin-top: 12vh !important;
+.scanner-img-container {
+  margin-top: 12vh !important;
 }
 
-.scanner-img{
-    display: block;
-    width: 10vw !important;
-    margin-left: auto;
-    margin-right: auto;
+.scanner-img {
+  display: block;
+  width: 10vw !important;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.scanReceiveTextIndicator{
-    text-align: center;
-    margin-top: 3vh;
+.scanReceiveTextIndicator {
+  text-align: center;
+  margin-top: 3vh;
 }

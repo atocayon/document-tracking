@@ -88,7 +88,9 @@ function Users(props) {
                       ))}
                     </TableCell>
                     <TableCell>{user.position}</TableCell>
-                    <TableCell>{user.dts_role}</TableCell>
+                    <TableCell>
+                      {user.dts_role !== null ? user.dts_role : "N/A"}
+                    </TableCell>
                     <TableCell>
                       {user.accnt_status === "deleted" ? (
                         <span style={{ color: "red" }}>Deleted</span>

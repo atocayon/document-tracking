@@ -286,7 +286,7 @@ function UserManagement(props) {
               paddingBottom: 100,
               bottom: 0,
               height: "100vh",
-              marginTop: 70,
+              marginTop: "7vh",
               overflow: "auto",
             }}
           >

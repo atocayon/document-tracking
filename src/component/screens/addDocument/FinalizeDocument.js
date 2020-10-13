@@ -178,6 +178,7 @@ class FinalizeDocument extends Component {
                       <BarcodeComponent
                         trackingNumber={this.props.trackingNumber}
                         margin={5}
+                        width={1.2}
                       />
                     </a>
                   ))}

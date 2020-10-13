@@ -68,7 +68,7 @@ function Profile({
               color: "#263238",
               paddingBottom: "3vh",
               height: "100vh",
-              marginTop: 70,
+              marginTop: "7vh",
               overflow: "auto",
             }}
           >

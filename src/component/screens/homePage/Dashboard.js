@@ -247,7 +247,7 @@ function Dashboard(props) {
           />
         </div>
         <div className={"col-md-8"}>
-          <Paper elevation={3} className={"paper"} style={{}}>
+          <Paper elevation={3} className={"paper"}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <div

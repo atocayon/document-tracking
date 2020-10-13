@@ -76,7 +76,7 @@ function UserFolder(props) {
           <Paper
             elevation={3}
             style={{
-              marginTop: 70,
+              marginTop: "7vh",
               paddingTop: 0,
               height: "100vh",
               overflow: "auto",

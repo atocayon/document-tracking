@@ -17,8 +17,8 @@ export default function fetchUserById(state = defaultState, action) {
         secshort: action.data.secshort,
         section: action.data.section,
         position: action.data.position,
-        role: action.data.role,
-        role_id: action.data.role_id,
+        dts_role: action.data.dts_role,
+        work_queue_role: action.data.work_queue_role,
         department: action.data.department,
         depshort: action.data.depshort,
       };

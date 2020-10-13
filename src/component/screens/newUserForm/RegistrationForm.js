@@ -167,7 +167,7 @@ function RegistrationForm(props) {
           style={{
             marginBottom: 0,
             bottom: 0,
-            marginTop: 70,
+            marginTop: "7vh",
             paddingBottom: 100,
             height: "100vh",
             overflow: "auto",
