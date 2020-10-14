@@ -60,12 +60,12 @@ function UserList(props) {
   }, []);
 
   return (
-    <div>
+    <div style={{ overflow: "auto" }}>
       {props.userList.length > 0 && (
         <h6
           style={{
-            paddingTop: 100,
-            paddingLeft: 20,
+            paddingTop: "10vh",
+            paddingLeft: 10,
             paddingBottom: 30,
             fontWeight: "bold",
             color: "#2196F3",
@@ -79,36 +79,48 @@ function UserList(props) {
 
       {props.userList.length > 0 && (
         <List>
-          {props.userList.map((data, index) => (
-            <ListItem alignItems="flex-start" key={data.user_id}>
-              <ListItemAvatar>
-                <StyledBadge
-                  overlap="circle"
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  variant="dot"
-                >
-                  <Avatar alt={data.name} src="/static/images/avatar/1.jpg" />
-                </StyledBadge>
-              </ListItemAvatar>
-              <ListItemText
-                primary={data.name}
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      // className={classes.inline}
-                    >
-                      {data.position}
-                    </Typography>
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
-          ))}
+          {props.userList.map((data, index) => {
+            let name = data.name.replace(/(^\w{1})|(\s{1}\w{1})/g, (match) =>
+              match.toUpperCase()
+            );
+
+            let position = data.position.replace(
+              /(^\w{1})|(\s{1}\w{1})/g,
+              (match) => match.toUpperCase()
+            );
+
+            return (
+              <ListItem alignItems="flex-start" key={data.user_id}>
+                <ListItemAvatar>
+                  <StyledBadge
+                    overlap="circle"
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    variant="dot"
+                  >
+                    <Avatar alt={data.name} src="/static/images/avatar/1.jpg" />
+                  </StyledBadge>
+                </ListItemAvatar>
+                <ListItemText
+                  MuiListItemText-dense
+                  primary={name}
+                  secondary={
+                    <React.Fragment>
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        // className={classes.inline}
+                      >
+                        {position}
+                      </Typography>
+                    </React.Fragment>
+                  }
+                />
+              </ListItem>
+            );
+          })}
         </List>
       )}
 

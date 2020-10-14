@@ -124,6 +124,7 @@ function Dashboard(props) {
 
     socket = io(process.env.REACT_APP_SERVER);
     if (props.receive !== "") {
+      setLoading(false);
       if (props.receive === "success") {
         const variant = "info";
         props.enqueueSnackbar("NMP| Document received successfully...", {
@@ -152,7 +153,7 @@ function Dashboard(props) {
         props.clear_message();
       }
     }
-  }, [props, props.receive]);
+  }, [props, props.receive, loading]);
 
   const handleClick = () => {
     setOpen(!open);
@@ -164,6 +165,7 @@ function Dashboard(props) {
 
   const handleManual = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (!props._trackOrSearchOnly) {
       await props.receiveDoc(
         props.trackingNum.documentTrackingNumber,
@@ -171,7 +173,7 @@ function Dashboard(props) {
         props.user.secshort,
         socket
       );
-      await props.trackDoc(props.trackingNum.documentTrackingNumber);
+      // await props.trackDoc(props.trackingNum.documentTrackingNumber);
       _onScan.play();
     }
 
@@ -182,6 +184,7 @@ function Dashboard(props) {
   };
 
   const handleScanning = async (data) => {
+    setLoading(true);
     if (!props._trackOrSearchOnly) {
       await props.receiveDoc(
         data,
@@ -190,7 +193,7 @@ function Dashboard(props) {
         socket
       );
 
-      await props.trackDoc(data);
+      // await props.trackDoc(data);
       _onScan.play();
     }
 
@@ -252,7 +255,7 @@ function Dashboard(props) {
               <Grid item xs={12}>
                 <div
                   className={"jumbotron"}
-                  style={{ paddingTop: "3vh", paddingBottom: "2vh" }}
+                  style={{ paddingTop: "10vh", paddingBottom: "2vh" }}
                 >
                   <div className={"row"}>
                     <div className={"col-md-2"}>

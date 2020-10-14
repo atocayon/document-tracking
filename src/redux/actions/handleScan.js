@@ -11,15 +11,44 @@ export function receiveDoc(data, user_id, secshort, socket) {
       secshort,
       async (message) => {
         if (message === "server error") {
-          dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "failed" });
+          return dispatch({
+            type: actionTypes.RECEIVE_DOCUMENT,
+            data: "failed",
+          });
         }
 
         if (message === "success") {
-          dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "success" });
+          let arr = [];
+          let track = await axios.get(
+            "http://" +
+              process.env.REACT_APP_SERVER +
+              "/dts/document/tracking/" +
+              str.toString()
+          );
+
+          for (let i = 0; i < track.data.length; i++) {
+            // Reactotron.log(res.data[i].document_id);
+            let fetch = await get_branches(track.data[i].document_id);
+            let sub = await getSubProcess(track.data[i].document_id);
+            arr.push({ root: track.data[i], subProcess: sub, branch: fetch });
+          }
+
+          dispatch({
+            type: actionTypes.TRACK_DOCUMENT,
+            data: arr,
+          });
+
+          dispatch({
+            type: actionTypes.RECEIVE_DOCUMENT,
+            data: "success",
+          });
         }
 
         if (message === "failed") {
-          dispatch({ type: actionTypes.RECEIVE_DOCUMENT, data: "pending" });
+          return dispatch({
+            type: actionTypes.RECEIVE_DOCUMENT,
+            data: "pending",
+          });
         }
       }
     );
@@ -29,30 +58,25 @@ export function receiveDoc(data, user_id, secshort, socket) {
 export function trackDoc(data) {
   return async function (dispatch) {
     let str = data.split("-", 1);
-    return axios
-      .get(
-        "http://" +
-          process.env.REACT_APP_SERVER +
-          "/dts/document/tracking/" +
-          str.toString()
-      )
-      .then(async (res) => {
-        let arr = [];
-        for (let i = 0; i < res.data.length; i++) {
-          // Reactotron.log(res.data[i].document_id);
-          let fetch = await get_branches(res.data[i].document_id);
-          let sub = await getSubProcess(res.data[i].document_id);
-          arr.push({ root: res.data[i], subProcess: sub, branch: fetch });
-        }
+    let arr = [];
+    let track = await axios.get(
+      "http://" +
+        process.env.REACT_APP_SERVER +
+        "/dts/document/tracking/" +
+        str.toString()
+    );
 
-        dispatch({
-          type: actionTypes.TRACK_DOCUMENT,
-          data: arr,
-        });
-      })
-      .catch((err) => {
-        throw err;
-      });
+    for (let i = 0; i < track.data.length; i++) {
+      // Reactotron.log(res.data[i].document_id);
+      let fetch = await get_branches(track.data[i].document_id);
+      let sub = await getSubProcess(track.data[i].document_id);
+      arr.push({ root: track.data[i], subProcess: sub, branch: fetch });
+    }
+
+    dispatch({
+      type: actionTypes.TRACK_DOCUMENT,
+      data: arr,
+    });
   };
 }
 
