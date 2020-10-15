@@ -16,10 +16,15 @@ import BusinessIcon from "@material-ui/icons/Business";
 import SendIcon from "@material-ui/icons/Send";
 export default function Forward(props) {
   const options = [];
-  for (let i = 0; i < props.sections.length; i++) {
+  console.log(props.user);
+  const sectionList = props.sections.filter(
+    (item) => item.secid !== parseInt(props.user.secid)
+  );
+  console.log(sectionList);
+  for (let i = 0; i < sectionList.length; i++) {
     options.push({
-      id: props.sections[i].secshort,
-      type: props.sections[i].section,
+      id: sectionList[i].secshort,
+      type: sectionList[i].section,
     });
   }
 
@@ -67,7 +72,7 @@ export default function Forward(props) {
                 onChange={props.onChangeDestination}
               />
 
-              {props.doc.destination.length > 1 && (
+              {props.doc.route === "multiple" && (
                 <>
                   <br />
                   <button

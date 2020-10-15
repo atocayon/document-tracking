@@ -13,6 +13,10 @@ import { withSnackbar } from "notistack";
 import io from "socket.io-client";
 import InfoIcon from "@material-ui/icons/Info";
 import { fetchActiveUserList } from "../../../redux/actions/fetchActiveUserList";
+import Paper from "@material-ui/core/Paper";
+import ListSubheader from "@material-ui/core/ListSubheader";
+import { makeStyles } from "@material-ui/core/styles";
+
 let socket;
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -43,7 +47,26 @@ const StyledBadge = withStyles((theme) => ({
   },
 }))(Badge);
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: "100%",
+    maxWidth: 360,
+    backgroundColor: theme.palette.background.paper,
+    position: "relative",
+    overflow: "auto",
+    maxHeight: "80vh",
+  },
+  listSection: {
+    backgroundColor: "inherit",
+  },
+  ul: {
+    backgroundColor: "inherit",
+    padding: 0,
+  },
+}));
+
 function UserList(props) {
+  const classes = useStyles();
   useEffect(() => {
     socket = io(process.env.REACT_APP_SERVER);
     const obj = getFromStorage("documentTracking");
@@ -60,7 +83,7 @@ function UserList(props) {
   }, []);
 
   return (
-    <div style={{ overflow: "auto" }}>
+    <div class="overflow-auto">
       {props.userList.length > 0 && (
         <h6
           style={{
@@ -77,52 +100,117 @@ function UserList(props) {
         </h6>
       )}
 
-      {props.userList.length > 0 && (
-        <List>
-          {props.userList.map((data, index) => {
-            let name = data.name.replace(/(^\w{1})|(\s{1}\w{1})/g, (match) =>
-              match.toUpperCase()
-            );
+      <div class="overflow-auto">
+        {props.userList.length > 0 && (
+          <List className={classes.root} subheader={<li />}>
+            {props.userList.map((data, index) => {
+              let name = data.name.replace(/(^\w{1})|(\s{1}\w{1})/g, (match) =>
+                match.toUpperCase()
+              );
 
-            let position = data.position.replace(
-              /(^\w{1})|(\s{1}\w{1})/g,
-              (match) => match.toUpperCase()
-            );
+              let position = data.position.replace(
+                /(^\w{1})|(\s{1}\w{1})/g,
+                (match) => match.toUpperCase()
+              );
 
-            return (
-              <ListItem alignItems="flex-start" key={data.user_id}>
-                <ListItemAvatar>
-                  <StyledBadge
-                    overlap="circle"
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "right",
-                    }}
-                    variant="dot"
-                  >
-                    <Avatar alt={data.name} src="/static/images/avatar/1.jpg" />
-                  </StyledBadge>
-                </ListItemAvatar>
-                <ListItemText
-                  MuiListItemText-dense
-                  primary={name}
-                  secondary={
-                    <React.Fragment>
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        // className={classes.inline}
-                      >
-                        {position}
-                      </Typography>
-                    </React.Fragment>
-                  }
-                />
-              </ListItem>
-            );
-          })}
-        </List>
-      )}
+              return (
+                <ListItem alignItems="flex-start" key={data.user_id}>
+                  <ListItemAvatar>
+                    <StyledBadge
+                      overlap="circle"
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "right",
+                      }}
+                      variant="dot"
+                    >
+                      <Avatar
+                        alt={data.name}
+                        src="/static/images/avatar/1.jpg"
+                      />
+                    </StyledBadge>
+                  </ListItemAvatar>
+                  <ListItemText
+                    MuiListItemText-dense
+                    primary={name}
+                    secondary={
+                      <React.Fragment>
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          // className={classes.inline}
+                        >
+                          {position}
+                        </Typography>
+                      </React.Fragment>
+                    }
+                  />
+                </ListItem>
+              );
+            })}
+
+            <ListItem alignItems="flex-start" key={"data.user_id"}>
+              <ListItemAvatar>
+                <StyledBadge
+                  overlap="circle"
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                  }}
+                  variant="dot"
+                >
+                  <Avatar alt={"dample"} src="/static/images/avatar/1.jpg" />
+                </StyledBadge>
+              </ListItemAvatar>
+              <ListItemText
+                MuiListItemText-dense
+                primary={"name"}
+                secondary={
+                  <React.Fragment>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      // className={classes.inline}
+                    >
+                      "sample"
+                    </Typography>
+                  </React.Fragment>
+                }
+              />
+            </ListItem>
+
+            <ListItem alignItems="flex-start" key={"data.user_id"}>
+              <ListItemAvatar>
+                <StyledBadge
+                  overlap="circle"
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                  }}
+                  variant="dot"
+                >
+                  <Avatar alt={"dample"} src="/static/images/avatar/1.jpg" />
+                </StyledBadge>
+              </ListItemAvatar>
+              <ListItemText
+                MuiListItemText-dense
+                primary={"name"}
+                secondary={
+                  <React.Fragment>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      // className={classes.inline}
+                    >
+                      "sample"
+                    </Typography>
+                  </React.Fragment>
+                }
+              />
+            </ListItem>
+          </List>
+        )}
+      </div>
 
       {props.userList.length === 0 && (
         <div

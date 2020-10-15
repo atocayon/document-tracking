@@ -134,6 +134,8 @@
 }
 
 ::-webkit-scrollbar {
+  height: 5px !important;
+
   width: 5px !important;
   /* Remove scrollbar space */
   background: #e0e0e0 !important;
@@ -142,4 +144,5 @@
 
 ::-webkit-scrollbar-thumb {
   background: #2196f3 !important;
+  height: 5px !important;
 }

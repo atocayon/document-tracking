@@ -674,7 +674,9 @@ function AddDocument({
                               id={"internalDestination"}
                               name={"internalDestination"}
                               label={"Internal Office/Section"}
-                              options={sections}
+                              options={sections.filter(
+                                (item) => item.id !== user.secshort
+                              )}
                               onChange={addDocumentInputChange}
                               variant={"outlined"}
                               error={error.internalDestination}

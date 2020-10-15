@@ -450,7 +450,7 @@ function Dashboard(props) {
             </Grid>
           </Paper>
         </div>
-        <div className={"col-md-2"}>
+        <div className={"col-md-2 overflow-auto"}>
           <UserList />
         </div>
       </div>

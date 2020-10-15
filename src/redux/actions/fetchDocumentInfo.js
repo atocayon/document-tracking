@@ -28,6 +28,14 @@ export function fetchDocumentInfo(doc_id) {
         "/dts/document/status/" +
         doc_id
     );
+
+    const fetchDocRoute = await axios.get(
+      "http://" +
+        process.env.REACT_APP_SERVER +
+        "/dts/document/route/type/" +
+        doc_id
+    );
+
     // Reactotron.log("saddsadssda");
     // Reactotron.log(await docDestination(fetchDocDestination));
 
@@ -56,6 +64,11 @@ export function fetchDocumentInfo(doc_id) {
     await dispatch({
       type: actionTypes.FETCH_DOC_CURRENT_STATUS,
       data: fetchDocCurrentStatus.data,
+    });
+
+    await dispatch({
+      type: actionTypes.FETCH_DOC_ROUTE,
+      data: fetchDocRoute.data,
     });
   };
 }

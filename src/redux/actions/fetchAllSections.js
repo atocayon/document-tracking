@@ -11,6 +11,7 @@ export function fetchAllSections() {
           section.push({
             id: res.data[i].secid,
             type: res.data[i].section,
+            secshort: res.data[i].secshort,
           });
 
           internalDestination.push({

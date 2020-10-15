@@ -98,7 +98,7 @@ function PendingDocumentInfo(props) {
       token,
       props.forwardDocument.remarks,
       selectedValue,
-      props.pendingDocumentInfo.destination.length > 1
+      props.pendingDocumentInfo.route === "multiple"
         ? props.forwardDocument.des
         : props.forwardDocument.destination,
       "2"
@@ -125,6 +125,7 @@ function PendingDocumentInfo(props) {
   return (
     <Grid container>
       <Forward
+        user={props.user}
         doc={props.pendingDocumentInfo}
         open={forwardDialog}
         handleClose={handleSetForwardDialog}
