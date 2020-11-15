@@ -3,7 +3,7 @@ import axios from "axios";
 export function fetchAllUsers() {
   return async function (dispatch) {
     return axios
-      .get("http://" + process.env.REACT_APP_SERVER + "/dts/users")
+      .get("http://" + process.env.REACT_APP_SERVER + "/fetchUsers")
       .then((res) => {
         dispatch({
           type: actionTypes.FETCH_ALL_USER,

@@ -14,7 +14,7 @@ import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import PrintIcon from "@material-ui/icons/Print";
 import InfoIcon from "@material-ui/icons/Info";
 import Badge from "@material-ui/core/Badge";
-
+import HistoryIcon from "@material-ui/icons/History";
 export default function ListItemComponent(props) {
   function icon() {
     if (props.primary === "Drafts") {
@@ -33,8 +33,8 @@ export default function ListItemComponent(props) {
       return <FolderSharedIcon />;
     }
 
-    if (props.primary === "Received/Released") {
-      return <ArchiveIcon />;
+    if (props.primary === "History") {
+      return <HistoryIcon />;
     }
 
     if (props.primary === "New") {
@@ -74,7 +74,7 @@ export default function ListItemComponent(props) {
       return "/sectionDocuments";
     }
 
-    if (props.primary === "Received/Released") {
+    if (props.primary === "History") {
       return "/processedDocuments";
     }
 
@@ -84,10 +84,6 @@ export default function ListItemComponent(props) {
 
     if (props.primary === "Home") {
       return "/";
-    }
-
-    if (props.primary === "User Management") {
-      return "/users";
     }
 
     if (props.primary === "Generate Reports") {

@@ -3,7 +3,7 @@ import axios from "axios";
 export function fetchCurrentSystemUser(token) {
   return async function (dispatch) {
     return axios
-      .get("http://" + process.env.REACT_APP_SERVER + "/dts/user/" + token)
+      .get("http://" + process.env.REACT_APP_SERVER + "/user/" + token)
       .then((res) => {
         dispatch({
           type: actionTypes.FETCH_SYSTEM_CURRENT_USER,

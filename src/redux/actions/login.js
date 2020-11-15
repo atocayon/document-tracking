@@ -6,7 +6,7 @@ export function login(data) {
   const { usernameOrEmail, password } = data;
   return async function (dispatch) {
     return axios
-      .post("http://" + process.env.REACT_APP_SERVER + "/dts/login", {
+      .post("http://" + process.env.REACT_APP_SERVER + "/login", {
         usernameOrEmail,
         password,
       })

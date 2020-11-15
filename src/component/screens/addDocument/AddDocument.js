@@ -40,11 +40,9 @@ import { removeDestination } from "../../../redux/actions/clearAddNewDocumentInp
 import { addNewDocument } from "../../../redux/actions/addNewDocument";
 import { logDocumentCreator } from "../../../redux/actions/addDocumentDestination";
 import { clearAddNewDocumentState } from "../../../redux/actions/clearAddNewDocumentInput";
-// import { addNewDocumentDraft } from "../../../redux/actions/addNewDocumentDraft";
 import { notification } from "../../../redux/actions/notification";
 import { removeFirstIndexOnEditAddDocument } from "../../../redux/actions/addDocumentDestination";
 import { clearAddDocumentMessage } from "../../../redux/actions/addNewDocument";
-import { clearDraftsMessage } from "../../../redux/actions/addNewDocumentDraft";
 import { logout } from "../../../redux/actions/logout";
 import { fetchDocCategory } from "../../../redux/actions/manageDocumentCategory";
 import ReactJoyride from "react-joyride";
@@ -81,7 +79,6 @@ function AddDocument({
   // addNewDocumentDraft,
   // submit_new_document_draft,
   clearAddDocumentMessage,
-  clearDraftsMessage,
   logout,
   _logout,
   fetchDocCategory,
@@ -208,25 +205,6 @@ function AddDocument({
         clearAddDocumentMessage();
       }
     }
-
-    // if (submit_new_document_draft !== "") {
-    //   if (submit_new_document_draft === "success") {
-    //     setFinalize(false);
-    //     setDestination("");
-    //     const variant = "info";
-    //     enqueueSnackbar("Document saved as draft success...", {
-    //       variant,
-    //     });
-    //     clearDraftsMessage();
-    //   }
-    //   if (submit_new_document_draft === "failed") {
-    //     const variant = "error";
-    //     enqueueSnackbar("Document saving as draft failed...", {
-    //       variant,
-    //     });
-    //     clearDraftsMessage();
-    //   }
-    // }
 
     if (_logout !== null) {
       if (_logout === "false") {
@@ -808,11 +786,9 @@ const mapDispatchToProps = {
   addNewDocument,
   logDocumentCreator,
   clearAddNewDocumentState,
-  // addNewDocumentDraft,
   notification,
   removeFirstIndexOnEditAddDocument,
   clearAddDocumentMessage,
-  clearDraftsMessage,
   logout,
   fetchDocCategory,
 };

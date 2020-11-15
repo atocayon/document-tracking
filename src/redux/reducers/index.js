@@ -3,18 +3,13 @@ import update from "./updateUserProfile";
 import fetchUserById from "./fetchUserById";
 import fetchAllUsers from "./fetchAllUsers";
 import fetchAllSections from "./fetchAllSections";
-import deleteUser from "./deleteUser";
 import logout from "./logout";
 import fetchDivisions from "./fetchDivisions";
-import fetchDivisionById from "./fetchDivisionById";
 import fetchSectionsList from "./fetchSectionsList";
-import fetchSectionById from "./fetchSectionById";
 import fetchDocumentTypes from "./fetchDocumentTypes";
-import fetchDocumentTypeById from "./fetchDocumentTypeById";
 import login from "./login";
 import verifyToken from "./verifyToken";
 import fetchCurrentSystemUser from "./fetchCurrentSystemUser";
-import userRegistration from "./userRegistration";
 import fetchDocumentById from "./fetchDocumentById";
 import fetchDocumentActionRequired from "./fetchDocumentActionRequired";
 import fetchDocumentId from "./fetchDocumentId";
@@ -45,15 +40,6 @@ import fetchProcessedDocument from "./fetchProcessedDocument";
 import fetchSectionUsers from "./fetchSectionUsers";
 import trackOrSearchOnly from "./trackOrSearchOnly";
 import handleDocDissemination from "./handleDocDissemination";
-import addNewDivision from "./addNewDivision";
-import updateDivision from "./updateDivision";
-import deleteDivision from "./deleteDivision";
-import addNewSection from "./addNewSection";
-import updateSection from "./updateSection";
-import deleteSection from "./deleteSection";
-import addNewDocumentType from "./addNewDocumentType";
-import updateDocumentType from "./updateDocumentType";
-import deleteDocumentType from "./deleteDocumentType";
 import count_pending from "./count_pending";
 const rootReducer = combineReducers({
   update: update,
@@ -61,17 +47,17 @@ const rootReducer = combineReducers({
   fetchAllUsers: fetchAllUsers,
   fetchAllSections: fetchAllSections,
   fetchDivisions: fetchDivisions,
-  fetchDivisionById: fetchDivisionById,
+
   fetchSectionsList: fetchSectionsList,
-  fetchSectionById: fetchSectionById,
+
   fetchDocumentTypes: fetchDocumentTypes,
-  fetchDocumentTypeById: fetchDocumentTypeById,
+
   fetchCurrentSystemUser: fetchCurrentSystemUser,
-  deleteUser: deleteUser,
+
   logout: logout,
   login: login,
   verifyToken: verifyToken,
-  userRegistration: userRegistration,
+
   fetchDocumentById: fetchDocumentById,
   fetchDocumentActionRequired: fetchDocumentActionRequired,
   fetchDocumentId: fetchDocumentId,
@@ -102,15 +88,7 @@ const rootReducer = combineReducers({
   fetchSectionUsers: fetchSectionUsers,
   trackOrSearchOnly: trackOrSearchOnly,
   handleDocDissemination: handleDocDissemination,
-  addNewDivision: addNewDivision,
-  updateDivision: updateDivision,
-  deleteDivision: deleteDivision,
-  addNewSection: addNewSection,
-  deleteSection: deleteSection,
-  updateSection: updateSection,
-  addNewDocumentType: addNewDocumentType,
-  updateDocumentType: updateDocumentType,
-  deleteDocumentType: deleteDocumentType,
+
   count_pending: count_pending,
 });
 

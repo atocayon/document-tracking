@@ -8,7 +8,7 @@ export function handleSearchSectionDocuments({ target }) {
         data: target.value,
       });
     } else {
-      window.location.reload(true);
+      window.location.reload();
     }
   };
 }

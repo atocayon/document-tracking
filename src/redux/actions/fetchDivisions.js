@@ -3,7 +3,7 @@ import axios from "axios";
 export function fetchDivisions() {
   return async function (dispatch) {
     return axios
-      .get("http://" + process.env.REACT_APP_SERVER + "/dts/divisions")
+      .get("http://" + process.env.REACT_APP_SERVER + "/fetchDivisions")
       .then((res) => {
         dispatch({ type: actionTypes.FETCH_DIVISIONS, data: res.data });
       })

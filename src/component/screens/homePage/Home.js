@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Dashboard from "./Dashboard";
 import { getFromStorage } from "../../storage";
 import { Redirect } from "react-router-dom";
-import ControlPanel from "../controlPanel/ControlPanel";
 import { connect } from "react-redux";
 import { verifyToken } from "../../../redux/actions/verifyToken";
 import { fetchCurrentSystemUser } from "../../../redux/actions/fetchCurrentSystemUser";
@@ -31,7 +30,6 @@ function Home(props) {
     }
     setEndSession(!(obj && obj.token));
   }, []);
-  Rectotron.log(props.user.dts_role);
   return (
     <div>
       {loading && <CircularProgressComponent />}
@@ -44,15 +42,8 @@ function Home(props) {
             <Dashboard user={props.user} sections={props.sections} />
           )}
 
-          {props.user.dts_role === "admin" && (
+          {props.user.dts_role && (
             <Dashboard user={props.user} sections={props.sections} />
-          )}
-
-          {props.user.dts_role === "member" && (
-            <Dashboard user={props.user} sections={props.sections} />
-          )}
-          {props.user.dts_role === "super_admin" && (
-            <ControlPanel user={props.user} />
           )}
         </>
       )}

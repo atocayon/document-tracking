@@ -55,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     overflow: "auto",
     maxHeight: "80vh",
+    paddingBottom: "10vh",
   },
   listSection: {
     backgroundColor: "inherit",
@@ -87,7 +88,7 @@ function UserList(props) {
       {props.userList.length > 0 && (
         <h6
           style={{
-            paddingTop: "10vh",
+            paddingTop: "15vh",
             paddingLeft: 10,
             paddingBottom: 30,
             fontWeight: "bold",

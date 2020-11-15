@@ -4,9 +4,7 @@ import Reactotron from "reactotron-react-js";
 export function fetchDocumentTypes() {
   return async function (dispatch) {
     return axios
-      .get(
-        "http://" + process.env.REACT_APP_SERVER + "/dts/document/list/types"
-      )
+      .get("http://" + process.env.REACT_APP_SERVER + "/document_types")
       .then((res) => {
         dispatch({
           type: actionTypes.FETCH_DOCUMENT_TYPES,

@@ -3,7 +3,7 @@ import axios from "axios";
 export function fetchAllSections() {
   return async function (dispatch) {
     return axios
-      .get("http://" + process.env.REACT_APP_SERVER + "/dts/sections")
+      .get("http://" + process.env.REACT_APP_SERVER + "/fetchSections")
       .then(async (res) => {
         const section = [];
         const internalDestination = [];

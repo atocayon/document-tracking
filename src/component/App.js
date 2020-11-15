@@ -8,14 +8,11 @@ import SectionDocuments from "./screens/sectionDocuments/SectionDocuments";
 import ProcessedDocuments from "./screens/processedDocuments/ProcessedDocuments";
 import LoginModal from "./screens/login/Login";
 import Profile from "./screens/profile/Profile";
-import RegistrationForm from "./screens/newUserForm/RegistrationForm";
 import NotFoundPage from "./screens/pageNotfound/NotFoundPage";
-import UserManagement from "./screens/userManagement/UserManagement";
 import UpdateProfile from "./screens/updateProfile/UpdateProfile";
 import UserFolder from "./screens/folder/UsersFolder";
 import { getFromStorage } from "./storage";
 import { withSnackbar } from "notistack";
-import Drafts from "./screens/drafts/Drafts";
 import DocumentInfo from "./screens/documentInfo/DocumentInfo";
 import PendingDocumentInfo from "./screens/pendingForRelease/PendingDocumentInfo";
 import "../../src/styles/login.css";
@@ -33,7 +30,6 @@ function App(props) {
         <Switch>
           <Route path={"/"} exact component={Home} />
           <Route path={"/login"} component={LoginModal} />
-          <Route path={"/fetchUsersBySection"} component={UserManagement} />
           <Route path={"/addDocument/:id"} component={AddDocument} />
           <Route path={"/addDocument"} component={AddDocument} />
           <Route path={"/pending"} component={PendingForRelease} />
@@ -43,11 +39,11 @@ function App(props) {
           <Route path={"/user/:id"} component={Profile} />
           <Route path={"/user"} component={Profile} />
           <Route path={"/update/:id"} component={UpdateProfile} />
-          <Route path={"/users"} component={UserManagement} />
-          <Route path={"/registration"} component={RegistrationForm} />
-          <Route path={"/drafts"} component={Drafts} />
           <Route path={"/doc/:doc_id"} component={DocumentInfo} />
-          <Route path={"/pending_doc/:doc_id"} component={PendingDocumentInfo} />
+          <Route
+            path={"/pending_doc/:doc_id"}
+            component={PendingDocumentInfo}
+          />
           <Route path={"/folder/:folder"} component={UserFolder} />
           <Route component={NotFoundPage} />
         </Switch>

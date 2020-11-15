@@ -27,12 +27,15 @@ const useStyles = makeStyles((theme) => ({
     display: "none",
     width: "100%",
     height: "100vh",
-    overflow: "auto",
-    maxWidth: 360,
+    overflowY: "auto",
+    overflowX: "hidden",
+    maxWidth: "30vw",
     backgroundColor: theme.palette.background.paper,
     marginTop: 50,
+    marginRight: 10,
     paddingBottom: 100,
-    paddingLeft: theme.spacing(2),
+    paddingLeft: theme.spacing(1),
+
     [theme.breakpoints.up("lg")]: {
       display: "block",
     },
@@ -175,7 +178,7 @@ function SideBarNavigation(props) {
 
               <div className={"sidebarProcessedDoc"}>
                 <ListItemComponent
-                  primary="Received/Released"
+                  primary="History"
                   className={classes.nested}
                 />
               </div>
@@ -186,11 +189,6 @@ function SideBarNavigation(props) {
         <List component="nav" aria-label="secondary mailbox folders">
           <div className={"sidebarManageDocCat"}>
             <ListItemComponent primary="Manage Document Category" />
-          </div>
-        </List>
-        <List component="nav" aria-label="secondary mailbox folders">
-          <div className={"sidebarUserManage"}>
-            <ListItemComponent primary="User Management" />
           </div>
         </List>
 
